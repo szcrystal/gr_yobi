@@ -621,7 +621,7 @@ use App\DeliveryGroup;
                             ?>
                             
                             <div class="mb-2">
-                            ・<b class="d-inline-block mb-1">{{ Ctm::getItemTitle($si) }}</b><br>
+                            <i class="fal fa-angle-double-right"></i> <b class="d-inline-block mb-1">{{ Ctm::getItemTitle($si) }}</b><br>
                             
                             <?php
                                 $checked = '';
@@ -672,7 +672,7 @@ use App\DeliveryGroup;
                                 <p class="mb-1 pb-2">■下記の商品につきまして、ご希望配送時間の指定ができます。</p>
                                  @foreach($val as $itemId)
                                  	<?php $i = Item::find($itemId); ?>
-                                    ・<b>{{ Ctm::getItemTitle($i) }}</b><br>
+                                    <i class="fal fa-angle-double-right"></i> <b>{{ Ctm::getItemTitle($i) }}</b><br>
                                  @endforeach
                             @endif
                              

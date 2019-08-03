@@ -222,25 +222,23 @@
         	<tr>
             <td>
             	<p>
-                <b class="text-small">ご希望日</b>：
-                @if(isset($data['plan_date']))
-                    {{ $data['plan_date'] }}<br>
-                    
-                    @if(isset($data['is_seinou']) && strpos($data['plan_date'], '日'))
-                        <span class="text-enji text-small">*ご希望日が日曜日の場合は、送料が1000円増しとなります。</span>
+                    <span class="text-small">ご希望日</span>：
+                    <b>
+                    @if(isset($data['plan_date']))
+                        {{ $data['plan_date'] }}<br>
+                    @else
+                        最短出荷<br>
                     @endif
-                @else
-                    最短出荷<br>
-                @endif
+                    </b>
                 </p>
             
             
             @if(isset($data['is_huzaioki']))
-            	<ul class="px-4 mt-3">
+            	<ul class="px-4 mt-3 mb-0 py-0">
                     @foreach($data['is_huzaioki'] as $itemIdKey => $vs)
                     	<?php $si = Item::find($itemIdKey); ?>
                         <li class="mb-2">
-                        	{{ Ctm::getItemTitle($si) }}：
+                        	{{ Ctm::getItemTitle($si) }}<br>
                             <b>
                         	@if($vs)
                             	不在置きを了承する
@@ -251,6 +249,10 @@
                         </li>
                     @endforeach
                 </ul>
+                
+                @if(isset($data['is_seinou']) && Ctm::isSeinouSunday($data['plan_date']))
+                    <span class="text-enji text-small ml-3">＊上記の商品は、ご希望配送日が日曜日の場合に送料が1000円増しとなります。</span>
+                @endif
 			@endif
             
 			<ul class="px-4 mt-3">
@@ -258,7 +260,7 @@
                 	@if(isset($item->plan_time))                   
                         <li class="mb-3">
                             {{ Ctm::getItemTitle($item) }}<br>
-                            <b class="text-small">ご希望時間</b>：[ {{ $item->plan_time }} ]
+                            <span class="text-small">ご希望時間</span>：<b>[ {{ $item->plan_time }} ]</b>
                         </li>
                     @endif
                 @endforeach

@@ -482,6 +482,12 @@ class CustomController extends Controller
         return $codFee;
     }
     
+    static function isSeinouSunday($planDate)
+    {
+    	return isset($planDate) && strpos($planDate, '（日）') !== false;
+    }
+    
+    
 //    static function getPointBack($item) {
 //        
 //        //商品に入力されているポイント還元率が最優先

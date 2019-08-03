@@ -314,15 +314,14 @@ class CartController extends Controller
       	$addPoint = $all['add_point'];
         
         $destination = $allData['destination'];
-        //$destination = isset($allData['destination']) ? 1 : 0;
         
         $pm = $allData['pay_method'];
         
         //配送時間
-        $planTime = isset($allData['plan_time']) ? $allData['plan_time'] : array();
+        //$planTime = isset($allData['plan_time']) ? $allData['plan_time'] : array();
         
         //不在置き指定
-        $isHuzaioki = isset($allData['is_huzaioki']) ? $allData['is_huzaioki'] : null;
+        //$isHuzaioki = isset($allData['is_huzaioki']) ? $allData['is_huzaioki'] : null;
         
         $userData = Auth::check() ? $this->user->find(Auth::id()) : $allData['user']; //session(all.data.user)
       	$receiverData = $allData['receiver']; //session('all.data.receiver');
@@ -338,17 +337,17 @@ class CartController extends Controller
        
        	
         //配送時間指定 itemごとにitemDataの配列内に入れる
-        if(count($planTime) > 0) {
-            foreach($itemData as $key => $value) {
-                
-                foreach($planTime as $dgKey => $dgTime ) {
-                    $dgId = $this->item->find($value['item_id'])->dg_id;
-                    if($dgKey == $dgId) {
-                        $itemData[$key]['plan_time'] = $dgTime;
-                    }
-                }
-            }
-        }
+//        if(count($planTime) > 0) {
+//            foreach($itemData as $key => $value) {
+//                
+//                foreach($planTime as $dgKey => $dgTime ) {
+//                    $dgId = $this->item->find($value['item_id'])->dg_id;
+//                    if($dgKey == $dgId) {
+//                        $itemData[$key]['plan_time'] = $dgTime;
+//                    }
+//                }
+//            }
+//        }
 
       
       	//User登録処理 ==============
@@ -384,7 +383,7 @@ class CartController extends Controller
 //                $userData['birth_day'] = 0;
 //            }
             
-            session('all.data.user.magazine', $userData['magazine']); //session入れ　不要？？
+            //session('all.data.user.magazine', $userData['magazine']); //session入れ　不要？？
             
             if($regist) {   
                 $userData['password'] = bcrypt($userData['password']);
@@ -526,45 +525,29 @@ class CartController extends Controller
         $saleObjs = array();
         $stockNone = array();
         
-        $prefectureId = $this->prefecture->where('name', $receiver->prefecture)->first()->id;
+//        $prefectureId = $this->prefecture->where('name', $receiver->prefecture)->first()->id;
         
         //売上登録処理 Sale create
-        foreach($itemData as $key => $val) {
+        foreach($itemData as $key => $oneSesData) {
         	
-            $oneItemData = array();
-            $singleDeliFee = 0;
+//            $oneItemData = array();
             
-			$i = $this->item->find($val['item_id']);
-            $i->count = $val['item_count'];
-            $oneItemData[] = $i;
-            
+			$i = $this->item->find($oneSesData['item_id']);
+            $singleSellCount = $oneSesData['item_count'];
+//            $i->count = $val['item_count'];
+//            $oneItemData[] = $i;
                         
-            $df = new Delifee($oneItemData, $prefectureId);
-            $singleDeliFee = $df->getDelifee();
-            
-            $itemTotalPrice = $val['item_total_price'];
-        	
-            // Seinou Correct **************************
-            //西濃運輸の場合の日曜判定 -> 日曜配達は+1000、不在置き了承-3000
-            /*
-            if($i->dg_id == $this->dgSeinouId) {
-            	if(isset($allData['plan_date']) && strpos($allData['plan_date'], '日') !== false) {
-                	$singleDeliFee += 1000;
-                }
-                
-                if(isset($isHuzaioki[$i->id]) && $isHuzaioki[$i->id]) {
-                	$itemTotalPrice -= 3000;
-                }
-            }
-            */
+//            $df = new Delifee($oneItemData, $prefectureId);
+//            $singleDeliFee = $df->getDelifee();
+
             
             $sale = $this->sale->create(
                 [
                 	'salerel_id' => $saleRelId,
                 	'order_number' => $orderNumber, //コンビニなし
                     
-                    'item_id' =>$val['item_id'],
-                    'item_count' =>$val['item_count'], 
+                    'item_id' => $oneSesData['item_id'],
+                    'item_count' => $singleSellCount, 
                     
                     'regist' =>$all['regist'],
                     'user_id' =>$userId,
@@ -572,20 +555,20 @@ class CartController extends Controller
                     'receiver_id' => $receiverId,
 					
                     'pay_method' => $pm,
-                    'deli_fee' => $singleDeliFee,
+                    'deli_fee' => $oneSesData['single_deli_fee'],
                     'cod_fee' => $codFee,
                     'use_point' => 0,
-                    'add_point' => $val['single_point'],
+                    'add_point' => $oneSesData['single_point'],
                     'single_price' => $this->getItemPrice($i),
-                    'total_price' => $itemTotalPrice,
+                    'total_price' => $oneSesData['item_total_price'] - $oneSesData['down_price'],
                     
-                    'cost_price' => $i->cost_price * $val['item_count'],
+                    'cost_price' => $i->cost_price * $oneSesData['item_count'],
                     'charge_loss' => 0,
                     
                     'plan_date' => isset($allData['plan_date']) ? $allData['plan_date'] : null,
-                    'plan_time' => isset($val['plan_time']) ? $val['plan_time'] : null,
+                    'plan_time' => $oneSesData['plan_time'],
                     
-                    'is_huzaioki' => isset($isHuzaioki[$i->id]) ? $isHuzaioki[$i->id] : null,
+                    'is_huzaioki' => $oneSesData['is_huzaioki'],
                     
                     'deli_done' => 0,
                     'pay_done' => 0,
@@ -609,25 +592,26 @@ class CartController extends Controller
             
 
             //在庫引く処理
-            $item = $this->item->find($val['item_id']);
-            $item->timestamps = false; //在庫引く時とsale Countでタイムスタンプを上書きしない
-            $item->decrement('stock', $val['item_count']);
+            //$item = $this->item->find($val['item_id']);
+            $i->timestamps = false; //在庫引く時とsale Countでタイムスタンプを上書きしない
+            $i->decrement('stock', $singleSellCount);
             
-            if(! $item->stock) { //在庫が0になればitem_idを配列へ メールで知らせるため
-            	$stockNone[] = $item->id;
+            if(! $i->stock) { //在庫が0になればitem_idを配列へ メールで知らせるため
+            	$stockNone[] = $i->id;
             }
             
             //Sale Count処理（itemの売れた個数）
-            if($item->is_potset) {
-            	$this->item->find($item->pot_parent_id)->increment('sale_count', $val['item_count']);
+            if($i->is_potset) {
+            	$this->item->find($i->pot_parent_id)->increment('sale_count', $singleSellCount);
             }
             else {
-            	$item->increment('sale_count', $val['item_count']);
+            	$i->increment('sale_count', $singleSellCount);
             }
             
             //お気に入りにsale_idを入れる。お気に入りに購入履歴を残すため。
             if($isUser) {
-            	$fav = $this->favorite->where(['user_id'=>$userId, 'item_id'=>$val['item_id']])->first();
+            	$fav = $this->favorite->where(['user_id'=>$userId, 'item_id'=>$i->id])->first();
+                
              	if(isset($fav)) {
               		$fav->sale_id = $sale->id;
                 	$fav->save();      
@@ -651,12 +635,12 @@ class CartController extends Controller
         //for Admin（3分後に送信 -> 1分後に変更）
         Mail::to($this->set->admin_email, $this->set->admin_name)->later(now()->addMinutes(1), new OrderEnd($saleRelId, 0))/*->queue(new OrderEnd($saleRelId, 0))*/;
         
-        if($regist) { //ユーザー新規登録の時
+        if($regist) { //ユーザー新規登録の時（2分後に送信）
         	Mail::to($userData['email'], $userData['name'])->later(now()->addMinutes(2), new Register($userId))/*->queue(new Register($userId))*/; //for User New Regist
         }
         
         
-        //在庫確認 -----------------------------------------------
+        //在庫確認（5分後に送信） -----------------------------------------------
         if(count($stockNone) > 0) {
         	
         	$str = '下記商品の在庫がなくなりました。'. "\n\n";
@@ -679,7 +663,7 @@ class CartController extends Controller
         }
         
         
-        if(! Ctm::isLocal()) {
+        if(! Ctm::isEnv('local')) {
             $request->session()->forget('item');
             $request->session()->forget('all'); 
 		}   
@@ -1214,17 +1198,17 @@ class CartController extends Controller
         
         $itemSes = session('item.data');
         $regist = session('all.regist');
-        $allPrice = session('all.all_price');
-//        print_r(session('all'));
-//        exit;
+
+		//ここでall_priceをsessionから取得すると金額変動などあった時にsession維持でずれるので取得しない　この関数の中で入れ直す
+        //$allPrice = session('all.all_price');
         
         
         //商品テーブル用のオブジェクト取得 -------------------------------
         $itemData = array();
         $addPoint = 0;
         $seinouSundayDeliFee = 0;
-//        print_r($itemSes);
-//        exit;
+        $allPrice = 0;
+
 
 		//ユーザー(配送先)の都道府県NameとIdを取得
         if(isset($data['destination']) && $data['destination']) {
@@ -1242,59 +1226,94 @@ class CartController extends Controller
         
         //都道府県ID
         $prefId = $this->prefecture->where('name', $prefName)->first()->id;
-		//$prefDeli = array();
         
+        
+        //既存Session新規データを追加　各データの修正をここでする。再度Sessionに入れ直す
         foreach($itemSes as $key => $val) {
+        	
+            $downPrice = 0;
+            
         	$obj = $this->item->find($val['item_id']);
             
             // 配送先が配送可能かどうかを確認するための配列をここで作る
 			//$prefDeli[$obj->dg_id][] = $val['item_id'];
             
-         	//カウント 個数  
-         	$obj['count'] = $val['item_count'];
+         	//カウント 個数  送料計算用
+         	$obj->count = $val['item_count'];
           	
-            //トータルプライス   
-            $obj['item_total_price'] = $val['item_total_price'];
+            //トータルプライス Singleの商品金額x個数の金額  
+            $itemTotalPrice = $val['item_total_price'];
             
             //ポイント　ポイント加算
             $pointBack = $this->getPointBack($obj);
-            $obj['point'] = ceil($val['item_total_price'] * $pointBack); //商品金額のみに対してのパーセント 切り上げ 切り捨て->floor()
-			$addPoint += $obj['point'];
+            $obj->point = ceil($val['item_total_price'] * $pointBack); //商品金額のみに対してのパーセント 切り上げ 切り捨て->floor()
+			$addPoint += $obj->point;
             
             //Session入れ ポイント計算後
-            session(['item.data.'. $key . '.single_point' => $obj['point']]);
+            //session(['item.data.'. $key . '.single_point' => $obj['point']]);
+            
+            
+            //商品個別送料の計算
+            $df = new Delifee([$obj], $prefId);
+            $obj->single_deli_fee = $df->getDelifee();
+            
             
             //配送希望時間
             if(isset($data['plan_time'])) {
                 foreach($data['plan_time'] as $dgKey => $timeVal) {
                     if($obj->dg_id == $dgKey) {
-                        $obj['plan_time'] = $timeVal;
+                        $obj->plan_time = $timeVal;
                     }
                 }
             }
             
-            //西濃運輸の場合に、日曜配送は+1000加算
-            if(isset($data['plan_date'])) {
-            	if($obj->dg_id == $this->dgSeinouId && strpos($data['plan_date'], '日') !== false) {
-                    $seinouSundayDeliFee += 1000;
+            //西濃運輸の場合に、日曜配送は+1000加算、不在置き了承で商品から-3000
+            if($obj->dg_id == $this->dgSeinouId) {
+            	if(Ctm::isSeinouSunday($data['plan_date'])) {
+                	$addDeliFee = 1000 * $obj->count;
+                	$obj->single_deli_fee += $addDeliFee;
+                    $seinouSundayDeliFee += $addDeliFee;
+                }
+                
+                if(isset($data['is_huzaioki'][$obj->id])) {
+                	if($data['is_huzaioki'][$obj->id]) {
+                    	//item_total_price(商品金額x個数)をここでsessionに上書きするとズレが出るので、down_priceとして新データをsessionに入れる
+                    	$downPrice = 3000 * $obj->count;
+                        $itemTotalPrice -= $downPrice;
+                    }
+                    
+                    $obj->is_huzaioki = $data['is_huzaioki'][$obj->id];
                 }
             }
             
-			$itemData[] = $obj;
+            //トータルプライス Confirm表示用 sessionには入れ直さない
+            $obj->item_total_price = $itemTotalPrice;
+
+			//allPrice加算
+            $allPrice += $itemTotalPrice;
+
+            //sessionに新しいデータを入れる。ここに上書きデータを入れてはいけない。reload等でループされるので。
+            $itemSes[$key]['single_point'] = $obj->point;
+            $itemSes[$key]['single_deli_fee'] = $obj->single_deli_fee;
+            $itemSes[$key]['plan_time'] = isset($obj->plan_time) ? $obj->plan_time : null;
+            $itemSes[$key]['down_price'] = $downPrice;
+            
+            $itemSes[$key]['is_huzaioki'] = isset($obj->is_huzaioki) ? $obj->is_huzaioki : null;
+            
+            
+            //送料計算用とConfirm画面表示用に使用するObjの配列
+			$itemData[] = $obj; 
         }
+
+//		print_r(session('item.data'));
+//        exit;
         
+        //Session入れ 新規データを追加したitemDataとAllPrice allPriceはここで計算された金額がsessionに入る*****************************
+        session(['item.data'=>$itemSes, 'all.all_price'=>$allPrice]);
+        // **********************************
         
-        //西濃運輸の場合に、不在置き指定で商品から3000円引き
-        if(isset($data['is_huzaioki'])) {
-        	foreach($data['is_huzaioki'] as $vs) {
-            	if($vs) {
-                	$allPrice -= 3000;
-                    
-                    //Session入れ 不在置き了承時のall_price
-                	session(['all.all_price'=>$allPrice]);
-                }
-            }
-        }
+//        print_r(session('item.data'));
+//        exit;
         
         
 
@@ -1338,9 +1357,9 @@ class CartController extends Controller
         $deliFee = $df->getDelifee();
         
         // Seinou Correct **************************
-        //if($seinouSundayDeliFee) { //西濃の日曜配達なら
-        	//$deliFee = $deliFee + $seinouSundayDeliFee;
-        //}
+        if($seinouSundayDeliFee) { //西濃の日曜配達なら
+        	$deliFee = $deliFee + $seinouSundayDeliFee;
+        }
         
         $totalFee = $totalFee + $deliFee;
         //送料END -----------------
@@ -1696,10 +1715,12 @@ class CartController extends Controller
         	$dgId = $this->item->find($item['item_id'])->dg_id;
             
             // Seinou Correct **************************
-//            if($dgId == $this->dgSeinouId) {
-//            	$dgSeinou[] = $item['item_id'];
-//            }
+            //西濃なら
+            if($dgId == $this->dgSeinouId) {
+            	$dgSeinou[] = $item['item_id'];
+            }
             
+            //時間指定可能なら
             if($this->dg->find($dgId)->is_time) {
             	$dgGroup[$dgId][] = $item['item_id'];
             }  

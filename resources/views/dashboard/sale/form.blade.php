@@ -256,7 +256,7 @@ use App\Setting;
                                 </td>
                             </tr>
                             
-                            @if($item->dg_id == 11111)
+                            @if($item->dg_id == 11)
                                 <tr>
                                     <th>不在置き</th>
                                     <td>
