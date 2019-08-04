@@ -1090,7 +1090,8 @@ class CartController extends Controller
             'user_comment' => [
             	'max:30000',
                 function($attribute, $value, $fail) use($request) {
-                    if( $request->has('is_huzaioki') && in_array(1, $request->input('is_huzaioki')) ) {
+                    //if( $request->has('is_huzaioki') && in_array(1, $request->input('is_huzaioki')) ) {
+                    if( $request->has('is_huzaioki') && $request->input('is_huzaioki') ) {
                     	if($value == '') {
                         	return $fail('「不在置きを了承する」場合は「その他コメント」に不在時の荷物の置き場所を記載して下さい。');
                         }
@@ -1271,18 +1272,20 @@ class CartController extends Controller
             if($obj->dg_id == $this->dgSeinouId) {
             	if(Ctm::isSeinouSunday($data['plan_date'])) {
                 	$addDeliFee = 1000 * $obj->count;
-                	$obj->single_deli_fee += $addDeliFee;
+                	
+                    $obj->single_deli_fee += $addDeliFee;
                     $seinouSundayDeliFee += $addDeliFee;
                 }
                 
-                if(isset($data['is_huzaioki'][$obj->id])) {
-                	if($data['is_huzaioki'][$obj->id]) {
+                //if(isset($data['is_huzaioki'][$obj->id])) {
+                if(isset($data['is_huzaioki'])) {
+                	if($data['is_huzaioki']) {
                     	//item_total_price(商品金額x個数)をここでsessionに上書きするとズレが出るので、down_priceとして新データをsessionに入れる
                     	$downPrice = 3000 * $obj->count;
                         $itemTotalPrice -= $downPrice;
                     }
                     
-                    $obj->is_huzaioki = $data['is_huzaioki'][$obj->id];
+                    $obj->is_huzaioki = $data['is_huzaioki'];
                 }
             }
             

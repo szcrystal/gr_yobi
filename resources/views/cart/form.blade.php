@@ -541,154 +541,148 @@ use App\DeliveryGroup;
                 </div> 
          </div><!-- receiver -->
          
+
+        <div class="pt-3">
+            <h3 class="card-header mt-4">配送希望日時</h3>
+            
+            <fieldset class="mb-4 mt-3 col-md-7 form-group{{ $errors->has('plan_date') ? ' has-error' : '' }}">
+                <label for="plan_date" class="control-label">■ご希望日程<span class="text-small"></span></label>
                 
-                
-                
-                <div class="pt-3">
-                	<h3 class="card-header mt-4">配送希望日時</h3>
-                    
-                    <fieldset class="mb-4 mt-3 col-md-7 form-group{{ $errors->has('plan_date') ? ' has-error' : '' }}">
-                        <label for="plan_date" class="control-label">■ご希望日程<span class="text-small"></span></label>
+                <div class="select-wrap col-md-6 p-0">
+                <select class="form-control {{ $errors->has('plan_date') ? ' is-invalid' : '' }}" name="plan_date">
+                    <option value="希望なし（最短出荷）" selected>希望なし（最短出荷）</option>
+                        <?php 
+                            $days = array();
+                            $week = ['日', '月', '火', '水', '木', '金', '土'];
                         
-                        <div class="select-wrap col-md-6 p-0">
-                        <select class="form-control {{ $errors->has('plan_date') ? ' is-invalid' : '' }}" name="plan_date">
-                            <option value="希望なし（最短出荷）" selected>希望なし（最短出荷）</option>
-                            	<?php 
-                                	$days = array();
-                                    $week = ['日', '月', '火', '水', '木', '金', '土'];
-                                
-                                    for($plusDay = 4; $plusDay < 64; $plusDay++) { //現在より4日後スタート、2ヶ月表示
-                                        $now = date('Y-m-d', time());
-                                        $first = strtotime($now." +". $plusDay . " day");
-                                        $days[] = date('Y/m/d', $first) . '（' . $week[date('w', $first)] . '）';
+                            for($plusDay = 4; $plusDay < 64; $plusDay++) { //現在より4日後スタート、2ヶ月表示
+                                $now = date('Y-m-d', time());
+                                $first = strtotime($now." +". $plusDay . " day");
+                                $days[] = date('Y/m/d', $first) . '（' . $week[date('w', $first)] . '）';
+                            }
+                        ?>
+
+                        @foreach($days as $day)
+                            <?php
+                                $selected = '';
+                                if(Ctm::isOld()) {
+                                    if(old('plan_date') == $day)
+                                        $selected = ' selected';
+                                }
+                                else {
+                                    if(Session::has('all.data.plan_date') && session('all.data.plan_date') == $day) {
+                                        $selected = ' selected';
                                     }
-                                ?>
-
-                                @foreach($days as $day)
-                                    <?php
-                                        $selected = '';
-                                        if(Ctm::isOld()) {
-                                            if(old('plan_date') == $day)
-                                                $selected = ' selected';
-                                        }
-                                        else {
-                                            if(Session::has('all.data.plan_date') && session('all.data.plan_date') == $day) {
-                                                $selected = ' selected';
-                                            }
-                                        }
-                                    ?>
-                                    
-                                    <option value="{{ $day }}"{{ $selected }}>{{ $day }}</option>
-                                @endforeach
-                        </select>
-                        </div>
-                        
-                        @if(count($dgSeinou) > 0)
-                        	
-                        @endif
-                        
-                        @if ($errors->has('plan_date'))
-                            <span class="help-block">
-                                <strong>{{ $errors->first('plan_date') }}</strong>
-                            </span>
-                        @endif
-
-						{{--
-                        <textarea id="plan_date" type="text" class="form-control" name="plan_date" rows="2">{{ Ctm::isOld() ? old('plan_date') : (Session::has('all.data.plan_date') ? session('all.data.plan_date') : '') }}</textarea>
-                        --}}
-
-                        
-                </fieldset>
+                                }
+                            ?>
+                            
+                            <option value="{{ $day }}"{{ $selected }}>{{ $day }}</option>
+                        @endforeach
+                </select>
+                </div>
                 
-                @if(count($dgSeinou) > 0)
-                	<fieldset class="form-group my-3 px-3 py-2{{ $errors->has('is_huzaioki.*') ? ' border border-danger' : '' }}">
-                        
-                        <p class="mb-1 pb-2">
-                            ■下記の商品につきまして
-                            <ul class="pl-4">
+                @if ($errors->has('plan_date'))
+                    <span class="help-block">
+                        <strong>{{ $errors->first('plan_date') }}</strong>
+                    </span>
+                @endif
+
+            </fieldset>
+                
+            @if(count($dgSeinou) > 0)
+                <fieldset class="form-group my-3 px-3 py-2{{ $errors->has('is_huzaioki.*') ? ' border border-danger' : '' }}">
+                    
+                    <p class="mb-1 pb-2">
+                        ■下記の商品につきまして
+                        <ul class="pl-4 text-small">
                             <li>「ご希望日程」が日曜日の場合は、下記1商品につき送料が1000円増しとなります。
-                            <li>不在置きが可能の場合はチェックをして下さい。<br>
-                            <span class="text-enji text-small">※チェック時は商品代金から3000円引きとなります。その際、必ず「その他コメント」内に不在時の荷物の置き場所を記載して下さい。<br>
-                            例：玄関前、門扉の裏、玄関右側入り庭ウッドデッキ付近・・など
-                            </span>
-                            </ul>
-                        </p>
-                        
+                            <li>不在置きを了承頂ける場合はチェックをして下さい。<br>
+                            <span class="text-enji text-small">※チェック時は1商品につき代金から3000円引きとなります。その際、必ず「その他コメント」内に不在時の荷物の置き場所を記載して下さい。<br>
+                            例：玄関前、門扉の裏、玄関右側入り庭ウッドデッキ付近・・など</span>
+                        </ul>
+                    </p>
+                    
+                    <div>
                         @foreach($dgSeinou as $sk => $seinouItemId)
                             
                             <?php 
                                 $si = Item::find($seinouItemId);
+                                $siTitle = Ctm::getItemTitle($si);
                             ?>
                             
-                            <div class="mb-2">
-                            <i class="fal fa-angle-double-right"></i> <b class="d-inline-block mb-1">{{ Ctm::getItemTitle($si) }}</b><br>
-                            
-                            <?php
-                                $checked = '';
-                                if(Ctm::isOld()) {
-                                    if(old('is_huzaioki.'. $si->id))
-                                        $checked = ' checked';
-                                }
-                                else {
-                                    if(Session::has('all.data.is_huzaioki.'. $si->id)  && session('all.data.is_huzaioki.'. $si->id)) {
-                                        $checked = ' checked';
-                                    }
-                                }
-                            ?>
-                            
-                            <input type="hidden" name="is_huzaioki[{{ $si->id }}]" value="0">
-                            
-                            <input id="check-magazine-{{ $sk }}" type="checkbox" name="is_huzaioki[{{ $si->id }}]" value="1"{{ $checked }}>
-                            <label for="check-magazine-{{ $sk }}" class="checks ml-1">不在置きを了承する</label>
-                            
-                            @if ($errors->has('is_huzaioki.'. $si->id))
-                                <div class="help-block text-danger">
-                                    <span class="fa fa-exclamation form-control-feedback"></span>
-                                    <span>{{ $errors->first('is_huzaioki.'. $si->id) }}</span>
-                                </div>
-                            @endif
-                            
-                            </div>
+                            <i class="fal fa-angle-double-right"></i> <b class="d-inline-block mb-1">{{ $siTitle }}</b>
+                            <input type="hidden" name="seinouItemTitle[]" value="{{ $siTitle }}">
+                            <br>    
                         @endforeach
                         
-                        <input type="hidden" name="is_seinou" value="1">
-                    
-                    </fieldset>
-                @endif
-				
-                @if(count($dgGroup) > 0)
-                    <fieldset class="form-group my-3 px-3 py-2{{ $errors->has('deli_time.*') ? ' border border-danger' : '' }}">
-                        @if ($errors->has('deli_time.*'))
-                            <div class="help-block text-danger mb-2">
-                                <span class="fa fa-exclamation form-control-feedback"></span>
-                                <span>{{ $errors->first('deli_time.*') }}</span>
-                            </div>
-                        @endif
-                        
-                        @foreach($dgGroup as $key => $val)
-                            <div class="mb-2 py-2">
+                        <?php
+                            $checked = '';
+                            if(Ctm::isOld()) {
+                                if(old('is_huzaioki'))
+                                    $checked = ' checked';
+                            }
+                            else {
+                                if(Session::has('all.data.is_huzaioki')  && session('all.data.is_huzaioki')) {
+                                    $checked = ' checked';
+                                }
+                            }
+                        ?>
+                       	
+                        <div class="mt-2">
+                            <input type="hidden" name="is_huzaioki" value="0">
                             
+                            <input id="check-huzaioki-0" type="checkbox" name="is_huzaioki" value="1"{{ $checked }}>
+                            <label for="check-huzaioki-0" class="checks ml-1">不在置きを了承する</label>
+                            
+                            @if ($errors->has('is_huzaioki'))
+                                <div class="help-block text-danger">
+                                    <span class="fa fa-exclamation form-control-feedback"></span>
+                                    <span>{{ $errors->first('is_huzaioki') }}</span>
+                                </div>
+                            @endif
+                        
+                            <input type="hidden" name="is_seinou" value="1">
+                        </div>
+                    </div>
+                    
+                </fieldset>
+            @endif
+				
+            @if(count($dgGroup) > 0)
+                <fieldset class="form-group mt-1 mb-2 px-3 py-2{{ $errors->has('plan_time.*') ? ' border border-danger' : '' }}">
+                	
+                    <p class="mb-1 pb-2">■下記の商品につきまして、ご希望配送時間の指定ができます。</p>
+                    
+                    @foreach($dgGroup as $key => $val)
+                        <div class="mb-2 pb-1">
+                        
                             @if(session()->has('item.data') && count(session('item.data')) > 0)
-                                <p class="mb-1 pb-2">■下記の商品につきまして、ご希望配送時間の指定ができます。</p>
+                                
                                  @foreach($val as $itemId)
-                                 	<?php $i = Item::find($itemId); ?>
-                                    <i class="fal fa-angle-double-right"></i> <b>{{ Ctm::getItemTitle($i) }}</b><br>
+                                    <?php 
+                                        $i = Item::find($itemId); 
+                                        $iTitle = Ctm::getItemTitle($i);
+                                    ?>
+                                    
+                                    <i class="fal fa-angle-double-right"></i> <b class="d-inline-block mb-1">{{ $iTitle }}</b>
+                                    <input type="hidden" name="planTimeItemTitle[{{ $key }}][]" value="{{ $iTitle }}">
+                                    <br>
                                  @endforeach
                             @endif
                              
                             
-                            <div class="mt-2 mb-3 ml-1">
+                            <div class="mb-4 ml-1">
                                 <?php
                                     $timeTable = DeliveryGroup::find($key)->time_table;
                                     $timeTable = explode(",", $timeTable);
                                 ?>
                                 
                                 <span class="deliRadioWrap">
-                                	<input id="radio-deli-{{ $key }}-no" type="radio" name="plan_time[{{$key}}]" value="希望なし" class="deliRadio" checked>
-                    				<label for="radio-deli-{{ $key }}-no" class="radios">希望なし</label>
+                                    <input id="radio-deli-{{ $key }}-no" type="radio" name="plan_time[{{$key}}]" value="希望なし" class="deliRadio" checked>
+                                    <label for="radio-deli-{{ $key }}-no" class="radios">希望なし</label>
                                     
                                     {{--
-                                	<input type="radio" name="plan_time[{{$key}}]" class="deliRadio" value="希望なし" checked><span class="mr-3"> 希望なし</span>
+                                    <input type="radio" name="plan_time[{{$key}}]" class="deliRadio" value="希望なし" checked><span class="mr-3"> 希望なし</span>
                                     --}}
                                 </span>
                                 
@@ -709,39 +703,46 @@ use App\DeliveryGroup;
                                      ?>
                                     
                                     <span class="deliRadioWrap">
-                                    	<input id="radio-deli-{{ $key }}-{{ $k }}" type="radio" name="plan_time[{{$key}}]" value="{{ $table }}" class="deliRadio" {{ $checked }}>
-                    					<label for="radio-deli-{{ $key }}-{{ $k }}" class="radios">{{ $table }}</label>
-                                    	
+                                        <input id="radio-deli-{{ $key }}-{{ $k }}" type="radio" name="plan_time[{{$key}}]" value="{{ $table }}" class="deliRadio" {{ $checked }}>
+                                        <label for="radio-deli-{{ $key }}-{{ $k }}" class="radios">{{ $table }}</label>
+                                        
                                         {{--
-                                    	<input type="radio" name="plan_time[{{$key}}]" class="deliRadio" value="{{ $table }}" {{ $checked }}> <span class="mr-3">{{ $table }}</span>
+                                        <input type="radio" name="plan_time[{{$key}}]" class="deliRadio" value="{{ $table }}" {{ $checked }}> <span class="mr-3">{{ $table }}</span>
                                         --}}
                                     </span>
                                 @endforeach
                                     
                             </div>
-                            </div>
-                            
-                         @endforeach
-                    
-                	</fieldset>
-                @endif
-                
-                </div>
-                
-                <div>
-                	<h3 class="card-header mt-4">その他コメント</h3>
-                    
-                    <fieldset class="form-group my-3 pb-4">
-                        <textarea id="user_comment" class="form-control{{ $errors->has('user_comment') ? ' is-invalid' : '' }}" name="user_comment" rows="10">{{ Ctm::isOld() ? old('user_comment') : (Session::has('all.data.user_comment') ? session('all.data.user_comment') : '') }}</textarea>
+                    	</div>
                         
-                        @if ($errors->has('user_comment'))
-                            <div class="help-block text-danger receiver-error">
-                                <span class="fa fa-exclamation form-control-feedback"></span>
-                                <span>{{ $errors->first('user_comment') }}</span>
-                            </div>
-                        @endif
-                    </fieldset>
-                </div>
+                     @endforeach
+                     
+                     @if ($errors->has('plan_time.*'))
+                        <div class="help-block text-danger mb-2">
+                            <span class="fa fa-exclamation form-control-feedback"></span>
+                            <span>{{ $errors->first('plan_time.*') }}</span>
+                        </div>
+                    @endif
+                
+                </fieldset>
+            @endif
+            
+            </div>
+                
+            <div>
+                <h3 class="card-header mt-4">その他コメント</h3>
+                
+                <fieldset class="form-group my-3 pb-4">
+                    <textarea id="user_comment" class="form-control{{ $errors->has('user_comment') ? ' is-invalid' : '' }}" name="user_comment" rows="10">{{ Ctm::isOld() ? old('user_comment') : (Session::has('all.data.user_comment') ? session('all.data.user_comment') : '') }}</textarea>
+                    
+                    @if ($errors->has('user_comment'))
+                        <div class="help-block text-danger receiver-error">
+                            <span class="fa fa-exclamation form-control-feedback"></span>
+                            <span>{{ $errors->first('user_comment') }}</span>
+                        </div>
+                    @endif
+                </fieldset>
+            </div>
                 
                 
                 <div>

@@ -235,8 +235,9 @@
             </tr>
             
             <tr>
-            	<th class="clearfix">
+            	<th class="clearfix pt-3">
                 	@if(! isset($deliFee))
+                    	<b><i class="far fa-angle-double-right float-right text-big text-enji"></i></b>
                         <div class="cart-note">
                             <span class="text-enji"><i class="fas fa-exclamation-triangle"></i> 数量変更は「数量」を、送料確認は「配送先都道府県」を選択して「再計算」を押して下さい。</span>
                         </div>
@@ -244,7 +245,7 @@
                     @endif
                 </th>
                 
-                <td>
+                <td class="pt-3">
                 	<button class="btn px-2 w-100 bg-enji" type="submit" name="re_calc" value="1"{{ $disabled }}><i class="fal fa-redo"></i> 再計算</button>
                 	{{--
                     <button class="btn px-2 w-100 bg-enji" type="submit" name="delifee_calc" value="1"{{ $disabled }}><b>送料計算</b></button>
@@ -259,7 +260,7 @@
     
 </div>
 
-<div class="clearfix mt-0 cart-btn-wrap">
+<div class="clearfix mt-3 cart-btn-wrap">
 	
 	<div class="clearfix">
         <input type="hidden" name="from_cart" value="1">

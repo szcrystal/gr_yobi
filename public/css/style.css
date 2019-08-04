@@ -449,6 +449,7 @@ body {
 .table-foot tr th {
 	width: 77%;
     font-weight: normal;
+    padding-right: 0;
 }
 .table-foot tr td {
 	//text-align: right;
@@ -461,6 +462,7 @@ body {
 	border: 2px solid #C15360;
     padding: 0.1em 0 0.1em 0.8em;
     width: 53%;
+    margin-right: 0.5em;
 }
 
 .table-foot tr:last-of-type th,

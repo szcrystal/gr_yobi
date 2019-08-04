@@ -220,54 +220,69 @@
         
         <tbody>
         	<tr>
+                <td>
+                    <p class="p-0 m-0">
+                        <b><span class="text-small">ご希望日程</span>：
+                        
+                        @if(isset($data['plan_date']))
+                            {{ $data['plan_date'] }}<br>
+                        @else
+                            最短出荷<br>
+                        @endif
+                        </b>
+                    </p>
+                </td>
+            </tr>
+            
+            <?php
+//            	print_r($itemData);
+//                exit;
+            ?>
+            
+            @if(isset($data['is_seinou']))
+            <tr>
             <td>
-            	<p>
-                    <span class="text-small">ご希望日</span>：
-                    <b>
-                    @if(isset($data['plan_date']))
-                        {{ $data['plan_date'] }}<br>
-                    @else
-                        最短出荷<br>
+            	<div class="">
+                    <ul class="mb-2 list-unstyled">
+                        @foreach($data['seinouItemTitle'] as $seinouItemTitle)
+                            <li>
+                                <i class="fal fa-angle-double-right"></i> {{ $seinouItemTitle }}
+                            </li>
+                        @endforeach
+                    </ul>
+                    
+                    <b><span class="text-small">不在置きを</span>：{{ $data['is_huzaioki'] ? '了承する' : '了承しない' }}</b>
+                    
+                    @if(Ctm::isSeinouSunday($data['plan_date']))
+                        <br><span class="d-inline-block text-enji text-small">＊上記の商品は、ご希望配送日が日曜日の場合に送料が1000円増しとなります。</span>
                     @endif
-                    </b>
-                </p>
-            
-            
-            @if(isset($data['is_huzaioki']))
-            	<ul class="px-4 mt-3 mb-0 py-0">
-                    @foreach($data['is_huzaioki'] as $itemIdKey => $vs)
-                    	<?php $si = Item::find($itemIdKey); ?>
-                        <li class="mb-2">
-                        	{{ Ctm::getItemTitle($si) }}<br>
-                            <b>
-                        	@if($vs)
-                            	不在置きを了承する
-                            @else
-                            	不在置きを了承しない
-                            @endif
-                            </b>
-                        </li>
-                    @endforeach
-                </ul>
-                
-                @if(isset($data['is_seinou']) && Ctm::isSeinouSunday($data['plan_date']))
-                    <span class="text-enji text-small ml-3">＊上記の商品は、ご希望配送日が日曜日の場合に送料が1000円増しとなります。</span>
-                @endif
+                </div>
+                </td>
+            </tr>
 			@endif
             
-			<ul class="px-4 mt-3">
-                @foreach($itemData as $item) 
-                	@if(isset($item->plan_time))                   
-                        <li class="mb-3">
-                            {{ Ctm::getItemTitle($item) }}<br>
-                            <span class="text-small">ご希望時間</span>：<b>[ {{ $item->plan_time }} ]</b>
-                        </li>
-                    @endif
+            @if(count($data['plan_time']) > 0)
+            	<tr>
+            <td>
+            	@foreach($data['planTimeItemTitle'] as $k => $planTimeTitleArr) 
+                	<div class="mb-4"> 
+                        <ul class="mb-2 list-unstyled">
+                            @foreach($planTimeTitleArr as $planTimeTitle)
+                                <li>
+                                	<i class="fal fa-angle-double-right"></i> {{ $planTimeTitle }}
+                                </li>
+                            @endforeach
+                        </ul>
+                        
+                        <b><span class="text-small">ご希望時間</span>：[ {{ $data['plan_time'][$k] }} ]</b>
+                	</div>
                 @endforeach
-            </ul>
-            
-        	</td>
+                
+                </td>
             </tr>
+            @endif
+            
+
         </tbody>
     </table>
 </div>
