@@ -55,6 +55,12 @@ use App\Icon;
 </div>
 
 <div class="meta">
+	<?php
+    	//特殊な時のみ@includeの引数でセットする
+    	if(! isset($strNum)) 
+        	$strNum = Ctm::isAgent('sp') ? 22 : 25;
+    ?>
+    
     <h3><a href="{{ $link }}">
         {{ Ctm::shortStr($item->title, $strNum) }}
     </a></h3>

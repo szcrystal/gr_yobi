@@ -212,25 +212,21 @@
 </div>
 
 
-<div class="table-responsive table-cart mt-3">
+<div class="table-responsive table-normal mt-3">
     <table class="table table-borderd border bg-white">
-    	<thead>
-     	   <tr><th>ご希望配送日時</th></tr>
-        </thead>
+    	
         
         <tbody>
         	<tr>
+            	<th class="font-weight-normal">ご希望日程</th>
                 <td>
-                    <p class="p-0 m-0">
-                        <b><span class="text-small">ご希望日程</span>：
-                        
-                        @if(isset($data['plan_date']))
-                            {{ $data['plan_date'] }}<br>
-                        @else
-                            最短出荷<br>
-                        @endif
-                        </b>
-                    </p>
+                	<b>
+                    @if(isset($data['plan_date']))
+                        {{ $data['plan_date'] }}<br>
+                    @else
+                        最短出荷<br>
+                    @endif
+					</b>
                 </td>
             </tr>
             
@@ -241,45 +237,47 @@
             
             @if(isset($data['is_seinou']))
             <tr>
-            <td>
-            	<div class="">
-                    <ul class="mb-2 list-unstyled">
-                        @foreach($data['seinouItemTitle'] as $seinouItemTitle)
-                            <li>
-                                <i class="fal fa-angle-double-right"></i> {{ $seinouItemTitle }}
-                            </li>
-                        @endforeach
-                    </ul>
-                    
-                    <b><span class="text-small">不在置きを</span>：{{ $data['is_huzaioki'] ? '了承する' : '了承しない' }}</b>
-                    
-                    @if(Ctm::isSeinouSunday($data['plan_date']))
-                        <br><span class="d-inline-block text-enji text-small">＊上記の商品は、ご希望配送日が日曜日の場合に送料が1000円増しとなります。</span>
-                    @endif
-                </div>
+            	<th class="font-weight-normal">不在置き</th>
+            	<td>
+                    <div class="">
+                        <ul class="mb-1 list-unstyled text-small">
+                            @foreach($data['seinouItemTitle'] as $seinouItemTitle)
+                                <li>
+                                    <i class="fal fa-angle-double-right"></i> {{ $seinouItemTitle }}
+                                </li>
+                            @endforeach
+                        </ul>
+                        
+                        <b>[ 不在置きを{{ $data['is_huzaioki'] ? '了承する' : '了承しない' }} ]</b>
+                        
+                        @if(Ctm::isSeinouSunday($data['plan_date']))
+                            <br><span class="d-inline-block text-enji text-small mt-1">＊上記の商品は、ご希望日程が日曜日の場合に送料が1000円増しとなります。</span>
+                        @endif
+                    </div>
                 </td>
             </tr>
 			@endif
             
             @if(count($data['plan_time']) > 0)
             	<tr>
-            <td>
-            	@foreach($data['planTimeItemTitle'] as $k => $planTimeTitleArr) 
-                	<div class="mb-4"> 
-                        <ul class="mb-2 list-unstyled">
-                            @foreach($planTimeTitleArr as $planTimeTitle)
-                                <li>
-                                	<i class="fal fa-angle-double-right"></i> {{ $planTimeTitle }}
-                                </li>
-                            @endforeach
-                        </ul>
-                        
-                        <b><span class="text-small">ご希望時間</span>：[ {{ $data['plan_time'][$k] }} ]</b>
-                	</div>
-                @endforeach
+                	<th class="font-weight-normal">ご希望時間</th>
+                    <td>
+                        @foreach($data['planTimeItemTitle'] as $k => $planTimeTitleArr) 
+                            <div class="mb-4"> 
+                                <ul class="mb-1 list-unstyled text-small">
+                                    @foreach($planTimeTitleArr as $planTimeTitle)
+                                        <li>
+                                            <i class="fal fa-angle-double-right"></i> {{ $planTimeTitle }}
+                                        </li>
+                                    @endforeach
+                                </ul>
+                                
+                                <b>[ {{ $data['plan_time'][$k] }} ]</b>
+                            </div>
+                        @endforeach
                 
-                </td>
-            </tr>
+                	</td>
+            	</tr>
             @endif
             
 

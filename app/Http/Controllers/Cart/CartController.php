@@ -1260,12 +1260,10 @@ class CartController extends Controller
             
             
             //配送希望時間
-            if(isset($data['plan_time'])) {
-                foreach($data['plan_time'] as $dgKey => $timeVal) {
-                    if($obj->dg_id == $dgKey) {
-                        $obj->plan_time = $timeVal;
-                    }
-                }
+            if(isset($data['plan_time']) && isset($data['plan_time'][$obj->dg_id])) {
+            	
+                $obj->plan_time = $data['plan_time'][$obj->dg_id];
+                
             }
             
             //西濃運輸の場合に、日曜配送は+1000加算、不在置き了承で商品から-3000
@@ -1274,7 +1272,7 @@ class CartController extends Controller
                 	$addDeliFee = 1000 * $obj->count;
                 	
                     $obj->single_deli_fee += $addDeliFee;
-                    $seinouSundayDeliFee += $addDeliFee;
+                    $seinouSundayDeliFee += $addDeliFee; //最終的なトータルの送料計算用
                 }
                 
                 //if(isset($data['is_huzaioki'][$obj->id])) {
@@ -1289,7 +1287,7 @@ class CartController extends Controller
                 }
             }
             
-            //トータルプライス Confirm表示用 sessionには入れ直さない
+            //トータルプライス Confirm表示用 sessionには入れ直さない 1246行目でSessionから取得する（これ以外にない）ので、Sessionに入れ直すとずれていく
             $obj->item_total_price = $itemTotalPrice;
 
 			//allPrice加算

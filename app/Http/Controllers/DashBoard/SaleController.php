@@ -664,7 +664,10 @@ class SaleController extends Controller
         	$saleRel->pay_date = date('Y-m-d H:i:s', time());
         }
         
+        
+        $saleRel->total_price = $saleRel->total_price - $saleRel->deli_fee + $data['deli_fee'];
         $saleRel->deli_fee = $data['deli_fee'];
+        
         $saleRel->information = $data['information'];
         $saleRel->information_foot = $data['information_foot'];
         $saleRel->memo = $data['memo'];

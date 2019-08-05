@@ -45,9 +45,8 @@ use App\TopSetting;
                             <span class="top-rank"><i class="fas fa-crown"></i><em>{{ $rankNum }}</em></span>
                         @endif
                                                         
-                        <?php $strNum = Ctm::isAgent('sp') ? 16 : 25; ?>
                         
-                        @include('main.shared.atcl')
+                        @include('main.shared.atcl', [])
  
                     </article>
                     

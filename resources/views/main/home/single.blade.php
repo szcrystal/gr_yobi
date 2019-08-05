@@ -174,19 +174,7 @@ use App\TopSetting;
                             </div>
                         @endif
                     @endif
-                 	
-                   {{--
-                    <div class="mb-3" >
-                    	<span class="text-small">カテゴリー：</span>
-                        @if(isset($cate))
-                        	<a href="{{ url('category/'.$cate->slug) }}">{{ $cate->link_name }}</a>
-                        @endif
-                        @if(isset($subCate))
-                        	&nbsp;<i class="fas fa-angle-right"></i>&nbsp;<a href="{{ url('category/'.$cate->slug. '/'.$subCate->slug) }}">{{ $subCate->name }}</a>
-                        @endif
-                    </div>
-                    --}}
-                    
+                 	                    
                     
                     <form method="post" action="{{ url('shop/cart') }}">
                         {{ csrf_field() }}
@@ -340,9 +328,10 @@ use App\TopSetting;
                     
 
                   	<div class="form-wrap">
-                  		@if($item->stock > 0)
- 
- 							@if(! $isPotSet)
+                    	@if(! $isPotSet)
+                  			
+                            @if($item->stock > 0)
+
                                 <fieldset class="mb-3 form-group clearfix text-right">
                                     <label>数量
                                     @if($item->stock_show)
@@ -387,38 +376,35 @@ use App\TopSetting;
                                     
                                     <input type="hidden" name="item_id[]" value="{{ $item->id }}">
                                 </fieldset>
-                            @endif
-
                 	
-                        @else
-                        	<div class="no-stock">
-                                <span class="text-danger text-big">在庫がありません</span>
-                                @if($item->stock_type)
-                                <p>
-                                    @if($item->stock_type == 1)
-                                        次回{{ $item->stock_reset_month }}月頃入荷予定
-                                    @else
-                                        次回入荷未定
+                        	@else
+                                <div class="no-stock">
+                                    <span class="text-danger text-big">在庫がありません</span>
+                                    @if($item->stock_type)
+                                    <p>
+                                        @if($item->stock_type == 1)
+                                            次回{{ $item->stock_reset_month }}月頃入荷予定
+                                        @else
+                                            次回入荷未定
+                                        @endif
+                                    </p>
                                     @endif
-                                </p>
-                                @endif
-                            </div>
+                                </div>
+                        	@endif
+                        
                         @endif  
                   	 
-                    
                     
                     	@if($item->stock > 0 || $isPotSet)
                             <input type="hidden" name="from_item" value="1">
                             <input type="hidden" name="uri" value="{{ Request::path() }}">     
                             
                             <?php
-                            	$disabled = '';
-                            	if($isPotSet) {
-                                	$disabled = ' disabled';
-                                }
+                            	$disabled = $isPotSet ? ' disabled' : '';
                             ?>
                             
                             <button type="submit" class="btn btn-custom btn-pink text-center col-md-12"{{ $disabled }}><i class="fal fa-cart-arrow-down"></i> カートに入れる</button>
+                            
                             <p class=""><b>{{ $item->deli_plan_text }}</b></p>
                             
                             @if(Ctm::isAgent('sp'))
@@ -589,7 +575,7 @@ use App\TopSetting;
                                     <ul class="clearfix">
                                         @foreach($recom as $item)
                                             <li class="main-atcl">
-                                                @include('main.shared.atcl', ['strNum'=>Ctm::isAgent('sp') ? 16 : 23])
+                                                @include('main.shared.atcl', [])
                                             </li>
                                         @endforeach
                                     </ul>
@@ -619,15 +605,15 @@ use App\TopSetting;
                     ?>
                     
                     @foreach($cacheItems as $cacheItem)
-                    <div>
-                        <ul class="clearfix">
-                            @foreach($cacheItem as $item)                            
-                                <li class="main-atcl">
-                                    @include('main.shared.atcl', ['strNum'=>Ctm::isAgent('sp') ? 12 : 16])
-                                </li>    
-                            @endforeach      
-                        </ul>
-                    </div>
+                        <div class="mb-2">
+                            <ul class="clearfix">
+                                @foreach($cacheItem as $item)                            
+                                    <li class="main-atcl">
+                                        @include('main.shared.atcl', ['strNum'=>Ctm::isAgent('sp') ? 13 : 16])
+                                    </li>    
+                                @endforeach      
+                            </ul>
+                        </div>
                     @endforeach
                 </div>
             @endif
