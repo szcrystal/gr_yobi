@@ -487,6 +487,27 @@ class CustomController extends Controller
     	return isset($planDate) && strpos($planDate, '（日）') !== false;
     }
     
+    static function getSeinouObj()
+    {
+    	//西濃運輸のIDもここで
+    	$seinouId = 11;
+        
+    	//西濃に対する加減算の金額は消費税対象となる
+        $seinouHuzaiokiFee = 3000;
+        $seinouSundayFee = 1000;
+
+		$seinouHuzaiokiFee = $seinouHuzaiokiFee + ($seinouHuzaiokiFee * Setting::first()->tax_per/100);
+        $seinouSundayFee = $seinouSundayFee + ($seinouSundayFee * Setting::first()->tax_per/100);
+        
+        
+        return (object) [
+        	'id' => $seinouId,
+        	'huzaiokiFee' => $seinouHuzaiokiFee,
+            'sundayFee' => $seinouSundayFee,
+            //"isSunday" => CustomController::isSeinouSunday,
+        ];
+    }
+    
     
 //    static function getPointBack($item) {
 //        

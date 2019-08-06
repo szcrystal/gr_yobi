@@ -339,14 +339,14 @@ use App\PayMethodChild;
                                                 </td>
                                             </tr>
                                             
-                                            @if($items->find($sale->item_id)->dg_id == 11)
+                                            @if($item->dg_id == Ctm::getSeinouObj()->id)
                                             	<tr>
                                             		<th>不在置き</th>
                                                 	<td>
                                                     	@if($sale->is_huzaioki)
-                                                        	了承する
+                                                        	<span class="text-success">了承する</span>
                                                         @else
-                                                        	了承しない
+                                                        	<span class="text-danger">了承しない</span>
                                                         @endif
                                                     </td>
                                                 </tr>

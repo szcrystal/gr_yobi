@@ -251,14 +251,14 @@
                         <b>[ 不在置きを{{ $data['is_huzaioki'] ? '了承する' : '了承しない' }} ]</b>
                         
                         @if(Ctm::isSeinouSunday($data['plan_date']))
-                            <br><span class="d-inline-block text-enji text-small mt-1">＊上記の商品は、ご希望日程が日曜日の場合に送料が1000円増しとなります。</span>
+                            <br><span class="d-inline-block text-enji text-small mt-1">＊上記商品は、ご希望日程が日曜日の場合に1商品につき{{ number_format(Ctm::getSeinouObj()->sundayFee) }}円増しとなります。</span>
                         @endif
                     </div>
                 </td>
             </tr>
 			@endif
             
-            @if(count($data['plan_time']) > 0)
+            @if(isset($data['plan_time']) && count($data['plan_time']) > 0)
             	<tr>
                 	<th class="font-weight-normal">ご希望時間</th>
                     <td>

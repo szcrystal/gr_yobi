@@ -58,8 +58,16 @@ class CartController extends Controller
         $this->favorite = $favorite;
         $this->payMethodChild = $payMethodChild;
         
-        $this->dgSeinouId = 11;
-
+        //西濃運輸用変数
+        $this->seinouObj = Ctm::getSeinouObj();
+        //$this->dgSeinouId = $seinouObj->id;
+        
+        //西濃に対する加減算の金額は消費税対象となる（+3000, -1000）
+//		$this->seinouHuzaiokiFee = $seinouObj->huzaiokiFee;
+//        $this->seinouSundayFee = $seinouObj->sundayFee;
+        
+        
+        //GMO 決済ID
         $this->gmoId = Ctm::gmoId();
         
 //        $this->perPage = 20;
@@ -533,13 +541,11 @@ class CartController extends Controller
 //            $oneItemData = array();
             
 			$i = $this->item->find($oneSesData['item_id']);
-            $singleSellCount = $oneSesData['item_count'];
-//            $i->count = $val['item_count'];
-//            $oneItemData[] = $i;
-                        
-//            $df = new Delifee($oneItemData, $prefectureId);
-//            $singleDeliFee = $df->getDelifee();
+            
+            $singleSellCount = $oneSesData['item_count']; //DB追加以降でも使用する変数
+            $itemTotalPrice = $oneSesData['item_total_price'] + $oneSesData['up_price'] - $oneSesData['down_price'];
 
+			//$oneItemData[] = $i;
             
             $sale = $this->sale->create(
                 [
@@ -560,9 +566,9 @@ class CartController extends Controller
                     'use_point' => 0,
                     'add_point' => $oneSesData['single_point'],
                     'single_price' => $this->getItemPrice($i),
-                    'total_price' => $oneSesData['item_total_price'] - $oneSesData['down_price'],
+                    'total_price' => $itemTotalPrice,
                     
-                    'cost_price' => $i->cost_price * $oneSesData['item_count'],
+                    'cost_price' => $i->cost_price * $singleSellCount,
                     'charge_loss' => 0,
                     
                     'plan_date' => isset($allData['plan_date']) ? $allData['plan_date'] : null,
@@ -1229,10 +1235,13 @@ class CartController extends Controller
         $prefId = $this->prefecture->where('name', $prefName)->first()->id;
         
         
-        //既存Session新規データを追加　各データの修正をここでする。再度Sessionに入れ直す
+        //Important ! ********************
+        //既存Session新規データを追加　各データの修正をここでする。新規データをSessionに追加する
         foreach($itemSes as $key => $val) {
         	
-            $downPrice = 0;
+            //加減算用の調整する金額
+            $upPrice = 0; 
+            $downPrice = 0; 
             
         	$obj = $this->item->find($val['item_id']);
             
@@ -1267,19 +1276,26 @@ class CartController extends Controller
             }
             
             //西濃運輸の場合に、日曜配送は+1000加算、不在置き了承で商品から-3000
-            if($obj->dg_id == $this->dgSeinouId) {
+            if($obj->dg_id == $this->seinouObj->id) {
             	if(Ctm::isSeinouSunday($data['plan_date'])) {
-                	$addDeliFee = 1000 * $obj->count;
+                	/* 日曜1000円を送料として捉える場合 **************
+                	$addDeliFee = $this->seinouSundayFee * $obj->count;
                 	
                     $obj->single_deli_fee += $addDeliFee;
                     $seinouSundayDeliFee += $addDeliFee; //最終的なトータルの送料計算用
+                    **************************** */
+                    
+                    /* 日曜1000円を商品金額として捉える場合 ***** */
+                    $upPrice = $this->seinouObj->sundayFee * $obj->count;
+                    $itemTotalPrice += $upPrice; 
+                    
                 }
                 
                 //if(isset($data['is_huzaioki'][$obj->id])) {
                 if(isset($data['is_huzaioki'])) {
                 	if($data['is_huzaioki']) {
                     	//item_total_price(商品金額x個数)をここでsessionに上書きするとズレが出るので、down_priceとして新データをsessionに入れる
-                    	$downPrice = 3000 * $obj->count;
+                    	$downPrice = $this->seinouObj->huzaiokiFee * $obj->count;
                         $itemTotalPrice -= $downPrice;
                     }
                     
@@ -1297,6 +1313,8 @@ class CartController extends Controller
             $itemSes[$key]['single_point'] = $obj->point;
             $itemSes[$key]['single_deli_fee'] = $obj->single_deli_fee;
             $itemSes[$key]['plan_time'] = isset($obj->plan_time) ? $obj->plan_time : null;
+            
+            $itemSes[$key]['up_price'] = $upPrice;
             $itemSes[$key]['down_price'] = $downPrice;
             
             $itemSes[$key]['is_huzaioki'] = isset($obj->is_huzaioki) ? $obj->is_huzaioki : null;
@@ -1561,8 +1579,6 @@ class CartController extends Controller
         	$userArr = $data['user'];
         }
         
-//        print_r($userArr);
-//        exit;
         
         $metaTitle = 'ご注文内容の確認' . '｜植木買うならグリーンロケット';
         
@@ -1717,7 +1733,7 @@ class CartController extends Controller
             
             // Seinou Correct **************************
             //西濃なら
-            if($dgId == $this->dgSeinouId) {
+            if($dgId == $this->seinouObj->id) {
             	$dgSeinou[] = $item['item_id'];
             }
             
@@ -1734,6 +1750,7 @@ class CartController extends Controller
         //$dgGroup = $this->item->groupBy('view_count')->get()->all();        
 //        print_r($dgGroup);
 //        exit;
+
 
 		$metaTitle = 'ご注文情報の入力' . '｜植木買うならグリーンロケット';
      

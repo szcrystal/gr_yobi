@@ -592,12 +592,14 @@ use App\DeliveryGroup;
             @if(count($dgSeinou) > 0)
                 <fieldset class="form-group my-3 px-3 py-2{{ $errors->has('is_huzaioki.*') ? ' border border-danger' : '' }}">
                     
+                    <?php $seinouObj = Ctm::getSeinouObj(); ?>
+                    
                     <p class="mb-1 pb-2">
                         ■下記の商品につきまして
                         <ul class="pl-4 text-small">
-                            <li>「ご希望日程」が日曜日の場合は、下記1商品につき送料が1000円増しとなります。
+                            <li>「ご希望日程」が日曜日の場合は、下記1商品につき{{ number_format($seinouObj->sundayFee) }}円増しとなります。
                             <li>不在置きを了承頂ける場合はチェックをして下さい。<br>
-                            <span class="text-enji text-small">※チェック時は1商品につき代金から3000円引きとなります。その際、必ず「その他コメント」内に不在時の荷物の置き場所を記載して下さい。<br>
+                            <span class="text-enji text-small">※チェック時は1商品につき{{ number_format($seinouObj->huzaiokiFee) }}円引きとなります。その際、必ず下記の「その他コメント」内に不在時の荷物の置き場所を記載して下さい。<br>
                             例：玄関前、門扉の裏、玄関右側入り庭ウッドデッキ付近・・など</span>
                         </ul>
                     </p>
