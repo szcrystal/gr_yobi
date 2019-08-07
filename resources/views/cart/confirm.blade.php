@@ -236,26 +236,33 @@
             ?>
             
             @if(isset($data['is_seinou']))
-            <tr>
-            	<th class="font-weight-normal">不在置き</th>
-            	<td>
-                    <div class="">
-                        <ul class="mb-1 list-unstyled text-small">
-                            @foreach($data['seinouItemTitle'] as $seinouItemTitle)
-                                <li>
-                                    <i class="fal fa-angle-double-right"></i> {{ $seinouItemTitle }}
-                                </li>
-                            @endforeach
-                        </ul>
-                        
-                        <b>[ 不在置きを{{ $data['is_huzaioki'] ? '了承する' : '了承しない' }} ]</b>
-                        
-                        @if(Ctm::isSeinouSunday($data['plan_date']))
-                            <br><span class="d-inline-block text-enji text-small mt-1">＊上記商品は、ご希望日程が日曜日の場合に1商品につき{{ number_format(Ctm::getSeinouObj()->sundayFee) }}円増しとなります。</span>
-                        @endif
-                    </div>
-                </td>
-            </tr>
+                <tr>
+                    <th class="font-weight-normal" rowspan="2">不在置き</th>
+                    <td>
+                        <div class="">
+                            <ul class="mb-1 list-unstyled text-small">
+                                @foreach($data['seinouItemTitle'] as $seinouItemTitle)
+                                    <li>
+                                        <i class="fal fa-angle-double-right"></i> {{ $seinouItemTitle }}
+                                    </li>
+                                @endforeach
+                            </ul>
+                            
+                            <b class="d-block">[ 不在置きを{{ $data['is_huzaioki'] ? '了承する' : '了承しない' }} ]</b>
+
+                            @if(Ctm::isSeinouSunday($data['plan_date']))
+                                <small class="d-inline-block text-enji mt-1">＊上記商品は、ご希望日程が日曜日の場合に1商品につき{{ number_format(Ctm::getSeinouObj()->sundayFee) }}円増しとなります。</small>
+                            @endif
+                        </div>
+                    </td>  
+                </tr>
+                <tr>
+                    <td>
+                        <p class="text-small p-0 mb-0">
+                            {!! nl2br($data['huzai_comment']) !!}
+                        </p>
+                    </td>
+                </tr>
 			@endif
             
             @if(isset($data['plan_time']) && count($data['plan_time']) > 0)
@@ -315,10 +322,6 @@
              <td>{{ $userArr['hurigana'] }}</td>
         </tr>
         <tr>
-            <th>メールアドレス</th>
-             <td>{{ $userArr['email'] }}</td>
-        </tr>
-        <tr>
             <th>電話番号</th>
              <td>{{ $userArr['tel_num'] }}</td>
         </tr>
@@ -330,6 +333,10 @@
                     {{ $userArr['address_2'] }}<br>
                		{{-- $userArr['address_3'] --}}
              </td>
+        </tr>
+        <tr>
+            <th>メールアドレス</th>
+             <td>{{ $userArr['email'] }}</td>
         </tr>
         
         {{--

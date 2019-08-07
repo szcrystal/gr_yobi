@@ -510,6 +510,7 @@ class CartController extends Controller
             'all_price' => $allPrice, //商品withTax x 個数 の合計　送料等は含まれない
             'total_price' => $allPrice + $deliFee + $codFee - $usePoint, //送料 手数料　含む全ての合計 SessionにTotalPrice（送料、手数料、マイナスポイント）は入れていない
             'destination' => $destination,
+            'huzai_comment' => isset($allData['huzai_comment']) ? $allData['huzai_comment'] : null,
             'user_comment' => $allData['user_comment'],
             'deli_done' => 0,
             'pay_done' => 0,
@@ -1093,17 +1094,20 @@ class CartController extends Controller
             //'receiver.address_2' => 'required_with:destination|max:255',
             //'receiver.address_3' => 'max:255',
             
-            'user_comment' => [
-            	'max:30000',
-                function($attribute, $value, $fail) use($request) {
-                    //if( $request->has('is_huzaioki') && in_array(1, $request->input('is_huzaioki')) ) {
-                    if( $request->has('is_huzaioki') && $request->input('is_huzaioki') ) {
-                    	if($value == '') {
-                        	return $fail('「不在置きを了承する」場合は「その他コメント」に不在時の荷物の置き場所を記載して下さい。');
-                        }
-                    }
-                },
-            ],
+            'huzai_comment' => 'required_if:is_huzaioki,1|max:30000' ,
+            'user_comment' => 'max:30000',
+            
+//            'user_comment' => [
+//            	'max:30000',
+//                function($attribute, $value, $fail) use($request) {
+//                    //if( $request->has('is_huzaioki') && in_array(1, $request->input('is_huzaioki')) ) {
+//                    if( $request->has('is_huzaioki') && $request->input('is_huzaioki') ) {
+//                    	if($value == '') {
+//                        	return $fail('「不在置きを了承する」場合は「その他コメント」に不在時の荷物の置き場所を記載して下さい。');
+//                        }
+//                    }
+//                },
+//            ],
             
             'pay_method' => 'required', 
             'net_bank'=> 'required_if:pay_method,3',
@@ -1165,6 +1169,7 @@ class CartController extends Controller
             'pay_method.required' => '「お支払い方法」を選択して下さい。',
             'use_point.max' => '「ポイント」が保持ポイントを超えています。',
             'net_bank.required_if'=> '「お支払い方法」ネットバンク決済の銀行を選択して下さい。',
+            'huzai_comment.required_if' => '「不在置きを了承する」時は置き場所を記載して下さい。',
             'user_comment.max' => '「コメント」の文字数が長すぎます。',
             
 //            'cardno.required_if' => '「カード番号」は必須です。',

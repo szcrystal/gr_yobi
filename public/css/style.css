@@ -684,6 +684,9 @@ img.img-fluid + div {
 	display: none;
 }
 
+.huzai-comment-wrap {
+	display: none;
+}
 
 /*.thumb-prev .no-img {*/
 /*    width: 100%;*/

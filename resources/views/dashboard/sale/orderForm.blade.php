@@ -350,6 +350,12 @@ use App\PayMethodChild;
                                                         @endif
                                                     </td>
                                                 </tr>
+                                                <tr>
+                                            		<th>置き場所</th>
+                                                	<td>
+                                                    	{!! nl2br($saleRel->huzai_comment) !!}
+                                                    </td>
+                                                </tr>
                                             @endif
                                             
                                             <tr>

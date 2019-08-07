@@ -13,10 +13,15 @@ class AddColumnToEtcEight extends Migration
      */
     public function up()
     {
-        //SaleRel
+        //Sale
         Schema::table('sales', function (Blueprint $table) {            
             $table->boolean('is_huzaioki')->after('plan_time')->nullable()->default(null);
-            //$table->integer('add_point')->after('use_point')->nullable()->default(0);
+        });
+        
+        //SaleRel
+        Schema::table('sale_relations', function (Blueprint $table) {            
+            $table->text('huzai_comment')->after('destination')->nullable()->default(null);
+            $table->integer('adjust_price')->after('all_price')->nullable()->default(0);
         });
     }
 
@@ -30,6 +35,18 @@ class AddColumnToEtcEight extends Migration
         if (Schema::hasColumn('sales', 'is_huzaioki')) {
             Schema::table('sales', function (Blueprint $table) {
                 $table->dropColumn('is_huzaioki');
+            });
+        }
+        
+        if (Schema::hasColumn('sale_relations', 'huzai_comment')) {
+            Schema::table('sale_relations', function (Blueprint $table) {
+                $table->dropColumn('huzai_comment');
+            });
+        }
+        
+        if (Schema::hasColumn('sale_relations', 'adjust_price')) {
+            Schema::table('sale_relations', function (Blueprint $table) {
+                $table->dropColumn('adjust_price');
             });
         }
     }

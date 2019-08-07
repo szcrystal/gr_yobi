@@ -542,7 +542,7 @@ use App\DeliveryGroup;
          </div><!-- receiver -->
          
 
-        <div class="pt-3">
+        <div class="pt-2">
             <h3 class="card-header mt-4">配送希望日時</h3>
             
             <fieldset class="mb-4 mt-3 col-md-7 form-group{{ $errors->has('plan_date') ? ' has-error' : '' }}">
@@ -590,7 +590,7 @@ use App\DeliveryGroup;
             </fieldset>
                 
             @if(count($dgSeinou) > 0)
-                <fieldset class="form-group my-3 px-3 py-2{{ $errors->has('is_huzaioki.*') ? ' border border-danger' : '' }}">
+                <fieldset class="form-group mt-1 mb-2 px-3 py-2{{ $errors->has('is_huzaioki.*') ? ' border border-danger' : '' }}">
                     
                     <?php $seinouObj = Ctm::getSeinouObj(); ?>
                     
@@ -599,8 +599,7 @@ use App\DeliveryGroup;
                         <ul class="pl-4 text-small">
                             <li>「ご希望日程」が日曜日の場合は、下記1商品につき{{ number_format($seinouObj->sundayFee) }}円増しとなります。
                             <li>不在置きを了承頂ける場合はチェックをして下さい。<br>
-                            <span class="text-enji text-small">※チェック時は1商品につき{{ number_format($seinouObj->huzaiokiFee) }}円引きとなります。その際、必ず下記の「その他コメント」内に不在時の荷物の置き場所を記載して下さい。<br>
-                            例：玄関前、門扉の裏、玄関右側入り庭ウッドデッキ付近・・など</span>
+                            <span class="text-enji text-small">※チェック時は1商品につき{{ number_format($seinouObj->huzaiokiFee) }}円引きとなります。その際、下に表示される枠内に不在時の荷物の置き場所を記載して下さい。</span>
                         </ul>
                     </p>
                     
@@ -630,7 +629,7 @@ use App\DeliveryGroup;
                             }
                         ?>
                        	
-                        <div class="mt-2">
+                        <div class="mt-1">
                             <input type="hidden" name="is_huzaioki" value="0">
                             
                             <input id="check-huzaioki-0" type="checkbox" name="is_huzaioki" value="1"{{ $checked }}>
@@ -644,6 +643,20 @@ use App\DeliveryGroup;
                             @endif
                         
                             <input type="hidden" name="is_seinou" value="1">
+                        </div>
+                        
+                        <div class="mt-1 huzai-comment-wrap">
+                        	<span class="text-small ml-1">不在時の置き場所を記載して下さい</span>
+                            <fieldset class="form-group">
+                                <textarea id="huzai_comment" class="form-control col-md-9{{ $errors->has('huzai_comment') ? ' is-invalid' : '' }}" name="huzai_comment" rows="6" placeholder="例：玄関前、門扉の裏、玄関右側入り庭ウッドデッキ付近・・など">{{ Ctm::isOld() ? old('huzai_comment') : (Session::has('all.data.huzai_comment') ? session('all.data.huzai_comment') : '') }}</textarea>
+                                
+                                @if ($errors->has('huzai_comment'))
+                                    <div class="help-block text-danger receiver-error">
+                                        <span class="fa fa-exclamation form-control-feedback"></span>
+                                        <span>{{ $errors->first('huzai_comment') }}</span>
+                                    </div>
+                                @endif
+                            </fieldset>
                         </div>
                     </div>
                     
@@ -731,10 +744,10 @@ use App\DeliveryGroup;
             
             </div>
                 
-            <div>
-                <h3 class="card-header mt-4">その他コメント</h3>
+            <div class="pt-2">
+            	<h3 class="card-header mt-3">その他コメント</h3>
                 
-                <fieldset class="form-group my-3 pb-4">
+                <fieldset class="form-group my-3">
                     <textarea id="user_comment" class="form-control{{ $errors->has('user_comment') ? ' is-invalid' : '' }}" name="user_comment" rows="10">{{ Ctm::isOld() ? old('user_comment') : (Session::has('all.data.user_comment') ? session('all.data.user_comment') : '') }}</textarea>
                     
                     @if ($errors->has('user_comment'))
@@ -747,8 +760,8 @@ use App\DeliveryGroup;
             </div>
                 
                 
-                <div>
-                	<h3 class="card-header mt-4">お支払い方法</h3>
+            <div class="pt-2">
+            	<h3 class="card-header mt-4">お支払い方法</h3>
    					<a href="{{ url('about-pay') }}" class="d-inline-block mt-2 ml-1 text-small" target="_brank">お支払についてのご注意はこちら <i class="fal fa-angle-double-right"></i></a>
                     
                     @if ($errors->has('pay_method'))

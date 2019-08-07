@@ -40,8 +40,10 @@
 
 【ご注文商品】： 
 <?php
-$num = 1;
+	$num = 1;
+	$isHuzai = 0;
 ?>
+
 @foreach($sales as $sale)
 <div style="margin: 0 0 1.5em 1.0em;">
 <div>{{ $num }}.</div>
@@ -49,18 +51,38 @@ $num = 1;
 商品名: {{ Ctm::getItemTitle($itemModel->find($sale->item_id)) }}<br>
 数量: {{ $sale->item_count}}<br>
 金額：¥{{ number_format($sale->total_price) }}（税込）<br>
+
 @if(isset($sale->plan_time))
 ご希望配送時間：{{ $sale->plan_time }}<br>
 @endif
+
+@if(isset($sale->is_huzaioki))
+	不在置き：
+    @if($sale->is_huzaioki)
+    	了承する
+        <?php $isHuzai = 1; ?>
+    @else
+    	了承しない
+    @endif
+@endif
+
 </div>
 <?php $num++; ?>
 @endforeach
 
+
+@if($isHuzai && isset($saleRel->huzai_comment) && $saleRel->huzai_comment != '')
+    【不在置き場所】：
+    <div style="margin: 0 0 1.0em 1.0em;">
+    {!! nl2br($saleRel->huzai_comment) !!}
+    </div>
+@endif
+
 @if(isset($saleRel->user_comment) && $saleRel->user_comment != '')
-【コメント】：
-<div style="margin: 0 0 1.0em 1.0em;">
-{!! nl2br($saleRel->user_comment) !!}
-</div>
+    【コメント】：
+    <div style="margin: 0 0 1.0em 1.0em;">
+    {!! nl2br($saleRel->user_comment) !!}
+    </div>
 @endif
 
 【ご注文金額】：

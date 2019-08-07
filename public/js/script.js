@@ -677,6 +677,7 @@ var exe = (function() {
             var $wrapNewCard = $('.wrap-new-card');
             var $wrapExpire = $editCardRadio.parent('label').next('.wrap-expire');
             
+            
             //クレカを選択した時
             if($('.payMethodRadio:checked').val() == 1) {
             	$wrapAllCard.show();
@@ -756,6 +757,28 @@ var exe = (function() {
                 	$askTelWrap.slideUp(50);
                 }
             	
+            });
+            
+            
+            //shop 不在時置き場所コメント
+            var $checkHuzai = $('#check-huzaioki-0');
+            var $huzaiComWrap = $('.huzai-comment-wrap');
+            
+            //load時
+            if($checkHuzai.is(':checked')) {
+            	$huzaiComWrap.show(0);
+            }
+            
+            $checkHuzai.on('change', function(e){
+            	$huzaiComWrap.slideToggle(50);
+                
+//                if($(this).is(':checked')) {
+//                	$huzaiComWrap.slideDown(50); 
+//                }
+//                else {
+//                	$huzaiComWrap.slideUp(50); 
+//                }
+                
             });
             
             

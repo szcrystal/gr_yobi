@@ -143,6 +143,7 @@ return [
         'ask_category' => '「お問い合わせ種別」',
         'request_day' => '「ご希望日」',
         'request_time' => '「ご希望時間帯」',
+        'huzai_comment' => '「不在置きの場所」',
         'user_comment' => '「その他コメント」',
         
         //'name' => '「ユーザー名」',

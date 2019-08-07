@@ -23,9 +23,11 @@ class SaleRelation extends Model
         'use_point',
         'add_point',
         'all_price',
+        'adjust_price',
 		'total_price', 
                
         'destination',
+        'huzai_comment',
         'user_comment',
         
         //'deli_done',
