@@ -15,11 +15,18 @@
                 <h2 class="card-header">お問い合わせ</h2>
                 <p class="mt-3 ml-1">
                 	グリーンロケットをご利用いただき誠にありがとうございます。<br>
-                    お問い合わせのご希望方法より、お電話かメールのどちらかを選択して下さい。<br><br>
+                    お問い合わせのご希望方法より、お電話かメールのどちらかを選択して下さい。
+                </p>
+                <p>
                     お電話でのお問い合わせをご希望の方は、こちらより改めて専門スタッフがお電話致します。<br>
                     ご希望の日時を入力頂き、送信をお願い致します。<br>
                     <span class="text-small"><b>営業時間：9:00〜16:00／月〜金（土曜不定休、日・祝休）</b></span>
-                </p> 
+                </p>
+                
+                <p>
+                	メールで直接お送りする場合は下記アドレスまで送信下さい。<br>
+                    <i class="fal fa-envelope"></i> <a href="mailto:info@green-rocket.jp">info@green-rocket.jp</a>
+                </p>
             </div>
 
             <div class="panel-body mt-5">

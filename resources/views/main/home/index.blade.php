@@ -15,33 +15,27 @@ use App\TopSetting;
         <div class="panel-body top-cont">
 
 
-@foreach($firstItems as $key => $firstItem)
+@foreach($firstItems as $keyTitle => $firstItem)
 	
     <?php 
-        if(strpos($key, '新着情報') !== false)
-            $lineType = 1;
-        elseif(strpos($key, 'ランキング') !== false) {
-            $lineType = 2; 
-            $rankNum = 1;
-        }
-        elseif(strpos($key, 'チェック') !== false)
-            $lineType = 3;
+    	$rankNum = 1;
+        $type = $firstItem['type'];
     ?>
 
-    @if(isset($firstItem) && count($firstItem) > 0)
+    @if(isset($firstItem['items']) && count($firstItem['items']) > 0)
 
         <div class="wrap-atcl top-first">
             <div class="head-atcl">
-                <h2>{{ $key }}</h2>
+                <h2>{{ $keyTitle }}</h2>
             </div>
         
             <div class="clearfix">
-                @foreach($firstItem as $item)
+                @foreach($firstItem['items'] as $item)
 
                    <article class="main-atcl">
-                        @if($lineType == 1)
+                        @if($type == 1)
                             <span class="top-new">NEW！</span>
-                        @elseif($lineType == 2)
+                        @elseif($type == 2)
                             <span class="top-rank"><i class="fas fa-crown"></i><em>{{ $rankNum }}</em></span>
                         @endif
                                                         
@@ -50,24 +44,14 @@ use App\TopSetting;
  
                     </article>
                     
-                    @if($lineType == 2)
+                    @if($type == 2)
                         <?php $rankNum++; ?>
                     @endif
-                        
-              
-                    <?php 
-                        if($lineType == 1)
-                            $slug = 'new-items';
-                        elseif($lineType == 2)
-                            $slug = 'ranking';
-                        elseif($lineType == 3)
-                            $slug = 'recent-items';
-                    ?>    
 
                 @endforeach
             </div>
             
-            <a href="{{ url($slug) }}" class="btn btn-block btn-custom bg-white border-secondary rounded-0">もっと見る <i class="fal fa-angle-double-right"></i></a>
+            <a href="{{ url($firstItem['slug']) }}" class="btn btn-block btn-custom bg-white border-secondary rounded-0">もっと見る <i class="fal fa-angle-double-right"></i></a>
             
         </div>
         

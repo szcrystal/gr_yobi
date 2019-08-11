@@ -99,10 +99,18 @@ class HomeController extends Controller
 		//Carousel
         $caros = $this->itemImg->where(['item_id'=>9999, 'type'=>6])->inRandomOrder()->get();
 
-		//FirstItem =======================
+		//FirstItem =================================================
+        
         $getNum = Ctm::isAgent('sp') ? 3 : 4;
+        
+        
+        
+        //SaleItem
+        $saleItems['items'] = $this->item->where('sale_price', '>', 0)->where($whereArr)->orderBy('updated_at', 'desc')->get()->all();
+        $saleItems['type'] = 4;
+        $saleItems['slug'] = 'sale-items';
 		
-        //New
+        //New 新着情報
         $newItems = null;
         
         $scIds = $this->itemSc->orderBy('updated_at','desc')->get()->map(function($isc){
@@ -111,11 +119,16 @@ class HomeController extends Controller
         
         if(count($scIds) > 0) {
             $scIdStr = implode(',', $scIds);
-            $newItems = $this->item->whereIn('id', $scIds)->where($whereArr)->orderByRaw("FIELD(id, $scIdStr)")->take($getNum)->get()->all();
+            $newItems['items'] = $this->item->whereIn('id', $scIds)->where($whereArr)->orderByRaw("FIELD(id, $scIdStr)")->take($getNum)->get()->all();
         }
         
+        $newItems['type'] = 1; 
+        $newItems['slug'] = 'new-items';
+        
         //Ranking
-        $rankItems = $this->item->where($whereArr)->orderBy('sale_count', 'desc')->take($getNum)->get()->all();
+        $rankItems['items'] = $this->item->where($whereArr)->orderBy('sale_count', 'desc')->take($getNum)->get()->all();        
+        $rankItems['type'] = 2; 
+        $rankItems['slug'] = 'ranking';
         
         //Recent 最近見た
         $cookieArr = array();
@@ -126,8 +139,13 @@ class HomeController extends Controller
         
         if(isset($cookieIds) && $cookieIds != '') {
             $cookieArr = explode(',', $cookieIds); //orderByRowに渡すものはString
-          	$cookieItems = $this->item->whereIn('id', $cookieArr)->where($whereArr)->orderByRaw("FIELD(id, $cookieIds)")->take($getNum)->get()->all();  
+          	$cookieItems['items'] = $this->item->whereIn('id', $cookieArr)->where($whereArr)->orderByRaw("FIELD(id, $cookieIds)")->take($getNum)->get()->all();
         }
+        
+        $cookieItems['type'] = 3; 
+        $cookieItems['slug'] = 'recent-items';
+        
+        //FirstItem END =========================
         
         /*
         if(cache()->has('item_ids')) {
@@ -142,6 +160,7 @@ class HomeController extends Controller
         
         //array
         $firstItems = [
+        	'Sale商品'=> $saleItems,
             '人気ランキング'=> $rankItems,
             '新着情報'=> $newItems,
             '最近チェックしたアイテム'=> $cookieItems,
@@ -170,8 +189,9 @@ class HomeController extends Controller
 
         //$allRecoms = $this->item->where($whereArr)->orderBy('created_at', 'desc')->take(10)->get(); 
 
-		//category
+		//category =>現在未使用のはず
         $itemCates = array();
+        /*
         foreach($cates as $cate) { //カテゴリー名をkeyとしてatclのかたまりを配列に入れる
         
             $whereArr['cate_id'] = $cate->id;
@@ -182,6 +202,7 @@ class HomeController extends Controller
                 $itemCates[$cate->id] = $as;
             }
         }
+        */
         
 //        $items = $this->item->where(['open_status'=>1])->orderBy('created_at','DESC')->get();
 //        $items = $items->groupBy('cate_id')->toArray();

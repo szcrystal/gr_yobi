@@ -576,7 +576,7 @@ use App\PayMethodChild;
                             <tr>
                                 <th>送料 [B]</th>
                                 <td>
-                                	<fieldset class="mt-2 mb-4 form-group">
+                                	<fieldset class="mt-1 mb-3 form-group">
                                         <input class="form-control col-md-6 d-inline{{ $errors->has('deli_fee') ? ' is-invalid' : '' }}" name="deli_fee" value="{{ Ctm::isOld() ? old('deli_fee') : (isset($saleRel->deli_fee) ? $saleRel->deli_fee : '') }}">
                                         
                                         @if ($errors->has('deli_fee'))
@@ -593,11 +593,21 @@ use App\PayMethodChild;
                             <tr>
                                 <th>手数料 [C]</th>
                                 <td>
-                                	@if(! $sale->cod_fee)
-                                    	--
-                                    @else
-                                    	¥{{ number_format($saleRel->cod_fee) }} [{{ $pms->find($saleRel->pay_method)->name }}]
-                                    @endif
+                                    <fieldset class="mt-1 mb-3 form-group">
+                                        <input class="form-control col-md-6 d-inline{{ $errors->has('cod_fee') ? ' is-invalid' : '' }}" name="cod_fee" value="{{ Ctm::isOld() ? old('cod_fee') : (isset($saleRel->cod_fee) ? $saleRel->cod_fee : '') }}">
+                                        
+                                        @if ($errors->has('cod_fee'))
+                                            <div class="text-danger">
+                                                <span class="fa fa-exclamation form-control-feedback"></span>
+                                                <span>{{ $errors->first('cod_fee') }}</span>
+                                            </div>
+                                        @endif
+                                        
+                                        @if($saleRel->cod_fee)
+                                            <span class="ml-2">[{{ $pms->find($saleRel->pay_method)->name }}]</span>
+                                        @endif
+                                    
+                                    </fieldset>
                                 	
                                 </td>
                             </tr>
@@ -605,12 +615,44 @@ use App\PayMethodChild;
                             <tr>
                                 <th>ポイント利用 [D]</th>
                                 <td>
-	                                {{ $saleRel->use_point }}
+	                                <fieldset class="mt-1 mb-3 form-group">
+                                        <input class="form-control col-md-6 d-inline{{ $errors->has('use_point') ? ' is-invalid' : '' }}" name="use_point" value="{{ Ctm::isOld() ? old('use_point') : (isset($saleRel->use_point) ? $saleRel->use_point : '') }}">
+                                        
+                                        @if ($errors->has('use_point'))
+                                            <div class="text-danger">
+                                                <span class="fa fa-exclamation form-control-feedback"></span>
+                                                <span>{{ $errors->first('use_point') }}</span>
+                                            </div>
+                                        @endif
+                                    </fieldset>
                                 </td>
                             </tr>
                             
                             <tr>
-                                <th>購入総合計（税込）<br>[A+B+C-D]</th>
+                                <th>調整金額 [E]</th>
+                                <td>
+                                	<fieldset class="mt-1 mb-3 form-group">
+                                        <input class="form-control col-md-6 d-inline{{ $errors->has('adjust_price') ? ' is-invalid' : '' }}" name="adjust_price" value="{{ Ctm::isOld() ? old('adjust_price') : (isset($saleRel->adjust_price) ? $saleRel->adjust_price : '') }}">
+                                        
+                                        @if ($errors->has('adjust_price'))
+                                            <div class="text-danger">
+                                                <span class="fa fa-exclamation form-control-feedback"></span>
+                                                <span>{{ $errors->first('adjust_price') }}</span>
+                                            </div>
+                                        @endif
+                                        
+                                    </fieldset>
+                                    
+                                    <small>
+                                        足す場合はそのまま整数値を、引く場合は先頭に -（半角マイナス）を付けて入力して下さい。<br>
+                                        2000円を=> 足す場合：2000 / 引く場合：-2000<br>
+                                        ＊A及びB〜Dに入力した数値の合計は自動計算されます。それ以外に調整する場合に利用して下さい。
+                                    </small>
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <th>購入総合計（税込）<br>[A+B+C-D+E]</th>
                                 <?php 
                                 	if(isset($saleRel->total_price)) {
                                     	$total = $saleRel->total_price;

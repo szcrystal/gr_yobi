@@ -251,34 +251,35 @@ use App\DeliveryGroup;
             </td>
          </tr>
          
-         
-         <tr class="form-group">
-             <th>パスワード<em>必須</em></th>
-               <td>
-                <input type="password" class="form-control col-md-12{{ $errors->has('user.password') ? ' is-invalid' : '' }}" name="user[password]" value="{{ Ctm::isOld() ? old('user.password') : (Session::has('all.data.user') ? session('all.data.user.password') : '') }}" placeholder="8文字以上（半角）">
-                                    
-                @if ($errors->has('user.password'))
-                    <div class="help-block text-danger">
-                        <span class="fa fa-exclamation form-control-feedback"></span>
-                        <span>{{ $errors->first('user.password') }}</span>
-                    </div>
-                @endif
-            </td>
-         </tr>
-         
-         <tr class="form-group">
-             <th>パスワードの確認<em>必須</em></th>
-               <td>
-                <input type="password" class="form-control col-md-12{{ $errors->has('user.password_confirmation') ? ' is-invalid' : '' }}" name="user[password_confirmation]" value="{{ Ctm::isOld() ? old('user.password_confirmation') : (Session::has('all.data.user') ? session('all.data.user.password_confirmation') : '') }}">
-                
-                @if ($errors->has('user.password_confirmation'))
-                    <div class="help-block text-danger">
-                        <span class="fa fa-exclamation form-control-feedback"></span>
-                        <span>{{ $errors->first('user.password_confirmation') }}</span>
-                    </div>
-                @endif
-            </td>
-         </tr>
+         @if($regist)
+             <tr class="form-group">
+                 <th>パスワード<em>必須</em></th>
+                   <td>
+                    <input type="password" class="form-control col-md-12{{ $errors->has('user.password') ? ' is-invalid' : '' }}" name="user[password]" value="{{ Ctm::isOld() ? old('user.password') : (Session::has('all.data.user') ? session('all.data.user.password') : '') }}" placeholder="8文字以上（半角）">
+                                        
+                    @if ($errors->has('user.password'))
+                        <div class="help-block text-danger">
+                            <span class="fa fa-exclamation form-control-feedback"></span>
+                            <span>{{ $errors->first('user.password') }}</span>
+                        </div>
+                    @endif
+                </td>
+             </tr>
+             
+             <tr class="form-group">
+                 <th>パスワードの確認<em>必須</em></th>
+                   <td>
+                    <input type="password" class="form-control col-md-12{{ $errors->has('user.password_confirmation') ? ' is-invalid' : '' }}" name="user[password_confirmation]" value="{{ Ctm::isOld() ? old('user.password_confirmation') : (Session::has('all.data.user') ? session('all.data.user.password_confirmation') : '') }}">
+                    
+                    @if ($errors->has('user.password_confirmation'))
+                        <div class="help-block text-danger">
+                            <span class="fa fa-exclamation form-control-feedback"></span>
+                            <span>{{ $errors->first('user.password_confirmation') }}</span>
+                        </div>
+                    @endif
+                </td>
+             </tr>
+         @endif
          
          
          

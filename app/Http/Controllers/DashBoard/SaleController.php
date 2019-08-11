@@ -415,7 +415,7 @@ class SaleController extends Controller
                 $status .= 'キャンセルにより、金額と在庫が戻されました。';
             }
         }
-        else { //キャンセルを取り消した時 cancel_dateが入っていることが条件
+        else { //キャンセルを取り消した時 cancel_dateが入っていることが条件 =>キャンセルのキャンセルは不可とした
         	if(isset($saleModel->cancel_date)) {
             
             }
@@ -658,22 +658,28 @@ class SaleController extends Controller
         
         
         $saleRel = $this->saleRel->find($data['order_id']);
-        $saleRel->pay_done = isset($data['pay_done']) ? $data['pay_done'] : 0;
+        //$saleRel->pay_done = isset($data['pay_done']) ? $data['pay_done'] : 0;
         
         if(isset($data['pay_done'])) {
-        	$saleRel->pay_date = date('Y-m-d H:i:s', time());
+        	$saleRel['pay_date'] = date('Y-m-d H:i:s', time());
+        }
+        else {
+        	$data['pay_done'] = 0;
         }
         
+        //$saleRel->total_price = $saleRel->total_price - $saleRel->deli_fee + $data['deli_fee'];
         
-        $saleRel->total_price = $saleRel->total_price - $saleRel->deli_fee + $data['deli_fee'];
+        $saleRel['total_price'] = $saleRel->all_price + $data['deli_fee'] + $data['cod_fee'] - $data['use_point'] + $data['adjust_price'];
+                
+        /*
         $saleRel->deli_fee = $data['deli_fee'];
-        
         $saleRel->information = $data['information'];
         $saleRel->information_foot = $data['information_foot'];
         $saleRel->memo = $data['memo'];
         $saleRel->craim = $data['craim'];
+        */
         
-        //$saleRel->fill($data);
+        $saleRel->fill($data);
         $saleRel->save();
         
         //プレビュー表示 --------------------------------------------------------
