@@ -113,16 +113,15 @@
                 <p>営業日：月〜金曜（土曜不定休）<br>定休日：日・祝日</p>
                 <ul class="list-unstyled clearfix">
                 	<li></li>
-                    {{--
                     <li><i class="fal fa-envelope"></i> <a href="mailto:info@green-rocket.jp">info@green-rocket.jp</a></li>
-                    --}}
+                    
+                    {{--
                     <li>
                     	<span style="font-size:1.6em;"><a href="https://twitter.com/shop8463" target="_brank"><i class="fab fa-twitter-square"></i></a></span>
                         <span><a href="https://www.facebook.com/8463andgreenrocket/" target="_brank"><i class="fab fa-facebook"></i></a></span>
                         <span><a href="https://www.facebook.com/8463andgreenrocket/" target="_brank"><i class="fab fa-instagram"></i></a></span>
-                        
-                    
                     </li>
+                    --}}
                     
                 </ul>
             </address>

@@ -24,7 +24,7 @@
                 </p>
                 
                 <p>
-                	メールで直接お送りする場合は下記アドレスまで送信下さい。<br>
+                	メールで直接お送り頂く場合は下記アドレスまで送信下さい。<br>
                     <i class="fal fa-envelope"></i> <a href="mailto:info@green-rocket.jp">info@green-rocket.jp</a>
                 </p>
             </div>

@@ -181,6 +181,11 @@ return [
         'table_name' => '「送料表名」',
         'time_table' => '「時間割」',
         
+        'deli_fee' => '「送料」',
+        'cod_fee' => '「手数料」',
+        'use_point' => '「ポイント利用」',
+        'adjust_price' => '「調整金額」',
+        
         'admin_name' => '「管理者名」',
         'admin_email' => '「管理者メールアドレス」',
         'admin_forward_email' => '「転送先メールアドレス」',

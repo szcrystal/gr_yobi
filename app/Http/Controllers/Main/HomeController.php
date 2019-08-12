@@ -236,7 +236,17 @@ class HomeController extends Controller
         $orgItem = null;
         $title = '';
         
-        if($path == 'new-items') {
+        if($path == 'sale-items') {
+        	$itemObjs = $this->item->where('sale_price', '>', 0)->where($whereArr)->orderBy('updated_at', 'desc')->get();
+            
+            $stockIds = $this->getStockSepIds($itemObjs); //$itemObjsはコレクション
+            $strs = implode(',', $stockIds); //$strs = '"'. implode('","', $stockIds) .'"';
+            $items = $this->item->whereIn('id', $stockIds)->orderByRaw("FIELD(id, $strs)")->paginate($this->perPage);            
+            
+            $title = 'Sale商品';
+            
+        }
+        elseif($path == 'new-items') {
         
             $scs = $this->itemSc->orderBy('updated_at','desc')/*->take(100)*/->get();
 //            ->map(function($isc){

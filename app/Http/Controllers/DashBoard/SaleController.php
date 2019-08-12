@@ -611,6 +611,8 @@ class SaleController extends Controller
             $this->validate($request, $rules, $messages);
         }
         
+        
+        
         //サンクス/発送（未伝票）/発送
         if(/*$withPreview == $templIds['thanks'] || */$withPreview == $templIds['deliDoneNo'] || $withPreview == $templIds['deliDone']) {
             foreach($request->input('sale_ids') as $si) {
@@ -653,6 +655,17 @@ class SaleController extends Controller
             
             $this->validate($request, $rules, $messages);
         }
+        
+        
+        $rules = [
+            'deli_fee' => 'numeric',
+            'cod_fee' => 'numeric',
+            'use_point' => 'numeric',
+            'adjust_price' => 'numeric',
+        ];
+        
+        $messages = [];
+        $this->validate($request, $rules, $messages);
  
     	$data = $request->all();
         
