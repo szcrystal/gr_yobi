@@ -437,6 +437,7 @@ for SP
         line-height: 0;
         z-index: 998;
         font-size: 1.2em;
+        padding: 0;
         //padding-bottom: 0.6em;
         //background: red;
     }

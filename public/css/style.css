@@ -41,7 +41,8 @@ textarea {
 }
 .form-control:focus {
 	border-color: #bfbfbf;
-    background: rgba(250, 130, 143, 0.1); /*#fa828f*/
+/*    background: rgba(250, 130, 143, 0.1);*/ /*#fa828f*/
+    background: rgba(24, 32, 111, 0.1); /* #18206F */
     outline: none;
     box-shadow: none !important;
     //box-shadow: 0 0 0 0.02rem rgba(250, 130, 143, 0.85) !important;
@@ -62,7 +63,8 @@ select.form-control {
 /*	color: red !important;*/
 /*}*/
 select.form-control:focus {
-	background: rgba(250, 130, 143, 0.1) !important;
+/*	background: rgba(250, 130, 143, 0.1) !important;*/
+    background: rgba(24, 32, 111, 0.1) !important;
     outline: 0;
 }
 
@@ -90,7 +92,8 @@ select.form-control:focus {
 @media all and (-ms-high-contrast:none) {
     *::-ms-backdrop, select.form-control:focus {
       background: none !important;
-      border: 1px solid rgba(250, 130, 143, 0.75) !important;
+/*      border: 1px solid rgba(250, 130, 143, 0.75) !important;*/
+      border: 1px solid rgba(24, 32, 111, 0.75) !important;
     }
     
     *::-ms-backdrop, .select-wrap {
@@ -104,10 +107,10 @@ select.form-control:focus {
 @supports (-ms-ime-align:auto) {
   select.form-control:focus {
   	background: none !important;
-    border: 1px solid rgba(250, 130, 143, 0.75) !important;
+/*    border: 1px solid rgba(250, 130, 143, 0.75) !important;*/
+	border: 1px solid rgba(24, 32, 111, 0.75) !important;
   }
 }
-
 
 
 textarea {
@@ -150,55 +153,56 @@ input[type=radio], input[type=checkbox] {
   cursor: pointer;
 }
 .radios:hover, .checks:hover {
-  //background-color: red;
+/*  background-color: red;*/
 }
 .radios:hover:after, .checks:hover:after {
-  //border-color: #53b300;
+/*  border-color: #53b300;*/
 }
 
 .radios:after { /* waku */
     position: absolute;
-  top: 0.2em;
-  left: 0;
-  display: block;
-/*  margin-top: -10px;*/
-  width: 1.2em;
-  height: 1.2em;
-  background: #fff;
-  border: 1px solid #bbb;
-  border-radius: 50%;
-  content: '';
+    top: 0.2em;
+    left: 0;
+    display: block;
+    /*  margin-top: -10px;*/
+    width: 1.2em;
+    height: 1.2em;
+    background: #fff;
+    border: 1px solid #bbb;
+    border-radius: 50%;
+    content: '';
 }
 
 .radios:before { /* small-maru */
-  position: absolute;
-  top: 0.5em;
-  left: 0.3em;
-  display: block;
-/*  margin-top: -5px;*/
-  width: 0.6em;
-  height: 0.6em;
-  border-radius: 50%;
-  background-color: #fa828f;
-  content: "";
-  opacity: 0;
-  z-index: 9;
+    position: absolute;
+    top: 0.5em;
+    left: 0.3em;
+    display: block;
+    /*  margin-top: -5px;*/
+    width: 0.6em;
+    height: 0.6em;
+    border-radius: 50%;
+/*    background-color: #fa828f;*/
+    background-color: #18206F;
+    content: "";
+    opacity: 0;
+    z-index: 9;
 }
 
 .checks:after {
 /*  -webkit-transition: border-color 0.2s linear;*/
 /*  transition: border-color 0.2s linear;*/
-  position: absolute;
-  top: 52%;
-  left: 0;
-  display: block;
-  margin-top: -10px;
-  width: 18px;
-  height: 18px;
-  background: #fff;
-  border: 1px solid #bbb;
-  border-radius: 0;
-  content: "";
+    position: absolute;
+    top: 52%;
+    left: 0;
+    display: block;
+    margin-top: -10px;
+    width: 18px;
+    height: 18px;
+    background: #fff;
+    border: 1px solid #bbb;
+    border-radius: 0;
+    content: "";
 }
 input[type=radio]:checked + .radios:before {
   opacity: 1;
@@ -215,8 +219,10 @@ input[type=radio]:checked + .radios:before {
   margin-top: -7px;
   width: 0.8em;
   height: 1.2em;
-  border-right: 3px solid #fa828f;
-  border-bottom: 3px solid #fa828f;
+/*  border-right: 3px solid #fa828f;*/
+/*  border-bottom: 3px solid #fa828f;*/
+  border-right: 3px solid #18206F;
+  border-bottom: 3px solid #18206F;
   content: '';
   opacity: 0;
   z-index: 9;
@@ -510,12 +516,15 @@ body {
 	background: #3a3b3c;
 }
 .btn-pink {
-	background: #fa828f;
+/*	background: #fa828f; =>pink*/
+	background: #18206F; /* =>blue */
 }
 .btn-white {
-	border: 2px solid #fa828f;
     background: #fff;
-    color: #fa828f;
+/*    border: 2px solid #fa828f;*/
+/*    color: #fa828f;*/
+	border: 2px solid #18206F;
+    color: #18206F;
 }
 .btn-cart-del {
 	background: none;
@@ -2054,6 +2063,7 @@ ul.side-rank {
 }
 .single .form-wrap .btn-custom {
 	font-size: 1.3em;
+    padding: 0.7em 0;
 }
 .single .form-wrap .btn-custom + p {
 	font-size: 1.2em;
