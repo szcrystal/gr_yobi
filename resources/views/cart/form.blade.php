@@ -595,12 +595,12 @@ use App\DeliveryGroup;
                     
                     <?php $seinouObj = Ctm::getSeinouObj(); ?>
                     
-                    <p class="mb-1 pb-2">
+                    <p class="mb-2 pb-2">
                         ■下記の商品につきまして
-                        <ul class="pl-4 text-small">
-                            <li>「ご希望日程」が日曜日の場合は、下記1商品につき{{ number_format($seinouObj->sundayFee) }}円増しとなります。
+                        <ul class="pl-4">
+                            <li class="mb-3 text-kon text-bold">「ご希望日程」が日曜日の場合は、下記1商品につき{{ number_format($seinouObj->sundayFee) }}円増しとなります。
                             <li>不在置きを了承頂ける場合はチェックをして下さい。<br>
-                            <span class="text-enji text-small">※チェック時は1商品につき{{ number_format($seinouObj->huzaiokiFee) }}円引きとなります。その際、下に表示される枠内に不在時の荷物の置き場所を記載して下さい。</span>
+                            <span class="text-bold text-extra-big d-inline-block mt-1">※チェック時は1商品につき{{ number_format($seinouObj->huzaiokiFee) }}円引きとなります。</span><br><span class="">その際、下に表示される枠内に不在時の荷物の置き場所を記載して下さい。</span>
                         </ul>
                     </p>
                     

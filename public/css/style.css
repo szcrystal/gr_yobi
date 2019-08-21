@@ -550,6 +550,9 @@ body {
 .text-big {
 	font-size: 1.1em;
 }
+.text-extra-big {
+	font-size: 1.2em;
+}
 .text-small {
 	font-size: 0.9em;
 }
@@ -574,6 +577,9 @@ body {
 }
 .text-enji {
 	color: #C15360;
+}
+.text-kon {
+	color: #18206F;
 }
 .text-blue {
 	color: #506EA8;
