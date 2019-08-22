@@ -456,28 +456,31 @@ class CustomController extends Controller
     static function daibikiCodFee($totalFee)
     {
     	$codFee = 0;
+        $taxPer = Setting::first()->tax_per / 100;
         
     	if($totalFee <= 10000) {
-            $codFee = 324;
+            $codFee = 300;
         }
         elseif ($totalFee >= 10001 && $totalFee <= 30000) {
-            $codFee = 432;
+            $codFee = 400;
         }
         elseif ($totalFee >= 30001 && $totalFee <= 100000) {
-            $codFee = 648;
+            $codFee = 600;
         }
         elseif ($totalFee >= 100001 && $totalFee <= 300000) {
-            $codFee = 1080;
+            $codFee = 1000;
         }
         elseif ($totalFee >= 300001 && $totalFee <= 500000) {
-            $codFee = 2160;
+            $codFee = 2000;
         }
         elseif ($totalFee >= 500001 && $totalFee <= 1000000) {
-            $codFee = 3240;
+            $codFee = 3000;
         }
         elseif ($totalFee >= 1000001 && $totalFee <= 999999999) {
-            $codFee = 4320;
+            $codFee = 4000;
         }
+        
+        $codFee += $codFee * $taxPer;
         
         return $codFee;
     }
@@ -492,12 +495,15 @@ class CustomController extends Controller
     	//西濃運輸のIDもここで
     	$seinouId = 11;
         
+        //taxPer
+        $taxPer = Setting::first()->tax_per / 100;
+        
     	//西濃に対する加減算の金額は消費税対象となる
         $seinouHuzaiokiFee = 3000;
         $seinouSundayFee = 1000;
 
-		$seinouHuzaiokiFee = $seinouHuzaiokiFee + ($seinouHuzaiokiFee * Setting::first()->tax_per/100);
-        $seinouSundayFee = $seinouSundayFee + ($seinouSundayFee * Setting::first()->tax_per/100);
+		$seinouHuzaiokiFee += $seinouHuzaiokiFee * $taxPer;
+        $seinouSundayFee += $seinouSundayFee * $taxPer;
         
         
         return (object) [

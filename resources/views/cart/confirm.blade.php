@@ -256,9 +256,10 @@
                         </div>
                     </td>  
                 </tr>
+                
                 <tr>
-                    <td>
-                        <p class="text-small p-0 mb-0">
+                    <td class="border-top-0">
+                        <p class="text-small p-0 m-0">
                             {!! nl2br($data['huzai_comment']) !!}
                         </p>
                     </td>

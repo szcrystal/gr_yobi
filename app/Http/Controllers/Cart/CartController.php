@@ -1390,13 +1390,15 @@ class CartController extends Controller
         
         
         $codFee = 0;
+        $taxPer = $this->set->tax_per / 100;
+        
         $errors = array();
         
         //コンビニ手数料 --------------
         if($data['pay_method'] == 2) { 
         	//https://www.epsilon.jp/pricelist/com_conv.html
         	
-            $taxPer = $this->set->tax_per / 100;
+            //$taxPer = $this->set->tax_per / 100;
             
          	if($totalFee <= 1999) {
             	$epTesu = 130;
@@ -1423,14 +1425,15 @@ class CartController extends Controller
                    
         }
         
-        //NP後払い手数料 -> 一律205 （190 + 税）----------------
+        //NP後払い手数料 -> 一律205 （190 + 税）切り捨て関数必要----------------
         else if($data['pay_method'] == 4) {
         	
-        	$codFee = 205;
+        	$codFee = 190;
             $codMax = 50000;
             
-            $codTax = $codMax * ($this->set->tax_per / 100);
-            $codMax = $codMax + $codTax;
+            $codFee += floor($codFee * $taxPer);
+            
+            $codMax += $codMax * $taxPer; //後払い上限金額の税計算
             
             //NP後払い上限額
             if( ($totalFee + $codFee) > $codMax) {
