@@ -105,7 +105,7 @@ class HomeController extends Controller
         
         
         
-        //SaleItem
+        //SaleItem 全セール中の時でも各商品のセール指定が優先表示
         $saleItems['items'] = $this->item->where('sale_price', '>', 0)->where($whereArr)->orderBy('updated_at', 'desc')->get()->all();
         $saleItems['type'] = 4;
         $saleItems['slug'] = 'sale-items';

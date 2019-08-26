@@ -874,6 +874,18 @@ var exe = (function() {
 
         },
         
+        //FAQを開いた時にCollapse showをつける
+        setCollapseShowFaq: function() {
+        	var path = location.pathname;
+        	
+            if(path == '/faq') {
+            	var hash = location.hash;
+            	$(hash).next('div').addClass('show');
+            }
+            
+        },
+        
+        
         
         getCardToken: function() {
         	
@@ -1016,6 +1028,8 @@ $(function(e){ //ready
     exe.slidePayMethodChild();
     
     exe.toggleSideMenu();
+    
+    exe.setCollapseShowFaq();
     
     exe.accordionMoveUp();
     //exe.setSliderFrame();

@@ -595,14 +595,14 @@ use App\DeliveryGroup;
                     
                     <?php $seinouObj = Ctm::getSeinouObj(); ?>
                     
-                    <p class="mb-2 pb-2">
+                    <div class="pb-3">
                         ■下記の商品につきまして
-                        <ul class="pl-4">
+                        <ul class="mt-3 pl-4">
                             <li class="mb-3 text-kon text-bold">「ご希望日程」が日曜日の場合は、下記1商品につき{{ number_format($seinouObj->sundayFee) }}円増しとなります。
                             <li>不在置きを了承頂ける場合はチェックをして下さい。<br>
                             <span class="text-bold text-extra-big d-inline-block mt-1">※チェック時は1商品につき{{ number_format($seinouObj->huzaiokiFee) }}円引きとなります。</span><br><span class="">その際、下に表示される枠内に不在時の荷物の置き場所を記載して下さい。</span>
                         </ul>
-                    </p>
+                    </div>
                     
                     <div>
                         @foreach($dgSeinou as $sk => $seinouItemId)
@@ -612,9 +612,17 @@ use App\DeliveryGroup;
                                 $siTitle = Ctm::getItemTitle($si);
                             ?>
                             
-                            <i class="fal fa-angle-double-right"></i> <b class="d-inline-block mb-1">{{ $siTitle }}</b>
-                            <input type="hidden" name="seinouItemTitle[]" value="{{ $siTitle }}">
-                            <br>    
+                            <div class="clearfix mb-3 ml-1">
+                                <div class="float-left mr-2">
+                                    @include('main.shared.smallThumbnail', ['item'=>$si])
+                                </div>
+                                
+                                <span class="text-big text-bold">{{ $siTitle }}</span><br>
+                                <span class="">[{{ $si->number }}]</span>
+                                
+                                <input type="hidden" name="seinouItemTitle[]" value="{{ $siTitle }}">
+                            </div>
+
                         @endforeach
                         
                         <?php
@@ -630,7 +638,7 @@ use App\DeliveryGroup;
                             }
                         ?>
                        	
-                        <div class="mt-1">
+                        <div class="mt-4">
                             <input type="hidden" name="is_huzaioki" value="0">
                             
                             <input id="check-huzaioki-0" type="checkbox" name="is_huzaioki" value="1"{{ $checked }}>
@@ -680,9 +688,16 @@ use App\DeliveryGroup;
                                         $iTitle = Ctm::getItemTitle($i);
                                     ?>
                                     
-                                    <i class="fal fa-angle-double-right"></i> <b class="d-inline-block mb-1">{{ $iTitle }}</b>
+                                    <div class="clearfix mb-2 ml-1">
+                                        <div class="float-left mr-2">
+                                            @include('main.shared.smallThumbnail', ['item'=>$i])
+                                        </div>
+                                        
+                                        <span class="text-big text-bold">{{ $iTitle }}</span><br>
+                                        <span class="">[{{ $i->number }}]</span>
+                                    </div>
+                                    
                                     <input type="hidden" name="planTimeItemTitle[{{ $key }}][]" value="{{ $iTitle }}">
-                                    <br>
                                  @endforeach
                             @endif
                              
