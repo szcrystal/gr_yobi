@@ -30,14 +30,14 @@
     
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css">
     
-    @if(! Ctm::isAgent('sp') && Request::is('item/*'))
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.10.0/css/lightbox.css" rel="stylesheet">
-    @endif
-
-	@if(isset($isTop) && $isTop)
+	@if(isset($isTop) || Request::is('item/*'))
     <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css"/>
     <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css"/>
 	@endif
+    
+    @if(! Ctm::isAgent('sp') && Request::is('item/*'))
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.10.0/css/lightbox.css" rel="stylesheet">
+    @endif
     
     <?php $getNow = '?up=' . time(); ?>
     

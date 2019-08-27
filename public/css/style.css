@@ -1792,6 +1792,64 @@ ul.side-rank {
     //border: 1px solid green;
 }
 
+/* Single Slider Slick */
+.slider-single > div {
+	//position: relative;
+    //border: 2px solid red;
+}
+.slider-single .s-caption {
+	position: absolute;
+    bottom: 0;
+    //left: 0;
+    z-index: 999;
+	color: #fff;
+    font-size: 0.95em;
+    font-weight: normal;
+    background: rgba(0,0,0,0.55);
+    width: 100%;
+    padding: 0.3em 0.2em;
+    text-align: center;
+}
+.slider-single .slick-prev,
+.slider-single .slick-next {
+	//display: none;
+}
+.slider-single .s-prev,
+.slider-single .s-next {
+	display: block;
+	position: absolute;
+    top: 48%;
+	background: rgba(0,0,0,0.65);
+    font-size: 1.8em;
+    width: 0.9em;
+    height: 1.8em;
+    line-height: 1.8em;
+    border-radius: 0;
+    border: 0;
+    box-shadow: 0;
+    color: #fff;
+    text-align: center;
+    z-index: 99;
+    cursor: pointer;
+}
+.slider-single .s-prev {
+    left: 0;
+}
+.slider-single .s-next {
+    right: 0;
+}
+.slider-single .s-prev:hover,
+.slider-single .s-next:hover {
+	background: rgba(0,0,0,0.85);
+}
+
+/*.slider-item {*/
+/*	background: red;*/
+/*}*/
+/*.slider-item.current {*/
+/*	background: #3f3f3f;*/
+/*    cursor: default;*/
+/*}*/
 
 /* Single Carousel */
 .single .carousel-item {

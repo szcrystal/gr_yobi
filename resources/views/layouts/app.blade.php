@@ -69,9 +69,42 @@ $cartAllClass = Request::is('shop/*') ? 'cart-all' : '';
     @endif
 @endif
 
+@if(isset($isTop) || Request::is('item/*'))
+<script type="text/javascript" src="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+@endif
+
 @if(! Ctm::isAgent('sp') && Request::is('item/*'))
 <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.10.0/js/lightbox.min.js" type="text/javascript"></script>
 <script>
+<?php
+	$slideNum = Ctm::isAgent('sp') ? 3 : 10; //naviの画像個数 要：奇数
+?>
+	$(document).ready(function() {
+    	
+        $('.slider-single').slick({
+            slidesToShow: 1,
+            slidesToScroll: 1,
+            arrows: true,
+            fade: false,
+//            touchThreshold: 5,
+//            speed: 250,
+            //cssEase: 'swing',
+            //asNavFor: '.slider-nav',
+            prevArrow: '<span class="s-prev"><i class="fal fa-angle-left"></i></span>',
+        	nextArrow: '<span class="s-next"><i class="fal fa-angle-right"></i></span>',
+        });
+    
+//        $('.slider-nav').slick({
+//              slidesToShow: {{ $slideNum }},
+//              slidesToScroll: 1,
+//              asNavFor: '.slider-single',
+//              dots: false,
+//              centerMode: false,
+//              focusOnSelect: true,
+//              arrows: false,
+//        });
+    });
+
     lightbox.option({
     	'fadeDuration': 400,
         'resizeDuration': 500,
@@ -79,7 +112,9 @@ $cartAllClass = Request::is('shop/*') ? 'cart-all' : '';
         'wrapAround': true,
       	'showImageNumberLabel': false,
       	'maxWidth': 800,
-    });
+    });    
+
+    
 </script>
 @endif
 
@@ -88,7 +123,6 @@ $cartAllClass = Request::is('shop/*') ? 'cart-all' : '';
 	$slideNum = Ctm::isAgent('sp') ? 3 : 7; //naviの画像個数 要：奇数
 ?>
 
-<script type="text/javascript" src="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
 <script>
 $(document).ready(function() {
 	$('.slider-top').slick({

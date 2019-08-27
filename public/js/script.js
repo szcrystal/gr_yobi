@@ -871,16 +871,33 @@ var exe = (function() {
             		set();
                 //}
             });
+            
+            
+            $('.slider-single').on('beforeChange', function(e, slick, currentSlide, nextSlide){
+
+                $('.slider-item').eq(currentSlide).removeClass('active');                                
+            	$('.slider-item').eq(nextSlide).addClass('active');
+                
+                //console.log(currentSlide);
+            });
+            
+            
+            $('.slider-item').on('click', function(){
+            	var index = $(this).index();
+                
+                $('.slider-single').slick('slickGoTo', index, false);
+                console.log(index);
+            });
 
         },
         
-        //FAQを開いた時にCollapse showをつける
+        //FAQを開いた時にcollapseにshowをつける
         setCollapseShowFaq: function() {
         	var path = location.pathname;
         	
             if(path == '/faq') {
             	var hash = location.hash;
-            	$(hash).next('div').addClass('show');
+            	$(hash).next('.collapse').addClass('show');
             }
             
         },
@@ -1032,7 +1049,8 @@ $(function(e){ //ready
     exe.setCollapseShowFaq();
     
     exe.accordionMoveUp();
-    //exe.setSliderFrame();
+    
+    exe.setSliderFrame();
     
     exe.getCardToken();
 });
