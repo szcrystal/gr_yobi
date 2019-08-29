@@ -2,6 +2,7 @@
 // for SinglePage => Slick Slider
 // Why Unmerge ??
 // abcde
+//12345 nano
 ?>
 
 <div class="slider-wrap">
