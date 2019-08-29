@@ -1,13 +1,13 @@
 <?php
 // for SinglePage => Slick Slider
 // Why Unmerge ??
-//
+// abcde
 ?>
 
 <div class="slider-wrap">
 
     <div class="slider slider-single">
-        
+        <span>ABCDE</span>
         <div class="position-relative">
 
             <?php 
