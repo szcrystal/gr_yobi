@@ -1,5 +1,7 @@
 <?php
 // for SinglePage => Slick Slider
+//
+//
 ?>
 
 <div class="slider-wrap">
@@ -65,7 +67,6 @@
         @endif
         
     </div>
-
 
 	@if(isset($imgsPri))
         <div class="clearfix">
