@@ -39,7 +39,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.10.0/css/lightbox.css" rel="stylesheet">
     @endif
     
-    <?php $getNow = '?up=' . time(); ?>
+    <?php //$getNow = '?up=' . time(); ?>
     
     <link href="{{ asset('css/style.css'. $getNow) }}" rel="stylesheet">
     

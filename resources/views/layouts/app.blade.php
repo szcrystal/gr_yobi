@@ -4,6 +4,8 @@ use App\Item;
 use App\Category;
 
 $cartAllClass = Request::is('shop/*') ? 'cart-all' : '';
+$getNow = ! Ctm::isEnv('product') ? '?up=' . time() : '';
+
 ?>
 
 @include('shared.header')
@@ -46,20 +48,18 @@ $cartAllClass = Request::is('shop/*') ? 'cart-all' : '';
 </div><!-- id app -->
 
 <?php
-    $getNow = '?up=' . time();
+    //$getNow = ! Ctm::isEnv('product') ? '?up=' . time() : '';
 ?>
 
 <!-- Scripts -->
-{{-- integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" --}}
-<script src="https://code.jquery.com/jquery-3.2.1.min.js" crossorigin="anonymous"></script>
+<script src="//code.jquery.com/jquery-3.2.1.min.js" crossorigin="anonymous"></script>
+<script src="//code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 
 @if(Request::is('shop/form') || Request::is('register') || Request::is('*/register'))
 <script type="text/javascript" src="//jpostal-1006.appspot.com/jquery.jpostal.js"></script>
 @endif
-
-<script src="//code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
 
 @if(Request::is('shop/confirm'))
     @if(Setting::first()->is_product)
@@ -71,40 +71,46 @@ $cartAllClass = Request::is('shop/*') ? 'cart-all' : '';
 
 @if(isset($isTop) || Request::is('item/*'))
 <script type="text/javascript" src="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+<script>
+    @if(Request::is('item/*'))
+        
+        $('.slider-single').slick({
+            prevArrow: '<span class="s-prev"><i class="fal fa-angle-left"></i></span>',
+            nextArrow: '<span class="s-next"><i class="fal fa-angle-right"></i></span>',
+        });
+        
+    @else
+    	<?php 
+        	// $slideNum = Ctm::isAgent('sp') ? 3 : 7; //naviの画像個数 要：奇数 
+//        	touchThreshold: 5,
+//          speed: 250,
+//          ease: 'linear',        
+        ?>
+        
+        $('.slider-top').slick({
+            slidesToShow: 1,
+            slidesToScroll: 1,
+            dots: true,
+
+            @if(! Ctm::isAgent('sp'))
+            centerMode: true,
+            variableWidth: true,
+            @endif
+
+            autoplay: true,
+            autoplaySpeed: 7000,
+            arrows: false,
+            fade: false,
+            pauseOnFocus: false,
+            //asNavFor: '.slider-nav',
+        });
+    @endif
+</script>
 @endif
 
 @if(! Ctm::isAgent('sp') && Request::is('item/*'))
 <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.10.0/js/lightbox.min.js" type="text/javascript"></script>
 <script>
-<?php
-	$slideNum = Ctm::isAgent('sp') ? 3 : 10; //naviの画像個数 要：奇数
-?>
-	$(document).ready(function() {
-    	
-        $('.slider-single').slick({
-            slidesToShow: 1,
-            slidesToScroll: 1,
-            arrows: true,
-            fade: false,
-//            touchThreshold: 5,
-//            speed: 250,
-            //cssEase: 'swing',
-            //asNavFor: '.slider-nav',
-            prevArrow: '<span class="s-prev"><i class="fal fa-angle-left"></i></span>',
-        	nextArrow: '<span class="s-next"><i class="fal fa-angle-right"></i></span>',
-        });
-    
-//        $('.slider-nav').slick({
-//              slidesToShow: {{ $slideNum }},
-//              slidesToScroll: 1,
-//              asNavFor: '.slider-single',
-//              dots: false,
-//              centerMode: false,
-//              focusOnSelect: true,
-//              arrows: false,
-//        });
-    });
-
     lightbox.option({
     	'fadeDuration': 400,
         'resizeDuration': 500,
@@ -112,48 +118,7 @@ $cartAllClass = Request::is('shop/*') ? 'cart-all' : '';
         'wrapAround': true,
       	'showImageNumberLabel': false,
       	'maxWidth': 800,
-    });    
-
-    
-</script>
-@endif
-
-@if(isset($isTop) && $isTop)
-<?php
-	$slideNum = Ctm::isAgent('sp') ? 3 : 7; //naviの画像個数 要：奇数
-?>
-
-<script>
-$(document).ready(function() {
-	$('.slider-top').slick({
-          slidesToShow: 1,
-          dots: true,
-          
-          @if(! Ctm::isAgent('sp'))
-          centerMode: true,
-          variableWidth: true,
-          @endif
-          
-          slidesToScroll: 1,
-          autoplay: true,
-          autoplaySpeed: 7000,
-          arrows: false,
-          fade: false,
-          pauseOnFocus: false,
-          //asNavFor: '.slider-nav',
     });
-    
-//    $('.slider-nav').slick({
-//          slidesToShow: {{ $slideNum }},
-//          slidesToScroll: 1,
-//          asNavFor: '.slider-top',
-//          dots: false,
-//          centerMode: true,
-//          focusOnSelect: true,
-//          prevArrow: '<span class="slick-prev"><i class="fal fa-angle-left"></i></span>',
-//          nextArrow: '<span class="slick-next"><i class="fal fa-angle-right"></i></span>',
-//    });
-});
 </script>
 @endif
 

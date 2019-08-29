@@ -840,6 +840,8 @@ var exe = (function() {
 
         },
         
+        
+        
         //TopSliderの枠調整
         setSliderFrame: function() {
         	function set() {
@@ -884,9 +886,9 @@ var exe = (function() {
             
             $('.slider-item').on('click', function(){
             	var index = $(this).index();
-                
                 $('.slider-single').slick('slickGoTo', index, false);
-                console.log(index);
+                
+                //console.log(index);
             });
 
         },
@@ -1050,7 +1052,9 @@ $(function(e){ //ready
     
     exe.accordionMoveUp();
     
+    //slickSlider / LightBox =========
     exe.setSliderFrame();
+    //slickSlider / LightBox END ======
     
     exe.getCardToken();
 });
