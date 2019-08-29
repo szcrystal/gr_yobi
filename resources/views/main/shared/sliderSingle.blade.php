@@ -3,7 +3,7 @@
 // Why Unmerge ??
 // abcde
 //12345 nano
-
+//あいうえお
 ?>
 
 <div class="slider-wrap">
