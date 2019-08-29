@@ -1,15 +1,13 @@
 <?php
 // for SinglePage => Slick Slider
-// Why Unmerge ??
-// abcde
-//12345 nano
-//あいうえお
+// Change from bootstrap carousel
+
 ?>
 
 <div class="slider-wrap">
 
     <div class="slider slider-single">
-        <span>ABCDE</span>
+
         <div class="position-relative">
 
             <?php 
