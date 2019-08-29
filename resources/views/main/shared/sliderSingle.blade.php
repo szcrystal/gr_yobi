@@ -1,6 +1,6 @@
 <?php
 // for SinglePage => Slick Slider
-//
+// Why Unmerge ??
 //
 ?>
 
