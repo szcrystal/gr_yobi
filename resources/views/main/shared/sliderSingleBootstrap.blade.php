@@ -1,5 +1,6 @@
 <?php
 // for Single Slider Bootstrap
+// Original:: Bootstrap Carousel
 // draggableが効かない
 ?>
 

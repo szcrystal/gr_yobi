@@ -1810,10 +1810,12 @@ ul.side-rank {
     padding: 0.3em 0.2em;
     text-align: center;
 }
+/*
 .slider-single .slick-prev,
 .slider-single .slick-next {
-	//display: none;
+	display: none;
 }
+*/
 .slider-single .s-prev,
 .slider-single .s-next {
 	display: block;
