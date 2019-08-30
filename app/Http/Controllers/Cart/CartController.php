@@ -416,6 +416,9 @@ class CartController extends Controller
                 
                 $userId = $user->id;
                 $isUser = 1;
+                
+                Auth::login($user);
+                
                 //ポイントの処理が必要
             }
             else {
@@ -679,7 +682,7 @@ class CartController extends Controller
         
         $metaTitle = 'ご注文完了' . '｜植木買うならグリーンロケット';
      	
-        return view('cart.end', ['data'=>$data, 'pm'=>$pm, 'pmModel'=>$pmModel, 'paymentCode'=>$payPaymentCode, 'orderNumber'=>$orderNumber, 'saleRel'=>$saleRel, 'saleObjs'=>$saleObjs, 'metaTitle'=>$metaTitle]);
+        return view('cart.end', ['regist'=>$regist, 'orderNumber'=>$orderNumber, 'metaTitle'=>$metaTitle]);
       
       
       //クレカからの戻りサンプルURL

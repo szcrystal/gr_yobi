@@ -467,45 +467,6 @@ var exe = (function() {
         
         },
         
-        outReceive: function() {
-        	var $destination = $('input[name="destination"]');
-            var $destinationCheck = $('input[name="destination"]:checked');
-         	var $em = $('.receiver').find('em');
-            var $rWrap = $('.receiver-wrap');
-             
-            //console.log($destination.val());
-             
-            //if($destination.is(':checked')) {
-            if($destinationCheck.val() == 1) {
-                $rWrap.show();
-                $em.show();
-            }
-            else {
-                $rWrap.hide();
-                $em.hide();
-            }
-
-            $destination.on('click', function(){
-            	
-                //console.log($(this).val());
-                
-                //if($(this).is(':checked')) {
-                if($(this).val() == 1) { 
-                    $em.fadeIn(30, function(){
-                    	$rWrap.slideDown(300);
-                    });
-                }
-                else {
-                    $rWrap.slideUp(300, function(){
-                    	$em.fadeOut(30);
-                    });
-                    
-                    $('.receiver-error:visible').fadeOut(30).siblings().removeClass('is-invalid');
-                    //$('.receiver-error:visible');
-                    
-                }
-            });
-        },
         
         addFavorite: function() {
         	var $fav= $('.fav');
@@ -667,6 +628,50 @@ var exe = (function() {
             });
         },
         
+        
+        outReceive: function() {
+        	var $destination = $('input[name="destination"]');
+            var $destinationCheck = $('input[name="destination"]:checked');
+         	var $em = $('.receiver').find('em');
+            var $rWrap = $('.receiver-wrap');
+            
+            var mainSpeed = 100;
+             
+            //console.log($destination.val());
+             
+            //if($destination.is(':checked')) {
+            if($destinationCheck.val() == 1) {
+                $rWrap.show();
+                $em.show();
+            }
+            else {
+                $rWrap.hide();
+                $em.hide();
+            }
+
+            $destination.on('click', function(){
+            	
+                //console.log($(this).val());
+                
+                //if($(this).is(':checked')) {
+                if($(this).val() == 1) { 
+                    $em.fadeIn(30, function(){
+                    	$rWrap.slideDown(mainSpeed);
+                    });
+                }
+                else {
+                    $rWrap.slideUp(mainSpeed, function(){
+                    	$em.fadeOut(30);
+                    });
+                    
+                    $('.receiver-error:visible').fadeOut(30).siblings().removeClass('is-invalid');
+                    //$('.receiver-error:visible');
+                    
+                }
+            });
+        },
+        
+        
         slidePayMethodChild: function() {
         	var $pmRadio = $('.payMethodRadio');
             var $useCardRadio = $('.useCardRadio');
@@ -760,6 +765,32 @@ var exe = (function() {
             });
             
             
+            //shop 会員登録 Y or N
+            var $radioRegist = $('.registRadio');
+            var $registTarget = $('.regist-frame');
+             
+            var registVal = $('.registRadio:checked').val();
+            
+            console.log(registVal);
+            
+            //load時
+            if(registVal == 1) {
+            	$registTarget.show(0);
+            }
+            else {
+            	$registTarget.hide(0);
+            }
+            
+            //change時
+            $radioRegist.on('change', function(e){
+            	if($(this).val() == 1)
+	            	$registTarget.slideDown(100);
+                else
+                	$registTarget.stop().slideUp(100);
+                
+            });
+            
+            
             //shop 不在時置き場所コメント
             var $checkHuzai = $('#check-huzaioki-0');
             var $huzaiComWrap = $('.huzai-comment-wrap');
@@ -769,6 +800,7 @@ var exe = (function() {
             	$huzaiComWrap.show(0);
             }
             
+            //change時
             $checkHuzai.on('change', function(e){
             	$huzaiComWrap.slideToggle(50);
                 

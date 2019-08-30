@@ -361,8 +361,8 @@ body {
 /* max width END ========================= */
 
 .home,
-.archive,
-.fix-page {
+.archive/*,
+.fix-page*/ {
 	float: right;
     width: 80%;
     //border: 1px solid red;

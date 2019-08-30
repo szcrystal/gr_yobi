@@ -27,7 +27,7 @@ use App\TopSetting;
 
         <div class="panel-body">
 
-            <div class="top-cont clearfix">
+            <div class="clearfix">
  
 
                 {!! $fix->contents !!}
@@ -43,11 +43,11 @@ use App\TopSetting;
 
 @endsection
 
-
+{{--
 @section('leftbar')
     @include('main.shared.leftbar')
 @endsection
-
+--}}
 
 
 

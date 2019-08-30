@@ -102,13 +102,46 @@ use App\DeliveryGroup;
 	</table>
 </div>
 
+<?php //新規会員登録 =================================================== ?>
 @else
+
 <h3 class="mb-3 card-header">お客様情報</h3>
 
 <input type="hidden" name="use_point" value="0">
 
 <div class="table-responsive table-custom">
-    <table class="table table-borderd border">
+    <table class="table table-borderd border p-0 m-0">
+    	
+        <tr>
+        	<th>会員登録<em>必須</em></th>
+        	<td>
+            	<div class="">
+                    <?php 
+                        $checked = '';
+                        
+                        if( Ctm::isOld()) {
+                            if(! old('regist')) 
+                                $checked = ' checked';
+                        }
+                        elseif(Session::has('regist')) {
+                            if(! session('regist')) 
+                            	$checked = ' checked';
+                        }
+                     ?>
+                    
+                    <span class="deliRadioWrap">
+                        <input id="radio-regist-y" type="radio" name="regist" value="1" class="registRadio" checked>
+                        <label for="radio-regist-y" class="radios">する</label>
+                    </span>
+                    
+                    <span class="deliRadioWrap">
+                        <input id="radio-regist-n" type="radio" name="regist" value="0" class="registRadio" {{ $checked }}>
+                        <label for="radio-regist-n" class="radios">しない</label>
+                    </span>
+                        
+                </div>
+            </td>
+        </tr>
        
         
         <tr class="form-group">
@@ -251,10 +284,16 @@ use App\DeliveryGroup;
             </td>
          </tr>
          
+         </table>
+        </div>
+         
          @if($regist)
-             <tr class="form-group">
-                 <th>パスワード<em>必須</em></th>
-                   <td>
+         <div class="table-responsive table-custom pb-4 regist-frame">
+    		<table class="table table-borderd border p-0 m-0">
+            
+            	<tr class="form-group">
+                	<th>パスワード<em>必須</em></th>
+                	<td>
                     <input type="password" class="form-control col-md-12{{ $errors->has('user.password') ? ' is-invalid' : '' }}" name="user[password]" value="{{ Ctm::isOld() ? old('user.password') : (Session::has('all.data.user') ? session('all.data.user.password') : '') }}" placeholder="8文字以上（半角）">
                                         
                     @if ($errors->has('user.password'))
@@ -279,6 +318,40 @@ use App\DeliveryGroup;
                     @endif
                 </td>
              </tr>
+             
+            <tr class="form-group">
+                <th class="pt-4"><small><i class="fas fa-square"></i> 当店からのお知らせを希望しますか？</small>メールマガジンの登録</th>
+                <td class="pt-4">
+                    <?php
+                        $checked = '';
+                        if(Ctm::isOld()) {
+                            if(old('user.magazine'))
+                                $checked = ' checked';
+                        }
+                        else {
+                            if(Session::has('all.data.user')  && session('all.data.user.magazine')) {
+                                $checked = ' checked';
+                            }
+                        }
+                    ?>
+                    
+                    <input id="check-magazine" type="checkbox" name="user[magazine]" value="1"{{ $checked }}>
+                    <label for="check-magazine" class="checks">登録する</label>
+                    
+                    {{--
+                    <input type="checkbox" name="user[magazine]" value="1"{{ $checked }}> 登録する
+                    --}}
+                    
+                    @if ($errors->has('user.magazine'))
+                        <div class="help-block text-danger">
+                            <span class="fa fa-exclamation form-control-feedback"></span>
+                            <span>{{ $errors->first('user.magazine') }}</span>
+                        </div>
+                    @endif
+                </td>
+             </tr>
+            </table>
+        </div>
          @endif
          
          
@@ -306,45 +379,7 @@ use App\DeliveryGroup;
          
          
         
-        @if($regist)
-            <div id="magazine" class="table-responsive table-custom">
-                <p class="mt-3 text-small mb-0 ml-2 pl-1"><i class="fas fa-square"></i> 当店からのお知らせを希望しますか？</p>
-                <table class="table table-borderd border">
-     
-                 <tr class="form-group">
-                     <th>メールマガジンの登録</th>
-                       <td>
-                        <?php
-                            $checked = '';
-                            if(Ctm::isOld()) {
-                                if(old('user.magazine'))
-                                    $checked = ' checked';
-                            }
-                            else {
-                                if(Session::has('all.data.user')  && session('all.data.user.magazine')) {
-                                    $checked = ' checked';
-                                }
-                            }
-                        ?>
-                        
-                        <input id="check-magazine" type="checkbox" name="user[magazine]" value="1"{{ $checked }}>
-                        <label for="check-magazine" class="checks">登録する</label>
-                        
-                        {{--
-                        <input type="checkbox" name="user[magazine]" value="1"{{ $checked }}> 登録する
-                        --}}
-                        
-                        @if ($errors->has('user.magazine'))
-                            <div class="help-block text-danger">
-                                <span class="fa fa-exclamation form-control-feedback"></span>
-                                <span>{{ $errors->first('user.magazine') }}</span>
-                            </div>
-                        @endif
-                    </td>
-                 </tr>
-                </table>
-            </div>
-        @endif
+        
  
 
 @endif {{-- AuthCheck --}}                     
@@ -1028,7 +1063,7 @@ use App\DeliveryGroup;
                                             	@if(isset($userObj) && $userObj->card_regist_count > 4)
                                                 	<span class="text-small text-secondary"><i class="fas fa-exclamation-circle"></i> 新規カード登録不可（最大5つまで）</span>
                                                 @else
-                                                    <label class="mt-2">
+                                                    <label class="mt-2 regist-frame">
                                                         <?php                            
                                                             $checked = '';
                                                             if(Ctm::isOld()) {
