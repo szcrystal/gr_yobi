@@ -117,15 +117,15 @@ use App\DeliveryGroup;
         	<td>
             	<div class="">
                     <?php 
-                        $checked = '';
+                        $registChecked = '';
                         
                         if( Ctm::isOld()) {
                             if(! old('regist')) 
-                                $checked = ' checked';
+                                $registChecked = ' checked';
                         }
-                        elseif(Session::has('regist')) {
-                            if(! session('regist')) 
-                            	$checked = ' checked';
+                        elseif(Session::has('all.regist')) {
+                            if(! session('all.regist')) 
+                            	$registChecked = ' checked';
                         }
                      ?>
                     
@@ -135,7 +135,7 @@ use App\DeliveryGroup;
                     </span>
                     
                     <span class="deliRadioWrap">
-                        <input id="radio-regist-n" type="radio" name="regist" value="0" class="registRadio" {{ $checked }}>
+                        <input id="radio-regist-n" type="radio" name="regist" value="0" class="registRadio" {{ $registChecked }}>
                         <label for="radio-regist-n" class="radios">しない</label>
                     </span>
                         
@@ -287,7 +287,6 @@ use App\DeliveryGroup;
          </table>
         </div>
          
-         @if($regist)
          <div class="table-responsive table-custom pb-4 regist-frame">
     		<table class="table table-borderd border p-0 m-0">
             
@@ -351,9 +350,7 @@ use App\DeliveryGroup;
                 </td>
              </tr>
             </table>
-        </div>
-         @endif
-         
+        </div>         
          
          
          
@@ -377,11 +374,6 @@ use App\DeliveryGroup;
         </div>
          
          
-         
-        
-        
- 
-
 @endif {{-- AuthCheck --}}                     
         
         <div class="receiver">
@@ -1059,7 +1051,9 @@ use App\DeliveryGroup;
                                             
                                             </div><!-- ErrorBlock -->
                                             
+                                            {{--
                                             @if($regist || (isset($userObj) && $userObj->card_regist_count < 6))
+                                            --}}
                                             	@if(isset($userObj) && $userObj->card_regist_count > 4)
                                                 	<span class="text-small text-secondary"><i class="fas fa-exclamation-circle"></i> 新規カード登録不可（最大5つまで）</span>
                                                 @else
@@ -1071,7 +1065,7 @@ use App\DeliveryGroup;
                                                                     $checked = ' checked';
                                                             }
                                                             else {
-                                                                if(Session::has('all.data.is_regist_card') && session('all.data.is_regist_card'))
+                                                                if(Session::has('all.data.temp_is_regist_card') && session('all.data.temp_is_regist_card'))
                                                                     $checked = ' checked';
                                                             }
                                                         ?>
@@ -1091,8 +1085,10 @@ use App\DeliveryGroup;
                                                         @endif
                                                     </label>
                                                 @endif
+                                            {{--
                                             @endif
-                                        
+                                        	--}}
+                                            
                                         </div>
                                         
                                         {{--
@@ -1164,8 +1160,9 @@ use App\DeliveryGroup;
                 	</fieldset>
                 </div>
                 
-
+		{{--
         <input type="hidden" name="regist" value="{{ $regist }}">
+        --}}
         
         <div>
         	<button class="btn btn-block btn-pink col-md-4 mb-4 mx-auto py-2" type="submit" name="recognize" value="1">確認する</button>

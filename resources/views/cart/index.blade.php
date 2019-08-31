@@ -281,20 +281,24 @@
             <div class="table-responsive">
                 <table class="table">
                     <tr>
-                        <th rowspan="2" class="border-0">会員登録がまだの方 {!! $arrow !!}</th>
+                        <th rowspan="1" class="border-0">会員登録がまだの方 {!! $arrow !!}</th>
                         <td class="border-0">
-                        	<button class="btn btn-block btn-pink mb-0 py-2 px-5" type="submit" name="regist_on" value="1" formaction="{{ url('shop/form') }}"{{ $disabled }}>会員登録をして購入手続きへ <i class="fal fa-angle-double-right"></i></button>
+                        	<button class="btn btn-block btn-pink mb-0 py-3 px-5" type="submit" name="regist_on" value="1" formaction="{{ url('shop/form') }}"{{ $disabled }}>購入手続きへ <i class="fal fa-angle-double-right"></i></button>
                         </td>
                    </tr>
+                   
+                   {{--
                    <tr class="border-0">
                         <td class="border-0">
                         	<button class="btn btn-block btn-white mb-3 py-2 px-5" type="submit" name="regist_off" value="1" formaction="{{ url('shop/form') }}"{{ $disabled }}>会員登録せずに購入手続きへ <i class="fal fa-angle-double-right"></i></button>
                         </td>               
                     </tr>
+                    --}}
+                    
                     <tr>
                         <th class="border-0">会員登録がお済みの方 {!! $arrow !!}</th>      
                         <td class="border-0">	
-                        <a href="{{ url('login?to_cart=1') }}" class="btn btn-block btn-custom mb-2 py-2 px-5">ログインする</a>
+                        <a href="{{ url('login?to_cart=1') }}" class="btn btn-block btn-custom mb-2 py-3 px-5">ログインする</a>
                         {{--
                         <button class="btn btn-block btn-custom mb-3 py-2" type="submit" name="to_cart" value="shop/cart" formaction="{{ url('login') }}">ログインする</button>
                         --}}

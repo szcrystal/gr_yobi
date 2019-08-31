@@ -156,7 +156,7 @@
                 </td>
             </tr>
             
-            @if($data['pay_method'] == 1 && $data['card_seq'] == 99)
+            @if($regist && $data['pay_method'] == 1 && $data['card_seq'] == 99)
             	<tr>
                     <th>カード番号の登録</th>
                     <td>

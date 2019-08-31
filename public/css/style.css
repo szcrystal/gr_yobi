@@ -2597,8 +2597,9 @@ Pagination View END :::
 .fix-page section > div {
 	margin: 2em 0 4em 0.4em;
 }
-.fix-page section p {
-	margin-left: 0.2em;
+.fix-page p/*,
+.fix-page section p*/ {
+	margin-left: 1.0em;
 }
 .fix-page section div.clearfix img {
 	width: 33%;

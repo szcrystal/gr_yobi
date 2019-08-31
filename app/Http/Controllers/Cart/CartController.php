@@ -340,9 +340,10 @@ class CartController extends Controller
        
        	//クレカ関連
        	$memberId = isset($allData['member_id']) && $allData['member_id'] != '' ? $allData['member_id'] : null;
-       
+       	
+        //ここはカード決済Methodの中でカード登録が正常完了した時に取得するSession
        	$isCardRegist = isset($allData['card_regist']) && $allData['card_regist'] != '' ? 1 : 0;
-       
+
        	
         //配送時間指定 itemごとにitemDataの配列内に入れる
 //        if(count($planTime) > 0) {
@@ -724,7 +725,8 @@ class CartController extends Controller
         
         
         $isRegistUser = session('all.regist');
-        $isRegistCard = session('all.data.is_regist_card') != '' ? session('all.data.is_regist_card') : 0;
+        $isRegistCard = session('all.data.is_regist_card');
+        //$isRegistCard = session('all.data.is_regist_card') != '' ? session('all.data.is_regist_card') : 0;
         
         $cardSeqSession = session('all.data.card_seq');
         
@@ -825,7 +827,7 @@ class CartController extends Controller
             else {
             	$cardSeqNum = $cardRegSuccess['CardSeq']; //新しい論理のCardSeq値が返る
 
-                //カード登録するの判定をsessin入れ
+                //カード登録するの判定をsession入れ => カード登録出来たという判定
                 session()->put('all.data.card_regist', 1);
             }
 
@@ -1072,8 +1074,10 @@ class CartController extends Controller
      		$pt = $this->user->find(Auth::id())->point;
      	}
 
+		$regist = $request->has('regist') && $request->input('regist') ? 1 : 0;
 
         $rules = [
+        	'regist' => 'sometimes|required',
             'user.name' => 'sometimes|required|max:255',
             'user.hurigana' => 'sometimes|required|max:255',
             'user.tel_num' => 'sometimes|required|numeric',
@@ -1083,8 +1087,12 @@ class CartController extends Controller
    			'user.address_1' => 'sometimes|required|max:255',
       		//'user.address_2' => 'sometimes|required|max:255', 
             'user.email' => 'sometimes|required|email|max:255', 
-        	'user.password' => 'sometimes|required|min:8|confirmed', 
-         	'user.password_confirmation' => 'sometimes|required|min:8',      
+        	//'user.password' => 'sometimes|required|min:8|confirmed', 
+         	//'user.password_confirmation' => 'sometimes|required|min:8',
+            
+            'user.password' => $regist ? 'sometimes|required|min:8|confirmed' : '', 
+         	'user.password_confirmation' => $regist ? 'sometimes|required|min:8' : '',
+            
 			'use_point' => 'numeric|max:'.$pt,
    			        
 			//'destination' => 'required_without:receiver.name,receiver.hurigana,receiver.tel_num,receiver.post_num,receiver.prefecture,receiver.address_1,receiver.address_2,receiver.address_3',
@@ -1127,7 +1135,7 @@ class CartController extends Controller
         //会員新規登録時でのemailバリデーション
         if(! Ctm::isEnv('local')) {
             if(! Auth::check()) {         	
-                if($request->input('regist')) {
+                if($regist) {
                     $rules['user.email'] = [
                         'filled',
                         'email',
@@ -1193,7 +1201,6 @@ class CartController extends Controller
         
         
         $data = $request->all();
-
         
 //        if(! Auth::check()) {
 //            //Birth Input 月日全て入力で登録することにしているがどうか
@@ -1204,15 +1211,24 @@ class CartController extends Controller
 //            }
 //        }
 
+		//card登録のOn/Off: registしないの時は強制的に0にする。temp_is_regist_cardは表示用のsessionにする
+        $data['temp_is_regist_card'] = isset($data['is_regist_card']) ? 1: 0;
+        $data['is_regist_card'] = isset($data['is_regist_card']) && (Auth::check() || $regist) ? 1 : 0;
+        
+        
         //全データをsessionに入れる session入れ
-        $request->session()->put('all.data', $data); //user receiver destination paymentMethod
+        session([
+        	'all.data' => $data, //user receiver destination paymentMethod
+        	'all.regist' => $regist, //$registはこのメソッドの先頭で取得
+        ]);
+        //$request->session()->put('all.data', $data); //user receiver destination paymentMethod
         //$request->session()->put('all.user', $data['user']);
         //$request->session()->put('all.receiver', $data['receiver']);
         //$request->session()->put('user.data', $data['user']);
         //$request->session()->put('receiver.data', $data['receiver']);
         
         $itemSes = session('item.data');
-        $regist = session('all.regist');
+        //$regist = session('all.regist');
 
 		//ここでall_priceをsessionから取得すると金額変動などあった時にsession維持でずれるので取得しない　この関数の中で入れ直す
         //$allPrice = session('all.all_price');
@@ -1593,6 +1609,7 @@ class CartController extends Controller
         
         $metaTitle = 'ご注文内容の確認' . '｜植木買うならグリーンロケット';
         
+        
         return view('cart.confirm', ['data'=>$data, 'userArr'=>$userArr, 'itemData'=>$itemData, 'regist'=>$regist, 'allPrice'=>$allPrice, 'settles'=>$settles, 'payMethod'=>$payMethod, 'pmChild'=>$pmChild, 'deliFee'=>$deliFee, 'codFee'=>$codFee, 'usePoint'=>$usePoint, 'addPoint'=>$addPoint, 'actionUrl'=>$actionUrl, 'cardInfo'=>$cardInfo, 'metaTitle'=>$metaTitle])->withErrors($errors);
     }
     
@@ -1630,9 +1647,12 @@ class CartController extends Controller
       	if($request->has('from_cart') ) { //cartからpostで来た時
        		$data = $request -> all(); 
             
+            /* registのボタン分けを無くした
             $regist = $request->has('regist_on') ? 1 : 0;
          	$request->session()->put('all.regist', $regist); //session入れ
-          	
+          	*/
+            $regist = 1;
+            
            	foreach($data['last_item_count'] as $key => $val) {   
             	$request->session()->put('item.data.'.$key.'.item_count', $val); //session入れ 
              
@@ -1653,7 +1673,7 @@ class CartController extends Controller
             //all priceのsession入れ
             $request->session()->put('all.all_price', $allPrice);
        	}
-        else { //getの時
+        else { //getの時（他ページからの移動）
         	if($request->session()->has('all.regist')) {
          		$regist = session('all.regist');
          	}

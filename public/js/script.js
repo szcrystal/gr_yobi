@@ -774,15 +774,20 @@ var exe = (function() {
             console.log(registVal);
             
             //load時
-            if(registVal == 1) {
-            	$registTarget.show(0);
+            if($radioRegist.length) {
+                if(registVal == 1) 
+                    $registTarget.show(0);
+                else 
+                    $registTarget.hide(0);
             }
-            else {
-            	$registTarget.hide(0);
-            }
+//            else {
+//            	$registTarget.show(0);
+//            }
             
             //change時
             $radioRegist.on('change', function(e){
+            	console.log($(this).val());
+                
             	if($(this).val() == 1)
 	            	$registTarget.slideDown(100);
                 else
