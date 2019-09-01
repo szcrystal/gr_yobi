@@ -244,6 +244,7 @@
                                 @foreach($data['seinouItemTitle'] as $seinouItemTitle)
                                     <li>
                                         <i class="fal fa-angle-double-right"></i> {{ $seinouItemTitle }}
+                                        
                                     </li>
                                 @endforeach
                             </ul>
@@ -417,7 +418,7 @@
     	<?php
         	$isProduct = Setting::get()->first()->is_product ? 1 : 0;
         ?>
-        <input type="button" id="card-submit" class="btn btn-block btn-enji col-md-4 mb-4 mx-auto py-2" data-product="{{ $isProduct }}" value="注文する">
+        <input type="button" id="card-submit" class="btn btn-block btn-enji col-md-4 mb-4 mx-auto py-3" data-product="{{ $isProduct }}" value="注文する">
         
         {{--
         <button class="btn btn-block btn-enji col-md-4 mb-4 mx-auto py-2" type="submit" name="regist_off" value="1"{{ $disabled }} onclick="doPurchase()">注文する</button>
@@ -466,7 +467,7 @@
             <span class="loader mr-3"><i class="fas fa-square mr-1"></i> 処理中..</span>
         </div>
         
-    	<button id="exist-submit" class="btn btn-block btn-enji col-md-4 mb-4 mx-auto py-2" type="submit"{{ $disabled }}>注文する</button>
+    	<button id="exist-submit" class="btn btn-block btn-enji col-md-4 mb-4 mx-auto py-3" type="submit"{{ $disabled }}>注文する</button>
     @endif
   
 </form>

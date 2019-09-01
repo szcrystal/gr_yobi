@@ -620,17 +620,21 @@ var exe = (function() {
             //is_potset ONの時
             var $isPotSet = $('input[name="is_potset"]');
             var $cateRequire = $('.cate-require');
+            var $potRequire = $('.pot-require');
             
             if($isPotSet.is(':checked')) {
             	$cateRequire.hide();
+                $potRequire.show();
             }
             
             $isPotSet.on('change', function() {
             	if($(this).is(':checked')) {
                 	$cateRequire.hide();
+                    $potRequire.show();
                 }
                 else {
                 	$cateRequire.show();
+                    $potRequire.hide();
                 }
                 
                 //console.log($(this).val());

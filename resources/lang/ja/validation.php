@@ -118,6 +118,7 @@ return [
         'email' => '「メールアドレス」',// forお問い合わせ
         'tel_num' => '「電話番号」',
         
+        'regist' => '「会員登録」',
         'user.name' => '「氏名」',
         'user.hurigana' => '「フリガナ」',
         'user.email' => '「メールアドレス」',

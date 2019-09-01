@@ -967,7 +967,7 @@ class CartController extends Controller
         return redirect('shop/thankyou');
         
         
-        //Epsilon
+        //Epsilon ========================================================================================================
         //1回postで送信（file_get_contentsで）し、結果がxmlで返る。その結果が正常ならepsilonへリダイレクトするという仕様
         //イプシロン_system_manual.pdfの47ページに返り値があり
         //しかし、この仕様については詳しく書いていない。サンプルCGIを見ろということらしい
@@ -1064,11 +1064,17 @@ class CartController extends Controller
         
         $redirectUrl = urldecode($array_res['redirect']);
         return redirect()->away($redirectUrl);
+        
+        //Epsilon END ========================================================================================================
     }
     
 
     public function postConfirm(Request $request)
     {
+//    	if($request->isMethod('get')) {
+//        	abort(404);
+//        }
+    
     	$pt=0; //ポイント
     	if(Auth::check()) {
      		$pt = $this->user->find(Auth::id())->point;
@@ -1134,17 +1140,15 @@ class CartController extends Controller
         
         //会員新規登録時でのemailバリデーション
         if(! Ctm::isEnv('local')) {
-            if(! Auth::check()) {         	
-                if($regist) {
-                    $rules['user.email'] = [
-                        'filled',
-                        'email',
-                        'max:255',
-                        Rule::unique('users', 'email')->where(function ($query) {
-                            return $query->where('active', 1); //uniqueする対象をactive:1のみにする
-                        }),
-                    ];
-                }
+            if($regist) {
+                $rules['user.email'] = [
+                    'filled',
+                    'email',
+                    'max:255',
+                    Rule::unique('users', 'email')->where(function ($query) {
+                        return $query->where('active', 1); //uniqueする対象をactive:1のみにする
+                    }),
+                ];
             }
         }        
         
@@ -1211,11 +1215,10 @@ class CartController extends Controller
 //            }
 //        }
 
-		//card登録のOn/Off: registしないの時は強制的に0にする。temp_is_regist_cardは表示用のsessionにする
-        $data['temp_is_regist_card'] = isset($data['is_regist_card']) ? 1: 0;
+		//クレカ登録のOn/Off: registしないの時は強制的に0にする。temp_is_regist_cardは表示用だけのsessionにする
+        $data['temp_is_regist_card'] = isset($data['is_regist_card']) ? 1 : 0;
         $data['is_regist_card'] = isset($data['is_regist_card']) && (Auth::check() || $regist) ? 1 : 0;
-        
-        
+                
         //全データをsessionに入れる session入れ
         session([
         	'all.data' => $data, //user receiver destination paymentMethod
@@ -1651,7 +1654,8 @@ class CartController extends Controller
             $regist = $request->has('regist_on') ? 1 : 0;
          	$request->session()->put('all.regist', $regist); //session入れ
           	*/
-            $regist = 1;
+            
+            session(['all.from_cart'=>$request->input('from_cart')]); //session入れ
             
            	foreach($data['last_item_count'] as $key => $val) {   
             	$request->session()->put('item.data.'.$key.'.item_count', $val); //session入れ 
@@ -1674,12 +1678,13 @@ class CartController extends Controller
             $request->session()->put('all.all_price', $allPrice);
        	}
         else { //getの時（他ページからの移動）
-        	if($request->session()->has('all.regist')) {
-         		$regist = session('all.regist');
-         	}
-          	else {
+        	//if($request->session()->has('all.regist')) {
+         	//	$regist = session('all.regist');
+         	//}
+            
+            if(! $request->session()->has('all.from_cart')) {
            		abort(404);
-           	}      
+           	}
         }          
      
      	//PayMethod
@@ -1785,7 +1790,7 @@ class CartController extends Controller
 
 		$metaTitle = 'ご注文情報の入力' . '｜植木買うならグリーンロケット';
      
-     	return view('cart.form', ['regist'=>$regist, 'payMethod'=>$payMethod, 'pmChilds'=>$pmChilds, 'prefs'=>$prefs, 'userObj'=>$userObj, 'codCheck'=>$codCheck, 'dgGroup'=>$dgGroup, 'dgSeinou'=>$dgSeinou, 'regCardDatas'=>$regCardDatas, 'regCardErrors'=>$regCardErrors, 'cardErrors'=>$cardErrors, 'metaTitle'=>$metaTitle]);   
+     	return view('cart.form', [/*'regist'=>$regist, */'payMethod'=>$payMethod, 'pmChilds'=>$pmChilds, 'prefs'=>$prefs, 'userObj'=>$userObj, 'codCheck'=>$codCheck, 'dgGroup'=>$dgGroup, 'dgSeinou'=>$dgSeinou, 'regCardDatas'=>$regCardDatas, 'regCardErrors'=>$regCardErrors, 'cardErrors'=>$cardErrors, 'metaTitle'=>$metaTitle]);   
     }
     
     

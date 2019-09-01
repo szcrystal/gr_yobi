@@ -272,7 +272,7 @@
         @endif
 
         @if(Auth::check())
-            <button class="btn btn-block btn-custom btn-pink mb-4 py-2 px-5" type="submit" name="regist_off" value="1" formaction="{{ url('shop/form') }}"{{ $disabled }}>購入手続きへ <i class="fal fa-angle-double-right"></i></button>
+            <button class="btn btn-block btn-custom btn-kon mb-4 py-3 px-10" type="submit" name="regist_off" value="1" formaction="{{ url('shop/form') }}"{{ $disabled }}>購入手続きへ <i class="fal fa-angle-double-right"></i></button>
         @else
         	<?php
             	$arrow = Ctm::isAgent('sp') ? '<i class="far fa-arrow-alt-down"></i>' : '<i class="far fa-arrow-alt-right"></i>';
@@ -283,7 +283,7 @@
                     <tr>
                         <th rowspan="1" class="border-0">会員登録がまだの方 {!! $arrow !!}</th>
                         <td class="border-0">
-                        	<button class="btn btn-block btn-pink mb-0 py-3 px-5" type="submit" name="regist_on" value="1" formaction="{{ url('shop/form') }}"{{ $disabled }}>購入手続きへ <i class="fal fa-angle-double-right"></i></button>
+                        	<button class="btn btn-block btn-kon mb-0 py-3 px-10" type="submit" name="regist_on" value="1" formaction="{{ url('shop/form') }}"{{ $disabled }}>購入手続きへ <i class="fal fa-angle-double-right"></i></button>
                         </td>
                    </tr>
                    
@@ -298,7 +298,7 @@
                     <tr>
                         <th class="border-0">会員登録がお済みの方 {!! $arrow !!}</th>      
                         <td class="border-0">	
-                        <a href="{{ url('login?to_cart=1') }}" class="btn btn-block btn-custom mb-2 py-3 px-5">ログインする</a>
+                        <a href="{{ url('login?to_cart=1') }}" class="btn btn-block btn-custom mb-2 py-3 px-10">ログインする</a>
                         {{--
                         <button class="btn btn-block btn-custom mb-3 py-2" type="submit" name="to_cart" value="shop/cart" formaction="{{ url('login') }}">ログインする</button>
                         --}}

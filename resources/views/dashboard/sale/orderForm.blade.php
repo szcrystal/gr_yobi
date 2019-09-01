@@ -336,6 +336,11 @@ use App\PayMethodChild;
                                                     @else
                                                     	--
                                                     @endif
+                                                    
+                                                    @if($item->dg_id == Ctm::getSeinouObj()->id && Ctm::isSeinouSunday($sale->plan_date))
+                                                    	<span class="text-orange ml-3">+{{ number_format(Ctm::getSeinouObj()->sundayFee) }}円</span>
+                                                    @endif
+                                                    
                                                 </td>
                                             </tr>
                                             
@@ -345,6 +350,7 @@ use App\PayMethodChild;
                                                 	<td>
                                                     	@if($sale->is_huzaioki)
                                                         	<span class="text-success">了承する</span>
+                                                            <span class="text-orange ml-3">-{{ number_format(Ctm::getSeinouObj()->huzaiokiFee) }}円</span>
                                                         @else
                                                         	<span class="text-danger">了承しない</span>
                                                         @endif

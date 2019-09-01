@@ -67,10 +67,6 @@ use App\DeliveryGroup;
          	<td>{{ $userObj->name }}</td>   
         </tr>
         <tr>
-            <th>メールアドレス</th>
-             <td>{{ $userObj->email }}</td>   
-        </tr>
-        <tr>
             <th>電話番号</th>
              <td>{{ $userObj->tel_num }}</td>   
         </tr>
@@ -80,6 +76,10 @@ use App\DeliveryGroup;
              {{ $userObj->prefecture }}{{ $userObj->address_1 }} {{ $userObj->address_2 }}<br>
              {{ $userObj->address_3 }}
              </td>   
+        </tr>
+        <tr>
+            <th>メールアドレス</th>
+             <td>{{ $userObj->email }}</td>   
         </tr>
         <tr>
             <th>ポイントのご利用</th>
@@ -319,7 +319,7 @@ use App\DeliveryGroup;
              </tr>
              
             <tr class="form-group">
-                <th class="pt-4"><small><i class="fas fa-square"></i> 当店からのお知らせを希望しますか？</small>メールマガジンの登録</th>
+                <th class="pt-4">{{--<small><i class="fas fa-square"></i> 当店からのお知らせを希望しますか？</small>--}}メールマガジンの登録</th>
                 <td class="pt-4">
                     <?php
                         $checked = '';
@@ -379,7 +379,7 @@ use App\DeliveryGroup;
         <div class="receiver">
             <h3 class="mt-4 card-header">お届け先</h3>     
                  
-            <fieldset class="form-group mt-3 py-1">
+            <fieldset class="form-group mt-3 py-1 pl-1">
                     <?php                            
                         $checked = '';
                         if(Ctm::isOld()) {
@@ -618,7 +618,7 @@ use App\DeliveryGroup;
             </fieldset>
                 
             @if(count($dgSeinou) > 0)
-                <fieldset class="form-group mt-1 mb-2 px-3 py-2{{ $errors->has('is_huzaioki.*') ? ' border border-danger' : '' }}">
+                <fieldset class="form-group mt-3 mb-2 px-3 py-2{{ $errors->has('is_huzaioki.*') ? ' border border-danger' : '' }}">
                     
                     <?php $seinouObj = Ctm::getSeinouObj(); ?>
                     
@@ -665,7 +665,7 @@ use App\DeliveryGroup;
                             }
                         ?>
                        	
-                        <div class="mt-4">
+                        <div class="mt-3">
                             <input type="hidden" name="is_huzaioki" value="0">
                             
                             <input id="check-huzaioki-0" type="checkbox" name="is_huzaioki" value="1"{{ $checked }}>
@@ -700,12 +700,12 @@ use App\DeliveryGroup;
             @endif
 				
             @if(count($dgGroup) > 0)
-                <fieldset class="form-group mt-1 mb-2 px-3 py-2{{ $errors->has('plan_time.*') ? ' border border-danger' : '' }}">
+                <fieldset class="form-group mt-3 mb-2 px-3 py-2{{ $errors->has('plan_time.*') ? ' border border-danger' : '' }}">
                 	
                     <p class="mb-1 pb-2">■下記の商品につきまして、ご希望配送時間の指定ができます。</p>
                     
                     @foreach($dgGroup as $key => $val)
-                        <div class="mb-2 pb-1">
+                        <div class="mb-4 pb-1">
                         
                             @if(session()->has('item.data') && count(session('item.data')) > 0)
                                 
@@ -805,7 +805,7 @@ use App\DeliveryGroup;
                 
             <div class="pt-2">
             	<h3 class="card-header mt-4">お支払い方法</h3>
-   					<a href="{{ url('about-pay') }}" class="d-inline-block mt-2 ml-1 text-small" target="_brank">お支払についてのご注意はこちら <i class="fal fa-angle-double-right"></i></a>
+                <a href="{{ url('about-pay') }}" class="d-inline-block mt-2 ml-1 text-small" target="_brank">お支払についてのご注意はこちら <i class="fal fa-angle-double-right"></i></a>
                     
                     @if ($errors->has('pay_method'))
                         <div class="help-block text-danger mt-2 mb-0">
@@ -814,7 +814,7 @@ use App\DeliveryGroup;
                         </div>
                     @endif
                     
-                    <fieldset class="form-group mt-1 mb-2 pb-4 pt-3 pb-2{{ $errors->has('pay_method') ? ' border border-danger' : '' }}">
+                    <fieldset class="form-group mt-1 mb-2 pt-3 pb-4 pl-1{{ $errors->has('pay_method') ? ' border border-danger' : '' }}">
 
                         @foreach($payMethod as $method)
                             <?php 
@@ -1165,7 +1165,7 @@ use App\DeliveryGroup;
         --}}
         
         <div>
-        	<button class="btn btn-block btn-pink col-md-4 mb-4 mx-auto py-2" type="submit" name="recognize" value="1">確認する</button>
+        	<button class="btn btn-block btn-kon col-md-4 mb-4 mx-auto py-3" type="submit" name="recognize" value="1">確認する</button>
         </div>
        
     </form>

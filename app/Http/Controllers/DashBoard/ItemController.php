@@ -231,14 +231,17 @@ class ItemController extends Controller
             'stock_reset_count' => 'nullable|numeric',
             'point_back' => 'nullable|numeric',
             
-            'pot_parent_id' =>'required_with:is_potset|nullable|numeric',
-            'pot_count' =>'required_with:is_potset|nullable|numeric',
+            'pot_parent_id' => 'required_with:is_potset|nullable|numeric|integer',
+            'pot_count' =>'required_with:is_potset|nullable|numeric|integer',
             
             //'main_img' => 'filenaming',
         ];
         
         if($request->has('is_potset')) {
         	unset($rules['cate_id']);
+            
+            $rules['pot_parent_id'] = $rules['pot_parent_id'] . '|min:1';
+            $rules['pot_count'] = $rules['pot_count'] . '|min:1';
         }
         
         $messages = [

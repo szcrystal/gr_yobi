@@ -505,7 +505,16 @@ body {
 	display: block;
     margin-top: 0.3em;
 }
+
+.px-10 {
+	padding-left: 7.5em;
+    padding-right: 7.5em;
+}
+.btn-block {
+	font-size: 1.05em;
+}
 .btn-custom,
+.btn-kon,
 .btn-pink,
 .btn-white {
     color: #fff;
@@ -515,9 +524,12 @@ body {
 .btn-custom {
 	background: #3a3b3c;
 }
-.btn-pink {
-/*	background: #fa828f; =>pink*/
+.btn-kon {
 	background: #18206F; /* =>blue */
+}
+.btn-pink {
+	background: #fa828f; /* =>pink */
+	/*background: #18206F;*/ /* =>blue */
 }
 .btn-white {
     background: #fff;

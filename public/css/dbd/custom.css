@@ -137,6 +137,9 @@ label em {
 }
 
 
+.pot-require {
+	display: none;
+}
 
 .no-img {
     display: block;

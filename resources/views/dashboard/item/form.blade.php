@@ -29,7 +29,9 @@
             	@if(!$item->is_potset)
                     <a href="{{ url('/dashboard/upper/'. $id. '?type=item') }}" class="btn btn-success border-round text-white d-block float-left"><i class="fa fa-angle-double-left" aria-hidden="true"></i> 上部コンテンツを編集 </a>
                 @else
-                	<small>ポットセット商品：上部コンテンツ不可</small>
+                	<small>ポットセット商品：上部コンテンツ不可</small><br>
+                    <a href="{{ url('dashboard/items/'. $item->pot_parent_id) }}" class="btn btn-purple border-round text-white d-block float-left mt-3" target="_brank"><i class="fa fa-angle-double-left" aria-hidden="true"></i> 親ポット編集ページ</a>
+                    
                 @endif
                 
                 <a href="{{ url('/item/'. $linkId) }}" class="btn btn-warning border-round text-white d-block float-right" target="_brank">この商品のページを見る <i class="fa fa-angle-double-right" aria-hidden="true"></i></a>
@@ -467,7 +469,7 @@
             </fieldset>
             
             <fieldset class="mb-2 form-group">
-                <label for="pot_parent_id" class="control-label">ポットセット親ID<small>（ポット親の時は0を入力）</small></label>
+                <label for="pot_parent_id" class="control-label">ポットセット親 ID <span class="text-danger text-big pot-require">*</span><small>（親ポットの時は0を入力、子ポットの時は0の入力不可、ポット以外の時は空欄を入力して下さい。）</small></label>
                 <input class="form-control col-md-6{{ $errors->has('pot_parent_id') ? ' is-invalid' : '' }}" name="pot_parent_id" value="{{ Ctm::isOld() ? old('pot_parent_id') : (isset($item) ? $item->pot_parent_id : '') }}">
                 
 
@@ -480,7 +482,7 @@
             </fieldset>
             
             <fieldset class="mb-5 form-group">
-                <label for="pot_count" class="control-label">ポット数</label>
+                <label for="pot_count" class="control-label">ポット数 <span class="text-danger text-big pot-require">*</span></label>
                 <input class="form-control col-md-6{{ $errors->has('pot_count') ? ' is-invalid' : '' }}" name="pot_count" value="{{ Ctm::isOld() ? old('pot_count') : (isset($item) ? $item->pot_count : '') }}">
                 
 
