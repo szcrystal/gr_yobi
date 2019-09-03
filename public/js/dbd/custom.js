@@ -617,7 +617,7 @@ var exe = (function() {
             
             
             
-            //is_potset ONの時
+            //is_potset ONの時（チェックボックス）
             var $isPotSet = $('input[name="is_potset"]');
             var $cateRequire = $('.cate-require');
             var $potRequire = $('.pot-require');
@@ -639,7 +639,28 @@ var exe = (function() {
                 
                 //console.log($(this).val());
            });
+           
+           
+           //メールをする全てチェック（チェックボックス）
+           var $allCheck = $('.all_mail_check');
+           var $doMail = $('.do-mail');
+           
+           if($isPotSet.is(':checked')) {
+            	$cateRequire.hide();
+                $potRequire.show();
+            }
             
+            $allCheck.on('change', function() {
+            	if($(this).is(':checked')) {
+                	$doMail.prop('checked', true);
+                }
+                else {
+                	$doMail.prop('checked', false);
+                }
+                
+                //console.log($(this).val());
+           });
+        	
         },
         
         openNav: function() {

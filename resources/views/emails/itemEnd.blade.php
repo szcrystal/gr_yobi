@@ -89,6 +89,14 @@
 <div style="margin: 0 0 1.0em 1.0em;">
 商品金額合計：￥{{ number_format($saleRel->all_price) }} <br>
 送料：￥{{ number_format($saleRel->deli_fee) }}<br>
+@if($saleRel->seinou_huzai)
+不在置き割引：￥{{ number_format($saleRel->seinou_huzai) }}<br>
+@endif
+
+@if($saleRel->seinou_sunday)
+日曜配達割増：￥{{ number_format($saleRel->seinou_sunday) }}<br>
+@endif
+
 @if($saleRel->pay_method == 2)
 コンビニ決済手数料：￥{{ number_format($saleRel->cod_fee) }}<br>
 @elseif($saleRel->pay_method == 4)
@@ -97,11 +105,13 @@
 代引手数料：￥{{ number_format($saleRel->cod_fee) }}<br>
 @endif
 @if($saleRel->is_user)
-ポイント利用：{{ $saleRel->use_point }}ポイント<br>
+ポイント利用：{{ $saleRel->use_point }} ポイント<br>
 @endif
+
 <?php
-$allTotal = $saleRel->all_price + $saleRel->deli_fee + $saleRel->cod_fee - $saleRel->use_point;
+$allTotal = $saleRel->all_price + $saleRel->deli_fee + $saleRel->cod_fee - $saleRel->use_point + $saleRel->seinou_sunday - $saleRel->seinou_huzai;
 ?>
+
 <b style="display:block; font-size:1.1em; margin-top:0.5em;">ご注文金額合計：￥{{ number_format($allTotal) }} （税込）</b>
 </div>
 【お支払方法】：{{ $pmModel->find($saleRel->pay_method)->name }} 

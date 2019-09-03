@@ -511,8 +511,10 @@ class CartController extends Controller
             //'take_charge_fee' => $takeChargeFee,
             'use_point' => $usePoint,
             'add_point' => $addPoint,
+            'seinou_huzai' => $allData['s_huzai_price'],
+            'seinou_sunday' => $allData['s_sunday_price'],
             'all_price' => $allPrice, //商品withTax x 個数 の合計　送料等は含まれない
-            'total_price' => $allPrice + $deliFee + $codFee - $usePoint, //送料 手数料　含む全ての合計 SessionにTotalPrice（送料、手数料、マイナスポイント）は入れていない
+            'total_price' => $allPrice + $deliFee + $codFee - $usePoint - $allData['s_huzai_price'] + $allData['s_sunday_price'], //送料 手数料　含む全ての合計 SessionにTotalPrice（送料、手数料、マイナスポイント）は入れていない
             'destination' => $destination,
             'huzai_comment' => isset($allData['huzai_comment']) ? $allData['huzai_comment'] : null,
             'user_comment' => $allData['user_comment'],
@@ -548,8 +550,9 @@ class CartController extends Controller
 			$i = $this->item->find($oneSesData['item_id']);
             
             $singleSellCount = $oneSesData['item_count']; //DB追加以降でも使用する変数
-            $itemTotalPrice = $oneSesData['item_total_price'] + $oneSesData['up_price'] - $oneSesData['down_price'];
-
+            $itemTotalPrice = $oneSesData['item_total_price'];
+            
+            
 			//$oneItemData[] = $i;
             
             $sale = $this->sale->create(
@@ -570,6 +573,9 @@ class CartController extends Controller
                     'cod_fee' => $codFee,
                     'use_point' => 0,
                     'add_point' => $oneSesData['single_point'],
+            		'seinou_huzai' => $oneSesData['seinou_huzai_down_price'],
+                    'seinou_sunday' => $oneSesData['seinou_sunday_up_price'],
+                    
                     'single_price' => $this->getItemPrice($i),
                     'total_price' => $itemTotalPrice,
                     
@@ -1080,6 +1086,7 @@ class CartController extends Controller
      		$pt = $this->user->find(Auth::id())->point;
      	}
 
+		//regist or Not 既存ユーザーはregist:0
 		$regist = $request->has('regist') && $request->input('regist') ? 1 : 0;
 
         $rules = [
@@ -1240,7 +1247,6 @@ class CartController extends Controller
         //商品テーブル用のオブジェクト取得 -------------------------------
         $itemData = array();
         $addPoint = 0;
-        $seinouSundayDeliFee = 0;
         $allPrice = 0;
 
 
@@ -1262,13 +1268,17 @@ class CartController extends Controller
         $prefId = $this->prefecture->where('name', $prefName)->first()->id;
         
         
-        //Important ! ********************
+        //Important ! ***************************************
         //既存Session新規データを追加　各データの修正をここでする。新規データをSessionに追加する
+        
+        $seinouSundayAllPrice = 0;
+        $seinouHuzaiAllPrice = 0;
+        
         foreach($itemSes as $key => $val) {
         	
-            //加減算用の調整する金額
-            $upPrice = 0; 
-            $downPrice = 0; 
+            //西濃-加減算用の調整する金額
+            $seinouSundayUpPrice = 0; 
+            $seinouHuzaiDownPrice = 0; 
             
         	$obj = $this->item->find($val['item_id']);
             
@@ -1313,8 +1323,10 @@ class CartController extends Controller
                     **************************** */
                     
                     /* 日曜1000円を商品金額として捉える場合 ***** */
-                    $upPrice = $this->seinouObj->sundayFee * $obj->count;
-                    $itemTotalPrice += $upPrice; 
+                    $seinouSundayUpPrice = $this->seinouObj->sundayFee * $obj->count;
+                    
+                    $seinouSundayAllPrice += $seinouSundayUpPrice;
+                    //$itemTotalPrice += $seinouSundayUpPrice; 
                     
                 }
                 
@@ -1322,8 +1334,10 @@ class CartController extends Controller
                 if(isset($data['is_huzaioki'])) {
                 	if($data['is_huzaioki']) {
                     	//item_total_price(商品金額x個数)をここでsessionに上書きするとズレが出るので、down_priceとして新データをsessionに入れる
-                    	$downPrice = $this->seinouObj->huzaiokiFee * $obj->count;
-                        $itemTotalPrice -= $downPrice;
+                    	$seinouHuzaiDownPrice = $this->seinouObj->huzaiokiFee * $obj->count;
+                        
+                        $seinouHuzaiAllPrice += $seinouHuzaiDownPrice;
+                        //$itemTotalPrice -= $seinouHuzaiDownPrice;
                     }
                     
                     $obj->is_huzaioki = $data['is_huzaioki'];
@@ -1331,6 +1345,8 @@ class CartController extends Controller
             }
             
             //トータルプライス Confirm表示用 sessionには入れ直さない 1246行目でSessionから取得する（これ以外にない）ので、Sessionに入れ直すとずれていく
+            $obj->seinou_sunday_price = $seinouSundayUpPrice;
+            $obj->seinou_huzai_price = $seinouHuzaiDownPrice;
             $obj->item_total_price = $itemTotalPrice;
 
 			//allPrice加算
@@ -1341,8 +1357,8 @@ class CartController extends Controller
             $itemSes[$key]['single_deli_fee'] = $obj->single_deli_fee;
             $itemSes[$key]['plan_time'] = isset($obj->plan_time) ? $obj->plan_time : null;
             
-            $itemSes[$key]['up_price'] = $upPrice;
-            $itemSes[$key]['down_price'] = $downPrice;
+            $itemSes[$key]['seinou_sunday_up_price'] = $seinouSundayUpPrice;
+            $itemSes[$key]['seinou_huzai_down_price'] = $seinouHuzaiDownPrice;
             
             $itemSes[$key]['is_huzaioki'] = isset($obj->is_huzaioki) ? $obj->is_huzaioki : null;
             
@@ -1355,7 +1371,12 @@ class CartController extends Controller
 //        exit;
         
         //Session入れ 新規データを追加したitemDataとAllPrice allPriceはここで計算された金額がsessionに入る*****************************
-        session(['item.data'=>$itemSes, 'all.all_price'=>$allPrice]);
+        session([
+        	'item.data'=>$itemSes,
+            'all.all_price'=>$allPrice,
+            'all.data.s_sunday_price' => $seinouSundayAllPrice,
+            'all.data.s_huzai_price' => $seinouHuzaiAllPrice,
+        ]);
         // **********************************
         
 //        print_r(session('item.data'));
@@ -1403,9 +1424,9 @@ class CartController extends Controller
         $deliFee = $df->getDelifee();
         
         // Seinou Correct **************************
-        if($seinouSundayDeliFee) { //西濃の日曜配達なら
-        	$deliFee = $deliFee + $seinouSundayDeliFee;
-        }
+//        if($seinouSundayDeliFee) { //西濃の日曜配達なら
+//        	$deliFee = $deliFee + $seinouSundayDeliFee;
+//        }
         
         $totalFee = $totalFee + $deliFee;
         //送料END -----------------
@@ -1613,7 +1634,7 @@ class CartController extends Controller
         $metaTitle = 'ご注文内容の確認' . '｜植木買うならグリーンロケット';
         
         
-        return view('cart.confirm', ['data'=>$data, 'userArr'=>$userArr, 'itemData'=>$itemData, 'regist'=>$regist, 'allPrice'=>$allPrice, 'settles'=>$settles, 'payMethod'=>$payMethod, 'pmChild'=>$pmChild, 'deliFee'=>$deliFee, 'codFee'=>$codFee, 'usePoint'=>$usePoint, 'addPoint'=>$addPoint, 'actionUrl'=>$actionUrl, 'cardInfo'=>$cardInfo, 'metaTitle'=>$metaTitle])->withErrors($errors);
+        return view('cart.confirm', ['data'=>$data, 'userArr'=>$userArr, 'itemData'=>$itemData, 'regist'=>$regist, 'allPrice'=>$allPrice, 'settles'=>$settles, 'payMethod'=>$payMethod, 'pmChild'=>$pmChild, 'deliFee'=>$deliFee, 'codFee'=>$codFee, 'usePoint'=>$usePoint, 'addPoint'=>$addPoint, 'seinouSundayAllPrice'=>$seinouSundayAllPrice, 'seinouHuzaiAllPrice'=>$seinouHuzaiAllPrice,  'actionUrl'=>$actionUrl, 'cardInfo'=>$cardInfo, 'metaTitle'=>$metaTitle])->withErrors($errors);
     }
     
     

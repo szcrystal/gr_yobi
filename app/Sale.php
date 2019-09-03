@@ -29,6 +29,8 @@ class Sale extends Model
         'cod_fee',
         'use_point',
         'add_point',
+        'seinou_sunday',
+        'seinou_huzai',
         
         'single_price',
         'total_price',

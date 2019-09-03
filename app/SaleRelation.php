@@ -22,6 +22,9 @@ class SaleRelation extends Model
         //'take_charge_fee',
         'use_point',
         'add_point',
+        'seinou_sunday',
+        'seinou_huzai',
+        
         'all_price',
         'adjust_price',
 		'total_price', 

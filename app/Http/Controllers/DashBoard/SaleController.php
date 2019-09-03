@@ -680,9 +680,11 @@ class SaleController extends Controller
         	$data['pay_done'] = 0;
         }
         
-        //$saleRel->total_price = $saleRel->total_price - $saleRel->deli_fee + $data['deli_fee'];
+        $data['seinou_huzai'] = isset($data['seinou_huzai']) ? $data['seinou_huzai'] : 0;
+        $data['seinou_sunday'] = isset($data['seinou_sunday']) ? $data['seinou_sunday'] : 0;
         
-        $saleRel['total_price'] = $saleRel->all_price + $data['deli_fee'] + $data['cod_fee'] - $data['use_point'] + $data['adjust_price'];
+        //$saleRel->total_price = $saleRel->total_price - $saleRel->deli_fee + $data['deli_fee'];
+        $saleRel['total_price'] = $saleRel->all_price + $data['deli_fee'] + $data['cod_fee'] - $data['use_point'] + $data['adjust_price'] - $data['seinou_huzai'] + $data['seinou_sunday'];
                 
         /*
         $saleRel->deli_fee = $data['deli_fee'];

@@ -89,6 +89,20 @@
                 <td>¥{{ number_format($deliFee) }}</td>
             </tr>
             
+            @if($seinouHuzaiAllPrice)
+            	<tr>
+                	<th>不在置き割引</th>
+                    <td>¥{{ number_format($seinouHuzaiAllPrice) }}</td>
+                </tr>
+            @endif
+            
+            @if($seinouSundayAllPrice)
+            	<tr>
+                	<th>日曜配達割増</th>
+                    <td>¥{{ number_format($seinouSundayAllPrice) }}</td>
+                </tr>
+            @endif
+            
             @if($data['pay_method'] == 2)
                 <tr>
                     <th>コンビニ決済手数料</th>
@@ -118,7 +132,7 @@
             <tr>
                 <th>注文金額合計（税込）</th>
                  <td class="text-danger text-big{{ count($errors) > 0 ? ' alert-danger' : '' }}">
-                      ¥{{ number_format($allPrice + $deliFee + $codFee - $usePoint) }}
+                      ¥{{ number_format($allPrice + $deliFee + $codFee - $usePoint - $seinouHuzaiAllPrice + $seinouSundayAllPrice) }}
                 </td>
             </tr>
             </tbody>
@@ -250,19 +264,25 @@
                             </ul>
                             
                             <b class="d-block">[ 不在置きを{{ $data['is_huzaioki'] ? '了承する' : '了承しない' }} ]</b>
-
-                            @if(Ctm::isSeinouSunday($data['plan_date']))
-                                <small class="d-inline-block text-enji mt-1">＊上記商品は、ご希望日程が日曜日の場合に1商品につき{{ number_format(Ctm::getSeinouObj()->sundayFee) }}円増しとなります。</small>
-                            @endif
                         </div>
                     </td>  
                 </tr>
                 
                 <tr>
-                    <td class="border-top-0">
-                        <p class="text-small p-0 m-0">
-                            {!! nl2br($data['huzai_comment']) !!}
+                    <td class="border-top-0 mt-0 pt-0">
+                        <p class="text-small p-0 m-2">
+                        	不在置きの場所：<br>
+                            <span class="text-big">{!! nl2br($data['huzai_comment']) !!}</span>
                         </p>
+                        
+                        @if(Ctm::isSeinouSunday($data['plan_date']))
+                            <small class="d-inline-block text-enji mt-1 pt-1">＊上記1商品につきまして
+                                <ul class="pl-4 mb-0 pb-0">
+                                    <li>不在置きを了承するの場合は、{{ number_format(Ctm::getSeinouObj()->huzaiokiFee) }}円引きとなります。
+                                    <li>配送ご希望日程が日曜日の場合は、{{ number_format(Ctm::getSeinouObj()->sundayFee) }}円増しとなります。
+                                </ul>
+                            </small>
+                        @endif
                     </td>
                 </tr>
 			@endif
@@ -272,7 +292,7 @@
                 	<th class="font-weight-normal">ご希望時間</th>
                     <td>
                         @foreach($data['planTimeItemTitle'] as $k => $planTimeTitleArr) 
-                            <div class="mb-4"> 
+                            <div class="mb-3"> 
                                 <ul class="mb-1 list-unstyled text-small">
                                     @foreach($planTimeTitleArr as $planTimeTitle)
                                         <li>

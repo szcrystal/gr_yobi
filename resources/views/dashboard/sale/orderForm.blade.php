@@ -184,6 +184,14 @@ use App\PayMethodChild;
                                 </td>
                             </tr>
                             
+                            @if(isset($saleRel->huzai_comment) && $saleRel->huzai_comment != '')
+                            	<tr>
+                                <th>不在置きの場所</th>
+                                <td>
+                            		{!! nl2br($saleRel->huzai_comment) !!}
+                                </td>
+                            @endif
+                            
                             <tr>
                                 <th>コメント</th>
                                 <td>
@@ -224,7 +232,39 @@ use App\PayMethodChild;
                                     </td>
                                 </tr>
                             @endif
-
+                            
+                            @if(count($sales) > 1)
+                                <tr>
+                                    <th class="my-0 py-0"></th>
+                                    <td class="my-0 pt-3 pb-1">
+                                        <fieldset class="form-group checkbox my-0 py-0">
+                                            <label class="my-0 py-0{{ $errors->has('all_mail_check') ? 'is-invalid' : '' }}">
+                                                <?php
+                                                    $checked = '';
+                                                    if(Ctm::isOld()) {
+                                                        if(old('all_mail_check'))
+                                                            $checked = ' checked';
+                                                    }
+    //                                                else {
+    //                                                    if(isset($item) && ! $item->open_status) {
+    //                                                        $checked = ' checked';
+    //                                                    }
+    //                                                }
+                                                ?>
+                                                
+                                                <input type="checkbox" class="all_mail_check" name="all_mail_check" value="1"{{ $checked }}> 全ての「メールをする」をON
+                                            </label>
+                                            
+                                            @if ($errors->has('all_mail_check'))
+                                                <br><span class="help-block text-danger text-small">
+                                                    {{ $errors->first('all_mail_check') }}
+                                                </span>
+                                            @endif
+                                            
+                                        </fieldset>
+                                    </td>
+                                </tr>
+                            @endif
                   
                   			<?php 
                                 $all = 0;
@@ -235,10 +275,10 @@ use App\PayMethodChild;
                             <tr>
                                 <th>購入商品.{{ $num }}</th>
                                 <td class="clearfix">
-                                	<a href="{{ url('dashboard/sales/'.$sale->id) }}" class="float-right btn border border-secondary text-dark bg-white"><i class="fa fa-arrow-right"></i> 売上個別情報</a>
+                                	<a href="{{ url('dashboard/sales/'.$sale->id) }}" class="float-right btn border border-secondary text-dark bg-white mb-3"><i class="fa fa-arrow-right"></i> 売上個別情報</a>
                                 	
-                                    <fieldset class="form-group checkbox mt-3">
-                                        <label class="{{ $errors->has('sale_ids') ? 'is-invalid' : '' }}">
+                                    <fieldset class="form-group checkbox mt-1">
+                                        <label class="m-0 p-0{{ $errors->has('sale_ids') ? 'is-invalid' : '' }}">
                                             <?php
                                                 $checked = '';
                                                 if(Ctm::isOld()) {
@@ -251,7 +291,8 @@ use App\PayMethodChild;
 //                                                    }
 //                                                }
                                             ?>
-                                            <input type="checkbox" name="sale_ids[]" value="{{ $sale->id }}"{{ $checked }}> メールをする
+                                            
+                                            <input type="checkbox" class="do-mail" name="sale_ids[]" value="{{ $sale->id }}"{{ $checked }}> メールをする
                                         </label>
                                         
                                         @if ($errors->has('sale_ids'))
@@ -338,7 +379,7 @@ use App\PayMethodChild;
                                                     @endif
                                                     
                                                     @if($item->dg_id == Ctm::getSeinouObj()->id && Ctm::isSeinouSunday($sale->plan_date))
-                                                    	<span class="text-orange ml-3">+{{ number_format(Ctm::getSeinouObj()->sundayFee) }}円</span>
+                                                    	<span class="text-orange ml-3">+{{ number_format(Ctm::getSeinouObj()->sundayFee * $sale->item_count) }}円</span>
                                                     @endif
                                                     
                                                 </td>
@@ -350,7 +391,7 @@ use App\PayMethodChild;
                                                 	<td>
                                                     	@if($sale->is_huzaioki)
                                                         	<span class="text-success">了承する</span>
-                                                            <span class="text-orange ml-3">-{{ number_format(Ctm::getSeinouObj()->huzaiokiFee) }}円</span>
+                                                            <span class="text-orange ml-3">-{{ number_format(Ctm::getSeinouObj()->huzaiokiFee * $sale->item_count) }}円</span>
                                                         @else
                                                         	<span class="text-danger">了承しない</span>
                                                         @endif
@@ -362,6 +403,9 @@ use App\PayMethodChild;
                                                     	{!! nl2br($saleRel->huzai_comment) !!}
                                                     </td>
                                                 </tr>
+                                                
+                                                <?php $isSeinou = 1; ?>
+                                                
                                             @endif
                                             
                                             <tr>
@@ -570,7 +614,7 @@ use App\PayMethodChild;
                             <tr>
                                 <th>商品総合計（税込）[A]</th>
                                 <?php
-                                	$taxPer = Setting::get()->first()->tax_per;
+                                	$taxPer = Setting::first()->tax_per;
                                     $taxPer = $taxPer/100 + 1; //$taxPer ->1.08
                                     
                                 	$ap = $saleRel->all_price;
@@ -596,8 +640,40 @@ use App\PayMethodChild;
                                 </td>
                             </tr>
                             
+                            @if(isset($isSeinou))
+                                <tr>
+                                    <th>西濃運輸 [C]</th>
+                                    <td>
+                                        <fieldset class="mt-1 mb-3 form-group">
+                                            <label>不在&nbsp;(-)&nbsp;</label>
+                                            <input class="form-control col-md-5 d-inline{{ $errors->has('seinou_huzai') ? ' is-invalid' : '' }}" name="seinou_huzai" value="{{ Ctm::isOld() ? old('seinou_huzai') : (isset($saleRel->seinou_huzai) ? $saleRel->seinou_huzai : '') }}">
+                                            
+                                            @if ($errors->has('seinou_huzai'))
+                                                <div class="text-danger">
+                                                    <span class="fa fa-exclamation form-control-feedback"></span>
+                                                    <span>{{ $errors->first('seinou_huzai') }}</span>
+                                                </div>
+                                            @endif
+                                        </fieldset>
+                                        
+                                        <fieldset class="mt-1 mb-3 form-group">
+                                            <label>日曜&nbsp;(+)&nbsp;</label>
+                                            <input class="form-control col-md-5 d-inline{{ $errors->has('seinou_sunday') ? ' is-invalid' : '' }}" name="seinou_sunday" value="{{ Ctm::isOld() ? old('seinou_sunday') : (isset($saleRel->seinou_sunday) ? $saleRel->seinou_sunday : '') }}">
+                                            
+                                            @if ($errors->has('seinou_sunday'))
+                                                <div class="text-danger">
+                                                    <span class="fa fa-exclamation form-control-feedback"></span>
+                                                    <span>{{ $errors->first('seinou_sunday') }}</span>
+                                                </div>
+                                            @endif
+                                        </fieldset>
+                                        
+                                    </td>
+                                </tr>
+                            @endif
+                            
                             <tr>
-                                <th>手数料 [C]</th>
+                                <th>手数料 [{{ isset($isSeinou) ? 'D' : 'C' }}]</th>
                                 <td>
                                     <fieldset class="mt-1 mb-3 form-group">
                                         <input class="form-control col-md-6 d-inline{{ $errors->has('cod_fee') ? ' is-invalid' : '' }}" name="cod_fee" value="{{ Ctm::isOld() ? old('cod_fee') : (isset($saleRel->cod_fee) ? $saleRel->cod_fee : '') }}">
@@ -619,7 +695,7 @@ use App\PayMethodChild;
                             </tr>
                             
                             <tr>
-                                <th>ポイント利用 [D]</th>
+                                <th>ポイント利用 [{{ isset($isSeinou) ? 'E' : 'D' }}]</th>
                                 <td>
 	                                <fieldset class="mt-1 mb-3 form-group">
                                         <input class="form-control col-md-6 d-inline{{ $errors->has('use_point') ? ' is-invalid' : '' }}" name="use_point" value="{{ Ctm::isOld() ? old('use_point') : (isset($saleRel->use_point) ? $saleRel->use_point : '') }}">
@@ -635,7 +711,7 @@ use App\PayMethodChild;
                             </tr>
                             
                             <tr>
-                                <th>調整金額 [E]</th>
+                                <th>調整金額 [{{ isset($isSeinou) ? 'F' : 'E' }}]</th>
                                 <td>
                                 	<fieldset class="mt-1 mb-3 form-group">
                                         <input class="form-control col-md-6 d-inline{{ $errors->has('adjust_price') ? ' is-invalid' : '' }}" name="adjust_price" value="{{ Ctm::isOld() ? old('adjust_price') : (isset($saleRel->adjust_price) ? $saleRel->adjust_price : '') }}">
@@ -658,7 +734,7 @@ use App\PayMethodChild;
                             </tr>
                             
                             <tr>
-                                <th>購入総合計（税込）<br>[A+B+C-D+E]</th>
+                                <th>購入総合計（税込）<br>[{{ isset($isSeinou) ? 'A+B+C+D-E+F' : 'A+B+C-D+E' }}]</th>
                                 <?php 
                                 	if(isset($saleRel->total_price)) {
                                     	$total = $saleRel->total_price;
@@ -871,6 +947,8 @@ use App\PayMethodChild;
                         <div class="form-group clearfix my-3">
                             <button type="submit" class="btn btn-blue col-md-12 text-white py-2" name="with_preview" value="{{ $templs['sekkai_iou'] }}"><i class="fa fa-envelope"></i> 石灰硫黄合剤</button>
                         </div>
+                        
+                        
                     </div>
                 
                 </div>

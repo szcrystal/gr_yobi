@@ -319,12 +319,12 @@ use App\TopSetting;
                             	$disabled = $isPotSet ? ' disabled' : '';
                             ?>
                             
-                            <button type="submit" class="btn btn-custom btn-pink text-center col-md-12"{{ $disabled }}><i class="fal fa-cart-arrow-down"></i> カートに入れる</button>
+                            <button type="submit" class="btn btn-custom btn-kon text-center col-md-12"{{ $disabled }}><i class="fal fa-cart-arrow-down"></i> カートに入れる</button>
                             
                             <p class=""><b>{{ $item->deli_plan_text }}</b></p>
                             
                             @if(Ctm::isAgent('sp'))
-                                <button id="spCartBtn" type="submit" class="btn btn-custom btn-pink text-center col-md-6"{{ $disabled }}><i class="fal fa-cart-arrow-down"></i> この商品をカートに入れる</button>
+                                <button id="spCartBtn" type="submit" class="btn btn-custom btn-kon text-center col-md-6"{{ $disabled }}><i class="fal fa-cart-arrow-down"></i> この商品をカートに入れる</button>
                             @endif
                         @endif
                    </form>
