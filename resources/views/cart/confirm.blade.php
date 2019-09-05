@@ -384,16 +384,24 @@
         </tr>
         --}}
         
-        <tr>
-            <th>メールマガジンの登録</th>
-             <td>
-             	@if(isset($userArr['magazine']))
-                	する
-                @else
-                	しない
-              	@endif   
-            </td>
-        </tr>
+        @if($regist)
+        	<tr>
+                <th>パスワード</th>
+                 <td>
+                    **********<span class="text-small">（表示されません）</span> 
+                </td>
+            </tr>
+            <tr>
+                <th>メールマガジンの登録</th>
+                 <td>
+                    @if(isset($userArr['magazine']))
+                        する
+                    @else
+                        しない
+                    @endif   
+                </td>
+            </tr>
+        @endif
         
         </tbody>
 

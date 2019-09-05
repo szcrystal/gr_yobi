@@ -766,6 +766,24 @@ var exe = (function() {
             
             
             //shop 会員登録 Y or N
+            var $checkRegistY = $('#check-regist-y');
+            var $registTarget = $('.regist-frame');
+            
+            //load時
+            if($checkRegistY.length) {
+                if($checkRegistY.is(':checked')) 
+                    $registTarget.show(0);
+                else
+                    $registTarget.hide(0);
+            }
+            
+            $checkRegistY.on('change', function(){
+            	$registTarget.slideToggle(100);
+            });
+            
+            
+            //会員登録Y/Nをradioにする時のコード
+            /*
             var $radioRegist = $('.registRadio');
             var $registTarget = $('.regist-frame');
              
@@ -794,9 +812,10 @@ var exe = (function() {
                 	$registTarget.stop().slideUp(100);
                 
             });
+            */
             
             
-            //shop 不在時置き場所コメント
+            //shop 不在時置き場所コメント checkbox
             var $checkHuzai = $('#check-huzaioki-0');
             var $huzaiComWrap = $('.huzai-comment-wrap');
             
@@ -877,6 +896,45 @@ var exe = (function() {
 
         },
         
+        //スマホ時 Single カートに入れるボタンのShow/Hide
+        cartBtnShowHide: function() {
+        	var $mainBtn = $('#mainCartBtn');
+            var $spBtn = $('#spCartBtn');
+            
+            if($mainBtn.length) {
+                var btnTop = $mainBtn.offset().top; //or position().top
+                var winH = $(window).height();
+                
+                var adH = btnTop - winH;
+                
+                function showHide(speed) {
+                    if($(document).scrollTop() + (winH/4) < btnTop) {
+                        $spBtn.stop().fadeOut(speed);
+                    }
+                    else {
+                        $spBtn.stop().fadeIn(speed);
+                    }
+                    
+                    if($(document).scrollTop() < adH) {
+                        $spBtn.stop().fadeIn(speed);
+                    }
+                }
+                
+                
+                //load時 ==========
+                showHide(10);
+                
+                //scroll時 ============
+                $(document).scroll(function(){ 
+                    showHide(100);
+                    
+    //            	console.log($(this).scrollTop());
+    //                console.log(btnTop);
+    //                console.log(adH);            
+                });
+            }
+
+        },
         
         
         //TopSliderの枠調整
@@ -904,6 +962,7 @@ var exe = (function() {
             
             //set(); //docu.ready時は不要 下記setPositionでsetされる
             
+            //現在未使用のはず　TOP:サムネイル表示=>スライドさせる でのSlick
             $('.slider-nav').on('setPosition', function(){
             //$(window).on('resize', function() {
                 //if($(window).width() > 1200) {
@@ -912,6 +971,7 @@ var exe = (function() {
             });
             
             
+            //現在使用 SingleページのSlick。 slider-itemはサムネイルのクラス
             $('.slider-single').on('beforeChange', function(e, slick, currentSlide, nextSlide){
 
                 $('.slider-item').eq(currentSlide).removeClass('active');                                
@@ -1062,6 +1122,8 @@ $(function(e){ //ready
     }
     else {
     	exe.toggleSp();
+        exe.accordionMoveUp();
+        exe.cartBtnShowHide();
     }
     
     exe.searchSlide();
@@ -1087,11 +1149,10 @@ $(function(e){ //ready
     
     exe.setCollapseShowFaq();
     
-    exe.accordionMoveUp();
     
-    //slickSlider / LightBox =========
+    // SlickSlider / LightBox =========
     exe.setSliderFrame();
-    //slickSlider / LightBox END ======
+    // SlickSlider / LightBox END ======
     
     exe.getCardToken();
 });

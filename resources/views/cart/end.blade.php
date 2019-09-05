@@ -41,7 +41,7 @@ use App\Item;
             
             @if(isset($regist) && $regist)
             	<p class="m-3 p-0">
-                	登録された会員情報で<br>現在ログイン中です。
+                	登録された会員情報でログイン中です。
                 </p>
             @endif
             

@@ -314,7 +314,7 @@
     
     <div class="">
 		<input type="hidden" name="uri" value="{{ $uri }}">
-		<a href="{{ url($uri)}}" class="btn border border-secondary bg-white my-2"><i class="fal fa-angle-double-left"></i> 元に戻って買い物を続ける</a>
+		<a href="{{ url($uri)}}" class="btn border border-secondary bg-white my-2"><i class="fal fa-angle-double-left"></i> 買い物を続ける</a>
 	</div>
     
 </div>

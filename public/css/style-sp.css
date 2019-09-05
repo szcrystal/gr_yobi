@@ -432,8 +432,8 @@ for SP
     	display: block;
     	position: fixed;
         left: 0;
-        bottom: 36px;
-        height: 36px;
+        bottom: 44px;
+        height: 52px;
         line-height: 0;
         z-index: 998;
         font-size: 1.2em;
@@ -456,16 +456,16 @@ for SP
     
     #colop {
     	margin-top: 4em;
-    	margin-bottom: 36px;
+    	margin-bottom: 44px;
     }
     #colop.single-colop {
-    	margin-bottom: 71px;
+    	margin-bottom: 96px;
     }
     .icon-belt {
     	width: 100%;
     	background: #3a3b3c;
-        height: 36px;
-        line-height: 39px;
+        height: 44px;
+        line-height: 47px;
         padding: 0 0.2em;
         position: fixed;
         left: 0;
@@ -492,7 +492,7 @@ for SP
     	color: #fff;
     }
     .icon-belt li .fal {
-        font-size: 1.5em;
+        font-size: 1.6em;
         margin-right: 0.5em;
         font-weight: 0;
         vertical-align: -2px;
@@ -804,6 +804,9 @@ ORG END ======================== */
     
     
     /* cart-index部分 */
+    .btn-block {
+    	font-size: 1.2em;
+    }
     .table-cart .btn {
     	font-size: 0.85em;
         width: 100%;

@@ -313,13 +313,13 @@ use App\TopSetting;
                     
                     	@if($item->stock > 0 || $isPotSet)
                             <input type="hidden" name="from_item" value="1">
-                            <input type="hidden" name="uri" value="{{ Request::path() }}">     
+                            <input type="hidden" name="uri" value="category/{{ Category::find($item->cate_id)->slug }}">     
                             
                             <?php
                             	$disabled = $isPotSet ? ' disabled' : '';
                             ?>
                             
-                            <button type="submit" class="btn btn-custom btn-kon text-center col-md-12"{{ $disabled }}><i class="fal fa-cart-arrow-down"></i> カートに入れる</button>
+                            <button id="mainCartBtn" type="submit" class="btn btn-custom btn-kon text-center col-md-12"{{ $disabled }}><i class="fal fa-cart-arrow-down"></i> カートに入れる</button>
                             
                             <p class=""><b>{{ $item->deli_plan_text }}</b></p>
                             

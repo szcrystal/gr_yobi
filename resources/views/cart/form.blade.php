@@ -112,23 +112,41 @@ use App\DeliveryGroup;
 <div class="table-responsive table-custom">
     <table class="table table-borderd border p-0 m-0">
     	
-        <tr>
-        	<th>会員登録<em>必須</em></th>
+        <tr class="form-group">
+        	<th>会員登録</th>
         	<td>
-            	<div class="">
-                    <?php 
-                        $registChecked = '';
-                        
-                        if( Ctm::isOld()) {
-                            if(! old('regist')) 
-                                $registChecked = ' checked';
-                        }
-                        elseif(Session::has('all.regist')) {
-                            if(! session('all.regist')) 
-                            	$registChecked = ' checked';
-                        }
-                     ?>
+            	<?php
+                    $registChecked = ' checked';
                     
+                    if( Ctm::isOld()) {
+                        if(! old('regist')) 
+                            $registChecked = '';
+                    }
+                    elseif(Session::has('all.regist')) {
+                        if(! session('all.regist')) 
+                            $registChecked = '';
+                    }
+                ?>
+                    
+                <input type="hidden" name="regist" value="0">
+                
+                <input id="check-regist-y" type="checkbox" name="regist" value="1"{{ $registChecked }}>
+                <label for="check-regist-y" class="checks">会員登録する</label>
+                    
+                <?php 
+//                        $registChecked = '';
+//                        
+//                        if( Ctm::isOld()) {
+//                            if(! old('regist')) 
+//                                $registChecked = ' checked';
+//                        }
+//                        elseif(Session::has('all.regist')) {
+//                            if(! session('all.regist')) 
+//                            	$registChecked = ' checked';
+//                        }
+                ?>
+                    
+                    {{--
                     <span class="deliRadioWrap">
                         <input id="radio-regist-y" type="radio" name="regist" value="1" class="registRadio" checked>
                         <label for="radio-regist-y" class="radios">する</label>
@@ -138,8 +156,7 @@ use App\DeliveryGroup;
                         <input id="radio-regist-n" type="radio" name="regist" value="0" class="registRadio" {{ $registChecked }}>
                         <label for="radio-regist-n" class="radios">しない</label>
                     </span>
-                        
-                </div>
+                    --}}
             </td>
         </tr>
        
@@ -319,8 +336,8 @@ use App\DeliveryGroup;
              </tr>
              
             <tr class="form-group">
-                <th class="pt-4">{{--<small><i class="fas fa-square"></i> 当店からのお知らせを希望しますか？</small>--}}メールマガジンの登録</th>
-                <td class="pt-4">
+                <th class="">{{--<small><i class="fas fa-square"></i> 当店からのお知らせを希望しますか？</small>--}}メールマガジンの登録</th>
+                <td class="">
                     <?php
                         $checked = '';
                         if(Ctm::isOld()) {
