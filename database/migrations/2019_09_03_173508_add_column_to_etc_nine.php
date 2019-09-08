@@ -25,6 +25,9 @@ class AddColumnToEtcNine extends Migration
             $table->integer('seinou_sunday')->after('seinou_huzai')->nullable()->default(0);
            
         });
+        
+        
+        
 
     }
 

@@ -134,15 +134,24 @@
                           <a href="{{ url('dashboard/categories') }}">親カテゴリー一覧</a>
                         </li>
                         <li>
-                          <a href="{{ url('dashboard/categories/create') }}">親カテゴリー新規追加</a>
+                          <a href="{{ url('dashboard/categories/create') }}">親カテゴリー追加</a>
                         </li>
                         
                         <li>
                           <a href="{{ url('dashboard/categories/sub') }}">子カテゴリー一覧</a>
                         </li>
                         <li>
-                          <a href="{{ url('dashboard/categories/sub/create') }}">子カテゴリー新規追加</a>
+                          <a href="{{ url('dashboard/categories/sub/create') }}">子カテゴリー追加</a>
                         </li>
+                        
+                        @if(Ctm::isEnv('local'))
+                        	<li>
+                              <a href="{{ url('dashboard/categories/post') }}">記事カテゴリー一覧</a>
+                            </li>
+                            <li>
+                              <a href="{{ url('dashboard/categories/post/create') }}">記事カテゴリー追加</a>
+                            </li>
+                        @endif
 
                     </ul>
                 </li>
@@ -305,7 +314,28 @@
               </a>
               
             </li>
-        @endif 
+        @endif
+        
+        
+        @if(Ctm::isEnv('local'))
+        <div class="border border-secondary border-top-0 w-100 mx-auto"></div>
+        
+        <li class="nav-item" data-toggle="tooltip" data-placement="right" title="記事ページ">
+          <a class="nav-link nav-link-collapse collapsed" data-toggle="collapse" href="#posts" data-parent="#exampleAccordion">
+            <i class="fa fa-file"></i>
+            <span class="nav-link-text">記事ページ</span>
+          </a>
+          <ul class="sidenav-second-level collapse" id="posts">
+            <li>
+              <a href="{{ url('dashboard/posts') }}">記事ページ一覧</a>
+            </li>
+            <li>
+              <a href="{{ url('dashboard/posts/create') }}">記事新規追加</a>
+            </li>
+
+          </ul>
+        </li>
+        @endif
         
       </ul>
       

@@ -88,6 +88,9 @@ Route::resource('dashboard/fixes', 'DashBoard\FixController');
 //MailMagazine
 Route::resource('dashboard/magazines', 'DashBoard\MailMagazineController');
 
+//Post
+Route::resource('dashboard/posts', 'DashBoard\PostController');
+
 
 //Main =========================================================
 //Fix Page

@@ -85,6 +85,14 @@ h1 {
 }
 
 
+.sidenav-third-level > li {
+    line-height: 0.9em;
+}
+.sidenav-third-level > li a:before {
+	content: ">";
+    margin-right: 0.2em;
+}
+
 /*  */
 .table-responsive {
 	padding: 0.5em 0 0.7em !important;
