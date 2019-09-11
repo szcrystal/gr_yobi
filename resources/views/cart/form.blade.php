@@ -352,7 +352,7 @@ use App\DeliveryGroup;
                     ?>
                     
                     <input id="check-magazine" type="checkbox" name="user[magazine]" value="1"{{ $checked }}>
-                    <label for="check-magazine" class="checks">登録する</label>
+                    <label for="check-magazine" class="checks">メルマガ登録する</label>
                     
                     {{--
                     <input type="checkbox" name="user[magazine]" value="1"{{ $checked }}> 登録する
@@ -682,11 +682,11 @@ use App\DeliveryGroup;
                             }
                         ?>
                        	
-                        <div class="mt-3">
+                        <div class="mt-3 pt-1">
                             <input type="hidden" name="is_huzaioki" value="0">
                             
                             <input id="check-huzaioki-0" type="checkbox" name="is_huzaioki" value="1"{{ $checked }}>
-                            <label for="check-huzaioki-0" class="checks ml-1">不在置きを了承する</label>
+                            <label for="check-huzaioki-0" class="checks ml-1"><b class="text-big">不在置きを了承する</b></label>
                             
                             @if ($errors->has('is_huzaioki'))
                                 <div class="help-block text-danger">
@@ -822,7 +822,7 @@ use App\DeliveryGroup;
                 
             <div class="pt-2">
             	<h3 class="card-header mt-4">お支払い方法</h3>
-                <a href="{{ url('about-pay') }}" class="d-inline-block mt-2 ml-1 text-small" target="_brank">お支払についてのご注意はこちら <i class="fal fa-angle-double-right"></i></a>
+                <a href="{{ url('about-pay?from-cart=1') }}" class="d-inline-block mt-2 ml-1 text-small" target="_brank">お支払についてのご注意はこちら <i class="fal fa-angle-double-right"></i></a>
                     
                     @if ($errors->has('pay_method'))
                         <div class="help-block text-danger mt-2 mb-0">

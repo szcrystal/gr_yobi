@@ -276,7 +276,7 @@
                         </p>
                         
                         @if(Ctm::isSeinouSunday($data['plan_date']))
-                            <small class="d-inline-block text-enji mt-1 pt-1">＊上記1商品につきまして
+                            <small class="d-inline-block text-enji mt-1 pt-1">＊上記１商品につきまして
                                 <ul class="pl-4 mb-0 pb-0">
                                     <li>不在置きを了承するの場合は、{{ number_format(Ctm::getSeinouObj()->huzaiokiFee) }}円引きとなります。
                                     <li>配送ご希望日程が日曜日の場合は、{{ number_format(Ctm::getSeinouObj()->sundayFee) }}円増しとなります。
