@@ -91,7 +91,7 @@ use App\Category;
                                         $checked = ' checked';
                                 }
                                 else {
-                                    if(isset($upper) && ! $upper->open_status) {
+                                    if(isset($postRel) && ! $postRel->open_status) {
                                         $checked = ' checked';
                                     }
                                 }
@@ -110,7 +110,7 @@ use App\Category;
                                         $checked = ' checked';
                                 }
                                 else {
-                                    if(isset($upper) && ! $upper->is_index) {
+                                    if(isset($postRel) && ! $postRel->is_index) {
                                         $checked = ' checked';
                                     }
                                 }
@@ -144,7 +144,7 @@ use App\Category;
                 
                 <hr class="mt-3">
         		
-                <h4 class="mt-5 mb-3 p-2 bg-secondary text-light text-uppercase block-tgl">記事ブロック</h4>
+                <h4 class="mt-5 mb-3 p-2 bg-secondary text-light text-uppercase block-tgl">記事ブロック <i class="fa fa-angle-double-down"></i></h4>
                 
                 <div class="block-all-wrap pt-2">
                     <fieldset class="mb-5 form-group">
@@ -222,12 +222,13 @@ use App\Category;
             
             <hr class="mt-3">
             
-            <fieldset class="form-group">
+            <fieldset class="form-group mt-5 pt-2">
                 
-                <label>記事カテゴリー <span class="text-danger text-big cate-require">*</span></label>
+                <label>記事カテゴリー <span class="text-danger text-big">*</span></label>
                 
-                <select class="form-control select-first col-md-6{{ $errors->has('cate_id') ? ' is-invalid' : '' }}" name="cate_id">
+                <select class="form-control col-md-6{{ $errors->has('cate_id') ? ' is-invalid' : '' }}" name="cate_id">
                     <option disabled selected>選択して下さい</option>
+                    
                     @foreach($cates as $cate)
                         <?php
                             $selected = '';
@@ -236,13 +237,15 @@ use App\Category;
                                     $selected = ' selected';
                             }
                             else {
-                                if(isset($item) && $item->cate_id == $cate->id) {
+                                if(isset($postRel) && $postRel->cate_id == $cate->id) {
                                     $selected = ' selected';
                                 }
                             }
                         ?>
+                        
                         <option value="{{ $cate->id }}"{{ $selected }}>{{ $cate->name }}</option>
                     @endforeach
+                    
                 </select>
                 <span class="text-warning"></span>
                 
@@ -289,7 +292,7 @@ use App\Category;
             </div><?php //tagwrap ?>
             
             
-            @include('dashboard.shared.meta')
+            @include('dashboard.shared.meta', ['obj'=>$postRel])
             
             
             {{--

@@ -27,10 +27,10 @@ Route::post('dashboard/register', 'DashBoard\MainController@postRegister');
 Route::delete('dashboard/register/{id}', 'DashBoard\MainController@destroy');
 Route::get('dashboard/logout', 'DashBoard\MainController@getLogout');
 
-//setting
+//Setting
 Route::resource('dashboard/settings', 'DashBoard\SettingController');
 
-//top Setting
+//Top Setting
 Route::resource('dashboard/top-settings', 'DashBoard\TopSettingController');
 
 //Consignor
@@ -145,6 +145,9 @@ Route::post('/item/script', 'Main\SingleController@postScript');
 //CacheFavorite
 Route::get('favorite', 'Main\SingleController@favIndex');
 Route::post('favorite-del', 'Main\SingleController@postFavDel');
+
+//Post
+Route::resource('post', 'Main\PostController');
 
 //Shop Cart
 Route::post('/cart/form', 'Main\SingleController@postForm');

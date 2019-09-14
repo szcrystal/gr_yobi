@@ -51,11 +51,11 @@ class PostController extends Controller
     
     public function show($id)
     {
-        $upper = $this->postRel->find($id);
+        $postRel = $this->postRel->find($id);
 
         $relArr = ['a'=>array()/*, 'b'=>array(), 'c'=>array()*/];
         
-        if(isset($upper) && $upper !== null) { //編集
+        if(isset($postRel) && $postRel !== null) { //編集
         	$edit = 1;
         	
             $upperRels = $this->post->where(['rel_id'=>$id])->orderBy('sort_num', 'asc')->get()/*->keyBy('block')*/;
@@ -106,7 +106,7 @@ class PostController extends Controller
         
         //$icons = $this->icon->all();
         
-        return view('dashboard.post.form', ['upper'=>$upper, 'relArr'=>$relArr, 'cates'=>$cates, 'allTags'=>$allTags, 'blockCount'=>$blockCount, 'id'=>$id, 'edit'=>$edit]);
+        return view('dashboard.post.form', ['postRel'=>$postRel, 'relArr'=>$relArr, 'cates'=>$cates, 'allTags'=>$allTags, 'blockCount'=>$blockCount, 'id'=>$id, 'edit'=>$edit]);
     }
    
     public function create()
@@ -186,10 +186,12 @@ class PostController extends Controller
         
         $postRel = $this->postRel->updateOrCreate(
         	['id'=>$editId],
-        	[
-            	'open_status' => $data['open_status'],
-                'is_index' => $data['is_index'],
-            ]
+            $data
+//        	[
+//            	'cate_id' => $data['cate_id'],
+//            	'open_status' => $data['open_status'],
+//                'is_index' => $data['is_index'],
+//            ]
         );
         
 //        print_r($data['block']);
@@ -222,14 +224,18 @@ class PostController extends Controller
         //サムネイル用コメント END ------------
         */
 
-		$status = '上部コンテンツが編集されました。';
+		$status = '記事が編集されました。';
+        
+        $midTitleId = 0;
+        $midTitleArr = array();
 
-		foreach($data['block'] as $blockKey => $blockArr) {
+		
+        foreach($data['block'] as $blockKey => $blockArr) {
         	
             $num = 0;
             
-            print_r($blockArr);
-            exit;
+//            print_r($blockArr);
+//            exit;
             
             foreach($blockArr as $key => $vals) {
                 
@@ -249,13 +255,14 @@ class PostController extends Controller
                     //$status .= "\n". '「' . $blockKey . 'ブロック-' . ($vals['count']+1) . '」が削除されました。';
                 }
                 else {
+                	
                 	if($isMidSection) {
                     	//大タイトルと中タイトルの区分けは、どちらもis_sectionは1、大タイトルはsort_numが必ず0、中タイトルは1以上
                         
                         $nn = 0;
-
+                        
                     	foreach($vals as $val) {
-                            $upperRel = $this->post->updateOrCreate(
+                            $midTitlePost = $this->post->updateOrCreate(
                                 [
                                     'id' => $val['rel_id'],
                                 ],
@@ -271,13 +278,23 @@ class PostController extends Controller
                                 ]
                             );
                         	
+                            //h2タイトルのIDを後でcontents用postにセットするのでそれ用の配列をここで作成する。
+                            if($val['title'] != '') {
+                            	$midTitleId = $midTitlePost->id;
+                            }
+                            
+                            $midTitleArr[$midTitlePost->sort_num] = $midTitleId;
+                            
                             $nn++;
                         }
                     }
                     else {
+                    	
+//                        print_r($midTitleArr);
+//                        exit;
                     
                         //relationのidをinput-hiddenに設定し（0ならcreate）$vals['rel_id']でupdateOrCreateする方法もあり
-                        $upperRel = $this->post->updateOrCreate(
+                        $contPost = $this->post->updateOrCreate(
                             [
                                 'id' => $vals['rel_id'],
                             ],
@@ -288,9 +305,12 @@ class PostController extends Controller
                                 'title'=> $vals['title'],
                                 'detail'=> $isSection ? null : $vals['detail'],
                                 'is_section'=> $isSection ? 1 : 0,
-                                'sort_num'=> $isSection ? 0 : $num+1,
+                                'sort_num'=> $isSection ? 0 : $num,
+                                //'mid_title_id' => $isSection ? null : $midTitleArr[$num+1],
                             ]
                         );
+                        
+                        $num++;
                     }
 
 					//sort_numでデータを照合してupdateOrCreateする方法もあり
@@ -346,17 +366,27 @@ class PostController extends Controller
                             //$path = Storage::disk('s3')->putFileAs($filename, $request->file('thumbnail'), 'public');
                             //$path = $request->file('thumbnail')->storeAs('', $filename, 's3');
                                                     
-                            $upperRel->img_path = $filename;
-                            $upperRel->save();
+                            $contPost->img_path = $filename;
+                            $contPost->save();
                         }
                     }
                     
-                    if(! $isSection) $num++;
+                    //if(! $isSection) $num++;
                 }
 
-            }
+            } //foreach
             
-        }
+        } //foreach
+        
+        
+        //h2タイトルのIDをここでセットする。$midTitleArrは保存中に取得する配列
+        $this->post->where(['rel_id'=>$postRel->id, 'is_section'=>0])->get()->map(function($contPost) use($midTitleArr){
+            $contPost->update([ 'mid_title_id' => $midTitleArr[$contPost->sort_num] ]);
+        });
+	
+//        print_r($midTitleArr);
+//        exit;
+        
         
         
         return redirect('dashboard/posts/'. $postRel->id)->with('status', $status);
