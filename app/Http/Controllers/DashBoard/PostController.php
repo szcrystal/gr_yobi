@@ -7,16 +7,20 @@ use App\Item;
 use App\Setting;
 use App\Post;
 use App\PostRelation;
-use App\Category;
+use App\PostCategory;
 use App\Tag;
+use App\PostTagRelation;
 
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
+use Storage;
+use Ctm;
+
 class PostController extends Controller
 {
-    public function __construct(Admin $admin, Item $item, Setting $setting, Post $post, PostRelation $postRel, Category $cate, Tag $tag)
+    public function __construct(Admin $admin, Item $item, Setting $setting, Post $post, PostRelation $postRel, PostCategory $postCate, Tag $tag, PostTagRelation $postTagRel)
     {
         
         $this -> middleware('adminauth');
@@ -27,8 +31,9 @@ class PostController extends Controller
         $this->set =  $setting->first();
         $this->post = $post;
         $this->postRel = $postRel;
-        $this->category = $cate;
+        $this->postCate = $postCate;
         $this->tag = $tag;
+        $this->postTagRel = $postTagRel;
         
         $this->perPage = 20;
 
@@ -37,15 +42,16 @@ class PostController extends Controller
     public function index()
     {
         //$itemObjs = Item::orderBy('id', 'desc')->paginate($this->perPage);
-        $itemObjs = $this->item->orderBy('id', 'desc')->get();
+        $postRels = $this->postRel->orderBy('id', 'desc')->get();
+        
+        foreach($postRels as $k => $postRel) {
+        	$post = $this->post->where(['rel_id'=>$postRel->id, 'is_section'=>1, 'sort_num'=>0])->first();
+            $postRel->big_title = $post->title;
+            $postRels[$k] = $postRel;
+        }
         
         
-        $recentObjs = $this->item->orderBy('updated_at', 'desc')->get()->take(5);
-        
-        //$status = $this->articlePost->where(['base_id'=>15])->first()->open_date;
-        
-        
-        return view('dashboard.post.index', ['itemObjs'=>$itemObjs, ]);
+        return view('dashboard.post.index', ['postRels'=>$postRels, ]);
     }
 
     
@@ -53,7 +59,7 @@ class PostController extends Controller
     {
         $postRel = $this->postRel->find($id);
 
-        $relArr = ['a'=>array()/*, 'b'=>array(), 'c'=>array()*/];
+        $relArr = ['p'=>array()/*, 'b'=>array(), 'c'=>array()*/];
         
         if(isset($postRel) && $postRel !== null) { //編集
         	$edit = 1;
@@ -91,7 +97,13 @@ class PostController extends Controller
 //        exit;
 
 
-		$cates = $this->category->all();
+		//Cate
+		$postCates = $this->postCate->all();
+        
+        //Tag
+        $tagNames = $this->postTagRel->where(['postrel_id'=>$id])->orderBy('sort_num', 'asc')->get()->map(function($obj) {
+            return $this->tag->find($obj->tag_id)->name;
+        })->all();
         
         $allTags = $this->tag->get()->map(function($tag){
         	return $tag->name;
@@ -99,14 +111,14 @@ class PostController extends Controller
         
         
         $blockCount = [
-        	'a' => $this->set->snap_block_a,
+        	'p' => $this->set->snap_block_a,
 //            'b' => $this->set->snap_block_b,
 //            'c' => $this->set->snap_block_c,
         ];
         
         //$icons = $this->icon->all();
         
-        return view('dashboard.post.form', ['postRel'=>$postRel, 'relArr'=>$relArr, 'cates'=>$cates, 'allTags'=>$allTags, 'blockCount'=>$blockCount, 'id'=>$id, 'edit'=>$edit]);
+        return view('dashboard.post.form', ['postRel'=>$postRel, 'relArr'=>$relArr, 'postCates'=>$postCates, 'tagNames'=>$tagNames, 'allTags'=>$allTags, 'blockCount'=>$blockCount, 'id'=>$id, 'edit'=>$edit]);
     }
    
     public function create()
@@ -114,10 +126,10 @@ class PostController extends Controller
 		$id = 0;
         $edit = 0;
         
-        $relArr = ['a'=>array()/*, 'b'=>array(), 'c'=>array()*/];
+        $relArr = ['p'=>array()/*, 'b'=>array(), 'c'=>array()*/];
         
         $blockCount = [
-        	'a' => $this->set->snap_block_a,
+        	'p' => $this->set->snap_block_a,
 //            'b' => $this->set->snap_block_b,
 //            'c' => $this->set->snap_block_c,
         ];
@@ -126,7 +138,7 @@ class PostController extends Controller
         $imgCount = $this->set->snap_secondary;
         
         
-        $cates = $this->category->all();
+        $postCates = $this->postCate->all();
         
         $allTags = $this->tag->get()->map(function($tag){
         	return $tag->name;
@@ -134,7 +146,7 @@ class PostController extends Controller
         
         
 //        $users = $this->user->where('active',1)->get();
-        return view('dashboard.post.form', ['primaryCount'=>$primaryCount, 'imgCount'=>$imgCount, 'relArr'=>$relArr, 'blockCount'=>$blockCount, 'cates'=>$cates, 'allTags'=>$allTags, 'edit'=>$edit, 'id'=>$id, ]);
+        return view('dashboard.post.form', ['primaryCount'=>$primaryCount, 'imgCount'=>$imgCount, 'relArr'=>$relArr, 'blockCount'=>$blockCount, 'postCates'=>$postCates, 'allTags'=>$allTags, 'edit'=>$edit, 'id'=>$id, ]);
     }
     
     
@@ -144,8 +156,9 @@ class PostController extends Controller
         
     	$rules = [
 //        	'number' => 'required|unique:items,number,'.$editId,
-            //'block.a.0.title' => 'required|max:255',
-          
+            'block.p.section.title' => 'required|max:255',
+          	'cate_id' => 'required',
+            
 //            'price' => 'required|numeric',
 //            'stock' => 'nullable|numeric',
 //            'stock_reset_month' => [
@@ -168,8 +181,8 @@ class PostController extends Controller
 
         
         $messages = [
-         	'block.a.0.title.required' => '「商品名」を入力して下さい。',
-            'cate_id.required' => '「カテゴリー」を選択して下さい。',
+         	'block.p.section.title.required' => '「大タイトル」は必須です。',
+            'cate_id.required' => '「記事カテゴリー」を選択して下さい。',
         ];
         
         $this->validate($request, $rules, $messages);
@@ -179,7 +192,7 @@ class PostController extends Controller
         
         //status
         $data['open_status'] = isset($data['open_status']) ? 0 : 1;
-        $data['is_index'] = isset($data['is_index']);
+        $data['is_index'] = isset($data['is_index']) ? 1 : 0;
         
 //        echo $data['open_status'];
 //        exit;
@@ -187,12 +200,34 @@ class PostController extends Controller
         $postRel = $this->postRel->updateOrCreate(
         	['id'=>$editId],
             $data
-//        	[
-//            	'cate_id' => $data['cate_id'],
-//            	'open_status' => $data['open_status'],
-//                'is_index' => $data['is_index'],
-//            ]
         );
+        
+        $postRelId = $postRel->id;
+        
+        //Main-img
+        if(isset($data['del_mainimg']) && $data['del_mainimg']) { //削除チェックの時
+            if($postRel->thumb_path !== null && $postRel->thumb_path != '') {
+                Storage::delete($postRel->thumb_path); //Storageはpublicフォルダのあるところをルートとしてみる
+                $postRel->thumb_path = null;
+                $postRel->save();
+            }
+        }
+        else {
+            if(isset($data['thumb_path'])) {
+                //$filename = $request->file('main_img')->getClientOriginalName();
+                $filename = $data['thumb_path']->getClientOriginalName();
+                $filename = str_replace(' ', '_', $filename);
+                
+                //$pre = time() . '-';
+                $filename = 'post/' . $postRelId . '/thumb/'/* . $pre*/ . $filename;
+                $path = $data['thumb_path']->storeAs('public', $filename);
+                //$path = Storage::disk('s3')->putFileAs($filename, $request->file('thumbnail'), 'public');
+                //$path = $request->file('thumbnail')->storeAs('', $filename, 's3');
+                
+                $postRel->thumb_path = $path;
+                $postRel->save();
+            }
+        }
         
 //        print_r($data['block']);
 //        exit;
@@ -267,7 +302,7 @@ class PostController extends Controller
                                     'id' => $val['rel_id'],
                                 ],
                                 [
-                                    'rel_id'=> $postRel->id, 
+                                    'rel_id'=> $postRelId, 
                                     'block'=> $blockKey,
                                     'url'=> null,
                                     'title'=> $val['title'],
@@ -299,7 +334,7 @@ class PostController extends Controller
                                 'id' => $vals['rel_id'],
                             ],
                             [
-                                'rel_id'=> $postRel->id, 
+                                'rel_id'=> $postRelId, 
                                 'block'=> $blockKey,
                                 'url'=> $isSection ? null : $vals['url'],
                                 'title'=> $vals['title'],
@@ -352,7 +387,7 @@ class PostController extends Controller
                             //$pre = mt_rand(0, 99999) . '-';
                             $pre = '';
                             
-                            $filename = 'post/' . $postRel->id . '/' . $blockKey . '/' . $pre . $filename;
+                            $filename = 'post/' . $postRelId . '/' . $blockKey . '/' . $pre . $filename;
                             //$dirName = 'upper/' . $type . '/' . $editId . '/' . $blockKey;
 
                             //new File()は画像情報を取得するためのもの。 new File('aaa.jpg')とすると、$vals['img'] or $request->file('img')と同じものになる
@@ -366,7 +401,7 @@ class PostController extends Controller
                             //$path = Storage::disk('s3')->putFileAs($filename, $request->file('thumbnail'), 'public');
                             //$path = $request->file('thumbnail')->storeAs('', $filename, 's3');
                                                     
-                            $contPost->img_path = $filename;
+                            $contPost->img_path = $path;
                             $contPost->save();
                         }
                     }
@@ -379,13 +414,90 @@ class PostController extends Controller
         } //foreach
         
         
-        //h2タイトルのIDをここでセットする。$midTitleArrは保存中に取得する配列
-        $this->post->where(['rel_id'=>$postRel->id, 'is_section'=>0])->get()->map(function($contPost) use($midTitleArr){
-            $contPost->update([ 'mid_title_id' => $midTitleArr[$contPost->sort_num] ]);
+        // ***** h2タイトルのIDをここでセットする。$midTitleArrは保存中に取得するh2タイトルのIDを保存した配列 *******
+        $this->post->where(['rel_id'=>$postRelId, 'is_section'=>0])->get()->map(function($contPost) use($midTitleArr){
+            $contPost->update([
+            	'mid_title_id' => $midTitleArr[$contPost->sort_num],
+            ]);
         });
 	
-//        print_r($midTitleArr);
-//        exit;
+		
+        
+        //タグのsave動作
+        if(isset($data['tags'])) {
+            
+            $tagArr = $data['tags'];
+            
+            //タグ削除の動作
+            if(isset($editId)) { //編集時のみ削除されたタグを消す
+            	//現在あるtagRelを取得
+                $tagRelIds = $this->postTagRel->where('postrel_id', $postRelId)->get()->map(function($tagRelObj){
+                    return $tagRelObj->tag_id;
+                })->all();
+                
+                //入力されたtagのidを取得（新規のものは取得されない->する必要がない）
+                $tagIds = $this->tag->whereIn('name', $tagArr)->get()->map(function($tagObj){
+                    return $tagObj->id;
+                })->all();
+                
+                //配列同士を比較(重複しないものは$tagRelIdsからreturnされる->これらが削除対象となる)
+                $tagDiffs = array_diff($tagRelIds, $tagIds);
+                
+                //削除対象となったものを削除する
+                if(count($tagDiffs) > 0) {
+                    foreach($tagDiffs as $valTagId) {
+                        $this->postTagRel->where(['postrel_id'=>$postRelId, 'tag_id'=>$valTagId])->first()->delete();
+                    }
+                }
+            }
+            
+        	$num = 1;
+            
+            foreach($tagArr as $tag) {
+                
+                //Tagセット
+                $setTag = Tag::firstOrCreate(['name'=>$tag]); //既存を取得 or なければ作成
+                
+                if(!$setTag->slug) { //新規作成時slugは一旦NULLでcreateされるので、その後idをセットする
+                    $setTag->slug = $setTag->id;
+                    $setTag->save();
+                }
+                
+                $tagId = $setTag->id;
+                $tagName = $tag;
+
+
+                //tagIdがRelationになければセット ->firstOrCreate() ->updateOrCreate()
+                $this->postTagRel->updateOrCreate(
+                    ['tag_id'=>$tagId, 'postrel_id'=>$postRelId],
+                    ['sort_num'=>$num]
+                );
+
+				$num++;
+                
+                //tagIdを配列に入れる　削除確認用
+                //$tagIds[] = $tagId;
+            }
+        
+        	/*
+            //編集時のみ削除されたタグを消す
+            if(isset($editId)) {
+                //元々relationにあったtagがなくなった場合：今回取得したtagIdの中にrelationのtagIdがない場合をin_arrayにて確認
+                $tagRels = $this->tagRelation->where('item_id', $itemId)->get();
+                
+                foreach($tagRels as $tagRel) {
+                    if(! in_array($tagRel->tag_id, $tagIds)) {
+                        $tagRel->delete();
+                    }
+                }
+            }
+            */
+        }
+        else { 
+        	if(isset($editId)) {
+        		$tagRels = $this->postTagRel->where('postrel_id', $postRelId)->delete();
+            }
+        }
         
         
         

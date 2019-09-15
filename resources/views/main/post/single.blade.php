@@ -24,7 +24,7 @@ use App\TopSetting;
 
 @section('content')
 
-    <div id="main" class="single post">
+<div id="main" class="single post-single">
     	
         {{--
         @if(! Ctm::isAgent('sp'))
@@ -32,8 +32,7 @@ use App\TopSetting;
         @endif
         --}}
         
-        
-@if(count($postArr) > 0)
+<div class="clearfix">
 
 <?php
 
@@ -44,7 +43,7 @@ use App\TopSetting;
 //    exit;
 ?>
 
-<div class="upper-wrap">
+<div class="upper-wrap post-main float-left border border-primary w-75">
 
 <article>
 	
@@ -54,58 +53,111 @@ use App\TopSetting;
     	{{ Ctm::changeDate($postRel->created_at, 1) }}
         
         <span>
-        	カテゴリー名	
+        	{{ $postCate->name }}	
         </span>
     </div>
+    
+    @if(! $postRel->is_index)
+        <div class="post-index">
+            <p><i class="fas fa-check text-kon"></i> 目次</p>
+            
+            <ol>
+            
+            <?php 
+            	$n = 1;
+                $nn = 1;
+            ?>
+            
+            @foreach($postArr as $keyMidId => $post)
+        
+                @if(isset($post['h2']->title))
+                    <li><a href="#{{ $n }}">{{ $post['h2']->title }}</a></li>
+                @endif
+                
+                @if(count($post['contents']) > 0)
+                    <ul class="list-unstyled">
+                        @foreach($post['contents'] as $contPost)
+                            @if(isset($contPost->title))
+                                <li><a href="#{{ $n.'-'.$nn }}">{{ $n.'-'.$nn }}. {{ $contPost->title }}</a></li>
+                            @endif
+                            
+                            <?php $nn++; ?>
+                        @endforeach
+                    </ul>
+                @endif
+                
+                <?php $n++; ?>
+                
+            @endforeach
+            
+            </ol>
+        </div>
+    @endif
+    
+    <?php 
+        $n = 1;
+        $nn = 1;
+    ?>
     
     @foreach($postArr as $keyMidId => $post)
         <?php
             //ここでのblockKeyは [a],[b],[c]
-            $chunkNum++;
-            
-			$contArr = array();
+            $chunkNum++;            
         ?>
         
-        <div class="block-wrap">
-        
-        	<?php
-            	//$contArr = $postArr['contents'][$post->id];
-             
-//                print_r($postArr['contents']);
-//                exit;
-                
-            ?>
+        <section class="block-wrap">
             
             @if(isset($post['h2']->title))
-            	<h2>{{ $post['h2']->title }}</h2>
+            	<h2 id="{{ $n }}"><i class="fas fa-check text-kon"></i> {{ $post['h2']->title }}</h2>
             @endif
                 
             @foreach($post['contents'] as $contPost)
-                <div>
+                <div id="{{ $n.'-'.$nn }}">
+                	@if(isset($contPost->title))
+                    	<h3>{{ $contPost->title }}</h3>
+                    @endif
+                    
                 	@if(isset($contPost->img_path))
                     	<img src="{{ Storage::url($contPost->img_path) }}" class="img-fluid d-block">
                     @endif
                     
-                    @if(isset($contPost->title))
-                    	<h3>{{ $contPost->title }}</h3>
-                    @endif
-                    
                     @if(isset($contPost->detail))
-                    	<p>{{ $contPost->detail }}</p>
+                    	<p>{!! nl2br($contPost->detail) !!}</p>
                     @endif
                 </div>
+                
+                <?php $nn++; ?>
             @endforeach
         
-        </div>
+        </section>
         
-        
+        <?php $n++; ?>
     @endforeach
 
 </article>
 </div>
 
-@endif
 
+<div class="post-side float-right border border-danger w-25">
+
+<div class="mb-5">
+<h4>こんな他の記事もあります</h4>
+
+</div>
+
+<div class="mb-5">
+<h4>この記事の関連商品</h4>
+
+</div>
+
+<div class="mb-5">
+<h4>この記事の関連タグ</h4>
+<div class="tags mt-4 mb-1">
+    @include('main.shared.tag', ['num'=>0])
+</div>
+</div>
+
+</div>
         
         
         
@@ -125,7 +177,7 @@ use App\TopSetting;
         --}}
         
 		
-
+</div>
 
             
 		

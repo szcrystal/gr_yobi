@@ -16,7 +16,7 @@ use App\Category;
 //        $pageUrl = url('/item/'. $linkId);
 //    }
         
-    $chunkNumArr = ['a'=>1/*, 'b'=>3, 'c'=>3*/];
+    $chunkNumArr = ['p'=>1/*, 'b'=>3, 'c'=>3*/];
 ?>
 
 	
@@ -34,9 +34,11 @@ use App\Category;
 
             </div>
     
-            <div class="mt-4 text-right">
-                <a href="" class="btn btn-warning border-round text-white" target="_brank">このページを見る <i class="fa fa-angle-double-right" aria-hidden="true"></i></a>
-            </div>
+    		@if($edit)
+                <div class="mt-4 text-right">
+                    <a href="{{ url('post/'. $id) }}" class="btn btn-warning border-round text-white" target="_brank">このページを見る <i class="fa fa-angle-double-right" aria-hidden="true"></i></a>
+                </div>
+            @endif
         
     	</div>
     </div>
@@ -68,10 +70,6 @@ use App\Category;
                 <div class="clearfix mb-5">
                     <button type="submit" class="btn btn-primary btn-block mx-auto w-btn w-25">更　新</button>
                 </div>
-                
-                @if(isset($orgObj))
-                    <b class="text-big">[{{ $orgObj->id }}] {{ $name }}の上部コンテンツ</b>
-                @endif
             </div>
 
             {{ csrf_field() }}
@@ -80,43 +78,43 @@ use App\Category;
             <input type="hidden" name="edit_id" value="{{ $id }}">
 
 			<div class="form-group clearfix">
-                <div class="col-md-3 float-right mt-0">
+                <div class="col-md-3 float-right mt-0 mb-4 pr-0 pl-5">
                     
                     <div class="checkbox">
                         <label>
                             <?php
-                                $checked = '';
+                                $openChecked = '';
                                 if(Ctm::isOld()) {
                                     if(old('open_status'))
-                                        $checked = ' checked';
+                                        $openChecked = ' checked';
                                 }
                                 else {
                                     if(isset($postRel) && ! $postRel->open_status) {
-                                        $checked = ' checked';
+                                        $openChecked = ' checked';
                                     }
                                 }
                             ?>
                             
-                            <input type="checkbox" name="open_status" value="1"{{ $checked }}> この記事を表示しない
+                            <input type="checkbox" name="open_status" value="1"{{ $openChecked }}> この記事を表示しない
                         </label>
                     </div>
                     
                     <div class="checkbox">
                         <label>
                             <?php
-                                $checked = '';
+                                $indexChecked = '';
                                 if(Ctm::isOld()) {
                                     if(old('is_index'))
-                                        $checked = ' checked';
+                                        $indexChecked = ' checked';
                                 }
                                 else {
-                                    if(isset($postRel) && ! $postRel->is_index) {
-                                        $checked = ' checked';
+                                    if(isset($postRel) && $postRel->is_index) {
+                                        $indexChecked = ' checked';
                                     }
                                 }
                             ?>
                             
-                            <input type="checkbox" name="is_index" value="1"{{ $checked }}> 目次を表示しない&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            <input type="checkbox" name="is_index" value="1"{{ $indexChecked }}> 目次を表示しない
                         </label>
                     </div>
                     
@@ -124,7 +122,68 @@ use App\Category;
             </div>
         
         	
-            <span class="text-small text-secondary d-block mb-2">＊UPする画像のファイル名は全て半角英数字とハイフンのみで構成して下さい。(abc-123.jpg など)</span>
+            <span class="text-small text-secondary d-block mb-2">＊UPする画像のファイル名は全て半角英数字とハイフンのみで構成して下さい。(abc-123.jpg など。他各所画像も同様です。)</span>
+            
+            
+            <div class="form-group clearfix mb-5 thumb-wrap">
+                <fieldset class="w-25 float-right">
+                    <div class="col-md-12 checkbox text-right px-0">
+                        <label>
+                            <?php
+                                $checked = '';
+                                if(Ctm::isOld()) {
+                                    if(old('del_mainimg'))
+                                        $checked = ' checked';
+                                }
+                                else {
+                                    if(isset($postRel) && $postRel->del_mainimg) {
+                                        $checked = ' checked';
+                                    }
+                                }
+                            ?>
+
+                            <input type="hidden" name="del_mainimg" value="0">
+                            <input type="checkbox" name="del_mainimg" value="1"{{ $checked }}> この画像を削除
+                        </label>
+                    </div>
+                </fieldset>
+                
+                <fieldset>
+                    <div class="float-left col-md-4 px-0 thumb-prev">
+                        @if(Ctm::isOld())
+                            @if(old('thumb_path') != '' && old('thumb_path'))
+                            	<img src="{{ Storage::url(old('thumb_path')) }}" class="img-fluid">
+                            @elseif(isset($postRel) && $postRel->thumb_path)
+                            	<img src="{{ Storage::url($postRel->thumb_path) }}" class="img-fluid">
+                            @else
+                            	<span class="no-img">No Image</span>
+                            @endif
+                        @elseif(isset($postRel) && $postRel->thumb_path)
+                        	<img src="{{ Storage::url($postRel->thumb_path) }}" class="img-fluid">
+                        @else
+                        	<span class="no-img">No Image</span>
+                        @endif
+                    </div>
+                    
+
+                    <div class="float-left col-md-8 pl-3 pr-0">
+                        <fieldset class="form-group{{ $errors->has('thumb_path') ? ' is-invalid' : '' }}">
+                            <label for="main_img">サムネイル画像</label>
+                            <input class="form-control-file thumb-file" id="thumb_path" type="file" name="thumb_path">
+                        </fieldset>
+                    
+                        @if ($errors->has('thumb_path'))
+                            <span class="help-block text-danger">
+                                <strong>{{ $errors->first('thumb_path') }}</strong>
+                            </span>
+                        @endif
+                        
+                        <span class="text-small text-secondary">＊サムネイル画像は原則必要なものとなります。<br>削除後の未入力など注意して下さい。</span>
+                    
+                    </div>
+                </fieldset>
+                
+            </div>
             
             
         
@@ -138,32 +197,27 @@ use App\Category;
                     
                 ?>
                 
-                @if(isset($upperRel['section'])) 
-                    <p class="text-big p-0 m-0"><b>{{ $upperRel['section']->title }}</b></p>
-                @endif
+                <fieldset class="mb-5 form-group">
+                    <label class="text-uppercase">大タイトル（h1）<span class="text-danger text-big">*</span></label>
+                    
+                    <input class="form-control col-md-12{{ $errors->has('block.' .$blockKey. '.section.title') ? ' is-invalid' : '' }}" name="block[{{ $blockKey }}][section][title]" value="{{ Ctm::isOld() ? old('block.' .$blockKey. '.section.title') : (isset($upperRel['section']) ? $upperRel['section']->title : '') }}" placeholder="">
+
+                        @if ($errors->has('block.' .$blockKey. '.section.title'))
+                            <div class="text-danger">
+                                <span class="fa fa-exclamation form-control-feedback"></span>
+                                <span>{{ $errors->first('block.' .$blockKey. '.section.title') }}</span>
+                            </div>
+                        @endif
+                    
+                    <input type="hidden" name="block[{{ $blockKey }}][section][rel_id]" value="{{ isset($upperRel['section']) ? $upperRel['section']->id : 0 }}">
+                </fieldset>
                 
-                <hr class="mt-3">
+                <hr class="mt-1">
         		
-                <h4 class="mt-5 mb-3 p-2 bg-secondary text-light text-uppercase block-tgl">記事ブロック <i class="fa fa-angle-double-down"></i></h4>
+                <h4 class="mt-2 mb-0 p-2 bg-secondary text-light text-uppercase block-tgl">記事ブロック <i class="fa fa-angle-double-down"></i></h4>
                 
                 <div class="block-all-wrap pt-2">
-                    <fieldset class="mb-5 form-group">
-                        <label class="text-uppercase">大タイトル（h1）<span class="text-danger text-big">*</span></label>
-                        
-                        <input class="form-control col-md-12{{ $errors->has('block.' .$blockKey. '.section.title') ? ' is-invalid' : '' }}" name="block[{{ $blockKey }}][section][title]" value="{{ Ctm::isOld() ? old('block.' .$blockKey. '.section.title') : (isset($upperRel['section']) ? $upperRel['section']->title : '') }}" placeholder="">
-
-                            @if ($errors->has('block.' .$blockKey. '.section.title'))
-                                <div class="text-danger">
-                                    <span class="fa fa-exclamation form-control-feedback"></span>
-                                    <span>{{ $errors->first('block.' .$blockKey. '.section.title') }}</span>
-                                </div>
-                            @endif
-                        
-                        <input type="hidden" name="block[{{ $blockKey }}][section][rel_id]" value="{{ isset($upperRel['section']) ? $upperRel['section']->id : 0 }}">
-                    </fieldset>
-
-                    
-                    
+ 
                     @while($n < $blockCount[$blockKey])
                     
                     	@if(! ($n % $retu))
@@ -229,7 +283,7 @@ use App\Category;
                 <select class="form-control col-md-6{{ $errors->has('cate_id') ? ' is-invalid' : '' }}" name="cate_id">
                     <option disabled selected>選択して下さい</option>
                     
-                    @foreach($cates as $cate)
+                    @foreach($postCates as $cate)
                         <?php
                             $selected = '';
                             if(Ctm::isOld()) {
@@ -292,7 +346,7 @@ use App\Category;
             </div><?php //tagwrap ?>
             
             
-            @include('dashboard.shared.meta', ['obj'=>$postRel])
+            @include('dashboard.shared.meta', ['obj'=> isset($postRel) ? $postRel : null])
             
             
             {{--
@@ -331,6 +385,12 @@ use App\Category;
             <?php 
             //サムネイル上部 END upper_title upper_text ================================== 
             ?>
+            
+            <div class="form-group mt-5 pt-3 mb-0">
+                <div class="clearfix mb-0">
+                    <button type="submit" class="btn btn-primary btn-block mx-auto w-btn w-25">更　新</button>
+                </div>
+            </div>
         
         </form>
 

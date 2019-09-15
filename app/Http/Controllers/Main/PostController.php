@@ -5,15 +5,20 @@ namespace App\Http\Controllers\Main;
 use App\Item;
 use App\Post;
 use App\PostRelation;
+use App\PostCategory;
+use App\Tag;
+use App\PostTagRelation;
 
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
+use Ctm;
+
 class PostController extends Controller
 {
     
-    public function __construct(Item $item, Post $post, PostRelation $postRel)
+    public function __construct(Item $item, Post $post, PostRelation $postRel, PostCategory $postCate, Tag $tag, PostTagRelation $postTagRel)
     {
         //$this->middleware('search');
         
@@ -21,6 +26,9 @@ class PostController extends Controller
         $this->post = $post;
         $this->postRel = $postRel;
         
+        $this->postCate = $postCate;
+        $this->tag = $tag;
+        $this->postTagRel = $postTagRel;
         
         
         $this->whereArr = ['open_status'=>1, 'is_potset'=>0]; //こことSingleとSearchとCtm::isPotParentAndStockにある
@@ -31,7 +39,7 @@ class PostController extends Controller
     
     public function index($id)
     {
-    	if(Ctm::isEnv('product')) abort(404);
+    	if(Ctm::isEnv('product') || Ctm::isEnv('alpha')) abort(404);
         
         
         $item = $this->item->find($id);
@@ -321,7 +329,7 @@ class PostController extends Controller
     
     public function show($postId)
     {
-    	if(Ctm::isEnv('product')) abort(404);
+    	if(Ctm::isEnv('product') || Ctm::isEnv('alpha')) abort(404);
         
         
         //ItemUpper
@@ -330,12 +338,13 @@ class PostController extends Controller
         
         $postRel = $this->postRel->find($postId);
         
-        if(! $postRel->open_status) {
+        if(! isset($postRel) || ! $postRel->open_status) {
         	abort(404);
         }
         
         $posts = $this->post->where('rel_id', $postId)->get();
         
+        $bigTitle = '';
         $postArr = array();
         
         foreach($posts as $post) {
@@ -358,10 +367,30 @@ class PostController extends Controller
         }
         
         
-        //$postArr['no_mid']['contents'] = $this->post->where(['rel_id'=>$postId, 'mid_title_id'=>null])->get();
+        //Cate
+        $postCate = $this->postCate->find($postRel->cate_id);
+        
+        //Tag
+        $tags = null;
+        $tagRels = array();
+        $sortIDs = array();
+        
+        $tagRels = $this->postTagRel->where('postrel_id', $postRel->id)->orderBy('sort_num','asc')->get()->map(function($obj){
+            return $obj->tag_id;
+        })->all();
+        
+        if(count($tagRels) > 0) { //tagのget ->main.shared.tagの中でも指定しているのでここでは不要だが入れておく
+			$sortIDs = implode(',', $tagRels);
+        	$tags = $this->tag->whereIn('id', $tagRels)->orderByRaw("FIELD(id, $sortIDs)")->get();
+        }
         
         
-        return view('main.post.single', ['postRel'=>$postRel, 'bigTitle'=>$bigTitle, 'postArr'=>$postArr,]);
+        
+        $metaTitle = isset($postRel->meta_title) ? $postRel->meta_title : $bigTitle . '｜植木買うならグリーンロケット';
+        $metaDesc = $postRel->meta_description;
+        $metaKeyword = $postRel->meta_keyword;
+        
+        return view('main.post.single', ['postRel'=>$postRel, 'bigTitle'=>$bigTitle, 'postArr'=>$postArr, 'postCate'=>$postCate, 'tags'=>$tags, 'metaTitle'=>$metaTitle, 'metaDesc'=>$metaDesc, 'metaKeyword'=>$metaKeyword]);
         
         
         		

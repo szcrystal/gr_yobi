@@ -20,8 +20,10 @@ class CreatePostRelationsTable extends Migration
             $table->integer('cate_id')->nullable()->default(NULL);
             $table->string('type_code')->nullable()->default(NULL);
             
-            $table->boolean('open_status')->nullable()->default(0);
+            $table->integer('open_status')->nullable()->default(0);
             $table->boolean('is_index')->nullable()->default(0);
+            
+            $table->string('thumb_path')->nullable()->default(NULL);
             
             $table->string('meta_title')->nullable()->default(NULL);
             $table->text('meta_description')->nullable()->default(NULL);
