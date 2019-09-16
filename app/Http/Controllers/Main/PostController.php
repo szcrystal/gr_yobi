@@ -332,10 +332,7 @@ class PostController extends Controller
     	if(Ctm::isEnv('product') || Ctm::isEnv('alpha')) abort(404);
         
         
-        //ItemUpper
-        $upperRels = null;
-        $upperRelArr = array();
-        
+        //get Post
         $postRel = $this->postRel->find($postId);
         
         if(! isset($postRel) || ! $postRel->open_status) {
@@ -356,17 +353,18 @@ class PostController extends Controller
                 	if($post->title != '') {
                     	$postArr[$post->id]['h2'] = $post;
                         
-                        $conts = $this->post->where(['rel_id'=>$postId, 'mid_title_id'=>$post->id])->get();
+                        $conts = $this->post->where(['rel_id'=>$postId, 'mid_title_id'=>$post->id])->get(); //mid_title_id => h2のmidTitle これに属するコンテンツを取得するため
                     	$postArr[$post->id]['contents'] = $conts;
                     }
-                    else {
-                    	$postArr[0]['contents'] = $this->post->where(['rel_id'=>$postId, 'mid_title_id'=>0])->get();
-                    }
+//                    else {
+//                    	$postArr[0]['contents'] = $this->post->where(['rel_id'=>$postId, 'mid_title_id'=>0])->get();
+//                    }
                 }
             }
         }
         
         
+                
         //Cate
         $postCate = $this->postCate->find($postRel->cate_id);
         
@@ -375,14 +373,56 @@ class PostController extends Controller
         $tagRels = array();
         $sortIDs = array();
         
-        $tagRels = $this->postTagRel->where('postrel_id', $postRel->id)->orderBy('sort_num','asc')->get()->map(function($obj){
+        $tagRelIds = $this->postTagRel->where('postrel_id', $postRel->id)->orderBy('sort_num','asc')->get()->map(function($obj){
             return $obj->tag_id;
         })->all();
         
-        if(count($tagRels) > 0) { //tagのget ->main.shared.tagの中でも指定しているのでここでは不要だが入れておく
-			$sortIDs = implode(',', $tagRels);
-        	$tags = $this->tag->whereIn('id', $tagRels)->orderByRaw("FIELD(id, $sortIDs)")->get();
+        if(count($tagRelIds) > 0) { //tagのget ->main.shared.tagの中でも指定している（$numを指定するarchiveのみ使用）が、singleとpost-singleのみここで指定する
+			$sortIDs = implode(',', $tagRelIds);
+        	$tags = $this->tag->whereIn('id', $tagRelIds)->orderByRaw("FIELD(id, $sortIDs)")->get();
         }
+        
+        
+        //関連記事 ===============================
+        //同じPostカテゴリーと先頭タグ1-3までと同じものをunionしてrandomOrderする
+        
+        //カテゴリー
+        $sameCates = $this->postRel->whereNotIn('id', [$postId])->where(['cate_id'=>$postRel->cate_id, 'open_status'=>1]);
+    	
+        //タグ random感をより出すのであれば、先頭タグ2-4までを抽出するのがいい
+        $ar = array();
+        
+        if(isset($tagRelIds[0])) {
+        	$ar[] = $tagRelIds[0];
+            
+            if(isset($tagRelIds[1])) {
+            	$ar[] = $tagRelIds[1];
+            }
+            
+            if(isset($tagRelIds[2])) {
+            	$ar[] = $tagRelIds[2];
+            }
+        }
+        
+        $sameTagIds = $this->postTagRel->whereNotIn('postrel_id', [$postId])->whereIn('tag_id', $ar)->get()->map(function($obj){
+        	return $obj->postrel_id;
+        });
+        
+        $relatePosts = $this->postRel->whereIn('id', $sameTagIds)->union($sameCates)->inRandomOrder()->take(3)->get();
+        
+        //bigTitle(H1)をセットする
+        $relatePosts = $this->setBigTitleToRel($relatePosts);
+        
+//        print_r($relatePosts);
+//        exit;
+        
+        
+        //関連商品 ==================================
+        
+
+        
+        
+        
         
         
         
@@ -390,7 +430,7 @@ class PostController extends Controller
         $metaDesc = $postRel->meta_description;
         $metaKeyword = $postRel->meta_keyword;
         
-        return view('main.post.single', ['postRel'=>$postRel, 'bigTitle'=>$bigTitle, 'postArr'=>$postArr, 'postCate'=>$postCate, 'tags'=>$tags, 'metaTitle'=>$metaTitle, 'metaDesc'=>$metaDesc, 'metaKeyword'=>$metaKeyword]);
+        return view('main.post.single', ['postRel'=>$postRel, 'bigTitle'=>$bigTitle, 'postArr'=>$postArr, 'postCate'=>$postCate, 'tags'=>$tags, 'relatePosts'=>$relatePosts, 'metaTitle'=>$metaTitle, 'metaDesc'=>$metaDesc, 'metaKeyword'=>$metaKeyword]);
         
         
         		
@@ -424,6 +464,17 @@ class PostController extends Controller
     }
     
     
+    
+    private function setBigTitleToRel($postRels)
+    {
+    	foreach($postRels as $k => $postRel) {
+        	$post = $this->post->where(['rel_id'=>$postRel->id, 'is_section'=>1, 'sort_num'=>0])->first();
+            $postRel->big_title = $post->title;
+            $postRels[$k] = $postRel;
+        }
+        
+        return $postRels;
+    }
     
     
     

@@ -279,15 +279,24 @@ class PostController extends Controller
                 
                 
                 if(isset($vals['del_block']) && $vals['del_block'] && $vals['rel_id']) { //block削除の時
-                	$postRel = $this->post->find($vals['rel_id']);
+                	$postDel = $this->post->find($vals['rel_id']);
                     
-                    if(isset($postRel->img_path)) {
-                    	Storage::delete('public/'. $postRel->img_path);
+                    if(isset($postDel->img_path)) {
+                    	Storage::delete($postDel->img_path);
                     }
                     
-                    $postRel->delete();
+                    $midNullPost = $this->post->where(['rel_id'=>$postDel->rel_id, 'is_section'=>1])->whereNull('title')->first();
                     
-                    //$status .= "\n". '「' . $blockKey . 'ブロック-' . ($vals['count']+1) . '」が削除されました。';
+                    if(collect($midNullPost)->isNotEmpty()) {
+                    	$midNullPost->delete();
+                    }
+                    else {
+                    	$status .= "\n". '<span class="text-warning">！中タイトルの個数が入力ブロック数より多いようですので確認して下さい。最後の中タイトルに対してブロックが未入力です！</span>';
+                    }
+                    
+                    $postDel->delete();
+                    
+                    
                 }
                 else {
                 	

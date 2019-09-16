@@ -2429,7 +2429,60 @@ h3.upper-title {
 }
 
 
+/* Post post-single ********** */
+.post-main {
+	float: left;
+    width: 69%;
+    margin-right: 3%;
+    //border: 1px solid orange;
+}
+.post-side {
+	float: right;
+    //border: 1px solid blue;
+    width: 28%;
+}
 
+.post-main header h1 {
+	font-size: 2.1em;
+	color: #141d21;
+    background: #e9e5e3;
+    padding: 0.2em 0.2em;
+}
+.post-main section h1,
+.post-main header h2 {
+	font-size: 1.6em;
+}
+.post-main section {
+	 //border: 1px solid red;
+}
+.post-main section h2 {
+	 font-size: 1.4em;
+}
+.post-index {
+	color: #141d21;
+    border: 1px solid #141d21;
+    background: #e9e5e3;
+    padding: 1em;
+}
+.post-cate {
+	color: #fff;
+	background: #878787;
+    padding: 0.2em 0.7em;
+}
+
+.post-side .side-img-wrap {
+	float: left;
+    width: 28%;
+    margin-right: 2%;
+}
+.post-side .side-cont-wrap {
+	float: left;
+    width: 70%;
+    font-size: 0.9em;
+}
+.post-side .side-cont-wrap h5 {
+	font-size: 1.2em;
+}
 
 
 /* login */
