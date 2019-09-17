@@ -730,8 +730,19 @@ var exe = (function() {
         
         openBlock: function() {
         	
+            var txt = $('.block-tgl').text();
+            
             $('.block-tgl').on('click', function(){
-            	$(this).next('div').slideToggle(300);
+            	var $th = $(this);
+                
+            	$th.next('div').slideToggle(300);
+                
+                if($th.hasClass('bg-secondary')) {
+                    $th.removeClass('bg-secondary text-light').addClass('bg-light text-info');
+                }
+                else {
+                    $th.removeClass('bg-light text-info').addClass('bg-secondary text-light');
+                }
             });
         
         },

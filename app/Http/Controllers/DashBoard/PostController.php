@@ -290,13 +290,9 @@ class PostController extends Controller
                     if(collect($midNullPost)->isNotEmpty()) {
                     	$midNullPost->delete();
                     }
-                    else {
-                    	$status .= "\n". '<span class="text-warning">！中タイトルの個数が入力ブロック数より多いようですので確認して下さい。最後の中タイトルに対してブロックが未入力です！</span>';
-                    }
                     
                     $postDel->delete();
-                    
-                    
+    
                 }
                 else {
                 	
@@ -376,11 +372,11 @@ class PostController extends Controller
                     
                     
                     if(isset($vals['del_img']) && $vals['del_img']) { //削除チェックの時
-                    	if(isset($postRel->img_path)) {
-                            Storage::delete('public/'. $postRel->img_path); //Storageはpublicフォルダのあるところをルートとしてみる
+                    	if(isset($contPost->img_path)) {
+                            Storage::delete($contPost->img_path); //Storageはpublicフォルダのあるところをルートとしてみる
                             
-                            $postRel->img_path = null;
-                            $postRel->save();
+                            $contPost->img_path = null;
+                            $contPost->save();
                         }
                     }
                     else {
@@ -394,10 +390,8 @@ class PostController extends Controller
                             
                             //$pre = time() . '-';
                             //$pre = mt_rand(0, 99999) . '-';
-                            $pre = '';
                             
-                            $filename = 'post/' . $postRelId . '/' . $blockKey . '/' . $pre . $filename;
-                            //$dirName = 'upper/' . $type . '/' . $editId . '/' . $blockKey;
+                            $filename = 'post/' . $postRelId . '/' . $blockKey . '/' . $filename;
 
                             //new File()は画像情報を取得するためのもの。 new File('aaa.jpg')とすると、$vals['img'] or $request->file('img')と同じものになる
                             
@@ -429,6 +423,26 @@ class PostController extends Controller
             	'mid_title_id' => $midTitleArr[$contPost->sort_num],
             ]);
         });
+        
+        
+        //最後のmid_titleに対してブロックがあるかどうかを判別する
+        //最後のmidTitlePostを取得
+        $lastMidPost = $this->post->where(['rel_id'=>$postRelId, 'is_section'=>1])->where('sort_num', '>', 0)->whereNotNull('title')->orderBy('sort_num', 'desc')->first();
+
+		//取得したmidTitlePostのsort_num以上のcontentsPostを取得
+		$checkPosts = $this->post->where(['rel_id'=>$postRelId, 'is_section'=>0])->where('sort_num', '>=', $lastMidPost->sort_num)->get();
+        
+        $res = 0;
+        foreach($checkPosts as $checkPost) {
+        	if(isset($checkPost->img_path) || isset($checkPost->title) || isset($checkPost->detail)) {
+            	$res = 1;
+                break;
+            }
+        }
+        
+        if(! $res) {
+        	$status .= '<br><span class="text-danger">確認して下さい！ 最後の中タイトルに対してブロックが未入力のようです。</span>';
+        }
 	
 		
         

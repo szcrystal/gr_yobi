@@ -152,7 +152,7 @@ use App\Category;
                 ?>
                 
                 <hr class="mt-3">
-        		<h4 class="mt-5 mb-3 p-2 bg-secondary text-light text-uppercase block-tgl">{{ $blockKey }}ブロック（{{ $retu }}列部分）</h4>
+        		<h5 class="mt-5 mb-3 p-2 bg-secondary text-light border border-secondary text-uppercase block-tgl">{{ $blockKey }}ブロック（{{ $retu }}列部分） <i class="fa fa-angle-down"></i></h5>
                 
                 <div class="block-all-wrap pt-2">
                     <fieldset class="mb-5 form-group">
@@ -230,7 +230,7 @@ use App\Category;
             
             
             <hr class="mt-3">
-            <h4 class="mt-5 mb-3 p-2 bg-secondary text-light text-uppercase block-tgl">サムネイル紹介コメント</h4>
+            <h5 class="mt-5 mb-3 p-2 bg-secondary text-light border border-secondary text-uppercase block-tgl">サムネイル紹介コメント <i class="fa fa-angle-down"></i></h5>
             
             <div class="block-all-wrap pt-2">
                 <fieldset class="my-3 form-group">

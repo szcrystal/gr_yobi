@@ -31,20 +31,24 @@ class PostController extends Controller
         $this->postTagRel = $postTagRel;
         
         
-        $this->whereArr = ['open_status'=>1, 'is_potset'=>0]; //こことSingleとSearchとCtm::isPotParentAndStockにある
+        $this->whereArr = ['open_status'=>1]; //こことSingleとSearchとCtm::isPotParentAndStockにある
         
-        $this->itemPerPage = 15;
+        $this->itemPerPage = 3;
         
     }
     
-    public function index($id)
+    public function index()
     {
     	if(Ctm::isEnv('product') || Ctm::isEnv('alpha')) abort(404);
         
-        
-        $item = $this->item->find($id);
-        
         $whereArr = $this->whereArr;
+        
+        $postRels = $this->postRel->where($whereArr)->orderBy('created_at','DESC')->paginate($this->itemPerPage);
+        //bigTitle(H1)をセットする
+        $postRels = $this->setBigTitleToRel($postRels);
+        
+        return view('main.post.archive', ['postRels'=>$postRels]);
+        
         
         if(!isset($item)) {
             abort(404);

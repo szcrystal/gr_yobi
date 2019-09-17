@@ -168,7 +168,7 @@ use App\Category;
 
                     <div class="float-left col-md-8 pl-3 pr-0">
                         <fieldset class="form-group{{ $errors->has('thumb_path') ? ' is-invalid' : '' }}">
-                            <label for="main_img">サムネイル画像</label>
+                            <label for="main_img">記事サムネイル画像</label>
                             <input class="form-control-file thumb-file" id="thumb_path" type="file" name="thumb_path">
                         </fieldset>
                     
@@ -178,7 +178,7 @@ use App\Category;
                             </span>
                         @endif
                         
-                        <span class="text-small text-secondary">＊サムネイル画像は原則必要なものとなります。<br>削除後の未入力など注意して下さい。</span>
+                        <span class="text-small text-secondary">＊記事サムネイル画像は原則必要なものとなります。<br>削除後の未入力など注意して下さい。</span>
                     
                     </div>
                 </fieldset>
@@ -214,9 +214,9 @@ use App\Category;
                 
                 <hr class="mt-1">
         		
-                <h4 class="mt-2 mb-0 p-2 bg-secondary text-light text-uppercase block-tgl">記事ブロック <i class="fa fa-angle-double-down"></i></h4>
+                <h5 class="mt-2 mb-2 p-2 bg-secondary border border-secondary text-light text-uppercase block-tgl">記事ブロック <i class="fa fa-angle-down"></i></h5>
                 
-                <div class="block-all-wrap pt-2">
+                <div class="block-all-wrap pt-1">
  
                     @while($n < $blockCount[$blockKey])
                     
@@ -244,7 +244,7 @@ use App\Category;
                                     $rId = isset($upperRel['mid_section'][$midCount]) ? $upperRel['mid_section'][$midCount]->id : 0;
                                 ?>
 
-                                @if(Ctm::isEnv('local'))
+                                @if(! Ctm::isEnv('local'))
                                     <br>{{ $rId }} / {{ $midCount }}
                                 @endif
                             </fieldset>
@@ -254,8 +254,8 @@ use App\Category;
                         @endif
                     
 
-                        <div class="border border-gray p-3 mb-4 bg-gray rounded">
-                            @include('dashboard.shared.upperContents')
+                        <div class="border border-gray p-3 mb-5 bg-gray rounded">
+                            @include('dashboard.shared.upperContents', ['type'=>'post'])
                         </div>
 
                         <?php $n++; ?>

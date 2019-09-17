@@ -163,27 +163,13 @@ use App\TopSetting;
     <div class="mb-5">
         <h4>こんな他の記事もあります</h4>
         @foreach($relatePosts as $relatePost)
-            <div class="clearfix mb-3">
-                <div class="side-img-wrap">
-                    <a href="{{ url('post/'. $relatePost->id) }}">
-                        <img src="{{ Storage::url($relatePost->thumb_path) }}" class="img-fluid">
-                    </a>
-                </div>
-                
-                <div class="side-cont-wrap">
-                    <span class="post-cate">{{ PostCategory::find($relatePost->cate_id)->name }}</span>
-                    <span class="post-date">{{ Ctm::changeDate($relatePost->created_at, 1) }}</span>
-                    <h5 class="mt-1"><a href="{{ url('post/'. $relatePost->id) }}">{{ $relatePost->big_title }}</a></h5>
-                </div>
-                
-            </div>
+            @include('main.shared.atclPost', ['post'=>$relatePost])
         @endforeach
 
     </div>
 
     <div class="mb-5">
     	<h4>この記事の関連商品</h4>
-
     </div>
 
     <div class="mb-5">
@@ -192,6 +178,12 @@ use App\TopSetting;
             @include('main.shared.tag', ['num'=>0])
         </div>
     </div>
+
+
+@if(Ctm::isEnv('local'))
+	<a href="{{ url('post') }}" >TOP</a>
+    <a href="{{ url('post/category/'. 1) }}" >post cate</a>
+@endif
 
 </div>
         

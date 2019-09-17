@@ -196,6 +196,8 @@ label em {
 }
 .block-all-wrap {
 	display: none;
+    background: #F2F2EB;
+    padding: 1em;
 }
 
 /* Mail Preview */
