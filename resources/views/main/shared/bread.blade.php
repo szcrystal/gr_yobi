@@ -1,6 +1,7 @@
 <?php
 use App\Category;
 use App\CategorySecond;
+use App\PostCategory;
 ?>
 
 <div class="">
@@ -10,7 +11,34 @@ use App\CategorySecond;
     
     <li class="breadcrumb-item"><a href="{{ url('/') }}"><i class="fal fa-home"></i></a></li>
     
-    @if($type == 'single')
+    @if($type == 'post')
+    	@if($typeSec == 'top')
+        	<li class="breadcrumb-item active" aria-current="page">記事一覧</li>
+        @else
+        	<?php $postCate = PostCategory::find($cateId); ?>
+            
+        	<li class="breadcrumb-item">
+                <a href="{{ url('post') }}">記事一覧</a>
+            </li>
+            
+        	@if($typeSec == 'cate')
+            	<li class="breadcrumb-item active" aria-current="page">
+                    {{ $postCate->name }}
+                </li>
+            
+            @elseif($typeSec == 'single')
+                <li class="breadcrumb-item">
+                    <a href="{{ url('post/category/'. $postCate->link_name) }}">{{ $postCate->name }}</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">
+                    {{ $bigTitle }}
+                </li>
+            
+            @endif
+            
+        @endif
+        
+    @elseif($type == 'single')
     	<?php $cate = Category::find($item->cate_id); ?>
     	<li class="breadcrumb-item">
     		<a href="{{ url('category/'. $cate->slug) }}">{{ $cate->name }}</a>

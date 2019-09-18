@@ -25,12 +25,8 @@ use App\TopSetting;
 @section('content')
 
 <div id="main" class="single post-single">
-    	
-        {{--
-        @if(! Ctm::isAgent('sp'))
-        	@include('main.shared.bread', ['type'=>'single'])
-        @endif
-        --}}
+    
+@include('main.shared.bread', ['type'=>'post', 'typeSec'=>'single', 'cateId'=>$postRel->cate_id])
         
 <div class="post-wrap clearfix">
 
@@ -81,10 +77,11 @@ use App\TopSetting;
                                     @foreach($post['contents'] as $contPost)
                                         @if(isset($contPost->title))
                                             <li class="mb-1"><a href="#{{ $n.'-'.$nn }}">{{ $n.'-'.$nn }}. {{ $contPost->title }}</a></li>
-                                        @endif
-                                        
-                                        <?php $nn++; ?>
+                                            
+                                            <?php $nn++; ?>
+                                        @endif   
                                     @endforeach
+                                    
                                 </ul>
                             @endif
                         

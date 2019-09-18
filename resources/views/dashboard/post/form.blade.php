@@ -217,6 +217,13 @@ use App\Category;
                 <h5 class="mt-2 mb-2 p-2 bg-secondary border border-secondary text-light text-uppercase block-tgl">記事ブロック <i class="fa fa-angle-down"></i></h5>
                 
                 <div class="block-all-wrap pt-1">
+                	
+                    <span class="text-small">
+                    	・1つ以上の中タイトルが入力されることが前提となります。<br>
+                        ・入力された1つ目中タイトルから、次に入力される中タイトルまでが1つのアウトライン（段落）となり、目次内等で区分けされます。<br>
+                        ・最後の中タイトルに対してブロック入力が1つもない場合、更新可能ですが警告が出ます。（タイトルだけ存在し内容がないというオモテにて不恰好な表示となります。）<br>
+                        ・画像の横幅について
+                    </span>
  
                     @while($n < $blockCount[$blockKey])
                     
@@ -253,7 +260,6 @@ use App\Category;
                             
                         @endif
                     
-
                         <div class="border border-gray p-3 mb-5 bg-gray rounded">
                             @include('dashboard.shared.upperContents', ['type'=>'post'])
                         </div>

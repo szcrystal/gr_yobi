@@ -18,7 +18,7 @@ $oldName = 'block.' . $blockKey . '.' . $n . '.';
 
 <h5 class="mb-3 float-left d-inline-block">{{ $blockName }}ブロック-{{ $n+1 }}</h5>
 
-<fieldset class="w-25 form-group float-left mb-0 pb-0 ml-3">
+<fieldset class="w-75 form-group float-left mb-0 pb-0 ml-3">
     <div class="col-md-12 checkbox px-0">
         <label>
             <?php
@@ -37,6 +37,10 @@ $oldName = 'block.' . $blockKey . '.' . $n . '.';
             <input type="hidden" name="{{ sprintf($nameFormat, 'del_block') }}" value="0">
             <input type="checkbox" name="{{ sprintf($nameFormat, 'del_block') }}" value="1"{{ $checked }}> {{ $blockName }}ブロック-{{ $n+1 }}を削除
         </label>
+        
+        @if($isPost)
+        	<small class="text-secondary ml-2">ブロック削除の時、上記中タイトルも同時に削除されるので注意して下さい。</small>
+        @endif
     </div>
 </fieldset>
 

@@ -15,9 +15,13 @@ use App\TopSetting;
 
 
 @section('bread')
+
+@include('main.shared.bread', ['type'=>'post', 'typeSec'=>'top'])
+
 {{--
-@include('main.shared.bread')
+@include('main.shared.bread', ['type'=>'post', 'typeSec'=>'cate', 'cateId'=>$cate->id])
 --}}
+
 @endsection
 
 
