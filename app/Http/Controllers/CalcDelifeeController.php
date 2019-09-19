@@ -11,6 +11,7 @@ use App\Setting;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
+use Ctm;
     
 class CalcDelifeeController extends Controller
 {
@@ -90,7 +91,10 @@ class CalcDelifeeController extends Controller
         foreach($this->itemData as $keys => $item) {
             
             $prefFee = $this->dgRel->where(['dg_id'=>$item->dg_id, 'pref_id'=>$prefId])->first()->fee;
-    
+            //getTax get tax ============
+            $prefFee = Ctm::getPriceWithTax($prefFee);
+    		//getTax get tax END ========
+            
             if($prefFee == '99999' || $prefFee === null) {            	
                 $title = $item->title;
                 $prefName = $this->prefecture->find($prefId)->name;
@@ -100,13 +104,14 @@ class CalcDelifeeController extends Controller
         }
         
         return $errorArr;
-        
+/*        
 //        if(count($errorArr) > 0) { //配送不可ならリダイレクト
 //            return redirect($toRedirect)->withErrors($errorArr)->withInput();
 //        }
 //        else {
 //        	return;
 //        }
+*/
     }
     
     
@@ -128,6 +133,9 @@ class CalcDelifeeController extends Controller
         $isDecimalAnswer = $answer - floor($answer); //小数点以下の数値があるかどうか。 切り捨てした数値を引いて例えば0.3など残ればtrueとなる
         
         $fee = $this->dgRel->where(['dg_id'=>$dgId, 'pref_id'=>$prefId])->first()->fee;
+        //getTax get tax ============
+        $fee = Ctm::getPriceWithTax($fee);
+        //getTax get tax END ========
     
         if($amari > 0) { //割り切れない時
             if($answer <= 1) {
@@ -164,6 +172,11 @@ class CalcDelifeeController extends Controller
         //下草小と大のそれぞれの送料
         $smFee = $this->dgRel->where(['dg_id'=>$smId, 'pref_id'=>$prefId])->first()->fee;
         $bgFee = $this->dgRel->where(['dg_id'=>$bgId, 'pref_id'=>$prefId])->first()->fee;
+        
+        //getTax get tax ============
+        $smFee = Ctm::getPriceWithTax($smFee);
+        $bgFee = Ctm::getPriceWithTax($bgFee);
+        //getTax get tax END ========
         
         //$factor = 27.9;
     
