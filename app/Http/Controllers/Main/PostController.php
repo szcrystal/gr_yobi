@@ -44,8 +44,9 @@ class PostController extends Controller
         $whereArr = $this->whereArr;
         
         $postRels = $this->postRel->where($whereArr)->orderBy('created_at','DESC')->paginate($this->itemPerPage);
+        
         //bigTitle(H1)をセットする
-        $postRels = $this->setBigTitleToRel($postRels);
+        //$postRels = $this->setBigTitleToRel($postRels);
         
         return view('main.post.archive', ['postRels'=>$postRels]);
         
@@ -415,7 +416,7 @@ class PostController extends Controller
         $relatePosts = $this->postRel->whereIn('id', $sameTagIds)->union($sameCates)->inRandomOrder()->take(3)->get();
         
         //bigTitle(H1)をセットする
-        $relatePosts = $this->setBigTitleToRel($relatePosts);
+        //$relatePosts = $this->setBigTitleToRel($relatePosts);
         
 //        print_r($relatePosts);
 //        exit;
@@ -430,7 +431,7 @@ class PostController extends Controller
         
         
         
-        $metaTitle = isset($postRel->meta_title) ? $postRel->meta_title : $bigTitle . '｜植木買うならグリーンロケット';
+        $metaTitle = isset($postRel->meta_title) ? $postRel->meta_title : $postRel->big_title . '｜植木買うならグリーンロケット';
         $metaDesc = $postRel->meta_description;
         $metaKeyword = $postRel->meta_keyword;
         

@@ -47,7 +47,7 @@ use App\TopSetting;
 <article>
 	
     <header>
-        <h1>{{ $bigTitle }}</h1>
+        <h1>{{ $postRel->big_title }}</h1>
         
         <div class="mt-2 mb-3 pl-1">
             <span class="post-date">{{ Ctm::changeDate($postRel->created_at, 1) }}</span>        
@@ -85,9 +85,9 @@ use App\TopSetting;
                                 </ul>
                             @endif
                         
-                        </li>
+                        	</li>
                         
-                        <?php $n++; ?>
+                        	<?php $n++; ?>
                         
                         @endif
                         

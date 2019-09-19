@@ -12,6 +12,7 @@ class PostRelation extends Model
         'open_status',
         'is_index',
         'thumb_path',
+        'big_title',
         'meta_title',
         'meta_description',
         'meta_keyword',

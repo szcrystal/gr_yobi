@@ -200,7 +200,7 @@ use App\Category;
                 <fieldset class="mb-5 form-group">
                     <label class="text-uppercase">大タイトル（h1）<span class="text-danger text-big">*</span></label>
                     
-                    <input class="form-control col-md-12{{ $errors->has('block.' .$blockKey. '.section.title') ? ' is-invalid' : '' }}" name="block[{{ $blockKey }}][section][title]" value="{{ Ctm::isOld() ? old('block.' .$blockKey. '.section.title') : (isset($upperRel['section']) ? $upperRel['section']->title : '') }}" placeholder="">
+                    <input class="form-control col-md-12{{ $errors->has('block.' .$blockKey. '.section.title') ? ' is-invalid' : '' }}" name="block[{{ $blockKey }}][section][title]" value="{{ Ctm::isOld() ? old('block.' .$blockKey. '.section.title') : (isset($postRel) ? $postRel->big_title : '') }}" placeholder="">
 
                         @if ($errors->has('block.' .$blockKey. '.section.title'))
                             <div class="text-danger">
@@ -234,7 +234,7 @@ use App\Category;
                             	$midSecRel = isset($upperRel['mid_section'][$midCount]) ? $upperRel['mid_section'][$midCount] : null;
                             ?>
                             
-                            <fieldset class="mt-5 mb-4 form-group">
+                            <fieldset class="form-group mt-4 pt-2 mb-4">
                                 <label>中タイトル-{{ $midCount+1 }}（H2）</label>
                                 <input class="form-control col-md-12{{ $errors->has($midOldName) ? ' is-invalid' : '' }}" name="block[{{ $blockKey }}][mid_section][{{ $midCount }}][title]" value="{{ Ctm::isOld() ? old($midOldName) : (isset($midSecRel) ? $midSecRel->title : '') }}" placeholder="">
 
@@ -264,8 +264,12 @@ use App\Category;
                             @include('dashboard.shared.upperContents', ['type'=>'post'])
                         </div>
 
+						<hr class="border-dotted border-secondary">
+                        
                         <?php $n++; ?>
+                        
                     @endwhile
+                    
                     
                     
                     <div class="form-group mt-5 mb-5 pt-3">
@@ -352,7 +356,7 @@ use App\Category;
             </div><?php //tagwrap ?>
             
             
-            @include('dashboard.shared.meta', ['obj'=> isset($postRel) ? $postRel : null])
+            @include('dashboard.shared.meta', ['obj'=> isset($postRel) ? $postRel : null, 'type'=>'post'])
             
             
             {{--

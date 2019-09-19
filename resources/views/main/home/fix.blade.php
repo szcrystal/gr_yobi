@@ -22,6 +22,7 @@ use App\TopSetting;
 
 <div id="main" class="fix-page {{ $fix->slug }}">
 
+	{{--
 	@if($fix->slug == 'about-pay' && Request::has('from-cart'))
     	<div>
             <a href="#" class="btn border border-secondary bg-white mt-2 mb-4" onClick="history.back(); return false;">
@@ -29,6 +30,7 @@ use App\TopSetting;
             </a>
         </div>
     @endif
+    --}}
 
     <div class="panel panel-default">
         <h2 class="mb-3 card-header">{{ $fix->title }}</h2>
@@ -42,7 +44,7 @@ use App\TopSetting;
 		</div>
     </div>
     
-    
+    {{--
     @if($fix->slug == 'about-pay' && Request::has('from-cart'))
     	<div>
             <a href="#" class="btn border border-secondary bg-white mt-0 mb-3" onClick="history.back(); return false;">
@@ -50,6 +52,7 @@ use App\TopSetting;
             </a>
         </div>
     @endif
+    --}}
 
 </div>
 

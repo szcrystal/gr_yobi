@@ -31,7 +31,7 @@ use App\PostCategory;
                     <a href="{{ url('post/category/'. $postCate->link_name) }}">{{ $postCate->name }}</a>
                 </li>
                 <li class="breadcrumb-item active" aria-current="page">
-                    {{ $bigTitle }}
+                    {{ $postRel->big_title }}
                 </li>
             
             @endif

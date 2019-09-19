@@ -41,14 +41,17 @@ class PostController extends Controller
     
     public function index()
     {
-        //$itemObjs = Item::orderBy('id', 'desc')->paginate($this->perPage);
+    	if(Ctm::isEnv('product') || Ctm::isEnv('alpha')) 
+        	return view('errors.dashboard');
+        
+            
         $postRels = $this->postRel->orderBy('id', 'desc')->get();
         
-        foreach($postRels as $k => $postRel) {
-        	$post = $this->post->where(['rel_id'=>$postRel->id, 'is_section'=>1, 'sort_num'=>0])->first();
-            $postRel->big_title = $post->title;
-            $postRels[$k] = $postRel;
-        }
+//        foreach($postRels as $k => $postRel) {
+//        	$post = $this->post->where(['rel_id'=>$postRel->id, 'is_section'=>1, 'sort_num'=>0])->first();
+//            $postRel->big_title = $post->title;
+//            $postRels[$k] = $postRel;
+//        }
         
         
         return view('dashboard.post.index', ['postRels'=>$postRels, ]);
@@ -57,6 +60,10 @@ class PostController extends Controller
     
     public function show($id)
     {
+    	if(Ctm::isEnv('product') || Ctm::isEnv('alpha')) 
+        	return view('errors.dashboard');
+        
+    
         $postRel = $this->postRel->find($id);
 
         $relArr = ['p'=>array()/*, 'b'=>array(), 'c'=>array()*/];
@@ -123,6 +130,10 @@ class PostController extends Controller
    
     public function create()
     {
+    	if(Ctm::isEnv('product') || Ctm::isEnv('alpha')) 
+        	return view('errors.dashboard');
+        
+        
 		$id = 0;
         $edit = 0;
         
@@ -194,8 +205,8 @@ class PostController extends Controller
         $data['open_status'] = isset($data['open_status']) ? 0 : 1;
         $data['is_index'] = isset($data['is_index']) ? 1 : 0;
         
-//        echo $data['open_status'];
-//        exit;
+        //big title
+		$data['big_title'] = $data['block']['p']['section']['title'];
         
         $postRel = $this->postRel->updateOrCreate(
         	['id'=>$editId],
@@ -276,169 +287,120 @@ class PostController extends Controller
                 
 				$isSection = $key === 'section' ? 1 : 0; //大タイトルの時かブロックかを判別する
                 $isMidSection = $key === 'mid_section' ? 1 : 0; //中タイトルの時かブロックかを判別する
-                
-                
-                if(isset($vals['del_block']) && $vals['del_block'] && $vals['rel_id']) { //block削除の時
-                /*
-                	$postDel = $this->post->find($vals['rel_id']);
-                    
-                    if(isset($postDel->img_path)) {
-                    	Storage::delete($postDel->img_path);
-                    }
-                    
-                    //$postDel->delete();
-                    
-                    //block削除時に空のmidTitleも1つ削除しないと順番が合わなくなるので
-                    $this->post->where(['rel_id'=>$postRelId, 'sort_num'=>$postDel->sort_num])->delete();
-                    unset($blockArr['mid_section'][$key]);
-                    //array_splice($blockArr['mid_section'], $key, 1); //$blockArr['mid_section'][$key]
-                 */   
-/*                    
-                    //$postDels->delete();
-                    
-                    
-//                    $midPostDel = $this->post->where(['rel_id'=>$postRelId, 'is_section'=>1, 'sort_num'=>$postDel->sort_num])->first();
-//                    
-//                    if(collect($midPostDel)->isNotEmpty()) {
-//                    	$midPostDel->delete();
-//                        
-//                        //sort_num振り直し
-//                        $sortMidPosts = $this->post->where(['rel_id'=>$postRelId, 'is_section'=>1])->where('sort_num', '>', 0)->orderBy('sort_num', 'asc')->get();
-//                        
-//                        $nn = 1;
-//                        foreach($sortMidPosts as $sortMidPost) {
-//                        	$sortMidPost->update(['sort_num'=>$nn]);
-//                            $nn++;
-//                        }
-//                    }
-//                    
-//                    //post（block）削除
-//                    $postDel->delete();
-//                    
-//                    //sort_num振り直し
-//                    $sortPosts = $this->post->where(['rel_id'=>$postRelId, 'is_section'=>0])->orderBy('sort_num', 'asc')->get();
-//                    
-//                    $nn = 1;
-//                    foreach($sortPosts as $sortPost) {
-//                        $sortPost->update(['sort_num'=>$nn]);
-//                        $nn++;
-//                    }
-*/    
-                }
-                else {
                 	
-                	if($isMidSection) {
-                    	//大タイトルと中タイトルの区分けは、どちらもis_sectionは1、大タイトルはsort_numが必ず0、中タイトルは1以上
+               
+               if($isMidSection) {
+                    //大タイトルと中タイトルの区分けは、どちらもis_sectionは1、大タイトルはsort_numが必ず0、中タイトルは1以上
+                    
+                    $nn = 0;
+                    //$nnn = 0;
+                    
+                    foreach($vals as $k => $val) {
+                        $midTitlePost = $this->post->updateOrCreate(
+                            [
+                                'id' => $val['rel_id'],
+                            ],
+                            [
+                                'rel_id'=> $postRelId, 
+                                'block'=> $blockKey,
+                                'url'=> null,
+                                'title'=> $val['title'],
+                                'detail'=> null,
+                                'is_section'=> 1,
+                                //'is_mid_section'=> null,
+                                'sort_num'=> $nn+1, //sort_numが0の時は大タイトルのみなので、ここでは必ず0を入れないこと
+                            ]
+                        );
                         
-                        $nn = 0;
-                        //$nnn = 0;
-                        
-                    	foreach($vals as $k => $val) {
-                            $midTitlePost = $this->post->updateOrCreate(
-                                [
-                                    'id' => $val['rel_id'],
-                                ],
-                                [
-                                    'rel_id'=> $postRelId, 
-                                    'block'=> $blockKey,
-                                    'url'=> null,
-                                    'title'=> $val['title'],
-                                    'detail'=> null,
-                                    'is_section'=> 1,
-                                    //'is_mid_section'=> null,
-                                    'sort_num'=> $nn+1, //sort_numが0の時は大タイトルのみなので、ここでは必ず0を入れないこと
-                                ]
-                            );
-                        	
-                            //h2タイトルのIDを後でcontents用postにセットするのでそれ用の配列をここで作成する。
+                        //h2タイトルのIDを後でcontents用postにセットするのでそれ用の配列をここで作成する。
 //                            if($val['title'] != '') {
 //                            	$midTitleId = $midTitlePost->id;
 //                            }                           
 //                            $midTitleArr[$midTitlePost->sort_num] = $midTitleId;
+                        
+                        
+                        //MidTitleに連動するblockを取得する
+                        $contPostArr = $blockArr[$k];
+                        
+                        
+                        if(isset($contPostArr['del_block']) && $contPostArr['del_block'] && $contPostArr['rel_id']) { //block削除の時
+                            $postDel = $this->post->find($contPostArr['rel_id']);
                             
+                            if(isset($postDel->img_path)) {
+                                Storage::delete($postDel->img_path);
+                            }
                             
-                            //MidTitleに連動するblockを取得する
-                            $contPostArr = $blockArr[$k];
-                            
-                            
-                            if(isset($contPostArr['del_block']) && $contPostArr['del_block'] && $contPostArr['rel_id']) { //block削除の時
-                                $postDel = $this->post->find($contPostArr['rel_id']);
-                                
-                                if(isset($postDel->img_path)) {
-                                    Storage::delete($postDel->img_path);
-                                }
-                                
-                                $postDel->delete();
-                                $midTitlePost->delete(); //MidTitleに連動するblockが削除指定なら、上記1度登録したmidTitleも合わせて削除しないとmid_title_idが合わなくなる
+                            $postDel->delete();
+                            $midTitlePost->delete(); //MidTitleに連動するblockが削除指定なら、上記1度登録したmidTitleも合わせて削除しないとmid_title_idが合わなくなる
 
+                        }
+                        else {
+                            //h2タイトルのIDを後でcontents用postにセットするのでそれ用の配列をここで作成する。
+                            if(isset($midTitlePost->title)) { //$val['title'] != ''
+                                $midTitleId = $midTitlePost->id;
+                            }
+
+                            //contPost登録
+                            $contPost = $this->post->updateOrCreate(
+                                [
+                                    'id' => $contPostArr['rel_id'],
+                                ],
+                                [
+                                    'rel_id'=> $postRelId, 
+                                    'block'=> $blockKey,
+                                    'url'=> $contPostArr['url'],
+                                    'title'=> $contPostArr['title'],
+                                    'detail'=> $contPostArr['detail'],
+                                    'is_section'=> 0,
+                                    'sort_num'=> $nn+1,
+                                    'mid_title_id' => $midTitleId,
+                                ]
+                            );
+                            
+                            //$nnn++;
+                                                            
+                            //画像UP
+                            if(isset($contPostArr['del_img']) && $contPostArr['del_img']) { //削除チェックの時
+                                if(isset($contPost->img_path)) {
+                                    Storage::delete($contPost->img_path); //Storageはpublicフォルダのあるところをルートとしてみる
+                                    
+                                    $contPost->img_path = null;
+                                    $contPost->save();
+                                }
                             }
                             else {
-                                //h2タイトルのIDを後でcontents用postにセットするのでそれ用の配列をここで作成する。
-                                if(isset($midTitlePost->title)) { //$val['title'] != ''
-                                    $midTitleId = $midTitlePost->id;
-                                }
-
-                                //contPost登録
-                                $contPost = $this->post->updateOrCreate(
-                                    [
-                                        'id' => $contPostArr['rel_id'],
-                                    ],
-                                    [
-                                        'rel_id'=> $postRelId, 
-                                        'block'=> $blockKey,
-                                        'url'=> $contPostArr['url'],
-                                        'title'=> $contPostArr['title'],
-                                        'detail'=> $contPostArr['detail'],
-                                        'is_section'=> 0,
-                                        'sort_num'=> $nn+1,
-                                        'mid_title_id' => $midTitleId,
-                                    ]
-                                );
+                                if(isset($contPostArr['img'])) {
                                 
-                                //$nnn++;
-                                                                
-                                //画像UP
-                                if(isset($contPostArr['del_img']) && $contPostArr['del_img']) { //削除チェックの時
-                                    if(isset($contPost->img_path)) {
-                                        Storage::delete($contPost->img_path); //Storageはpublicフォルダのあるところをルートとしてみる
-                                        
-                                        $contPost->img_path = null;
-                                        $contPost->save();
-                                    }
-                                }
-                                else {
-                                    if(isset($contPostArr['img'])) {
+                                    $filename = $contPostArr['img']->getClientOriginalName();
+                                    $filename = str_replace(' ', '_', $filename);
                                     
-                                        $filename = $contPostArr['img']->getClientOriginalName();
-                                        $filename = str_replace(' ', '_', $filename);
-                                        
-                                        $fNameArr = explode('.', $filename);
-                                        $filename = $fNameArr[0] . '-' . time() . '.' . array_pop($fNameArr); //array_pop 配列最後（拡張子を取得） end()でも可。mt_rand(0, 99999)
-                                        
-                                        $filename = 'post/' . $postRelId . '/' . $blockKey . '/' . $filename;
+                                    $fNameArr = explode('.', $filename);
+                                    $filename = $fNameArr[0] . '-' . time() . '.' . array_pop($fNameArr); //array_pop 配列最後（拡張子を取得） end()でも可。mt_rand(0, 99999)
+                                    
+                                    $filename = 'post/' . $postRelId . '/' . $blockKey . '/' . $filename;
 
-                                        //new File()は画像情報を取得するためのもの。 new File('aaa.jpg')とすると、$vals['img'] or $request->file('img')と同じものになる
-                                        
-                                        //$path = $vals['img']->store($dirName); //ファイル名が自動生成される
-                                        //Storage::putFile($dirName, $vals['img']); //上と同じ
-                                        
-                                        //$path = $vals['img']->storeAs($dirName, 'abc'); //ファイル名を独自指定(拡張子が付かない)
-                                        $path = $contPostArr['img']->storeAs('public', $filename);
-                                        
-                                        //$path = Storage::disk('s3')->putFileAs($filename, $request->file('thumbnail'), 'public');
-                                        //$path = $request->file('thumbnail')->storeAs('', $filename, 's3');
-                                                                
-                                        $contPost->img_path = $path;
-                                        $contPost->save();
-                                    }
+                                    //new File()は画像情報を取得するためのもの。 new File('aaa.jpg')とすると、$vals['img'] or $request->file('img')と同じものになる
+                                    
+                                    //$path = $vals['img']->store($dirName); //ファイル名が自動生成される
+                                    //Storage::putFile($dirName, $vals['img']); //上と同じ
+                                    
+                                    //$path = $vals['img']->storeAs($dirName, 'abc'); //ファイル名を独自指定(拡張子が付かない)
+                                    $path = $contPostArr['img']->storeAs('public', $filename);
+                                    
+                                    //$path = Storage::disk('s3')->putFileAs($filename, $request->file('thumbnail'), 'public');
+                                    //$path = $request->file('thumbnail')->storeAs('', $filename, 's3');
+                                                            
+                                    $contPost->img_path = $path;
+                                    $contPost->save();
                                 }
-                            
                             }
-                            
-                            
-                            $nn++;
+                        
                         }
+                        
+                        
+                        $nn++;
                     }
+                }
                     
                     /*
                     else {
@@ -527,7 +489,6 @@ class PostController extends Controller
                     */
                     
                     //if(! $isSection) $num++;
-                }
 
             } //foreach
             

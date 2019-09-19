@@ -2446,7 +2446,7 @@ h3.upper-title {
 	margin-bottom: 2em;
 }
 .post-main header h1 {
-	font-size: 2.1em;
+	font-size: 1.9em;
 	color: #141d21;
     background: #e9e5e3;
     padding: 0.1em 0.2em;
@@ -2457,7 +2457,7 @@ h3.upper-title {
 }
 .post-main section h1 {
 	padding-bottom: 0.1em;
-	 border-bottom: 1px solid #141d21;
+    border-bottom: 1px solid #141d21;
 }
 .post-main section h2 {
 	 font-size: 1.4em;
@@ -2492,6 +2492,9 @@ h3.upper-title {
 	float: left;
     width: 30%;
     margin-right: 1.2%;
+}
+.post-atcl h5 {
+	font-size: 1.2em;
 }
 .post-side .post-atcl {
 	float: none;
