@@ -54,6 +54,56 @@ use App\TopSetting;
             <span class="post-cate">{{ $postCate->name }}</span>
         </div>
         
+        <?php 
+            $n = 1;
+            //$nn = 1;
+        ?>
+        
+        @foreach($postArr as $keyMidId => $post)            
+            
+            <div class="intro-wrap mt-4">
+                
+                @if(isset($post['h2']->title) && $post['h2']->is_intro)
+                    <h2 id="{{ $n }}" class="mb-3"><i class="fas fa-check text-kon"></i> {{ $post['h2']->title }}</h2>
+                @endif
+                
+                <?php $nn = 1; ?>
+                
+                @foreach($post['contents'] as $contPost)
+                    @if($contPost->is_intro)
+                        <div id="{{ $n.'-'.$nn }}" class="pt-1 pb-3 pl-1">
+                            @if(isset($contPost->title))
+                                <h3>{{ $contPost->title }}</h3>
+                            @endif
+                            
+                            @if(isset($contPost->img_path))
+                                
+                                <?php 
+                                    $imgTag = sprintf('<img src="%s" class="img-fluid">', Storage::url($contPost->img_path));
+                                ?>
+                                
+                                @if(isset($contPost->url))
+                                    <a href="{{ $contPost->url }}" target="_brank">{!! $imgTag !!}</a>
+                                @else
+                                    {!! $imgTag !!}
+                                @endif
+                            @endif
+                            
+                            @if(isset($contPost->detail))
+                                <p class="mt-2">{!! nl2br($contPost->detail) !!}</p>
+                            @endif
+                            
+                        </div>
+                        
+                        <?php $nn++; ?>
+                    @endif
+                @endforeach
+            
+            </div>
+            
+            <?php $n++; ?>
+        @endforeach
+        
         @if(! $postRel->is_index && count($postArr) > 0)
             
             <h2><i class="fas fa-check text-kon"></i> 目次</h2>
@@ -99,10 +149,7 @@ use App\TopSetting;
     
     </header>
     
-    <?php 
-        $n = 1;
-        //$nn = 1;
-    ?>
+    
     
     @foreach($postArr as $keyMidId => $post)
         <?php
@@ -110,45 +157,48 @@ use App\TopSetting;
             $chunkNum++;            
         ?>
         
-        <section class="mt-4">
-            
-            @if(isset($post['h2']->title))
-            	<h1 id="{{ $n }}" class="mb-3"><i class="fas fa-check text-kon"></i> {{ $post['h2']->title }}</h1>
-            @endif
-            
-            <?php $nn = 1; ?>
-            
-            @foreach($post['contents'] as $contPost)
-                <div id="{{ $n.'-'.$nn }}" class="pt-1 pb-3 pl-1">
-                	@if(isset($contPost->title))
-                    	<h2>{{ $contPost->title }}</h2>
-                    @endif
-                    
-                	@if(isset($contPost->img_path))
-                    	
-                        <?php 
-                        	$imgTag = sprintf('<img src="%s" class="img-fluid">', Storage::url($contPost->img_path));
-                        ?>
-                        
-                    	@if(isset($contPost->url))
-                        	<a href="{{ $contPost->url }}" target="_brank">{!! $imgTag !!}</a>
-                        @else
-                        	{!! $imgTag !!}
-                        @endif
-                    @endif
-                    
-                    @if(isset($contPost->detail))
-                    	<p class="mt-2">{!! nl2br($contPost->detail) !!}</p>
-                    @endif
-                    
-                </div>
+        
+            <section class="mt-4">
                 
-                <?php $nn++; ?>
-            @endforeach
-        
-        </section>
-        
-        <?php $n++; ?>
+                @if(isset($post['h2']->title) && ! $post['h2']->is_intro)
+                    <h1 id="{{ $n }}" class="mb-3"><i class="fas fa-check text-kon"></i> {{ $post['h2']->title }}</h1>
+                @endif
+                
+                <?php $nn = 1; ?>
+                
+                @foreach($post['contents'] as $contPost)
+                    @if(! $contPost->is_intro)
+                    <div id="{{ $n.'-'.$nn }}" class="pt-1 pb-3 pl-1">
+                        @if(isset($contPost->title))
+                            <h2>{{ $contPost->title }}</h2>
+                        @endif
+                        
+                        @if(isset($contPost->img_path))
+                            
+                            <?php 
+                                $imgTag = sprintf('<img src="%s" class="img-fluid">', Storage::url($contPost->img_path));
+                            ?>
+                            
+                            @if(isset($contPost->url))
+                                <a href="{{ $contPost->url }}" target="_brank">{!! $imgTag !!}</a>
+                            @else
+                                {!! $imgTag !!}
+                            @endif
+                        @endif
+                        
+                        @if(isset($contPost->detail))
+                            <p class="mt-2">{!! nl2br($contPost->detail) !!}</p>
+                        @endif
+                        
+                    </div>
+                    
+                    <?php $nn++; ?>
+                    @endif
+                @endforeach
+            
+            </section>
+            
+            <?php $n++; ?>
     @endforeach
 
 </article>

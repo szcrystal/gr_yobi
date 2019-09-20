@@ -347,29 +347,30 @@ class PostController extends Controller
         $posts = $this->post->where('rel_id', $postId)->get();
         
         $bigTitle = '';
-        $postArr = array();
+        $indexArr = array(); //目次用
+        $postArr = array(); //post用
+        $introArr = array(); //Intro用
         
         foreach($posts as $post) {
         	if($post->is_section) {
-            	if(! $post->sort_num) { //sort_numが0なのは、h1タイトルのみ
-	                $bigTitle = $post->title;
+                if($post->title != '') {
+                    $postArr[$post->id]['h2'] = $post;
+                    
+                    $conts = $this->post->where(['rel_id'=>$postId, 'mid_title_id'=>$post->id])->get(); //mid_title_id => h2のmidTitle これに属するコンテンツを取得するため
+                    $postArr[$post->id]['contents'] = $conts;
                 }
-                else {
-                	if($post->title != '') {
-                    	$postArr[$post->id]['h2'] = $post;
-                        
-                        $conts = $this->post->where(['rel_id'=>$postId, 'mid_title_id'=>$post->id])->get(); //mid_title_id => h2のmidTitle これに属するコンテンツを取得するため
-                    	$postArr[$post->id]['contents'] = $conts;
-                    }
-//                    else {
-//                    	$postArr[0]['contents'] = $this->post->where(['rel_id'=>$postId, 'mid_title_id'=>0])->get();
+//                else {
+//                	if($post->is_intro) {
+//                    	$postArr[$post->id]['h2'] = $post;
+//                        
+//                        $conts = $this->post->where(['rel_id'=>$postId, 'is_section'=>0, 'is_intro'=>1])->get();
+//                    	$postArr[$post->id]['contents'] = $conts;
 //                    }
-                }
+//                }
             }
         }
         
         
-                
         //Cate
         $postCate = $this->postCate->find($postRel->cate_id);
         
@@ -435,7 +436,7 @@ class PostController extends Controller
         $metaDesc = $postRel->meta_description;
         $metaKeyword = $postRel->meta_keyword;
         
-        return view('main.post.single', ['postRel'=>$postRel, 'bigTitle'=>$bigTitle, 'postArr'=>$postArr, 'postCate'=>$postCate, 'tags'=>$tags, 'relatePosts'=>$relatePosts, 'metaTitle'=>$metaTitle, 'metaDesc'=>$metaDesc, 'metaKeyword'=>$metaKeyword]);
+        return view('main.post.single', ['postRel'=>$postRel, 'bigTitle'=>$bigTitle, 'postArr'=>$postArr, 'introArr'=>$introArr, 'postCate'=>$postCate, 'tags'=>$tags, 'relatePosts'=>$relatePosts, 'metaTitle'=>$metaTitle, 'metaDesc'=>$metaDesc, 'metaKeyword'=>$metaKeyword]);
         
         
         		

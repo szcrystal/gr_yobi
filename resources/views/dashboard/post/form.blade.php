@@ -216,7 +216,7 @@ use App\Category;
         		
                 <h5 class="mt-2 mb-2 p-2 bg-secondary border border-secondary text-light text-uppercase block-tgl">記事ブロック <i class="fa fa-angle-down"></i></h5>
                 
-                <div class="block-all-wrap pt-1">
+                <div class="block-all-wrap pt-1 d-block">
                 	
                     <span class="text-small">
                     	・1つ以上の中タイトルが入力されることが前提となります。<br>

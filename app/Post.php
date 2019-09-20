@@ -15,6 +15,7 @@ class Post extends Model
         'detail',            
         'sort_num',
         'is_section',
+        'is_intro',
         'mid_title_id',
     ];
 }

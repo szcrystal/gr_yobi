@@ -26,6 +26,7 @@ class CreatePostsTable extends Migration
             
             $table->integer('sort_num')->nullable()->default(NULL);
             $table->boolean('is_section')->nullable()->default(NULL);
+            $table->boolean('is_intro')->nullable()->default(NULL);
             
             $table->integer('mid_title_id')->nullable()->default(NULL);
             

@@ -18,7 +18,7 @@ $oldName = 'block.' . $blockKey . '.' . $n . '.';
 
 <h5 class="mb-3 float-left d-inline-block">{{ $blockName }}ブロック-{{ $n+1 }}</h5>
 
-<fieldset class="w-75 form-group float-left mb-0 pb-0 ml-3">
+<fieldset class="form-group d-inline-block mb-0 pb-0 ml-3">
     <div class="col-md-12 checkbox px-0">
         <label>
             <?php
@@ -44,7 +44,32 @@ $oldName = 'block.' . $blockKey . '.' . $n . '.';
     </div>
 </fieldset>
 
+@if($isPost)
+<fieldset class="clearfix d-block">
+    <div class="col-md-12 checkbox px-0 text-right">
+        <label>
+            <?php
+                $introChecked = '';
+                if(Ctm::isOld()) {
+                    if(old($oldName . 'is_intro'))
+                        $introChecked = ' checked';
+                }
+                else {
+                    if(isset($upperRel[$n]) && $upperRel[$n]->is_intro) {
+                        $introChecked = ' checked';
+                    }
+                }
+            ?>
+
+            <input type="hidden" name="{{ sprintf($nameFormat, 'is_intro') }}" value="0">
+            <input type="checkbox" name="{{ sprintf($nameFormat, 'is_intro') }}" value="1"{{ $introChecked }}> {{ $blockName }}ブロック-{{ $n+1 }}を紹介用ブロックにする
+        </label>
+    </div>
+</fieldset>
+@endif
 </div>
+
+
 
 <div class="form-group clearfix mb-4 thumb-wrap">
     <fieldset class="w-25 float-right">

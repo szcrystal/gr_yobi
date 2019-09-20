@@ -296,6 +296,13 @@ class PostController extends Controller
                     //$nnn = 0;
                     
                     foreach($vals as $k => $val) {
+                    	
+                        //MidTitleに連動するblockを取得する
+                        $contPostArr = $blockArr[$k];
+                        
+                        $isIntro = $contPostArr['is_intro'] ? 1 : 0;
+                        
+                         
                         $midTitlePost = $this->post->updateOrCreate(
                             [
                                 'id' => $val['rel_id'],
@@ -307,20 +314,12 @@ class PostController extends Controller
                                 'title'=> $val['title'],
                                 'detail'=> null,
                                 'is_section'=> 1,
+                                'is_intro' => $isIntro,
                                 //'is_mid_section'=> null,
                                 'sort_num'=> $nn+1, //sort_numが0の時は大タイトルのみなので、ここでは必ず0を入れないこと
                             ]
                         );
                         
-                        //h2タイトルのIDを後でcontents用postにセットするのでそれ用の配列をここで作成する。
-//                            if($val['title'] != '') {
-//                            	$midTitleId = $midTitlePost->id;
-//                            }                           
-//                            $midTitleArr[$midTitlePost->sort_num] = $midTitleId;
-                        
-                        
-                        //MidTitleに連動するblockを取得する
-                        $contPostArr = $blockArr[$k];
                         
                         
                         if(isset($contPostArr['del_block']) && $contPostArr['del_block'] && $contPostArr['rel_id']) { //block削除の時
@@ -339,7 +338,7 @@ class PostController extends Controller
                             if(isset($midTitlePost->title)) { //$val['title'] != ''
                                 $midTitleId = $midTitlePost->id;
                             }
-
+                            
                             //contPost登録
                             $contPost = $this->post->updateOrCreate(
                                 [
@@ -352,6 +351,7 @@ class PostController extends Controller
                                     'title'=> $contPostArr['title'],
                                     'detail'=> $contPostArr['detail'],
                                     'is_section'=> 0,
+                                    'is_intro' => $isIntro,
                                     'sort_num'=> $nn+1,
                                     'mid_title_id' => $midTitleId,
                                 ]
