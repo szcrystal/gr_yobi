@@ -92,14 +92,14 @@ class CalcDelifeeController extends Controller
             
             $prefFee = $this->dgRel->where(['dg_id'=>$item->dg_id, 'pref_id'=>$prefId])->first()->fee;
             //getTax get tax ============
-            $prefFee = Ctm::getPriceWithTax($prefFee);
+            //$prefFee = Ctm::getPriceWithTax($prefFee);
     		//getTax get tax END ========
             
             if($prefFee == '99999' || $prefFee === null) {            	
                 $title = $item->title;
                 $prefName = $this->prefecture->find($prefId)->name;
                 
-                $errorArr['no_delivery.'. $keys][] = '「'. $title .'」['.  $item->number .'] の「'. $prefName .'」への配送は不可です。';
+                $errorArr['no_delivery.'. $keys][] = '「'. $title .'」 の「'. $prefName .'」への配送は不可です。';
             }
         }
         
