@@ -347,6 +347,7 @@ class CalcDelifeeController extends Controller
             }
         }
         
+        
         foreach($tiyodaItem as $itemObject) {
         	//係数の合計を算出
             /*★★★ 
@@ -620,7 +621,7 @@ class CalcDelifeeController extends Controller
                 if(! $item->is_once) { //同梱包不可のものはそれぞれ単独で
                     $factor = $item->factor * $item->count;
                     $deliFee += $this->normalCalc($item->dg_id, $factor);
-                    
+
                     //ORG ---
                     //$deliFee += $this->dgRel->where(['dg_id'=>$item->dg_id, 'pref_id'=>$this->prefId])->first()->fee;
                 } 
@@ -688,7 +689,7 @@ class CalcDelifeeController extends Controller
         	$deliFee += $this->MoriyaConifer($coniferItem);
         }
         
-         
+
         return $deliFee;
         
         //送料END -----------------
