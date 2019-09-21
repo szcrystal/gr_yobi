@@ -77,7 +77,6 @@ use App\TopSetting;
                             @endif
                             
                             @if(isset($contPost->img_path))
-                                
                                 <?php 
                                     $imgTag = sprintf('<img src="%s" class="img-fluid">', Storage::url($contPost->img_path));
                                 ?>
