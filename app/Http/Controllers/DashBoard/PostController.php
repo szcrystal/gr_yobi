@@ -5,6 +5,8 @@ namespace App\Http\Controllers\DashBoard;
 use App\Admin;
 use App\Item;
 use App\Setting;
+use App\Category;
+use App\CategorySecond;
 use App\Post;
 use App\PostRelation;
 use App\PostCategory;
@@ -20,7 +22,7 @@ use Ctm;
 
 class PostController extends Controller
 {
-    public function __construct(Admin $admin, Item $item, Setting $setting, Post $post, PostRelation $postRel, PostCategory $postCate, Tag $tag, PostTagRelation $postTagRel)
+    public function __construct(Admin $admin, Item $item, Setting $setting, Category $cate, CategorySecond $subCate, Post $post, PostRelation $postRel, PostCategory $postCate, Tag $tag, PostTagRelation $postTagRel)
     {
         
         $this -> middleware('adminauth');
@@ -29,6 +31,9 @@ class PostController extends Controller
         $this -> admin = $admin;
         $this-> item = $item;
         $this->set =  $setting->first();
+        $this->category = $cate;
+        $this->categorySecond = $subCate;
+        
         $this->post = $post;
         $this->postRel = $postRel;
         $this->postCate = $postCate;
@@ -107,6 +112,9 @@ class PostController extends Controller
 		//Cate
 		$postCates = $this->postCate->all();
         
+        $itemCates = $this->category->all();
+        $itemSubCates = $this->categorySecond->all();
+        
         //Tag
         $tagNames = $this->postTagRel->where(['postrel_id'=>$id])->orderBy('sort_num', 'asc')->get()->map(function($obj) {
             return $this->tag->find($obj->tag_id)->name;
@@ -125,7 +133,7 @@ class PostController extends Controller
         
         //$icons = $this->icon->all();
         
-        return view('dashboard.post.form', ['postRel'=>$postRel, 'relArr'=>$relArr, 'postCates'=>$postCates, 'tagNames'=>$tagNames, 'allTags'=>$allTags, 'blockCount'=>$blockCount, 'id'=>$id, 'edit'=>$edit]);
+        return view('dashboard.post.form', ['postRel'=>$postRel, 'relArr'=>$relArr, 'postCates'=>$postCates, 'itemCates'=>$itemCates, 'itemSubCates'=>$itemSubCates, 'tagNames'=>$tagNames, 'allTags'=>$allTags, 'blockCount'=>$blockCount, 'id'=>$id, 'edit'=>$edit]);
     }
    
     public function create()
@@ -151,13 +159,16 @@ class PostController extends Controller
         
         $postCates = $this->postCate->all();
         
+        $itemCates = $this->category->all();
+        $itemSubCates = $this->categorySecond->all();
+        
         $allTags = $this->tag->get()->map(function($tag){
         	return $tag->name;
         })->all();
         
         
 //        $users = $this->user->where('active',1)->get();
-        return view('dashboard.post.form', ['primaryCount'=>$primaryCount, 'imgCount'=>$imgCount, 'relArr'=>$relArr, 'blockCount'=>$blockCount, 'postCates'=>$postCates, 'allTags'=>$allTags, 'edit'=>$edit, 'id'=>$id, ]);
+        return view('dashboard.post.form', ['primaryCount'=>$primaryCount, 'imgCount'=>$imgCount, 'relArr'=>$relArr, 'blockCount'=>$blockCount, 'postCates'=>$postCates, 'itemCates'=>$itemCates, 'itemSubCates'=>$itemSubCates, 'allTags'=>$allTags, 'edit'=>$edit, 'id'=>$id, ]);
     }
     
     

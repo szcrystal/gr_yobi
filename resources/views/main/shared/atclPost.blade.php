@@ -12,7 +12,7 @@ use App\PostCategory;
     </div>
     
     <div class="line-cont-wrap">
-        <span class="post-cate">{{ PostCategory::find($post->cate_id)->name }}</span>
+        <a href="{{ url('post/category/'.$postCate->slug) }}"><span class="post-cate">{{ PostCategory::find($post->cate_id)->name }}</span></a>
         <span class="post-date">{{ Ctm::changeDate($post->created_at, 1) }}</span>
         <h5 class="mt-1"><a href="{{ url('post/'. $post->id) }}">{{ $post->big_title }}</a></h5>
     </div>

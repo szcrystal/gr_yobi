@@ -219,8 +219,8 @@ use App\Category;
                 <div class="block-all-wrap pt-1 d-block">
                 	
                     <span class="text-small">
-                    	・1つ以上の中タイトルが入力されることが前提となります。<br>
-                        ・入力された1つ目中タイトルから、次に入力される中タイトルまでが1つのアウトライン（段落）となり、目次内等で区分けされます。<br>
+                        ・入力された1つ目中タイトルから、次に入力される中タイトルまでが1つのアウトライン（段落）となり、目次内等で区分けされます。紹介用ブロックも同様です。<br>
+                        ・1つのアウトラインの中で1つ以上の中タイトルが入力されることが前提となります。<br>
                         ・最後の中タイトルに対してブロック入力が1つもない場合、更新可能ですが警告が出ます。（タイトルだけ存在し内容がないというオモテにて不恰好な表示となります。）<br>
                         ・画像の横幅について
                     </span>
@@ -354,6 +354,114 @@ use App\Category;
 
                 </div>
             </div><?php //tagwrap ?>
+            
+            
+            <?php //========================================================= ?>
+            
+            <fieldset class="form-group mt-4 pt-2">
+                
+                <label>商品 親カテゴリー <span class="text-danger text-big">*</span></label>
+                
+                <select class="form-control select-first col-md-6{{ $errors->has('item_cate_id') ? ' is-invalid' : '' }}" name="item_cate_id">
+                    <option disabled selected>選択して下さい</option>
+                    
+                    @foreach($itemCates as $cate)
+                        <?php
+                            $selected = '';
+                            if(Ctm::isOld()) {
+                                if(old('item_cate_id') == $cate->id)
+                                    $selected = ' selected';
+                            }
+                            else {
+                                if(isset($postRel) && $postRel->item_cate_id == $cate->id) {
+                                    $selected = ' selected';
+                                }
+                            }
+                        ?>
+                        
+                        <option value="{{ $cate->id }}"{{ $selected }}>{{ $cate->name }}</option>
+                    @endforeach
+                    
+                </select>
+                <span class="text-warning"></span>
+                
+                @if ($errors->has('item_cate_id'))
+                    <div class="help-block text-danger">
+                    	<span class="fa fa-exclamation form-control-feedback"></span>
+                        <span>{{ $errors->first('item_cate_id') }}</span>
+                    </div>
+                @endif
+                
+            </fieldset>
+            
+            <fieldset class="form-group mt-3 pt-2">
+                
+                <label>商品 子カテゴリー <span class="text-danger text-big">*</span></label>
+                
+                <select class="form-control select-second col-md-6{{ $errors->has('item_subcate_id') ? ' is-invalid' : '' }}" name="item_subcate_id">
+                    <option disabled selected>選択して下さい</option>
+                    
+                    @foreach($itemSubCates as $cate)
+                        <?php
+                            $selected = '';
+                            if(Ctm::isOld()) {
+                                if(old('item_subcate_id') == $cate->id)
+                                    $selected = ' selected';
+                            }
+                            else {
+                                if(isset($postRel) && $postRel->item_subcate_id == $cate->id) {
+                                    $selected = ' selected';
+                                }
+                            }
+                        ?>
+                        
+                        <option value="{{ $cate->id }}"{{ $selected }}>{{ $cate->name }}</option>
+                    @endforeach
+                    
+                </select>
+                <span class="text-warning"></span>
+                
+                @if ($errors->has('item_subcate_id'))
+                    <div class="help-block text-danger">
+                    	<span class="fa fa-exclamation form-control-feedback"></span>
+                        <span>{{ $errors->first('item_subcate_id') }}</span>
+                    </div>
+                @endif
+                
+            </fieldset>
+            
+            
+            <fieldset class="mt-5 mb-5 form-group">
+                <label class="text-uppercase">検索ワード<small class="text-secondary ml-2">複数の場合は<b class="text-dark">半角スペース</b>で区切って下さい。</small></label>
+                
+                <input class="form-control col-md-12{{ $errors->has('s_word') ? ' is-invalid' : '' }}" name="s_word" value="{{ Ctm::isOld() ? old('s_word') : (isset($postRel) ? $postRel->s_word : '') }}" placeholder="シマトネリコ 苗木・・">
+
+                @if ($errors->has('s_word'))
+                    <div class="text-danger">
+                        <span class="fa fa-exclamation form-control-feedback"></span>
+                        <span>{{ $errors->first('s_word') }}</span>
+                    </div>
+                @endif
+                
+            </fieldset>
+            
+            
+            <fieldset class="mt-5 mb-5 form-group">
+                <label class="text-uppercase">商品ID<small class="text-secondary ml-2">複数の場合は<b class="text-dark">半角カンマ</b>で区切って下さい。</small></label>
+                
+                <input class="form-control col-md-12{{ $errors->has('s_word') ? ' is-invalid' : '' }}" name="item_ids" value="{{ Ctm::isOld() ? old('item_ids') : (isset($postRel) ? $postRel->item_ids : '') }}" placeholder="3,5,10・・">
+
+                    @if ($errors->has('item_ids'))
+                        <div class="text-danger">
+                            <span class="fa fa-exclamation form-control-feedback"></span>
+                            <span>{{ $errors->first('item_ids') }}</span>
+                        </div>
+                    @endif
+            
+            </fieldset>
+            
+            
+            <hr>
             
             
             @include('dashboard.shared.meta', ['obj'=> isset($postRel) ? $postRel : null, 'type'=>'post'])

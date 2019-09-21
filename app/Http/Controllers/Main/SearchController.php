@@ -11,6 +11,7 @@ use App\Category;
 use Ctm;
 use DB;
 use Schema;
+use Search;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -48,7 +49,13 @@ class SearchController extends Controller
             $search = '';
         }
         else {
+        	$s = new Search($searchs);
+        	$objs = $s->getSearchObj();
+
+        	/* ORG ==========
             $objs = $this->returnSearchObj($searchs);
+            =============== */
+            
             extract($objs); //$allResultはコレクション->all()で配列になっている -> 該当するIDを配列で取得に変更 [$allResIds, $search] item->id、検索ワード
         }
         /*

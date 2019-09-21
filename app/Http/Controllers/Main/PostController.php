@@ -7,6 +7,7 @@ use App\Post;
 use App\PostRelation;
 use App\PostCategory;
 use App\Tag;
+use App\TagRelation;
 use App\PostTagRelation;
 
 
@@ -14,11 +15,12 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
 use Ctm;
+use Search;
 
 class PostController extends Controller
 {
     
-    public function __construct(Item $item, Post $post, PostRelation $postRel, PostCategory $postCate, Tag $tag, PostTagRelation $postTagRel)
+    public function __construct(Item $item, Post $post, PostRelation $postRel, PostCategory $postCate, Tag $tag, TagRelation $tagRel, PostTagRelation $postTagRel)
     {
         //$this->middleware('search');
         
@@ -28,10 +30,13 @@ class PostController extends Controller
         
         $this->postCate = $postCate;
         $this->tag = $tag;
+        $this->tagRel = $tagRel;
         $this->postTagRel = $postTagRel;
         
         
-        $this->whereArr = ['open_status'=>1]; //こことSingleとSearchとCtm::isPotParentAndStockにある
+        $this->postWhere = ['open_status'=>1]; 
+        $this->itemWhere =['open_status'=>1, 'is_potset'=>0]; //こことSingleとSearch/ArchiveとCtm::isPotParentAndStockにある
+        
         
         $this->itemPerPage = 3;
         
@@ -347,28 +352,30 @@ class PostController extends Controller
         $posts = $this->post->where('rel_id', $postId)->get();
         
         $bigTitle = '';
-        $indexArr = array(); //目次用
         $postArr = array(); //post用
+        $indexArr = array(); //目次用
         $introArr = array(); //Intro用
         
         foreach($posts as $post) {
         	if($post->is_section) {
-                if($post->title != '') {
+                if(isset($post->title)) {
                     $postArr[$post->id]['h2'] = $post;
                     
-                    $conts = $this->post->where(['rel_id'=>$postId, 'mid_title_id'=>$post->id])->get(); //mid_title_id => h2のmidTitle これに属するコンテンツを取得するため
+                    $contIds = $this->post->where(['rel_id'=>$postId, 'mid_title_id'=>$post->id])->get()->map(function($obj){
+                        if(isset($obj->img_path) || isset($obj->title) || isset($obj->detail)) {
+                        	return $obj->id;
+                        }
+                    })->all(); //mid_title_id => h2のmidTitle これに属するコンテンツを取得するため
+                    
+                    $conts = $this->post->find($contIds);
+                    
                     $postArr[$post->id]['contents'] = $conts;
                 }
-//                else {
-//                	if($post->is_intro) {
-//                    	$postArr[$post->id]['h2'] = $post;
-//                        
-//                        $conts = $this->post->where(['rel_id'=>$postId, 'is_section'=>0, 'is_intro'=>1])->get();
-//                    	$postArr[$post->id]['contents'] = $conts;
-//                    }
-//                }
             }
         }
+        
+//        print_r($postArr);
+//        exit;
         
         
         //Cate
@@ -389,7 +396,7 @@ class PostController extends Controller
         }
         
         
-        //関連記事 ===============================
+        //関連記事 （こんな他の記事）===============================
         //同じPostカテゴリーと先頭タグ1-3までと同じものをunionしてrandomOrderする
         
         //カテゴリー
@@ -424,8 +431,29 @@ class PostController extends Controller
         
         
         //関連商品 ==================================
+        $relateNum = 6;
         
-
+        if(isset($postRel->s_word)) {
+        	$word = $postRel->s_word;
+            $s = new Search($word);
+            
+            $sRes = $s->getSearchObj();
+            
+            //-----
+            $relateItems = $this->item->whereIn('id', $sRes['allResIds'])->where($this->itemWhere)->where('stock', '>', 0)->inRandomOrder()->take($relateNum)->get();
+        }
+        else {
+            $relateTagIds = $this->tagRel->whereIn('tag_id', $ar)->get()->map(function($obj){
+                return $obj->item_id;
+            });
+            
+            //-----
+            $relateItems = $this->item->whereIn('id', $relateIds)->where($this->itemWhere)->where('stock', '>', 0)->inRandomOrder()->take($relateNum)->get();
+            //-----
+        }
+        
+        
+		
         
         
         
@@ -436,7 +464,7 @@ class PostController extends Controller
         $metaDesc = $postRel->meta_description;
         $metaKeyword = $postRel->meta_keyword;
         
-        return view('main.post.single', ['postRel'=>$postRel, 'bigTitle'=>$bigTitle, 'postArr'=>$postArr, 'introArr'=>$introArr, 'postCate'=>$postCate, 'tags'=>$tags, 'relatePosts'=>$relatePosts, 'metaTitle'=>$metaTitle, 'metaDesc'=>$metaDesc, 'metaKeyword'=>$metaKeyword]);
+        return view('main.post.single', ['postRel'=>$postRel, 'bigTitle'=>$bigTitle, 'postArr'=>$postArr, 'introArr'=>$introArr, 'postCate'=>$postCate, 'tags'=>$tags, 'relatePosts'=>$relatePosts, 'relateItems'=>$relateItems, 'metaTitle'=>$metaTitle, 'metaDesc'=>$metaDesc, 'metaKeyword'=>$metaKeyword]);
         
         
         		

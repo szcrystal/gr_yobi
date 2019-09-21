@@ -1208,6 +1208,7 @@ img.img-fluid + div {
 	width: 32.0%;
 	margin-right: 1.8%;	
 	margin-bottom: 1.5em;
+    position: relative;
 	//min-height: 23em;
     //border: 1px solid orange;
 }
@@ -2432,18 +2433,22 @@ h3.upper-title {
 /* Post post-single ********** */
 .post-main {
 	float: left;
-    width: 69%;
+    width: 67%;
     margin-right: 3%;
     //border: 1px solid orange;
 }
 .post-side {
 	float: right;
     //border: 1px solid blue;
-    width: 28%;
+    width: 30%;
 }
 
 .post-main header {
 	margin-bottom: 2em;
+}
+.post-main section {
+	margin-bottom: 2.5em;
+	border: 1px solid red;
 }
 .post-main header h1 {
 	font-size: 1.9em;
@@ -2460,7 +2465,7 @@ h3.upper-title {
     border-bottom: 1px solid #141d21;
 }
 .post-main section h2 {
-	 font-size: 1.4em;
+	 font-size: 1.3em;
 }
 .post-index {
 	color: #141d21;
@@ -2500,6 +2505,15 @@ h3.upper-title {
 	float: none;
     width: 100%;
     margin-right: 0;
+}
+
+.relate-item .main-atcl {
+	width: 48%;
+	font-size: 85%;
+}
+.relate-item .main-atcl:nth-of-type(3n) {
+	//margin-right: 0;
+	border: 1px solid red;
 }
 
 /* login */
