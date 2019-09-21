@@ -3,6 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Item;
+
+use App\Tag;
+use App\TagRelation;
+
 //use App\DeliveryGroup;
 //use App\DeliveryGroupRelation;
 //use App\Prefecture;
@@ -32,7 +36,11 @@ class CalcSearchController extends Controller
          $itemDataはitemのobjectに[count]（購入個数）を足したObjectを一つずつ配列にしたもの
         ************************/
         
-        $this->item = new Item;
+        $this->item = new Item; //DB::table('items')
+        
+        $this->tag = new Tag;
+        $this->tagRel = new TagRelation;
+        
 //        $this->dg = new DeliveryGroup;
 //        $this->dgRel = new DeliveryGroupRelation;
 //        $this->prefecture = new Prefecture;
@@ -47,8 +55,131 @@ class CalcSearchController extends Controller
                 
     }
     
+    private function customQueryWhere($query, $columnArray, $word)
+    {
+    	foreach($columnArray as $column) {
+            
+            if($column != 'created_at' && $column != 'updated_at') {
+                
+                if($column == 'job_number' || $column == 'user_number')
+                { 
+                    $query -> orWhere($column, $word);
+                }
+                //cate
+                elseif($column == 'cate_id')
+                {
+                	$ids = DB::table('categories')->where('name', 'like', $word)->get()->map(function($obj){
+                        return $obj->id;
+                    })->all();
+                    
+                    //$qry->whereIn('subcate_id', $ids);
+                    $query -> orWhere(function($q) use($ids) {
+                        $q->whereIn('cate_id', $ids);
+                    });
+                }
+                
+                //cateSec
+                elseif($column == 'subcate_id')
+                {
+                    $ids = DB::table('category_seconds')->where('name', 'like', $word)->get()->map(function($obj){
+                        return $obj->id;
+                    })->all();
+                    
+                    //$qry->whereIn('subcate_id', $ids);
+                    $query -> orWhere(function($q) use($ids) {
+                        $q->whereIn('subcate_id', $ids);
+                    });
+                }
+                elseif(
+                    $column == 'name' || 
+                    $column == 'title' || 
+                    //$column == 'slug' || 
+                    $column == 'catchcopy' || 
+                    $column == 'exp_first' || 
+                    $column == 'explain' || 
+                    $column == 'about_ship' || 
+                    $column == 'detail'
+                    )
+                {
+                    $query -> orWhere($column, 'like', $word);
+                }
+
+                //産地直送ワード
+                elseif($column == 'farm_direct')
+                {
+                    //if($word == "%産地%" || $word == "%直送%" || $word == "%産地直送%") {
+                    if(strpos($word, '産地') !== false || strpos($word, '直送') !== false ) {
+                        $query -> orWhere($column, 1);
+                    }
+                }
+                
+                //Item内にcolumnがないものをここで検索する
+                else
+                {
+                	//Tag
+                	$tagIds = $this->tag->where('name', 'like', $word)->get()->map(function($tag){
+                        return $tag->id;
+                    })->all();
+                    
+                    $itemIds = $this->tagRel->whereIn('tag_id', $tagIds)->get()->map(function($tagRel){
+                    	return $tagRel->item_id;
+                    })->all();
+                    
+                    $query -> orWhere(function($q) use($itemIds) {
+                        $q->whereIn('id', $itemIds);
+                    });
+                    
+                }
+
+            }
+        }
+    }
     
-    public function getSearchObj() //private function returnSearchObj($search)
+    public function getSearchObj()
+    {
+    	$searchWord = $this->searchWord;
+
+        //全角スペース時半角スペースに置き換える
+        if( str_contains($searchWord, '　')) {
+            $searchWord = str_replace('　', ' ', $searchWord);
+        }
+        
+        if(str_contains($searchWord, ' ')) { //半角スペースがある時配列に
+        	$searchWord = explode(' ', $searchWord);
+        }
+        
+        $itemQuery = DB::table('items');
+        $columnArr = Schema::getColumnListing('items');
+        
+        if(is_array($searchWord)) { //半角スペース AND検索
+
+            foreach($searchWord as $sWord) {
+                $sWord = "%".$sWord."%";
+                
+                $itemQuery->where( function($query) use($columnArr, $sWord) { //ここをorWhereにすればOR検索(追加検索)になりそう
+                    $this->customQueryWhere($query, $columnArr, $sWord);
+                });
+            }
+        }
+        else {
+        	$sWord = "%".$searchWord."%";
+        	$this->customQueryWhere($itemQuery, $columnArr, $sWord);
+        }
+        
+        
+        $allResIds = $itemQuery->get()->map(function($item){
+            return $item->id;
+        })->all();
+        
+        
+        $search = $this->searchWord;
+        
+        return compact('allResIds', 'search'); //return ['allResIds'=>$allResIds, 'search'=>$this->searchWord];
+    }
+    
+    
+    //ORG getSearchObj ============
+    public function ORGgetSearchObj() //private function returnSearchObj($search)
     {
     	$searchWord = $this->searchWord;
 
@@ -73,17 +204,17 @@ class CalcSearchController extends Controller
                     { 
                         $qry -> orWhere($column, $word);
                     }
-                    elseif($column == 'subcate_id')
-                    {
-                    	$ids = DB::table('category_seconds')->where('name', 'like', $word)->get()->map(function($obj){
-                        	return $obj->id;
-                        })->all();
-                        
-                        //$qry->whereIn('subcate_id', $ids);
-                        $qry -> orWhere(function($q) use($ids) {
-                        	$q->whereIn('subcate_id', $ids);
-                        });
-                    }
+//                    elseif($column == 'subcate_id')
+//                    {
+//                    	$ids = DB::table('category_seconds')->where('name', 'like', $word)->get()->map(function($obj){
+//                        	return $obj->id;
+//                        })->all();
+//                        
+//                        //$qry->whereIn('subcate_id', $ids);
+//                        $qry -> orWhere(function($q) use($ids) {
+//                        	$q->whereIn('subcate_id', $ids);
+//                        });
+//                    }
                     elseif(
                     	$column == 'name' || 
                         $column == 'title' || 
@@ -188,19 +319,19 @@ class CalcSearchController extends Controller
             $columnArr = Schema::getColumnListing($table_name);
             $subCateIds = array();
             
-//            foreach($searchWord as $sWord) {
-//                $sWord = "%".$sWord."%";
-//                
-//                $query ->orWhere( function($query) use($columnArr, $sWord) {
-//                    customQueryWhere($columnArr, $query, $sWord);
-//                });
-//            }
-//            
-//            if($query->count() > 0) {
-//                $subCateIds = $query->get()->map(function($obj){
-//                    return $obj->id;
-//                })->all();
-//            }
+            foreach($searchWord as $sWord) {
+                $sWord = "%".$sWord."%";
+                
+                $query ->orWhere( function($query) use($columnArr, $sWord) {
+                    customQueryWhere($columnArr, $query, $sWord);
+                });
+            }
+            
+            if($query->count() > 0) {
+                $subCateIds = $query->get()->map(function($obj){
+                    return $obj->id;
+                })->all();
+            }
             
             //cate result
             $cateSecResults = DB::table('items')->whereIn('subcate_id', $subCateIds);
