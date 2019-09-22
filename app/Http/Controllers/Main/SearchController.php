@@ -56,7 +56,7 @@ class SearchController extends Controller
             $objs = $this->returnSearchObj($searchs);
             =============== */
             
-            extract($objs); //$allResultはコレクション->all()で配列になっている -> 該当するIDを配列で取得に変更 [$allResIds, $search] item->id、検索ワード
+            extract($objs); //$allResultはコレクション->all()で配列になっている -> 該当するIDを配列で取得に変更 [$allResIds, $search] item->idと検索ワード
         }
         /*
         //Custom Pagination
@@ -90,10 +90,12 @@ class SearchController extends Controller
 //        $rankName = '全体';
 //        $rightRanks = Ctm::getArgForView('', 'all');
         //extract($arg);
+                
+        $metaTitle = '検索ワード：' . $search . '｜植木買うならグリーンロケット';
+//        $metaDesc = $postRel->meta_description;
+//        $metaKeyword = $postRel->meta_keyword;
         
-        //$groupModel = $this->tagGroup;
-        
-        return view('main.archive.index', ['items'=>$allResults, 'searchStr' => $search, 'type'=>'search'/*, 'rightRanks'=>$rightRanks, 'rankName'=>$rankName*/]);
+        return view('main.archive.index', ['items'=>$allResults, 'searchStr' => $search, 'type'=>'search', 'metaTitle'=>$metaTitle/*, 'rightRanks'=>$rightRanks, 'rankName'=>$rankName*/]);
     }
     
     

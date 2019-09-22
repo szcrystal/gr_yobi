@@ -61,9 +61,9 @@ class CalcSearchController extends Controller
             
             if($column != 'created_at' && $column != 'updated_at') {
                 
-                if($column == 'job_number' || $column == 'user_number')
+                if($column == 'number' || $column == 'user_number')
                 { 
-                    $query -> orWhere($column, $word);
+                    $query -> orWhere($column, 'like', $word);
                 }
                 //cate
                 elseif($column == 'cate_id')
@@ -93,11 +93,13 @@ class CalcSearchController extends Controller
                 elseif(
                     $column == 'name' || 
                     $column == 'title' || 
-                    //$column == 'slug' || 
+                    $column == 'title_addition' || 
                     $column == 'catchcopy' || 
+                    $column == 'deli_plan_text' ||
                     $column == 'exp_first' || 
                     $column == 'explain' || 
                     $column == 'about_ship' || 
+                    $column == 'contents' || 
                     $column == 'detail'
                     )
                 {
@@ -116,7 +118,7 @@ class CalcSearchController extends Controller
                 //Item内にcolumnがないものをここで検索する
                 else
                 {
-                	//Tag
+                	//Tag -----
                 	$tagIds = $this->tag->where('name', 'like', $word)->get()->map(function($tag){
                         return $tag->id;
                     })->all();
@@ -128,6 +130,8 @@ class CalcSearchController extends Controller
                     $query -> orWhere(function($q) use($itemIds) {
                         $q->whereIn('id', $itemIds);
                     });
+                    
+                    //Icon_Id どうするか -----
                     
                 }
 

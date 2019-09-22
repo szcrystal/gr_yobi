@@ -216,7 +216,7 @@ use App\Category;
         		
                 <h5 class="mt-2 mb-2 p-2 bg-secondary border border-secondary text-light text-uppercase block-tgl">記事ブロック <i class="fa fa-angle-down"></i></h5>
                 
-                <div class="block-all-wrap pt-1 d-block">
+                <div class="block-all-wrap pt-1">
                 	
                     <span class="text-small">
                         ・入力された1つ目中タイトルから、次に入力される中タイトルまでが1つのアウトライン（段落）となり、目次内等で区分けされます。紹介用ブロックも同様です。<br>
@@ -286,7 +286,7 @@ use App\Category;
             
             <hr class="mt-3">
             
-            <fieldset class="form-group mt-5 pt-2">
+            <fieldset class="form-group mt-5 mb-0 pt-2">
                 
                 <label>記事カテゴリー <span class="text-danger text-big">*</span></label>
                 
@@ -323,7 +323,7 @@ use App\Category;
             </fieldset>
             
             
-            <div class="clearfix tag-wrap">
+            <div class="clearfix tag-wrap mt-4">
                 <div class="tag-group form-group{{ $errors->has('tag-group') ? ' is-invalid' : '' }}">
                     <label for="tag-group" class="control-label">タグ</label>
                     
@@ -358,12 +358,12 @@ use App\Category;
             
             <?php //========================================================= ?>
             
-            <fieldset class="form-group mt-4 pt-2">
+            <fieldset class="form-group mt-2 pt-0">
                 
                 <label>商品 親カテゴリー <span class="text-danger text-big">*</span></label>
                 
                 <select class="form-control select-first col-md-6{{ $errors->has('item_cate_id') ? ' is-invalid' : '' }}" name="item_cate_id">
-                    <option disabled selected>選択して下さい</option>
+                    <option selected>選択して下さい</option>
                     
                     @foreach($itemCates as $cate)
                         <?php
@@ -383,7 +383,7 @@ use App\Category;
                     @endforeach
                     
                 </select>
-                <span class="text-warning"></span>
+                <span class="text-warning">&nbsp;</span>
                 
                 @if ($errors->has('item_cate_id'))
                     <div class="help-block text-danger">
@@ -399,7 +399,7 @@ use App\Category;
                 <label>商品 子カテゴリー <span class="text-danger text-big">*</span></label>
                 
                 <select class="form-control select-second col-md-6{{ $errors->has('item_subcate_id') ? ' is-invalid' : '' }}" name="item_subcate_id">
-                    <option disabled selected>選択して下さい</option>
+                    <option selected>選択して下さい</option>
                     
                     @foreach($itemSubCates as $cate)
                         <?php

@@ -16,6 +16,7 @@ use App\Http\Controllers\Controller;
 
 use Ctm;
 use Search;
+use DB;
 
 class PostController extends Controller
 {
@@ -431,40 +432,123 @@ class PostController extends Controller
         
         
         //関連商品 ==================================
+        /*
+        	・idsがセット：必ずそれらを先頭に。不足分はタグから
+            ・idsが空：検索ワード、カテゴリー、タグを混ぜたランダム
+            ・検索ワードはOR検索（ワードの数だけデータも増える）
+        */
+        
         $relateNum = 6;
         
+        //$dbItem = $this->item->where($this->itemWhere)->where('stock', '>', 0);
+        
+//        $searchItems = null;
+//        $mustItems = null;
+        
+        
+        $relateTagIds = $this->tagRel->whereIn('tag_id', $ar)->get()->map(function($obj){
+            return $obj->item_id;
+        });
+        
+        $t = DB::table('items');
+        //-----
+        $t->whereIn('id', $relateTagIds);
+        
+        
+        //item_cate_id/subcate_id=>未入力なら0なので必ずここを通ることになる
+        $itemCateId = ($itemCateId = $postRel->item_cate_id != 1) ? $postRel->item_cate_id : 0; //カテゴリー植木庭木ならスルーする
+                
+        $t->orWhere(['cate_id'=>$postRel->item_cate_id]);
+        
+        $t->orWhere(['subcate_id'=>$postRel->item_subcate_id]);
+        
+		$allItems = $t->where($this->itemWhere)->where('stock', '>', 0)->inRandomOrder()->take(6);
+        
+        //print_r($tt);
+        //Tag + Cate + cateSec
+        //$allUnionItems = $tagItems->union($cateItems)->union($cateSecItems)->inRandomOrder();
+
+        //カラムだけ抽出
+        
+        
         if(isset($postRel->s_word)) {
-        	$word = $postRel->s_word;
+            $word = $postRel->s_word;
             $s = new Search($word);
             
             $sRes = $s->getSearchObj();
             
-            //-----
-            $relateItems = $this->item->whereIn('id', $sRes['allResIds'])->where($this->itemWhere)->where('stock', '>', 0)->inRandomOrder()->take($relateNum)->get();
-        }
-        else {
-            $relateTagIds = $this->tagRel->whereIn('tag_id', $ar)->get()->map(function($obj){
-                return $obj->item_id;
-            });
+            $sorts = implode(',', $sRes['allResIds']);
             
             //-----
-            $relateItems = $this->item->whereIn('id', $relateIds)->where($this->itemWhere)->where('stock', '>', 0)->inRandomOrder()->take($relateNum)->get();
-            //-----
+            $searchItems = $this->item->whereIn('id', $sRes['allResIds'])->where($this->itemWhere)->where('stock', '>', 0)->orderBy('updated_at', 'desc');
+            	//->union($allItems)->inRandomOrder();
         }
         
         
-		
+        if(isset($postRel->item_ids)) {
+        	$idsArr = explode(',', $postRel->item_ids);
+        	$sortIDs = $postRel->item_ids;
+        	
+            $mustItems = $this->item->whereIn('id', $idsArr)->where($this->itemWhere)->where('stock', '>', 0)->orderByRaw("FIELD(id, $sortIDs)");
+            
+            /*
+            if(isset($searchItems)) {
+            	$sr = $searchItems->union($allItems)->inRandomOrder()->take(6)->get()->all();
+                $mt = $mustItems->get()->all();
+                
+                $res = array_merge($sr, $mt);                
+        		$mustItems = collect($res);
+                
+                 //おすすめ情報 RecommendInfo (cate & cateSecond & tag)
+                //        $tagRecoms = $this->tag->where(['is_top'=>1])->orderBy('updated_at', 'desc')->get()->all();       
+                //        $res = array_merge($tagRecoms, $cateRecoms, $subCateRecoms);
+                        
+                //        $books = array(
+                //        	$tagRecoms,
+                //            $cateRecoms,
+                //            $subCateRecoms
+                //        );
+
+            	//$mustItems = $mustItems->union($sr);
+            }
+            else {
+            	$mustItems = $mustItems->union($allItems);
+            }
+            */
+            
+        }
+                
+        
+        if(isset($mustItems)) {
+        	if(isset($searchItems)) {
+            	$sr = $searchItems->union($allItems)->inRandomOrder()->take(6)->get()->all();
+                $mt = $mustItems->get()->all();
+                
+                $res = array_merge($mt, $sr);                
+        		$relateItems = collect($res)->take($relateNum);
+            }
+            else {
+            	$relateItems = $mustItems->union($allItems)->take($relateNum)->get();
+            }
+        	
+            //$relateItems = $mustItems->take($relateNum)->get();
+        }
+        else if(isset($searchItems)) {
+        	$relateItems = $searchItems->union($allItems)->inRandomOrder()->take($relateNum)->get();
+        }
+        else {
+	        $relateItems = $allItems->take($relateNum)->get();
+    	}    
         
         
-        
-        
-        
-        
+        // Meta ====================
         $metaTitle = isset($postRel->meta_title) ? $postRel->meta_title : $postRel->big_title . '｜植木買うならグリーンロケット';
         $metaDesc = $postRel->meta_description;
         $metaKeyword = $postRel->meta_keyword;
         
-        return view('main.post.single', ['postRel'=>$postRel, 'bigTitle'=>$bigTitle, 'postArr'=>$postArr, 'introArr'=>$introArr, 'postCate'=>$postCate, 'tags'=>$tags, 'relatePosts'=>$relatePosts, 'relateItems'=>$relateItems, 'metaTitle'=>$metaTitle, 'metaDesc'=>$metaDesc, 'metaKeyword'=>$metaKeyword]);
+
+        
+        return view('main.post.single', compact('postRel', 'postArr', 'postCate', 'tags', 'relatePosts', 'relateItems', 'metaTitle', 'metaDesc', 'metaKeyword'));
         
         
         		
