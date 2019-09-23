@@ -6,6 +6,8 @@ use App\Setting;
 use App\User;
 use App\UserNoregist;
 
+use App\Item;
+
 /*
 |--------------------------------------------------------------------------
 | Console Routes
@@ -69,6 +71,49 @@ Artisan::command('nouseraddr3', function () {
     
     $this->comment('NoUser change address3 done');
 });
+
+
+Artisan::command('getPotParent', function () {
+    $items = Item::all();
+    $ar = array();
+    
+    foreach($items as $item) {
+    	$isPotParent = 0; //このitemがpotParentなら、1
+    	$isStock = 0; //このpotParentの子供ポットの在庫が全て0なら、0
+        $stockNum = 0;
+        
+    	$pots = Item::where(['open_status'=>1, 'is_potset'=>1, 'pot_parent_id'=>$item->id])->get();
+    	
+        
+        if($pots->isNotEmpty()) {
+            foreach($pots as $pot) {
+                if($pot->stock) {
+                	$isStock = 1;
+                    break;
+                    //$stockNum += $pot->stock;
+                }
+            }
+            
+            $isPotParent = 1;
+        }
+
+		//Set 0 ====================        
+        if($isPotParent && ! isset($item->pot_parent_id)) {        	
+            $item->update(['pot_parent_id' => 0]);
+        	$this->comment($item->id . ': Set Done !');
+        }
+        
+        //Set Stock ====================        
+        if($isPotParent) {
+            $item->update(['stock'=>$isStock]);
+            $this->comment($item->id . ': Set Stock Done !');
+        }
+    }
+    
+    
+    
+    //$this->comment('NoUser change address3 done');
+})->describe('Display potParentItem No Input pot_parent_id ');
 
 
 

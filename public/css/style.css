@@ -2507,7 +2507,14 @@ h3.upper-title {
     margin-right: 0;
 }
 
+/*ChunkしないとFlexは使えない*/
+/*.relate-item > div {*/
+/*	display: flex;*/
+/*    border: 1px solid orange;*/
+/*    justify-content: space-between;*/
+/*}*/
 .relate-item .main-atcl {
+/*	flex: 1;*/
 	width: 49%;
     margin-right: 1.5%;
 	font-size: 85%;

@@ -176,10 +176,53 @@ class PostController extends Controller
     {
         $editId = $request->input('edit_id');
         
+        //echo $request->input('item_cate_id') .'/'. $request->input('item_subcate_id'); exit;
+//        if(! $request->has('item_subcate_id')) {
+//        	$request->input('item_subcate_id') = 0;
+//        }
+        
     	$rules = [
 //        	'number' => 'required|unique:items,number,'.$editId,
             'block.p.section.title' => 'required|max:255',
           	'cate_id' => 'required',
+            'item_subcate_id' => function($attribute, $value, $fail) use($request) {
+                if($request->input('item_cate_id') && ! $value) {
+                    return $fail('「親カテゴリー」指定時は「子カテゴリー」も選択して下さい。');
+                } 
+            },
+            
+            's_word' => [
+            	'nullable',
+            	'max:255',
+                function($attribute, $value, $fail) {
+                    if (strpos($value, '、') !== false || strpos($value, ',') !== false) {
+                        return $fail('「検索ワード」にカンマがあります。');
+                    }
+                }
+            ],
+            
+            'item_ids' => [
+            	'nullable',
+            	'max:255',
+                function($attribute, $value, $fail) {
+                    if (strpos($value, '、') !== false) {
+                        return $fail('「商品ID」に全角のカンマがあります。');
+                    }
+                    elseif (strpos($value, ' ') !== false || strpos($value, ' ') !== false) {
+                        return $fail('「商品ID」にスペースがあります。');
+                    }
+                    else {
+                    	$nums = explode(',', $value);
+                        foreach($nums as $num) {
+                        	if(! is_numeric($num)) {
+                            	return $fail('「商品ID」に全角の文字があります。');
+                            }
+                        }
+                    }
+                }
+            ],
+            
+            
             
 //            'price' => 'required|numeric',
 //            'stock' => 'nullable|numeric',
@@ -205,6 +248,7 @@ class PostController extends Controller
         $messages = [
          	'block.p.section.title.required' => '「大タイトル」は必須です。',
             'cate_id.required' => '「記事カテゴリー」を選択して下さい。',
+            'item_subcate_id.required_unless' => '「親カテゴリー」指定時は「子カテゴリー」も選択して下さい。',
         ];
         
         $this->validate($request, $rules, $messages);

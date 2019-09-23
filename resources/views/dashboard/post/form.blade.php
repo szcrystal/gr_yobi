@@ -4,6 +4,7 @@
 
 <?php 
 use App\Category;
+use App\CategorySecond;
 
 //    if($type == 'item') {
 //        $name = $orgObj->title;
@@ -358,12 +359,13 @@ use App\Category;
             
             <?php //========================================================= ?>
             
+            <h5>商品の紐付け</h5>
             <fieldset class="form-group mt-2 pt-0">
                 
                 <label>商品 親カテゴリー <span class="text-danger text-big">*</span></label>
                 
                 <select class="form-control select-first col-md-6{{ $errors->has('item_cate_id') ? ' is-invalid' : '' }}" name="item_cate_id">
-                    <option selected>選択して下さい</option>
+                    <option value="0" selected>選択して下さい</option>
                     
                     @foreach($itemCates as $cate)
                         <?php
@@ -394,13 +396,20 @@ use App\Category;
                 
             </fieldset>
             
-            <fieldset class="form-group mt-3 pt-2">
+            <fieldset class="form-group mt-3 pt-1">
                 
                 <label>商品 子カテゴリー <span class="text-danger text-big">*</span></label>
                 
+                <input type="hidden" name="item_subcate_id" value="0">
+                
                 <select class="form-control select-second col-md-6{{ $errors->has('item_subcate_id') ? ' is-invalid' : '' }}" name="item_subcate_id">
-                    <option selected>選択して下さい</option>
-                    
+                    <option selected disabled>選択して下さい</option>
+                    <?php
+                        if(Ctm::isOld()) {
+                            $itemSubCates = CategorySecond::where('parent_id', old('item_cate_id'))->get();
+                        }
+                    ?>
+
                     @foreach($itemSubCates as $cate)
                         <?php
                             $selected = '';
@@ -432,7 +441,7 @@ use App\Category;
             
             
             <fieldset class="mt-5 mb-5 form-group">
-                <label class="text-uppercase">検索ワード<small class="text-secondary ml-2">複数の場合は<b class="text-dark">半角スペース</b>で区切って下さい。</small></label>
+                <label class="text-uppercase">検索ワード<small class="text-secondary ml-2">複数の場合は<b class="text-dark">半角スペース</b>で区切って下さい。（カンマ不可）</small></label>
                 
                 <input class="form-control col-md-12{{ $errors->has('s_word') ? ' is-invalid' : '' }}" name="s_word" value="{{ Ctm::isOld() ? old('s_word') : (isset($postRel) ? $postRel->s_word : '') }}" placeholder="シマトネリコ 苗木・・">
 
@@ -446,10 +455,10 @@ use App\Category;
             </fieldset>
             
             
-            <fieldset class="mt-5 mb-5 form-group">
+            <fieldset class="mt-5 mb-5 pb-3 form-group">
                 <label class="text-uppercase">商品ID<small class="text-secondary ml-2">複数の場合は<b class="text-dark">半角カンマ</b>で区切って下さい。</small></label>
                 
-                <input class="form-control col-md-12{{ $errors->has('s_word') ? ' is-invalid' : '' }}" name="item_ids" value="{{ Ctm::isOld() ? old('item_ids') : (isset($postRel) ? $postRel->item_ids : '') }}" placeholder="3,5,10・・">
+                <input class="form-control col-md-12{{ $errors->has('item_ids') ? ' is-invalid' : '' }}" name="item_ids" value="{{ Ctm::isOld() ? old('item_ids') : (isset($postRel) ? $postRel->item_ids : '') }}" placeholder="3,5,10・・">
 
                     @if ($errors->has('item_ids'))
                         <div class="text-danger">
@@ -463,6 +472,7 @@ use App\Category;
             
             <hr>
             
+            <h5>メタ</h5>
             
             @include('dashboard.shared.meta', ['obj'=> isset($postRel) ? $postRel : null, 'type'=>'post'])
             

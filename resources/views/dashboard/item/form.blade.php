@@ -1,5 +1,10 @@
 @extends('layouts.appDashBoard')
 
+<?php
+use App\CategorySecond;
+
+?>
+
 @section('content')
 	
 	<div class="text-left">
@@ -532,6 +537,12 @@
             <fieldset class="mb-4 form-group">
                 <label>子カテゴリー</label>
                 <select class="form-control select-second col-md-6{{ $errors->has('subcate_id') ? ' is-invalid' : '' }}" name="subcate_id">
+                    
+                    <?php
+                        if(Ctm::isOld()) {
+                            $subcates = CategorySecond::where('parent_id', old('cate_id'))->get();
+                        }
+                    ?>
                     
                     @if(isset($subcates))
                     	<option disabled selected>選択して下さい</option>

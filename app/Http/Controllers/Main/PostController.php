@@ -433,12 +433,16 @@ class PostController extends Controller
         
         //関連商品 ==================================
         /*
-        	・idsがセット：必ずそれらを先頭に。不足分はタグから
-            ・idsが空：検索ワード、カテゴリー、タグを混ぜたランダム
-            ・検索ワードはOR検索（ワードの数だけデータも増える）
+        	・強さ：ID > (ワード + タグ/カテ/子カテ)
+        	・idsがセット：必ずそれらが入力順に先頭表示。不足分は(ワード + タグ/カテ/子カテ)のランダムから
+            ・idsが空：(ワード + タグ/カテ/子カテ)のランダム
+            ・検索ワードが空：タグ/カテ/子カテのランダム
+            ・タグは1〜3個目までが連結対象
+            ・親カテセットの時は子カテ必須
         */
         
         $relateNum = 6;
+        //$isIds = 0;
         
         //$dbItem = $this->item->where($this->itemWhere)->where('stock', '>', 0);
         
@@ -450,23 +454,24 @@ class PostController extends Controller
             return $obj->item_id;
         });
         
-        $t = DB::table('items');
+        //$t = DB::table('items');
         //-----
-        $t->whereIn('id', $relateTagIds);
+        $tagItems = $this->item->whereIn('id', $relateTagIds)->where($this->itemWhere)->where('stock', '>', 0);
+        //$t->whereIn('id', $relateTagIds);
         
         
         //item_cate_id/subcate_id=>未入力なら0なので必ずここを通ることになる
         $itemCateId = ($itemCateId = $postRel->item_cate_id != 1) ? $postRel->item_cate_id : 0; //カテゴリー植木庭木ならスルーする
-                
-        $t->orWhere(['cate_id'=>$postRel->item_cate_id]);
         
-        $t->orWhere(['subcate_id'=>$postRel->item_subcate_id]);
-        
-		$allItems = $t->where($this->itemWhere)->where('stock', '>', 0)->inRandomOrder()->take(6);
-        
-        //print_r($tt);
+        $cateItems = $this->item->where(['cate_id'=>$postRel->item_cate_id])->where($this->itemWhere)->where('stock', '>', 0);
+        $cateSecItems = $this->item->where(['subcate_id'=>$postRel->item_subcate_id])->where($this->itemWhere)->where('stock', '>', 0);
+
         //Tag + Cate + cateSec
-        //$allUnionItems = $tagItems->union($cateItems)->union($cateSecItems)->inRandomOrder();
+        $relateItems = $tagItems->union($cateItems)->union($cateSecItems)->inRandomOrder()->get()->all();
+
+//        $t->orWhere(['cate_id'=>$postRel->item_cate_id]);
+//        $t->orWhere(['subcate_id'=>$postRel->item_subcate_id]);
+//		  $allItems = $t->where($this->itemWhere)->where('stock', '>', 0)->inRandomOrder()->take(6);
 
         //カラムだけ抽出
         
@@ -482,6 +487,16 @@ class PostController extends Controller
             //-----
             $searchItems = $this->item->whereIn('id', $sRes['allResIds'])->where($this->itemWhere)->where('stock', '>', 0)->orderBy('updated_at', 'desc');
             	//->union($allItems)->inRandomOrder();
+            
+            //allItemと混ぜてRandomする
+            $si = array_merge($searchItems->get()->all(), $relateItems);
+            $relateItems = array_unique($si); //重複要素削除
+            shuffle($relateItems); //配列のランダム
+
+            //$searchItems = collect($si)->random($relateNum);
+            
+            //DB::table('items')でタグカテitemを取得すればunionできる unionしたものをunionはできない
+            //$sr = $searchItems->union($allItems)->inRandomOrder()->take(6)->get()->all();            
         }
         
         
@@ -490,6 +505,15 @@ class PostController extends Controller
         	$sortIDs = $postRel->item_ids;
         	
             $mustItems = $this->item->whereIn('id', $idsArr)->where($this->itemWhere)->where('stock', '>', 0)->orderByRaw("FIELD(id, $sortIDs)");
+            
+            //searchItemかallItemと混ぜる Randomしない
+            //$targetArr = isset($searchItems) ? $searchItems : $relateItems;
+            
+            $mi = array_merge($mustItems->get()->all(), $relateItems);
+            $relateItems = array_unique($mi); //重複要素削除
+            
+            //$isIds = 1;
+            //$mustItems = collect($mi);
             
             /*
             if(isset($searchItems)) {
@@ -517,28 +541,34 @@ class PostController extends Controller
             */
             
         }
-                
+         
+        //親ポットの在庫を確認する
+        foreach($relateItems as $k => $v) {
+            extract(Ctm::isPotParentAndStock($v['id']));
+            
+            if($isPotParent && ! $isStock) 
+            	unset($relateItems[$k]);
+        }
         
-        if(isset($mustItems)) {
-        	if(isset($searchItems)) {
-            	$sr = $searchItems->union($allItems)->inRandomOrder()->take(6)->get()->all();
-                $mt = $mustItems->get()->all();
-                
-                $res = array_merge($mt, $sr);                
-        		$relateItems = collect($res)->take($relateNum);
-            }
-            else {
-            	$relateItems = $mustItems->union($allItems)->take($relateNum)->get();
-            }
-        	
-            //$relateItems = $mustItems->take($relateNum)->get();
-        }
-        else if(isset($searchItems)) {
-        	$relateItems = $searchItems->union($allItems)->inRandomOrder()->take($relateNum)->get();
-        }
-        else {
-	        $relateItems = $allItems->take($relateNum)->get();
-    	}    
+        $relateItems = collect($relateItems)->take($relateNum);
+        
+//        if($isIds) {
+//            $relateItems = collect($relateItems)->take($relateNum);
+//        }
+//        else {
+//        	$relateItems = collect($relateItems)->random($relateNum);
+//        }
+        
+//        if(isset($mustItems)) {
+//        	
+//            $relateItems = $mustItems->take($relateNum);
+//        }
+//        else if(isset($searchItems)) {
+//        	$relateItems = $searchItems->take($relateNum);
+//        }
+//        else {
+//	        $relateItems = $allItems->inRandomOrder()->take($relateNum)->get();
+//    	}    
         
         
         // Meta ====================

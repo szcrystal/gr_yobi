@@ -226,11 +226,13 @@ use App\TopSetting;
 
     <div class="relate-item mb-5 clearfix">
     	<h4>この記事の関連商品</h4>
-        @foreach($relateItems as $relateItem)
-        	<article class="main-atcl">
-        		@include('main.shared.atcl', ['item'=>$relateItem, 'type'=>'post'])
-            </article>
-        @endforeach
+        <div>
+            @foreach($relateItems as $relateItem)
+                <article class="main-atcl">
+                    @include('main.shared.atcl', ['item'=>$relateItem, 'type'=>'post'])
+                </article>
+            @endforeach
+        </div>
     </div>
 
     <div class="relate-tag mb-5">
