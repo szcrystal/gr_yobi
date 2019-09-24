@@ -5,7 +5,11 @@ $isPost = isset($type) && $type == 'post';
 ?>
 
 <fieldset class="form-group{{ $errors->has('meta_title') ? ' has-error' : '' }}">
-    <label for="meta_title" class="control-label">Meta Title<small class="ml-3">未入力の時は大タイトルがmeta titleになります</small></label>
+    <label for="meta_title" class="control-label">Meta Title
+    @if($isPost)
+    	<small class="ml-3">未入力の時は大タイトルがmeta titleになります</small>
+    @endif
+    </label>
 
     <input id="meta_title" type="text" class="form-control col-md-12" name="meta_title" value="{{ Ctm::isOld() ? old('meta_title') : (isset($obj) ? $obj->meta_title : '') }}">
 
