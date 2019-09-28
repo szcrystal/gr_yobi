@@ -35,6 +35,8 @@ class CreatePostRelationsTable extends Migration
             $table->text('meta_description')->nullable()->default(NULL);
             $table->string('meta_keyword')->nullable()->default(NULL);
             
+            $table->integer('view_count')->nullable()->default(0);
+            
             
             $table->timestamps();
         });

@@ -14,18 +14,28 @@ use App\TopSetting;
 @endsection
 
 
+
 @section('bread')
 
-@include('main.shared.bread', ['type'=>'post', 'typeSec'=>'top'])
+<div id="main" class="post-archive">
 
-{{--
-@include('main.shared.bread', ['type'=>'post', 'typeSec'=>'cate', 'cateId'=>$cate->id])
---}}
+@if(Request::is('post/category/*'))
+	@include('main.shared.bread', ['type'=>'post', 'typeSec'=>'cate', 'cateId'=>$postCate->id])
+
+@elseif(Request::has('post/rank-view'))
+	@include('main.shared.bread', ['type'=>'post', 'typeSec'=>'rank', ])
+
+@else
+	@include('main.shared.bread', ['type'=>'post', 'typeSec'=>'top'])
+
+@endif
 
 @endsection
 
 
 @section('content')
+
+
 
 <?php
     use App\Tag;
@@ -33,35 +43,46 @@ use App\TopSetting;
     use App\Setting;
 ?>
 
-<div id="main" class="post-archive">
-<div class="panel top-cont">
+<div class="post-wrap clearfix border border-danger top-cont">
 
-	<div class="pagination-wrap">
-        {{ $postRels->links() }}
-    </div>
-	
-    
-    <div class="panel-body clearfix">
-       
-       @foreach($postRels as $postRel)
-            @include('main.shared.atclPost', ['post'=>$postRel])
-        @endforeach
-    
-    </div>
+    <div class="post-main">
+
+        <div class="pagination-wrap">
+            {{ $postRels->links() }}
+        </div>
         
         
-    <div class="pagination-wrap">
-        {{ $postRels->links() }}
-    </div>
+        <div class="panel-body clearfix">
+           
+           @foreach($postRels as $postRel)
+                @include('main.shared.atclPost', ['post'=>$postRel])
+            @endforeach
+        
+        </div>
             
-</div>
-</div>
+            
+        <div class="pagination-wrap">
+            {{ $postRels->links() }}
+        </div>
+                
+    </div>
+
 
 @endsection
 
 
 @section('leftbar')
+	<div class="post-side border border-danger">
+    
+    </div>
+    
+    
+    {{--
     @include('main.shared.leftbar')
+    --}}
+    
+    </div>
+</div>
 @endsection
 
 

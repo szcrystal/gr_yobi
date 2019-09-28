@@ -148,6 +148,8 @@ Route::get('favorite', 'Main\SingleController@favIndex');
 Route::post('favorite-del', 'Main\SingleController@postFavDel');
 
 //Post
+Route::get('post/category/{slug}', 'Main\PostController@category');
+Route::get('post/view-rank', 'Main\PostController@viewRank');
 Route::resource('post', 'Main\PostController');
 
 //Shop Cart

@@ -246,6 +246,7 @@ use App\TopSetting;
 @if(Ctm::isEnv('local'))
 	<a href="{{ url('post') }}" >TOP</a>
     <a href="{{ url('post/category/'. 1) }}" >post cate</a>
+    <a href="{{ url('post/view-rank') }}" >view rank</a>
 @endif
 
 </div>

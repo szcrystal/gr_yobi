@@ -47,7 +47,7 @@ class PostController extends Controller
     {
     	if(Ctm::isEnv('product') || Ctm::isEnv('alpha')) abort(404);
         
-        $whereArr = $this->whereArr;
+        $whereArr = $this->postWhere;
         
         $postRels = $this->postRel->where($whereArr)->orderBy('created_at','DESC')->paginate($this->itemPerPage);
         
@@ -433,7 +433,7 @@ class PostController extends Controller
         
         //関連商品 ==================================
         /*
-        	・強さ：ID > (ワード + タグ/カテ/子カテ)
+        	・強さ：ID > (ワード + タグ/カテ/子カテ) ワードを強くしてもいいが、表示数が多いことが多いのでワードだけになることがほとんど
         	・idsがセット：必ずそれらが入力順に先頭表示。不足分は(ワード + タグ/カテ/子カテ)のランダムから
             ・idsが空：(ワード + タグ/カテ/子カテ)のランダム
             ・検索ワードが空：タグ/カテ/子カテのランダム
@@ -576,7 +576,10 @@ class PostController extends Controller
         $metaDesc = $postRel->meta_description;
         $metaKeyword = $postRel->meta_keyword;
         
-
+		
+        $postRel->increment('view_count');
+        //$postRel->save();
+		
         
         return view('main.post.single', compact('postRel', 'postArr', 'postCate', 'tags', 'relatePosts', 'relateItems', 'metaTitle', 'metaDesc', 'metaKeyword'));
         
@@ -612,7 +615,60 @@ class PostController extends Controller
     }
     
     
+    public function category($slug)
+    {
+    	if(Ctm::isEnv('product') || Ctm::isEnv('alpha')) abort(404);
+        
+        $postCate = $this->postCate->where('slug', $slug)->first();
+        
+        if(collect($postCate)->isEmpty())
+        	abort(404);
+        
+        
+        $postWhere = $this->postWhere;
+        $postWhere['cate_id'] = $postCate->id;
+        
+        $postRels = $this->postRel->where($postWhere)->orderBy('created_at','DESC')->paginate($this->itemPerPage);
+        
+        //bigTitle(H1)をセットする
+        //$postRels = $this->setBigTitleToRel($postRels);
+        
+        
+        // Meta ====================
+        $metaTitle = isset($postCate->meta_title) ? $postCate->meta_title : $postCate->name . '｜植木買うならグリーンロケット';
+        $metaDesc = $postCate->meta_description;
+        $metaKeyword = $postCate->meta_keyword;
+        
+        
+        return view('main.post.archive', compact('postRels', 'postCate', 'metaTitle', 'metaDesc', 'metaKeyword'));
+    }
     
+    
+    public function viewRank()
+    {
+    	if(Ctm::isEnv('product') || Ctm::isEnv('alpha')) abort(404);
+        
+        
+        $postWhere = $this->postWhere;
+        //$postWhere['cate_id'] = $postCate->id;
+        
+        $postRels = $this->postRel->where($postWhere)->orderBy('view_count','DESC')->paginate($this->itemPerPage);
+        
+        //bigTitle(H1)をセットする
+        //$postRels = $this->setBigTitleToRel($postRels);
+        
+        
+        // Meta ====================
+        $metaTitle = '記事ランキング' . '｜植木買うならグリーンロケット';
+        $metaDesc = '';
+        $metaKeyword = '';
+        
+        
+        return view('main.post.archive', compact('postRels', 'metaTitle', 'metaDesc', 'metaKeyword'));
+    }
+    
+    
+    //現在未使用：postの大タイトルをObjにセットするPrivateFunk
     private function setBigTitleToRel($postRels)
     {
     	foreach($postRels as $k => $postRel) {

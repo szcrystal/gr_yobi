@@ -441,7 +441,7 @@ use App\CategorySecond;
             
             
             <fieldset class="mt-5 mb-5 form-group">
-                <label class="text-uppercase">検索ワード<small class="text-secondary ml-2">複数の場合は<b class="text-dark">半角スペース</b>で区切って下さい。（カンマ不可）</small></label>
+                <label class="text-uppercase">検索ワード<small class="text-secondary ml-2">複数の場合は<b class="text-dark">半角スペース</b>で区切って下さい。</small></label>
                 
                 <input class="form-control col-md-12{{ $errors->has('s_word') ? ' is-invalid' : '' }}" name="s_word" value="{{ Ctm::isOld() ? old('s_word') : (isset($postRel) ? $postRel->s_word : '') }}" placeholder="シマトネリコ 苗木・・">
 
@@ -456,7 +456,7 @@ use App\CategorySecond;
             
             
             <fieldset class="mt-5 mb-5 pb-3 form-group">
-                <label class="text-uppercase">商品ID<small class="text-secondary ml-2">複数の場合は<b class="text-dark">半角カンマ</b>で区切って下さい。</small></label>
+                <label class="text-uppercase">商品ID<small class="text-secondary ml-2">複数の場合は<b class="text-dark">半角カンマ</b>で区切って下さい。（スペース不可）</small></label>
                 
                 <input class="form-control col-md-12{{ $errors->has('item_ids') ? ' is-invalid' : '' }}" name="item_ids" value="{{ Ctm::isOld() ? old('item_ids') : (isset($postRel) ? $postRel->item_ids : '') }}" placeholder="3,5,10・・">
 

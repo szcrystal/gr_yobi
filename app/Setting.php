@@ -38,6 +38,8 @@ class Setting extends Model
         'snap_block_b',
         'snap_block_c',
         
+        'post_block',
+        
         'snap_category',
         'snap_fix',
         

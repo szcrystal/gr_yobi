@@ -292,7 +292,9 @@
             
             <hr>
             
- 			<fieldset class="pt-4 mb-4 form-group{{ $errors->has('snap_news') ? ' has-error' : '' }}">
+            <h5><i class="fa fa-circle"></i> TOP画像</h5>
+            
+ 			<fieldset class="pt-2 mb-4 form-group{{ $errors->has('snap_news') ? ' has-error' : '' }}">
                 <label>TOPお知らせ用画像の枚数</label><br>
                 <input class="form-control d-inline-block col-md-4{{ $errors->has('snap_news') ? ' is-invalid' : '' }}" name="snap_news" value="{{ Ctm::isOld() ? old('snap_news') : (isset($setting) ? $setting->snap_news : '') }}"> <span>枚</span>
 
@@ -319,7 +321,9 @@
             
             <hr>
             
-            <fieldset class="mb-4 form-group{{ $errors->has('snap_primary') ? ' has-error' : '' }}">
+            <h5><i class="fa fa-circle"></i> 商品画像</h5>
+            
+            <fieldset class="pt-2 mb-4 form-group{{ $errors->has('snap_primary') ? ' has-error' : '' }}">
                 <label>商品サブ画像の枚数</label><br>
                 <input class="form-control d-inline-block col-md-4{{ $errors->has('snap_primary') ? ' is-invalid' : '' }}" name="snap_primary" value="{{ Ctm::isOld() ? old('snap_primary') : (isset($setting) ? $setting->snap_primary : '') }}"> <span>枚</span>
 
@@ -345,7 +349,37 @@
             
             <hr>
             
-            <fieldset class="mb-4 form-group{{ $errors->has('snap_block_a') ? ' has-error' : '' }}">
+            <h5><i class="fa fa-circle"></i> その他画像</h5>
+            
+            <fieldset class="pt-2 mb-4 form-group{{ $errors->has('snap_category') ? ' has-error' : '' }}">
+                <label>カテゴリー・タグ画像の枚数</label><br>
+                <input class="form-control d-inline-block col-md-4{{ $errors->has('snap_category') ? ' is-invalid' : '' }}" name="snap_category" value="{{ Ctm::isOld() ? old('snap_category') : (isset($setting) ? $setting->snap_category : '') }}"> <span>枚</span>
+
+                @if ($errors->has('snap_category'))
+                    <div class="text-danger">
+                        <span class="fa fa-exclamation form-control-feedback"></span>
+                        <span>{{ $errors->first('snap_category') }}</span>
+                    </div>
+                @endif
+            </fieldset>
+            
+            <fieldset class="mb-4 form-group{{ $errors->has('snap_fix') ? ' has-error' : '' }}">
+                <label>固定ページ画像の枚数</label><br>
+                <input class="form-control d-inline-block col-md-4{{ $errors->has('snap_fix') ? ' is-invalid' : '' }}" name="snap_fix" value="{{ Ctm::isOld() ? old('snap_fix') : (isset($setting) ? $setting->snap_fix : '') }}"> <span>枚</span>
+
+                @if ($errors->has('snap_fix'))
+                    <div class="text-danger">
+                        <span class="fa fa-exclamation form-control-feedback"></span>
+                        <span>{{ $errors->first('snap_fix') }}</span>
+                    </div>
+                @endif
+            </fieldset>
+            
+            <hr>
+            
+            <h5><i class="fa fa-circle"></i> 上部コンテンツブロック数</h5>
+            
+            <fieldset class="pt-2 mb-4 form-group{{ $errors->has('snap_block_a') ? ' has-error' : '' }}">
                 <label>上部コンテンツ（Aブロック）の個数</label><br>
                 <input class="form-control d-inline-block col-md-4{{ $errors->has('snap_block_a') ? ' is-invalid' : '' }}" name="snap_block_a" value="{{ Ctm::isOld() ? old('snap_block_a') : (isset($setting) ? $setting->snap_block_a : '') }}"> <span>個</span>
 
@@ -383,29 +417,21 @@
             
             <hr>
             
-            <fieldset class="mb-4 form-group{{ $errors->has('snap_category') ? ' has-error' : '' }}">
-                <label>カテゴリー・タグ画像の枚数</label><br>
-                <input class="form-control d-inline-block col-md-4{{ $errors->has('snap_category') ? ' is-invalid' : '' }}" name="snap_category" value="{{ Ctm::isOld() ? old('snap_category') : (isset($setting) ? $setting->snap_category : '') }}"> <span>枚</span>
+            <h5><i class="fa fa-circle"></i> 記事ブロック数</h5>
+            
+            <fieldset class="pt-2 mb-5 form-group{{ $errors->has('post_block') ? ' has-error' : '' }}">
+                <label>記事ブロックの個数</label><br>
+                <input class="form-control d-inline-block col-md-4{{ $errors->has('post_block') ? ' is-invalid' : '' }}" name="post_block" value="{{ Ctm::isOld() ? old('post_block') : (isset($setting) ? $setting->post_block : '') }}"> <span>個</span>
 
-                @if ($errors->has('snap_category'))
+                @if ($errors->has('post_block'))
                     <div class="text-danger">
                         <span class="fa fa-exclamation form-control-feedback"></span>
-                        <span>{{ $errors->first('snap_category') }}</span>
+                        <span>{{ $errors->first('post_block') }}</span>
                     </div>
                 @endif
             </fieldset>
             
-            <fieldset class="mb-4 form-group{{ $errors->has('snap_fix') ? ' has-error' : '' }}">
-                <label>固定ページ画像の枚数</label><br>
-                <input class="form-control d-inline-block col-md-4{{ $errors->has('snap_fix') ? ' is-invalid' : '' }}" name="snap_fix" value="{{ Ctm::isOld() ? old('snap_fix') : (isset($setting) ? $setting->snap_fix : '') }}"> <span>枚</span>
-
-                @if ($errors->has('snap_fix'))
-                    <div class="text-danger">
-                        <span class="fa fa-exclamation form-control-feedback"></span>
-                        <span>{{ $errors->first('snap_fix') }}</span>
-                    </div>
-                @endif
-            </fieldset>
+            
             
             
             

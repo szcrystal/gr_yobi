@@ -126,7 +126,7 @@ class PostController extends Controller
         
         
         $blockCount = [
-        	'p' => $this->set->snap_block_a,
+        	'p' => $this->set->post_block,
 //            'b' => $this->set->snap_block_b,
 //            'c' => $this->set->snap_block_c,
         ];
@@ -148,7 +148,7 @@ class PostController extends Controller
         $relArr = ['p'=>array()/*, 'b'=>array(), 'c'=>array()*/];
         
         $blockCount = [
-        	'p' => $this->set->snap_block_a,
+        	'p' => $this->set->post_block,
 //            'b' => $this->set->snap_block_b,
 //            'c' => $this->set->snap_block_c,
         ];
@@ -194,11 +194,11 @@ class PostController extends Controller
             's_word' => [
             	'nullable',
             	'max:255',
-                function($attribute, $value, $fail) {
-                    if (strpos($value, '、') !== false || strpos($value, ',') !== false) {
-                        return $fail('「検索ワード」にカンマがあります。');
-                    }
-                }
+//                function($attribute, $value, $fail) {
+//                    if (strpos($value, '、') !== false || strpos($value, ',') !== false) {
+//                        return $fail('「検索ワード」にカンマがあります。');
+//                    }
+//                }
             ],
             
             'item_ids' => [
