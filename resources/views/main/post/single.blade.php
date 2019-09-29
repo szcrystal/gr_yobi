@@ -22,13 +22,16 @@ use App\TopSetting;
 
 
 
-@section('content')
 
-<div id="main" class="single post-single">
+@section('bread')
+<div id="main" class="post-single">
     
 @include('main.shared.bread', ['type'=>'post', 'typeSec'=>'single', 'cateId'=>$postRel->cate_id])
-        
-<div class="post-wrap clearfix">
+
+@endsection
+
+@section('content')
+<div class="post-wrap clearfix border border-danger">
 
 <?php
 
@@ -116,7 +119,7 @@ use App\TopSetting;
                 <h1><i class="fas fa-check text-kon"></i> 目次</h1>
                 <div class="post-index">    
                     <?php 
-                        $n = 1;
+                        $iNum = 1;
                         //$nn = 1;
                     ?>
                     
@@ -125,15 +128,16 @@ use App\TopSetting;
                     
                             @if(isset($post['h2']->title))
                                 <li class="mb-2">
-                                    <a href="#{{ $n }}">{{ $post['h2']->title }}</a>
+                                    <a href="#{{ $iNum }}">{{ $post['h2']->title }}</a>
                             
                                 @if(count($post['contents']) > 0)
                                     <ul class="list-unstyled">
+                                        
                                         <?php $nn = 1; ?>
                                         
                                         @foreach($post['contents'] as $contPost)
                                             @if(isset($contPost->title))
-                                                <li class="mb-1"><a href="#{{ $n.'-'.$nn }}">{{ $n.'-'.$nn }}. {{ $contPost->title }}</a></li>
+                                                <li class="mb-1"><a href="#{{ $iNum.'-'.$nn }}">{{ $iNum.'-'.$nn }}. {{ $contPost->title }}</a></li>
                                                 
                                                 <?php $nn++; ?>
                                             @endif   
@@ -144,7 +148,7 @@ use App\TopSetting;
                             
                                 </li>
                             
-                                <?php $n++; ?>
+                                <?php $iNum++; ?>
                             
                             @endif
                             
@@ -160,14 +164,14 @@ use App\TopSetting;
         @foreach($postArr as $keyMidId => $post)
             <?php
                 //ここでのblockKeyは [a],[b],[c]
-                $chunkNum++;            
+                //$chunkNum++;            
             ?>
             
             @if(! $post['h2']->is_intro)
                 <section class="mt-4">
                     
                     @if(isset($post['h2']->title))
-                        <h1 id="{{ $n }}" class="mb-3"><i class="fas fa-check text-kon"></i> {{ $post['h2']->title }}</h1>
+                        <h1 id="{{ $n }}" class="mb-3"><i class="fas fa-check text-kon"></i> {{ $post['h2']->title }} {{ $n }}</h1>
                     @endif
                     
                     <?php $nn = 1; ?>
@@ -176,7 +180,7 @@ use App\TopSetting;
                         
                         <div id="{{ $n.'-'.$nn }}" class="pt-1 pb-3 pl-1">
                             @if(isset($contPost->title))
-                                <h2>{{ $contPost->title }}</h2>
+                                <h2>{{ $contPost->title }} {{ $n.'-'.$nn }}</h2>
                             @endif
                             
                             @if(isset($contPost->img_path))

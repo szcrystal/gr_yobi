@@ -17,25 +17,17 @@ use App\PostCategory;
         @else
         	<?php $postCate = PostCategory::find($cateId); ?>
             
-        	<li class="breadcrumb-item">
-                <a href="{{ url('post') }}">記事一覧</a>
-            </li>
+        	<li class="breadcrumb-item"><a href="{{ url('post') }}">記事一覧</a></li>
             
         	@if($typeSec == 'cate')
-            	<li class="breadcrumb-item active" aria-current="page">
-                    {{ $postCate->name }}
-                </li>
+            	<li class="breadcrumb-item active" aria-current="page">{{ $postCate->name }}</li>
             
             @elseif($typeSec == 'rank')
             	
             
             @elseif($typeSec == 'single')
-                <li class="breadcrumb-item">
-                    <a href="{{ url('post/category/'. $postCate->slug) }}">{{ isset($postCate->link_name) ? $postCate->link_name : $postCate->name }}</a>
-                </li>
-                <li class="breadcrumb-item active" aria-current="page">
-                    {{ $postRel->big_title }}
-                </li>
+                <li class="breadcrumb-item"><a href="{{ url('post/category/'. $postCate->slug) }}">{{ isset($postCate->link_name) ? $postCate->link_name : $postCate->name }}</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ $postRel->big_title }}</li>
             
             @endif
             

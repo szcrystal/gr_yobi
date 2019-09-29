@@ -1168,6 +1168,7 @@ img.img-fluid + div {
 .single .breadcrumb {
 	margin-bottom: 1.2em;
 }
+
 .breadcrumb-item + .breadcrumb-item::before {
   content: ">";
 }
@@ -2127,7 +2128,8 @@ ul.side-rank {
 	font-size: 0.75em;
     margin-right: 0.3em;
 }
-.single h4 {
+.single h4,
+.post-side h4 {
 	font-weight: normal;
     font-size: 1.3em;
     margin-bottom: 0.5em;
@@ -2525,7 +2527,11 @@ h3.upper-title {
 }
 .relate-item .main-atcl:nth-of-type(2n) {
 	margin-right: 0;
-	border: 1px solid red;
+	//border: 1px solid red;
+}
+
+.post-side .rank-tag {
+	font-size: 0.85em;
 }
 
 /* login */

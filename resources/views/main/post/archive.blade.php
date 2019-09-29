@@ -2,6 +2,9 @@
 
 <?php
 use App\TopSetting;
+use App\Tag;
+use App\TagRelation;
+use App\Setting;
 ?>
 
 @section('belt')
@@ -9,7 +12,6 @@ use App\TopSetting;
     <div class="clearfix">
         {!! nl2br(TopSetting::get()->first()->contents) !!}
     </div>
-    
 </div>
 @endsection
 
@@ -34,14 +36,6 @@ use App\TopSetting;
 
 
 @section('content')
-
-
-
-<?php
-    use App\Tag;
-    use App\TagRelation;
-    use App\Setting;
-?>
 
 <div class="post-wrap clearfix border border-danger top-cont">
 

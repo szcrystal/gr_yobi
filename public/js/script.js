@@ -1076,9 +1076,9 @@ var exe = (function() {
         },
         
         getWH: function() {
-        	$target = $('.top-first .img-box');
-        	var w = $target.width();
-            var h = $target.height();
+//        	$target = $('.top-first .img-box');
+//        	var w = $target.width();
+//            var h = $target.height();
             
             //$('h2').text(w +'/'+ h);
             //console.log(w +'/'+ h);
@@ -1088,10 +1088,8 @@ var exe = (function() {
             var fixH = $('.fixed-top').height();
            	var url = $(location).attr('href');
             
-            if(url.indexOf("#") != -1) {
-                var anchor = url.split("#");
-                var target = $('#' + anchor[anchor.length - 1]);
-                
+            function setAnchor(target) {
+            	
                 fixH = fixH + 10;
                 
                 if(target.length){
@@ -1101,6 +1099,47 @@ var exe = (function() {
                     //$("html, body").animate({scrollTop:pos}, 500);
                 }
             }
+            
+
+            if(url.indexOf("#") != -1) {
+            	var anchor = url.split("#");
+            	var target = $('#' + anchor[anchor.length - 1]);
+                
+            	setAnchor(target);
+                
+                /*
+                var anchor = url.split("#");
+                var target = $('#' + anchor[anchor.length - 1]);
+                                
+                fixH = fixH + 10;
+                
+                if(target.length){
+                    //var pos = Math.floor(target.offset().top) - fixHeight;
+                    var pos = target.offset().top - fixH;
+                    $("html, body").scrollTop(pos);
+                    //$("html, body").animate({scrollTop:pos}, 500);
+                }
+                */
+            }
+            
+            
+            /* Postの目次 アンカーリンク */
+            $('.post-index a').on('click', function() {
+                
+                var href = $(this).attr('href');
+                var target = $(href);
+                //console.log(target);
+                
+                setAnchor(target);
+                
+                //history.replaceState('','',url + href);
+                //location.hash = href;
+//                $(location).attr('href', url + href);
+                
+                return false;
+                
+            });
+            
             
                 
         },
@@ -1117,17 +1156,17 @@ $(function(e){ //ready
     //exe.autoComplete();
     exe.getWH();
     
-    if(! exe.isSpTab('sp')) {
+    if(! exe.isSpTab('sp')) { //Not SP
     	exe.scrollFunc();
     }
-    else {
+    else { // for SP
     	exe.toggleSp();
         exe.accordionMoveUp();
         exe.cartBtnShowHide();
+        exe.searchSlide();
     }
     
-    exe.searchSlide();
-
+    
     //exe.dropDown();
     exe.eventItem();
     
@@ -1150,9 +1189,9 @@ $(function(e){ //ready
     exe.setCollapseShowFaq();
     
     
-    // SlickSlider / LightBox =========
+    // SlickSlider & LightBox =========
     exe.setSliderFrame();
-    // SlickSlider / LightBox END ======
+    // SlickSlider & LightBox END ======
     
     exe.getCardToken();
 });
