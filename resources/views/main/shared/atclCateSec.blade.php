@@ -11,8 +11,8 @@ use App\Icon;
 <?php
 	$isCate = (isset($type) && $type == 'category') ? 1 : 0; //categoryページならの判別
 	
-    $category = Category::find($item->cate_id);
-    $link = url('/item/'. $item->id);
+    $category = Category::find($item->parent_id);
+    $link = url('/category/'. $category->slug . '/' . $cateSec->slug);
     ///$linkName = isset($category->link_name) ? $category->link_name : $category->name;
     
     
@@ -34,7 +34,7 @@ use App\Icon;
     //pot売り切れ判定
     $potsArr = Ctm::isPotParentAndStock($item->id); //親ポットか、Stockあるか、その子ポットのObjsを取る
     
-    $isStock = $potsArr['isPotParent'] ? $potsArr['isStock'] : ($item->stock ? 1 : 0); //pot親でない時は通常Itemの在庫を見る
+    $isStock = $cateSec->is_stock; //pot親でない時は通常Itemの在庫を見る
    
 ?>
 
@@ -50,7 +50,7 @@ use App\Icon;
     @endif
     
     <a href="{{ $link }}">
-    	<img src="{{ Storage::url($item->main_img) }}" alt="{{ $item->title }}" class="{{ $imgClass }}">
+    	<img src="{{ Storage::url($cateSec->main_img) }}" alt="{{ $cateSec->title }}" class="{{ $imgClass }}">
     </a>
 </div>
 
@@ -62,17 +62,17 @@ use App\Icon;
     ?>
     
     <h3><a href="{{ $link }}">
-        {{ Ctm::shortStr($item->title, $strNum) }}
+        {{ Ctm::shortStr($cateSec->name, $strNum) }}
     </a></h3>
     
     <p>
         <a href="{{ $cateLink }}">{{ $cateName }}</a>
     </p>
     
+    {{--
     @if(isset($item->icon_id) && $item->icon_id != '')
         <div class="icons">
-            <?php $obj = $item; ?>
-            @include('main.shared.icon')
+            @include('main.shared.icon', ['obj'=>$item])
         </div>
     @endif
 
@@ -80,7 +80,7 @@ use App\Icon;
     <div class="tags">
         @include('main.shared.tag', ['num'=>2])
     </div>
-            
+    --}}       
         
     <div class="price">
         <?php

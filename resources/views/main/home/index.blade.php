@@ -21,6 +21,7 @@ use App\TopSetting;
     	$rankNum = 1;
         $type = $firstItem['type'];
     ?>
+    
 
     @if(isset($firstItem['items']) && count($firstItem['items']) > 0)
 
@@ -39,8 +40,11 @@ use App\TopSetting;
                             <span class="top-rank"><i class="fas fa-crown"></i><em>{{ $rankNum }}</em></span>
                         @endif
                                                         
-                        
-                        @include('main.shared.atcl', [])
+                        @if($type == 5)
+                    		@include('main.shared.atclCateSec', ['cateSec'=>$item])
+                        @else
+                        	@include('main.shared.atcl', [])
+                        @endif
  
                     </article>
                     

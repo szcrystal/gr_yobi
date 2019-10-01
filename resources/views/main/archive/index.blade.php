@@ -62,7 +62,7 @@ use App\TopSetting;
                 @endif
             @endif
             
-        @elseif($type == 'unique')
+        @elseif($type == 'unique' || $type == 'unique-ueki' )
             {{ $title }}
         @endif
         </h2>
@@ -95,6 +95,7 @@ use App\TopSetting;
         </div>
         
         <?php 
+            
             $n = Ctm::isAgent('sp') ? 3 : 4;
             $itemArr = array_chunk($items->all(), $n); 
         ?>
@@ -104,9 +105,11 @@ use App\TopSetting;
 
             @foreach($itemVal as $item)
                 <article class="main-atcl">
-                        
-                    @include('main.shared.atcl', [])
-                        
+                    @if($type == 'unique-ueki')
+                        @include('main.shared.atclCateSec', ['cateSec'=>$item])
+                    @else
+	                    @include('main.shared.atcl', [])
+    				@endif                    
                 </article>
             @endforeach
             

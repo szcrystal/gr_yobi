@@ -115,6 +115,7 @@ Route::get('new-items', 'Main\HomeController@uniqueArchive');
 
 //Ranking
 Route::get('ranking', 'Main\HomeController@uniqueArchive');
+Route::get('ranking-ueki', 'Main\HomeController@uniqueArchive');
 
 //Recent Check
 Route::get('recent-items', 'Main\HomeController@uniqueArchive');

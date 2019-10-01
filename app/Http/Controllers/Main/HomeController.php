@@ -50,7 +50,7 @@ class HomeController extends Controller
         //ここでAuth::check()は効かない
         $this->whereArr = ['open_status'=>1, 'is_potset'=>0]; //こことSingleとSearchとCtm::isPotParentAndStockにある
                 
-        $this->perPage = env('PER_PAGE', Ctm::isAgent('sp') ? 21 : 20);
+        $this->perPage = Ctm::isAgent('sp') ? 21 : 20;
         
         //$this->itemPerPage = 15;
     }
@@ -125,7 +125,30 @@ class HomeController extends Controller
         $newItems['type'] = 1; 
         $newItems['slug'] = 'new-items';
         
-        //Ranking
+        
+        //Ranking ueki/niwaki
+//        $cateUekis = $this->cateSec->where('parent_id', 1)->get();
+//        
+//        $cateSecSum = array();
+//        
+//        foreach($cateUekis as $cateUeki) {
+//        	$cateSecSum[$cateUeki->id] = $this->item->where('subcate_id', $cateUeki->id)->sum('sale_count'); 
+//        }
+//        
+//        arsort($cateSecSum); //降順Sort
+//		$cateSecSum = array_keys($cateSecSum);
+//        
+//        $cateSecIds = implode(',', $cateSecSum);
+        
+        $uekiSecObj = Ctm::getUekiSecObj(); //get()で返る
+        
+        $uekiItems['items'] = $uekiSecObj->take($getNum)->all();      
+        $uekiItems['type'] = 5;
+        $uekiItems['slug'] = 'ranking-ueki';
+
+        
+        
+        //Ranking Other
         $rankItems['items'] = $this->item->where($whereArr)->orderBy('sale_count', 'desc')->take($getNum)->get()->all();        
         $rankItems['type'] = 2; 
         $rankItems['slug'] = 'ranking';
@@ -160,10 +183,11 @@ class HomeController extends Controller
         
         //array
         $firstItems = [
-        	'Sale商品'=> $saleItems,
-            '人気ランキング'=> $rankItems,
-            '新着情報'=> $newItems,
-            '最近チェックしたアイテム'=> $cookieItems,
+        	'Sale商品'=> $saleItems, //type:4
+            '人気ランキング(植木・庭木)'=> $uekiItems, //type:5
+            '人気ランキング(その他)'=> $rankItems, //type:1
+            '新着情報'=> $newItems, //type:2
+            '最近チェックしたアイテム'=> $cookieItems, //type:3
         ];
         //FirstItem END ================================
         
@@ -236,6 +260,8 @@ class HomeController extends Controller
         $orgItem = null;
         $title = '';
         
+        $type = 'unique';
+        
         if($path == 'sale-items') {
         	$itemObjs = $this->item->where('sale_price', '>', 0)->where($whereArr)->orderBy('updated_at', 'desc')->get();
             
@@ -275,14 +301,41 @@ class HomeController extends Controller
             $title = '新着情報';
         }
         elseif($path == 'ranking') {
-        	$rankItemIds = $this->item->where($whereArr)->orderBy('sale_count', 'desc')->limit(100)->get()->map(function($obj){
-            	return $obj->id;
-            })->all();
+//        	$rankItemIds = $this->item->where($whereArr)->orderBy('sale_count', 'desc')->limit(100)->get()->map(function($obj){ //paginateとlimitが併用できないのでこのやり方になる
+//            	return $obj->id;
+//            })->all();
+//            
+//            $items= $this->item->whereIn('id', $rankItemIds)->orderBy('sale_count', 'desc')->paginate($this->perPage); //ここで更にorderByする必要がある
+            $items = $this->item->where($whereArr)->orderBy('sale_count', 'desc')->take(100)->get()->all();
+            $items = Ctm::customPaginate($items, $this->perPage, $request);
             
-            $items= $this->item->whereIn('id', $rankItemIds)->orderBy('sale_count', 'desc')->paginate($this->perPage); //ここで更にorderByする必要がある
-            //$items = $this->item->where($whereArr)->orderBy('sale_count', 'desc')->take(100)->paginate($this->perPage);
+            $title = '人気ランキング(その他)';
+        }
+        elseif($path == 'ranking-ueki') {
+            $cateSecs= Ctm::getUekiSecObj()->all(); //ここで更にorderByする必要がある
             
-            $title = '人気ランキング';
+            $items = Ctm::customPaginate($cateSecs, $this->perPage, $request);
+            
+//            //配列を1ページに表示する件数分分割する
+//        	$displayData = array_chunk($cateSecs, $this->perPage);
+//
+//            //ページがnullの場合は1を設定
+//            $currentPageNo = $request->query('page');
+//            
+//            if (is_null($currentPageNo)) {
+//                $currentPageNo = 1;
+//            }
+//
+//         	$items = new LengthAwarePaginator(
+//                $displayData[$currentPageNo-1], //該当ページに表示するデータ
+//                count($cateSecs), //全件数
+//                $this->perPage, //1ページに表示する数
+//                $currentPageNo, //現在のページ番号
+//                ['path' => $path] //URLをオプションとして設定
+//            );
+            
+            $type = $type . '-ueki';
+            $title = '人気ランキング(植木・庭木)';
         }
         elseif($path == 'recent-items') {
         	$cookieArr = array();
@@ -334,7 +387,7 @@ class HomeController extends Controller
         	abort(404);
         }
         
-        return view('main.archive.index', ['items'=>$items, 'type'=>'unique', 'title'=>$title, 'metaTitle'=>$metaTitle, 'metaDesc'=>$metaDesc, 'metaKeyword'=>$metaKeyword, 'orgItem'=>$orgItem]);
+        return view('main.archive.index', ['items'=>$items, 'type'=>$type, 'title'=>$title, 'metaTitle'=>$metaTitle, 'metaDesc'=>$metaDesc, 'metaKeyword'=>$metaKeyword, 'orgItem'=>$orgItem]);
  
     }
     

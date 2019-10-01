@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Item;
 use App\Category;
+use App\CategorySecond;
 use App\Tag;
 use App\TagGroup;
 use App\TagRelation;
@@ -20,6 +21,7 @@ use DateTime;
 use Auth;
 
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class CustomController extends Controller
 {
@@ -514,6 +516,57 @@ class CustomController extends Controller
         ];
     }
     
+    
+    static function getUekiSecObj()
+    {
+    	$cateUekis = CategorySecond::where('parent_id', 1)->get();
+        
+        //$cateSecSum = array();
+        
+        foreach($cateUekis as $k => $cateUeki) {
+        	$items = Item::where([/*'open_status'=>1, 'is_potset'=>0, */'subcate_id'=>$cateUeki->id]);
+            
+        	$cateUeki->sale_count = $items->sum('sale_count');
+            $cateUeki->is_stock = $items->sum('stock') ? 1 : 0;
+            
+            $cateUekis[$k] = $cateUeki;
+        	//$cateSecSum[$cateUeki->id] = Item::where('subcate_id', $cateUeki->id)->sum('sale_count'); 
+        }
+        
+        $sorted = $cateUekis->sortByDesc('sale_count');
+        
+//        arsort($cateSecSum); //降順Sort
+//		$cateSecSum = array_keys($cateSecSum);
+//        
+//        $cateSecIds = implode(',', $cateSecSum);
+        
+        
+//        $uekiSecObj = CategorySecond::whereIn('id', $cateSecSum)->orderByRaw("FIELD(id, $cateSecIds)")->get(); 
+        
+        return $sorted;
+    }
+    
+    
+    static function customPaginate($itemAll, $perPage, $request)
+    {
+    	//配列を1ページに表示する件数分分割する
+        $chunkData = array_chunk($itemAll, $perPage);
+
+        //ページがnullの場合は1を設定
+        $currentPageNum = $request->query('page') ? $request->query('page') : 1;
+        
+//        if (is_null($currentPageNum)) 
+//            $currentPageNum = 1;
+		
+        
+        return new LengthAwarePaginator(
+            $chunkData[$currentPageNum-1], //該当ページに表示するデータ
+            count($itemAll), //全件数
+            $perPage, //1ページに表示する数
+            $currentPageNum, //現在のページ番号
+            ['path' => $request->path()] //URLをオプションとして設定
+        );
+    }
     
 //    static function getPointBack($item) {
 //        
