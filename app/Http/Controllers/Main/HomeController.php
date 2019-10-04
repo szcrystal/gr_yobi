@@ -126,7 +126,7 @@ class HomeController extends Controller
         $newItems['slug'] = 'new-items';
         
         
-        //Ranking ueki/niwaki
+        // Ranking ueki/niwaki ===========
 //        $cateUekis = $this->cateSec->where('parent_id', 1)->get();
 //        
 //        $cateSecSum = array();
@@ -149,7 +149,8 @@ class HomeController extends Controller
         
         
         //Ranking Other
-        $rankItems['items'] = $this->item->where($whereArr)->orderBy('sale_count', 'desc')->take($getNum)->get()->all();        
+        $rankItems['items'] = Ctm::getRankObj()->take($getNum)->all();
+        //$rankItems['items'] = $this->item->where($whereArr)->orderBy('sale_count', 'desc')->take($getNum)->get()->all();        
         $rankItems['type'] = 2; 
         $rankItems['slug'] = 'ranking';
         
@@ -306,7 +307,11 @@ class HomeController extends Controller
 //            })->all();
 //            
 //            $items= $this->item->whereIn('id', $rankItemIds)->orderBy('sale_count', 'desc')->paginate($this->perPage); //ここで更にorderByする必要がある
+            
+            /*ORG =======
             $items = $this->item->where($whereArr)->orderBy('sale_count', 'desc')->take(100)->get()->all();
+            ============ */
+            $items = Ctm::getRankObj()->take(100)->all();
             $items = Ctm::customPaginate($items, $this->perPage, $request);
             
             $title = '人気ランキング(その他)';

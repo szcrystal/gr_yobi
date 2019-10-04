@@ -24,7 +24,10 @@ class Setting extends Model
         'kare_ensure',
         'bank_info',
         'cot_per',
+        
         'rewrite_time',
+        'rank_term',
+        'rank_term_ueki',
         
         'contents',
         

@@ -280,7 +280,7 @@
             
             <fieldset class="pt-4 mb-4 form-group{{ $errors->has('rewrite_time') ? ' has-error' : '' }}">
                 <label>商品編集 上書き不可制限時間（分単位）</label><br>
-                <input class="form-control d-inline-block col-md-4{{ $errors->has('rewrite_time') ? ' is-invalid' : '' }}" name="rewrite_time" value="{{ Ctm::isOld() ? old('rewrite_time') : (isset($setting) ? $setting->rewrite_time : '') }}"> <span>分</span>
+                <input class="form-control d-inline-block col-md-4{{ $errors->has('rewrite_time') ? ' is-invalid' : '' }}" name="rewrite_time" value="{{ Ctm::isOld() ? old('rewrite_time') : (isset($setting) ? $setting->rewrite_time : '') }}"> <span><b>分</b></span>
 
                 @if ($errors->has('rewrite_time'))
                     <div class="text-danger">
@@ -289,6 +289,31 @@
                     </div>
                 @endif
             </fieldset>
+            
+            <fieldset class="pt-4 mb-2 form-group{{ $errors->has('rank_term_ueki') ? ' has-error' : '' }}">
+                <label>ランキング（植木・庭木）集計日数（日単位）</label><br>
+                <input class="form-control d-inline-block col-md-4{{ $errors->has('rank_term_ueki') ? ' is-invalid' : '' }}" name="rank_term_ueki" value="{{ Ctm::isOld() ? old('rank_term_ueki') : (isset($setting) ? $setting->rank_term_ueki : '') }}"> <span><b>日</b></span>
+
+                @if ($errors->has('rank_term_ueki'))
+                    <div class="text-danger">
+                        <span class="fa fa-exclamation form-control-feedback"></span>
+                        <span>{{ $errors->first('rank_term_ueki') }}</span>
+                    </div>
+                @endif
+            </fieldset>
+            
+            <fieldset class="pt-3 mb-5 pb-2 form-group{{ $errors->has('rank_term') ? ' has-error' : '' }}">
+                <label>ランキング（その他）集計日数（日単位）</label><br>
+                <input class="form-control d-inline-block col-md-4{{ $errors->has('rank_term') ? ' is-invalid' : '' }}" name="rank_term" value="{{ Ctm::isOld() ? old('rank_term') : (isset($setting) ? $setting->rank_term : '') }}"> <span><b>日</b></span>
+
+                @if ($errors->has('rank_term'))
+                    <div class="text-danger">
+                        <span class="fa fa-exclamation form-control-feedback"></span>
+                        <span>{{ $errors->first('rank_term') }}</span>
+                    </div>
+                @endif
+            </fieldset>
+            
             
             <hr>
             

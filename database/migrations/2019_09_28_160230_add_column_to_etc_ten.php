@@ -13,14 +13,15 @@ class AddColumnToEtcTen extends Migration
      */
     public function up()
     {
-        //Sale
+        //Setting
         Schema::table('settings', function (Blueprint $table) {
             $table->integer('post_block')->after('snap_block_c')->nullable()->default(5);
-            //$table->integer('seinou_sunday')->after('seinou_huzai')->nullable()->default(0);
+            $table->integer('rank_term')->after('rewrite_time')->nullable()->default(30);
+            $table->integer('rank_term_ueki')->after('rank_term')->nullable()->default(30);
         });
 
-		//Sale
-//        Schema::table('sale_relations', function (Blueprint $table) {
+		//Setting
+//        Schema::table('settings', function (Blueprint $table) {
 //            $table->integer('seinou_huzai')->after('add_point')->nullable()->default(0);         
 //            $table->integer('seinou_sunday')->after('seinou_huzai')->nullable()->default(0);
 //           
@@ -42,5 +43,18 @@ class AddColumnToEtcTen extends Migration
                 $table->dropColumn('post_block');
             });
         }
+        
+        if (Schema::hasColumn('settings', 'rank_term')) {
+            Schema::table('settings', function (Blueprint $table) {
+                $table->dropColumn('rank_term');
+            });
+        }
+        
+        if (Schema::hasColumn('settings', 'rank_term_ueki')) {
+            Schema::table('settings', function (Blueprint $table) {
+                $table->dropColumn('rank_term_ueki');
+            });
+        }
+        
     }
 }
