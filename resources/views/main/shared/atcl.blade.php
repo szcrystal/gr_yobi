@@ -28,6 +28,7 @@ use App\Icon;
 
     $isSp = Ctm::isAgent('sp');
     $isSale = Setting::get()->first()->is_sale;
+    $salePer = Setting::get()->first()->sale_per;
     
     $imgClass = '';
     
@@ -38,8 +39,12 @@ use App\Icon;
    
 ?>
 
-@if($isSale || isset($item->sale_price))
+@if(isset($item->sale_price))
 <span class="sale-belt">SALE</span>
+@else
+    @if($isSale && $salePer)
+        <span class="sale-belt">{{ $salePer }}％OFF</span>
+    @endif
 @endif
 
 

@@ -119,7 +119,7 @@ class HomeController extends Controller
         
         if(count($scIds) > 0) {
             $scIdStr = implode(',', $scIds);
-            $newItems['items'] = $this->item->whereIn('id', $scIds)->where($whereArr)->orderByRaw("FIELD(id, $scIdStr)")->take($getNum)->get()->all();
+            $newItems['items'] = $this->item->whereIn('id', $scIds)->where($whereArr)->where('stock', '>', 0)->orderByRaw("FIELD(id, $scIdStr)")->take($getNum)->get()->all();
         }
         
         $newItems['type'] = 1; 
@@ -275,28 +275,30 @@ class HomeController extends Controller
         }
         elseif($path == 'new-items') {
         
-            $scs = $this->itemSc->orderBy('updated_at','desc')/*->take(100)*/->get();
-//            ->map(function($isc){
-//                	return $isc->item_id;
-//            })->all();
+            //$scs = $this->itemSc->orderBy('updated_at','desc')/*->take(100)*/->get();            
+            $scIds = $this->itemSc->orderBy('updated_at','desc')->get()->map(function($obj) {
+            	return $obj->item_id;
+            })->all();
             
-            $scIds = array();
-            $n = 0;
+            //$scIds = array();
+            //$n = 0;
             
-            foreach($scs as $sc) {
-            	if($n > 99) break;
-                
-            	$i = $this->item->whereIn('id', [$sc->item_id])->where($whereArr)->get();
-                if($i->isNotEmpty()) {
-                	$scIds[] = $sc->item_id;
-                    $n++;
-                }
-            }
+//            foreach($scs as $sc) {
+//                //if($n > 99) break;
+//                
+//                $whereArr['id'] = $sc->item_id;                
+//                $i = $this->item->where($whereArr)->where('stock', '>', 0)->get();
+//                if($i->isNotEmpty()) {
+//                    $scIds[] = $sc->item_id;
+//                    $n++;
+//                }
+//            }
             
             if(count($scIds) > 0) {
             	//$scIds = array_slice($scIds, 0, 100);
                 $scIdStr = implode(',', $scIds);
-                $items = $this->item->whereIn('id', $scIds)/*->where($whereArr)*/->orderByRaw("FIELD(id, $scIdStr)")/*->take(100)*/->paginate($this->perPage); //paginateにtake()が効かない  
+                $items = $this->item->whereIn('id', $scIds)->where($whereArr)->where('stock', '>', 0)->orderByRaw("FIELD(id, $scIdStr)")->take(100)->get()->all()/*->paginate($this->perPage)*/; //paginateにtake()が効かない
+                $items = Ctm::customPaginate($items, $this->perPage, $request);
             }
             
             $title = '新着情報';

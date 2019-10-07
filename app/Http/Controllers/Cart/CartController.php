@@ -171,7 +171,7 @@ class CartController extends Controller
     /* 送料　通常の計算の関数 END ******************************** */
     
     /* 下草・シモツケ・高木コニファー　特別計算の関数 ************************************************** */
-    /* 
+    /*
     public function specialCalc($smId, $bgId, $prefId, $factor)
     {
         $deliveryFee = 0;
@@ -1468,14 +1468,13 @@ class CartController extends Controller
                    
         }
         
-        //NP後払い手数料 -> 一律205 （190 + 税）切り捨て関数必要----------------
+        //NP後払い手数料 -> 一律205 （190 + 税）切り捨て関数必要 => 手数料のみ205円の非課税となる なので手数料のみは税計算をしない ----------------
         else if($data['pay_method'] == 4) {
         	
-        	$codFee = 190;
+        	$codFee = 205; //ORG:190
             $codMax = 50000;
             
-            $codFee += floor($codFee * $taxPer);
-            
+            //$codFee += floor($codFee * $taxPer);
             $codMax += $codMax * $taxPer; //後払い上限金額の税計算
             
             //NP後払い上限額

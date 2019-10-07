@@ -28,6 +28,7 @@ use App\Icon;
 
     $isSp = Ctm::isAgent('sp');
     $isSale = Setting::get()->first()->is_sale;
+    $salePer = Setting::get()->first()->sale_per;
     
     $imgClass = '';
     
@@ -38,8 +39,12 @@ use App\Icon;
    
 ?>
 
-@if($isSale || isset($item->sale_price))
+@if(isset($item->sale_price))
 <span class="sale-belt">SALE</span>
+@else
+    @if($isSale && $salePer)
+        <span class="sale-belt">{{ $salePer }}％OFF</span>
+    @endif
 @endif
 
 
@@ -48,10 +53,14 @@ use App\Icon;
     	<?php $imgClass = 'stock-zero'; ?>
     	<span>SOLD OUT</span>
     @endif
-    
-    <a href="{{ $link }}">
-    	<img src="{{ Storage::url($cateSec->main_img) }}" alt="{{ $cateSec->title }}" class="{{ $imgClass }}">
-    </a>
+
+    @if(isset($cateSec->main_img))
+        <a href="{{ $link }}">
+            <img src="{{ Storage::url($cateSec->main_img) }}" alt="{{ $cateSec->title }}" class="{{ $imgClass }}">
+        </a>
+    @else
+        <div style="width:100%; height: 240px; line-height:240px;" class="bg-light">No Image</div>
+    @endif
 </div>
 
 <div class="meta">
