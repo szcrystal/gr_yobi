@@ -922,11 +922,11 @@ var exe = (function() {
                 
                 
                 //load時 ==========
-                showHide(10);
+                //showHide(10);
                 
                 //scroll時 ============
                 $(document).scroll(function(){ 
-                    showHide(100);
+                    //showHide(100);
                     
     //            	console.log($(this).scrollTop());
     //                console.log(btnTop);

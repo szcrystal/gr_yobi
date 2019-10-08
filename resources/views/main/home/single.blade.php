@@ -57,6 +57,7 @@ use App\TopSetting;
             
             	<?php //================================================================= 
                 	$itemId = $item->id;
+                 	$itemTitle = $item->title;   
                 ?>
                 
                 @if($item -> main_img)
@@ -78,7 +79,7 @@ use App\TopSetting;
             	
                 <?php //================================================================= ?>
             		<span>{{ $item->title_addition }}</span>
-                	<h2 class="single-title">{{ $item -> title }}<br><span>商品番号 {{ $item->number }}</span></h2>
+                	<h2 class="single-title">{{ $itemTitle }}<br><span>商品番号 {{ $item->number }}</span></h2>
                  	<p class="text-big">{{ $item->catchcopy }}</p>
                     
                     <?php $isPotSet = count($potSets) > 0; ?>
@@ -489,9 +490,13 @@ use App\TopSetting;
                                 @foreach($recoms as $recom)
                                 <div>
                                     <ul class="clearfix">
-                                        @foreach($recom as $item)
+                                        @foreach($recom as $recomItem)
                                             <li class="main-atcl">
-                                                @include('main.shared.atcl', [])
+                                            	@if(strpos($key, 'ランキング') !== false && $item->cate_id == 1)
+                                                    @include('main.shared.atclCateSec', ['cateSec'=>$recomItem]) 
+                                                @else
+                                                	@include('main.shared.atcl', ['item'=>$recomItem])
+                                                @endif
                                             </li>
                                         @endforeach
                                     </ul>
@@ -510,6 +515,26 @@ use App\TopSetting;
                 
 
         </div><!-- head-frame -->
+        
+        @if(count($posts) > 0)
+            <div class="similar-post mt-3 mb-3 pt-1">
+                <div class="mt-4 floar">
+                    <h4>「{{ $itemTitle }}」に関する記事</h4>
+                    <?php 
+                        //キャッシュアイテムはItemControllerでchunkされている
+                    ?>
+                    
+                    @foreach($posts as $chunkPost)
+                        <div class="mb-2 clearfix">
+                            @foreach($chunkPost as $post)
+                                @include('main.shared.atclPost', ['post'=>$post])
+                            @endforeach
+                        </div>
+                    @endforeach
+                    
+                </div>
+            </div>
+        @endif
         
 
         <div class="recent-check mt-3 pt-1">

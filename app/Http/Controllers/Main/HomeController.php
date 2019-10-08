@@ -319,7 +319,7 @@ class HomeController extends Controller
             $title = '人気ランキング(その他)';
         }
         elseif($path == 'ranking-ueki') {
-            $cateSecs= Ctm::getUekiSecObj()->all(); //ここで更にorderByする必要がある
+            $cateSecs= Ctm::getUekiSecObj()->all();
             
             $items = Ctm::customPaginate($cateSecs, $this->perPage, $request);
             

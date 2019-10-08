@@ -11,6 +11,9 @@ use App\ItemImage;
 use App\Favorite;
 use App\User;
 use App\FavoriteCookie;
+use App\Post;
+use App\PostRelation;
+use App\PostTagRelation;
 
 use App\ItemUpper;
 use App\ItemUpperRelation;
@@ -26,7 +29,7 @@ use DateTime;
 
 class SingleController extends Controller
 {
-    public function __construct(Item $item, Category $category, CategorySecond $subCate, Tag $tag, TagRelation $tagRel, ItemImage $itemImg, Favorite $favorite, User $user, ItemUpper $itemUpper, ItemUpperRelation $itemUpperRel, FavoriteCookie $favCookie)
+    public function __construct(Item $item, Category $category, CategorySecond $subCate, Tag $tag, TagRelation $tagRel, ItemImage $itemImg, Favorite $favorite, User $user, ItemUpper $itemUpper, ItemUpperRelation $itemUpperRel, FavoriteCookie $favCookie, Post $post, PostRelation $postRel, PostTagRelation $postTagRel)
     {
         //$this->middleware('search');
         
@@ -42,6 +45,11 @@ class SingleController extends Controller
         $this->upper = $itemUpper;
         $this->upperRel = $itemUpperRel;
         $this->favCookie = $favCookie;
+        
+        $this->post = $post;
+        $this->postRel = $postRel;
+        $this->postTagRel = $postTagRel;
+        
 //        $this->tag = $tag;
 //        $this->tagRelation = $tagRelation;
 //        $this->tagGroup = $tagGroup;
@@ -153,6 +161,7 @@ class SingleController extends Controller
         })->all();
     
         $noStockIds = array_filter($noStockIds);
+        $noStockIdsNoThis = $noStockIds;
         $noStockIds[] = $item->id;
         //在庫がないID END ===========
         
@@ -161,18 +170,33 @@ class SingleController extends Controller
             //->inRandomOrder()->take()->get() もあり クエリビルダに記載あり
         }
         
-        // レコメンド：同カテゴリー 植木庭木の時のみsubcateに合わせる
-        $cateArr = ($item->cate_id == 1) ? ['subcate_id' => $item->subcate_id] : ['cate_id' => $item->cate_id];
-                
-        $recomCateItems = $this->item->whereNotIn('id', $noStockIds)->where($whereArr)->where($cateArr)->inRandomOrder()->take($getNum)->get()->chunk($chunkNum);
+        // この商品を見た人におすすめの商品：同カテゴリーのランダム                
+        $recomCateItems = $this->item->whereNotIn('id', $noStockIds)->where($whereArr)->where('cate_id', $item->cate_id)->inRandomOrder()->take($getNum)->get()->chunk($chunkNum);
         
-        // レコメンド：同カテゴリーのランキング
-        $recomCateRankItems = $this->item->whereNotIn('id', $noStockIds)->where($whereArr)->where($cateArr)->orderBy('view_count', 'desc')->take($getNum)->get()->chunk($chunkNum);
+        // カテゴリーランキング：同カテゴリーのランキング
+        if($item->cate_id == 1) {
+        	$recomCateRankItems = Ctm::getUekiSecObj()->take($getNum)->chunk($chunkNum); //get()で返る
+            //$items = Ctm::customPaginate($items, $this->perPage, $request);
+            
+        }
+        else {
+        	$arIds = Ctm::getRankObj($item->cate_id)->map(function($obj){
+            	return $obj->id;
+            })->all();
+         	
+            $arIds = array_diff($arIds, $noStockIdsNoThis);
+            $arIds = array_values($arIds);
+            
+            $scIdStr = implode(',', $arIds);
+            $recomCateRankItems = $this->item->whereIn('id', $arIds)->orderByRaw("FIELD(id, $scIdStr)")->take($getNum)->get()->chunk($chunkNum);
+            
+        	//ORG	
+            //$recomCateRankItems = $this->item->whereNotIn('id', $noStockIds)->where($whereArr)->where('cate_id', $item->cate_id)->orderBy('sale_count', 'desc')->take($getNum)->get()->chunk($chunkNum);
+    	}
         
         
-        //Recommend レコメンド 先頭タグと同じものをレコメンド ==============
+        //他にもこんな商品が買われています：Recommend レコメンド 先頭タグと同じものをレコメンド & 合わせて関連する記事（Post）もここで取得 ==============
         //$getNum = Ctm::isAgent('sp') ? 3 : 3;
-        
         if(isset($tagRels[1])) {
         	$ar = [$tagRels[1]];
             
@@ -184,12 +208,10 @@ class SingleController extends Controller
             	$ar[] = $tagRels[3];
             }
             
+            //他にもこんな商品：部分 =====================
         	$idWithTag = $this->tagRel->whereIn('tag_id', $ar)->get()->map(function($obj){
             	return $obj->item_id;
-            })->all(); 
-            
-//            $tempIds = $idWithTag;
-//            $tempIds[] = $item->id;
+            })->all();
             
             $idWithCate = $this->item/*->whereNotIn('id', $tempIds)*/->where('subcate_id', $item->subcate_id)->get()->map(function($obj){
             	return $obj->id;
@@ -205,8 +227,21 @@ class SingleController extends Controller
             
             $recommends = $this->item->whereNotIn('id', $noStockIds)->whereIn('id', $res)->where($whereArr)->inRandomOrder()->take($getNum)->get()->chunk($chunkNum);
             //->inRandomOrder()->take()->get() もあり クエリビルダに記載あり
+            //他にもこんな商品：部分 END =====================
+            
+            
+            // Get SimilerPost : Tagルール同様 =====================================
+            $postRelIds = $this->postTagRel->whereIn('tag_id', $ar)->get()->map(function($obj){
+                return $obj->postrel_id;
+            })->all(); 
+            
+            $postNum = Ctm::isAgent('sp') ? 3 : 3; //ORG ? 4 : 3;
+            $postChunkNum = Ctm::isAgent('sp') ? 3 : 3; //ORG ? 2 : 3; 
+            $posts = $this->postRel->whereIn('id', $postRelIds)->where(['open_status'=>1, ])->inRandomOrder()->take($postNum)->get()->chunk($postChunkNum);
+            
+            // Get SimilerPost END =====================================
         }
-        else {
+        else { //タグがない時
         	$recommends = $this->item->whereNotIn('id', $noStockIds)->where($whereArr)->where(['subcate_id'=>$item->subcate_id])->inRandomOrder()->take($getNum)->get()->chunk($chunkNum);
             //->inRandomOrder()->take()->get() もあり クエリビルダに記載あり
         }
@@ -340,7 +375,7 @@ class SingleController extends Controller
         $metaKeyword = $item->meta_keyword;
         
         
-        return view('main.home.single', ['item'=>$item, 'potSets'=>$potSets, 'otherItem'=>$otherItem, 'cate'=>$cate, 'subCate'=>$subCate, 'tags'=>$tags, 'imgsPri'=>$imgsPri, 'imgsSec'=>$imgsSec, 'isFav'=>$isFav, 'recomArr'=>$recomArr, 'cacheItems'=>$cacheItems, 'recommends'=>$recommends, 'upperRelArr'=>$upperRelArr, 'metaTitle'=>$metaTitle, 'metaDesc'=>$metaDesc, 'metaKeyword'=>$metaKeyword, 'type'=>'single', 'isSingle'=>1]);
+        return view('main.home.single', ['item'=>$item, 'potSets'=>$potSets, 'otherItem'=>$otherItem, 'cate'=>$cate, 'subCate'=>$subCate, 'tags'=>$tags, 'imgsPri'=>$imgsPri, 'imgsSec'=>$imgsSec, 'isFav'=>$isFav, 'recomArr'=>$recomArr, 'cacheItems'=>$cacheItems, 'recommends'=>$recommends, 'posts'=>$posts, 'upperRelArr'=>$upperRelArr, 'metaTitle'=>$metaTitle, 'metaDesc'=>$metaDesc, 'metaKeyword'=>$metaKeyword, 'type'=>'single', 'isSingle'=>1]);
     }
     
     

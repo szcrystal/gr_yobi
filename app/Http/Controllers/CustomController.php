@@ -520,15 +520,21 @@ class CustomController extends Controller
     }
     
     
-    static function getRankObj()
+    static function getRankObj($cateId = null)
     {        
         $rankTerm = Setting::first()->rank_term;
         
         $now = new DateTime();
         $sepDay = $now->modify('-' . $rankTerm . ' days')->format('Y-m-d');
         
-		
-        $items = Item::where(['open_status'=>1, 'is_potset'=>0, ['cate_id', '>', 1] ])->get();
+        if(isset($cateId)) {
+        	$cateAr = ['cate_id', '=', $cateId];
+        }
+        else {
+        	$cateAr = ['cate_id', '>', 1];
+        }
+        
+        $items = Item::where(['open_status'=>1, 'is_potset'=>0, $cateAr ])->get();
         
         foreach($items as $k => $item) {
         	$sum = 0;

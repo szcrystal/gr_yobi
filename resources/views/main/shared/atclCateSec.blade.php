@@ -10,21 +10,22 @@ use App\Icon;
 
 <?php
 	$isCate = (isset($type) && $type == 'category') ? 1 : 0; //categoryページならの判別
-	
-    $category = Category::find($item->parent_id);
-    $link = url('/category/'. $category->slug . '/' . $cateSec->slug);
+		
+    $category = Category::find($cateSec->parent_id);
+
+    $cateLink = url('/category/'. $category->slug . '/' . $cateSec->slug);
     ///$linkName = isset($category->link_name) ? $category->link_name : $category->name;
     
     
-    if( $category->id == 1 && isset($item->subcate_id) && $item->subcate_id != '') {
-        $subCate = CategorySecond::find($item->subcate_id);
-        $cateLink = url('category/'. $category->slug . '/' . $subCate->slug);
-        $cateName = isset($subCate->link_name) ? $subCate->link_name : $subCate->name;
-    }
-    else {
-        $cateLink = url('category/'. $category->slug);
-        $cateName = isset($category->link_name) ? $category->link_name : $category->name;
-    }
+//    if( $category->id == 1 && isset($item->subcate_id) && $item->subcate_id != '') {
+//        $subCate = CategorySecond::find($item->subcate_id);
+//        $cateLink = url('category/'. $category->slug . '/' . $subCate->slug);
+//        $cateName = isset($subCate->link_name) ? $subCate->link_name : $subCate->name;
+//    }
+//    else {
+//        $cateLink = url('category/'. $category->slug);
+//        $cateName = isset($category->link_name) ? $category->link_name : $category->name;
+//    }
 
     $isSp = Ctm::isAgent('sp');
     $isSale = Setting::get()->first()->is_sale;
@@ -55,11 +56,11 @@ use App\Icon;
     @endif
 
     @if(isset($cateSec->main_img))
-        <a href="{{ $link }}">
+        <a href="{{ $cateLink }}">
             <img src="{{ Storage::url($cateSec->main_img) }}" alt="{{ $cateSec->title }}" class="{{ $imgClass }}">
         </a>
     @else
-        <div style="width:100%; height: 240px; line-height:240px;" class="bg-light">No Image</div>
+        <div style="width:100%; height: 215px; line-height:215px;" class="bg-light">No Image</div>
     @endif
 </div>
 
@@ -70,12 +71,12 @@ use App\Icon;
         	$strNum = Ctm::isAgent('sp') ? 22 : 25;
     ?>
     
-    <h3><a href="{{ $link }}">
+    <h3><a href="{{ $cateLink }}">
         {{ Ctm::shortStr($cateSec->name, $strNum) }}
     </a></h3>
     
     <p>
-        <a href="{{ $cateLink }}">{{ $cateName }}</a>
+        <a href="{{ url('category/' . $category->slug) }}">{{ $category->name }}</a>
     </p>
     
     {{--
