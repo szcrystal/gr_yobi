@@ -39,7 +39,7 @@ class PostController extends Controller
         $this->itemWhere =['open_status'=>1, 'is_potset'=>0]; //こことSingleとSearch/ArchiveとCtm::isPotParentAndStockにある
         
         
-        $this->itemPerPage = 3;
+        $this->itemPerPage = 20;
         
     }
     
@@ -54,8 +54,12 @@ class PostController extends Controller
         //bigTitle(H1)をセットする
         //$postRels = $this->setBigTitleToRel($postRels);
         
-        return view('main.post.archive', ['postRels'=>$postRels]);
+        $postCates = $this->postCate->all();
         
+        
+        return view('main.post.archive', compact('postRels', 'postCates'));
+        
+        //-------------------------------------------------------------------------
         
         if(!isset($item)) {
             abort(404);

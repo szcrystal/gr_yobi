@@ -61,7 +61,8 @@ Route::resource('dashboard/upper', 'DashBoard\ItemUpperController');
 
 
 //Category
-Route::resource('dashboard/categories/post', 'DashBoard\PostCategoryController');
+Route::resource('dashboard/post-categories/sec', 'DashBoard\PostCategorySecController');
+Route::resource('dashboard/post-categories', 'DashBoard\PostCategoryController');
 Route::resource('dashboard/categories/sub', 'DashBoard\CategorySecondController');
 Route::resource('dashboard/categories', 'DashBoard\CategoryController');
 

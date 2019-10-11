@@ -17,7 +17,7 @@
       <div class="col-sm-12 col-md-6 col-lg-6 col-xl-5 mb-3">
         <div class="bs-component clearfix">
             <div class="">  
-                <a href="{{ url('/dashboard/categories/post') }}" class="btn bg-white border border-1 border-secondary border-round text-primary"><i class="fa fa-angle-double-left" aria-hidden="true"></i>一覧へ戻る</a>
+                <a href="{{ url('/dashboard/post-categories') }}" class="btn bg-white border border-1 border-secondary border-round text-primary"><i class="fa fa-angle-double-left" aria-hidden="true"></i>一覧へ戻る</a>
             </div>
             
             {{--
@@ -53,7 +53,7 @@
     @endif
         
     <div class="col-lg-12">
-        <form class="form-horizontal" role="form" method="POST" action="/dashboard/categories/post" enctype="multipart/form-data">
+        <form class="form-horizontal" role="form" method="POST" action="/dashboard/post-categories" enctype="multipart/form-data">
         	
             <div class="form-group mt-4">
                 <button type="submit" class="btn btn-primary btn-block w-btn w-25 mx-auto">更　新</button>

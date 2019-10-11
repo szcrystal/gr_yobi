@@ -28,6 +28,9 @@
         </li>
         --}}
         
+        
+        
+        
         @if(Ctm::checkRole('isSuper'))
             <li class="nav-item" data-toggle="tooltip" data-placement="right" title="管理者設定">
                 <a class="nav-link" href="{{ url('dashboard/register') }}" id="register">
@@ -127,7 +130,7 @@
                   <li class="nav-item" data-toggle="tooltip" data-placement="right" title="カテゴリー">
                     <a class="nav-link nav-link-collapse collapsed" data-toggle="collapse" href="#categories" data-parent="#collapseMaster">
                         <i class="fa fa-align-left"></i>
-                        <span class="nav-link-text">カテゴリー</span>
+                        <span class="nav-link-text">商品カテゴリー</span>
                     </a>
                     <ul class="sidenav-third-level collapse" id="categories"><!-- class=" collapse" -->
                         <li>
@@ -143,15 +146,31 @@
                         <li>
                           <a href="{{ url('dashboard/categories/sub/create') }}">子カテゴリー追加</a>
                         </li>
+
+                    </ul>
+                </li>
+                
+                <div class="border border-secondary border-top-0 w-75 mx-auto"></div>
+                
+                <li class="nav-item" data-toggle="tooltip" data-placement="right" title="記事カテゴリー">
+                    <a class="nav-link nav-link-collapse collapsed" data-toggle="collapse" href="#post-categories" data-parent="#collapseMaster">
+                        <i class="fa fa-align-left"></i>
+                        <span class="nav-link-text">記事カテゴリー</span>
+                    </a>
+                    <ul class="sidenav-third-level collapse" id="post-categories"><!-- class=" collapse" -->
+                        <li>
+                          <a href="{{ url('dashboard/post-categories') }}">記事カテゴリー一覧</a>
+                        </li>
+                        <li>
+                          <a href="{{ url('dashboard/post-categories/create') }}">記事カテゴリー追加</a>
+                        </li>
                         
-                        @if(Ctm::isEnv('local'))
-                        	<li>
-                              <a href="{{ url('dashboard/categories/post') }}">記事カテゴリー一覧</a>
-                            </li>
-                            <li>
-                              <a href="{{ url('dashboard/categories/post/create') }}">記事カテゴリー追加</a>
-                            </li>
-                        @endif
+                        <li>
+                          <a href="{{ url('dashboard/post-categories/sec') }}">記事子カテゴリー一覧</a>
+                        </li>
+                        <li>
+                          <a href="{{ url('dashboard/post-categories/sec/create') }}">記事子カテゴリー追加</a>
+                        </li>
 
                     </ul>
                 </li>

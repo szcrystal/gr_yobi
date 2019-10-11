@@ -14,10 +14,9 @@ use App\TopSetting;
 
         <div class="panel-body top-cont">
 
-
 @foreach($firstItems as $keyTitle => $firstItem)
 	
-    <?php 
+    <?php   
     	$rankNum = 1;
         $type = $firstItem['type'];
     ?>

@@ -18,6 +18,7 @@ class CreatePostRelationsTable extends Migration
             
             //$table->integer('parent_id')->nullable()->default(NULL);
             $table->integer('cate_id')->nullable()->default(NULL);
+            $table->integer('catesec_id')->nullable()->default(NULL);
             $table->string('type_code')->nullable()->default(NULL);
             
             $table->integer('open_status')->nullable()->default(0);

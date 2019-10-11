@@ -2444,13 +2444,22 @@ h3.upper-title {
     //border: 1px solid blue;
     width: 30%;
 }
+.post-main-archive {
+	float: right;
+	width: 73%;
+	margin-left: 3%;
+}
+.post-side-archive {
+	float: right;
+	width: 24%;
+}
 
 .post-main header {
 	margin-bottom: 2em;
 }
 .post-main section {
 	margin-bottom: 2.5em;
-	border: 1px solid red;
+	//border: 1px solid red;
 }
 .post-main header h1 {
 	font-size: 1.9em;

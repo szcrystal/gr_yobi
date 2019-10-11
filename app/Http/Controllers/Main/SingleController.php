@@ -169,11 +169,13 @@ class SingleController extends Controller
         	$isOnceItems = $this->item->whereNotIn('id', $noStockIds)->where($whereArr)->where(['consignor_id'=>$item->consignor_id, 'is_once'=>1, 'is_once_recom'=>0])->inRandomOrder()->take($getNum)->get()->chunk($chunkNum);
             //->inRandomOrder()->take()->get() もあり クエリビルダに記載あり
         }
+        //同梱包可能商品レコメンド END ================
         
-        // この商品を見た人におすすめの商品：同カテゴリーのランダム                
+        // この商品を見た人におすすめの商品：同カテゴリーのランダム =====================              
         $recomCateItems = $this->item->whereNotIn('id', $noStockIds)->where($whereArr)->where('cate_id', $item->cate_id)->inRandomOrder()->take($getNum)->get()->chunk($chunkNum);
+        // この商品を見た人におすすめの商品：同カテゴリーのランダム END ====================
         
-        // カテゴリーランキング：同カテゴリーのランキング
+        // カテゴリーランキング：同カテゴリーのランキング ====================
         if($item->cate_id == 1) {
         	$recomCateRankItems = Ctm::getUekiSecObj()->take($getNum)->chunk($chunkNum); //get()で返る
             //$items = Ctm::customPaginate($items, $this->perPage, $request);
@@ -193,7 +195,7 @@ class SingleController extends Controller
         	//ORG	
             //$recomCateRankItems = $this->item->whereNotIn('id', $noStockIds)->where($whereArr)->where('cate_id', $item->cate_id)->orderBy('sale_count', 'desc')->take($getNum)->get()->chunk($chunkNum);
     	}
-        
+        // カテゴリーランキング：同カテゴリーのランキング END ====================
         
         //他にもこんな商品が買われています：Recommend レコメンド 先頭タグと同じものをレコメンド & 合わせて関連する記事（Post）もここで取得 ==============
         //$getNum = Ctm::isAgent('sp') ? 3 : 3;
@@ -255,7 +257,7 @@ class SingleController extends Controller
             'カテゴリーランキング' => $recomCateRankItems,
             '他にもこんな商品が買われています' => $recommends,
         ];
-        
+        //Recommend ALL END ============================
         
         //Cache 最近見た ===================
         $cookieArr = array();

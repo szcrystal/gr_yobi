@@ -31,7 +31,7 @@ use App\TopSetting;
 @endsection
 
 @section('content')
-<div class="post-wrap clearfix border border-danger">
+<div class="post-wrap clearfix mt-4">
 
 <?php
 

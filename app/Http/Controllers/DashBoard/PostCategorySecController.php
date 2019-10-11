@@ -1,20 +1,23 @@
 <?php
 
-namespace App\Http\Controllers\Dashboard;
+namespace App\Http\Controllers\DashBoard;
 
 use App\PostCategory;
+use App\PostCategorySecond;
 use App\Setting;
 
+    
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
-class PostCategoryController extends Controller
+class PostCategorySecController extends Controller
 {
-    public function __construct(PostCategory $postCate, Setting $setting)
+    public function __construct(PostCategory $postCate, PostCategorySecond $postCateSec, Setting $setting)
     {
-    	$this -> middleware(['adminauth', 'role:isAdmin']);
+        $this -> middleware(['adminauth', 'role:isAdmin']);
         
         $this->postCate = $postCate;
+        $this->postCateSec = $postCateSec;
         
         $this->setting = $setting;
         $this->set = $this->setting->first();
@@ -25,28 +28,29 @@ class PostCategoryController extends Controller
     public function index()
     {
         //$cates = Category::orderBy('id', 'desc')->paginate($this->perPage);
-        $cates = $this->postCate->orderBy('id', 'desc')->get();
+        $cates = $this->postCateSec->orderBy('id', 'desc')->get();
         
-        return view('dashboard.postCategory.index', ['cates'=>$cates]);
+        return view('dashboard.postCategorySec.index', ['cates'=>$cates]);
     }
 
     public function show($id)
     {
-        $cate = $this->postCate->find($id);
+        $cate = $this->postCateSec->find($id);
         
 //        $snaps = $this->itemImg->where(['item_id'=>$id, 'type'=>3])->get();
 //        $imgCount = $this->setting->get()->first()->snap_category;
         
         
-        return view('dashboard.postCategory.form', ['cate'=>$cate, /*'imgCount'=>$imgCount, 'snaps'=>$snaps, */'id'=>$id, 'edit'=>1]);
+        return view('dashboard.postCategorySec.form', ['cate'=>$cate, /*'imgCount'=>$imgCount, 'snaps'=>$snaps, */'id'=>$id, 'edit'=>1]);
     }
     
     
     public function create()
     {
-    	//$imgCount = $this->setting->get()->first()->snap_category;
+        //$imgCount = $this->setting->get()->first()->snap_category;
+        $cates = $this->postCate->all();
         
-        return view('dashboard.postCategory.form', [/*'imgCount'=>$imgCount,*/ ]);
+        return view('dashboard.postCategorySec.form', compact('cates'));
     }
 
     /**
@@ -65,8 +69,8 @@ class PostCategoryController extends Controller
         ];
         
         $messages = [
-            'name.required' => '「記事カテゴリー名」は必須です。',
-            'name.unique' => '「記事カテゴリー名」が既に存在します。',
+            'name.required' => '「記事 子カテゴリー名」は必須です。',
+            'name.unique' => '「記事 子カテゴリー名」が既に存在します。',
         ];
         
         $this->validate($request, $rules, $messages);
@@ -76,13 +80,13 @@ class PostCategoryController extends Controller
         $data['is_top'] = isset($data['is_top']) ? 1 : 0;
 
         if($editId) { //update（編集）の時
-            $status = '記事カテゴリーが更新されました！';
-            $cateModel = $this->postCate->find($editId);
+            $status = '記事 子カテゴリーが更新されました！';
+            $cateModel = $this->postCateSec->find($editId);
         }
         else { //新規追加の時
-            $status = '記事カテゴリーが追加されました！';
+            $status = '記事 子カテゴリーが追加されました！';
             $data['view_count'] = 0;
-            $cateModel = $this->postCate;
+            $cateModel = $this->postCateSec;
         }
         
         $cateModel->fill($data); //モデルにセット
@@ -102,7 +106,7 @@ class PostCategoryController extends Controller
             
             //$aId = $editId ? $editId : $rand;
             //$pre = time() . '-';
-            $filename = 'post/category/' . $cateId . '/recom/' . $filename;
+            $filename = 'post/category_sec/' . $cateId . '/recom/' . $filename;
             //if (App::environment('local'))
             $path = $data['top_img_path']->storeAs('public', $filename);
             //else
@@ -157,7 +161,7 @@ class PostCategoryController extends Controller
                         
                         //$aId = $editId ? $editId : $rand;
                         //$pre = time() . '-';
-                        $filename = 'category/' . $cateId . '/snap/'/* . $pre*/ . $filename;
+                        $filename = 'category_sec/' . $cateId . '/snap/'/* . $pre*/ . $filename;
                         //if (App::environment('local'))
                         $path = $data['snap_thumb'][$count]->storeAs('public', $filename);
                         //else
@@ -190,18 +194,10 @@ class PostCategoryController extends Controller
         }
         //Snap END ===========================================
 
-        return redirect('dashboard/post-categories/'. $cateId)->with('status', $status);
+        return redirect('dashboard/post-categories/sec'.$cateId)->with('status', $status);
     }
-
-
     
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+    
     public function edit($id)
     {
         //
@@ -237,13 +233,13 @@ class PostCategoryController extends Controller
         $cateDel = $this->cateSec->destroy($id);
         
         //if(Storage::exists('public/subcate/'. $id)) {
-        	Storage::deleteDirectory('public/subcate/'. $id); //存在しなければスルーされるようだ
+            Storage::deleteDirectory('public/subcate/'. $id); //存在しなければスルーされるようだ
         //}
         
         
         $status = 'カテゴリー「' . $name . '」';
         $status .= $cateDel ? 'が削除されました' : 'が削除出来ませんでした。';
         
-        return redirect('dashboard/categories/sub')->with('status', $status);
+        return redirect('dashboard/post-categories/sub')->with('status', $status);
     }
 }

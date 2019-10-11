@@ -76,7 +76,7 @@
 
 
                                 <td>
-                                    <a href="{{ url('dashboard/categories/post/'.$cate->id) }}" class="btn btn-success btn-sm center-block">編集</a>
+                                    <a href="{{ url('dashboard/post-categories/'.$cate->id) }}" class="btn btn-success btn-sm center-block">編集</a>
                                 </td>
 
                                 <td>
