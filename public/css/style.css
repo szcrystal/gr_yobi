@@ -2446,12 +2446,12 @@ h3.upper-title {
 }
 .post-main-archive {
 	float: right;
-	width: 73%;
+	width: 78%;
 	margin-left: 3%;
 }
 .post-side-archive {
 	float: right;
-	width: 24%;
+	//width: 24%; /* $left-barで指定済 */
 }
 
 .post-main header {
@@ -2473,7 +2473,7 @@ h3.upper-title {
 }
 .post-main section h1 {
 	padding-bottom: 0.1em;
-    border-bottom: 1px solid #141d21;
+    border-bottom: 1px solid #cdcdcd;
 }
 .post-main section h2 {
 	 font-size: 1.3em;
@@ -2495,12 +2495,12 @@ h3.upper-title {
 
 .line-img-wrap {
 	float: left;
-    width: 28%;
+    width: 30%;
     margin-right: 2%;
 }
 .line-cont-wrap {
 	float: left;
-    width: 70%;
+    width: 68%;
     font-size: 0.9em;
 }
 .post-side .side-cont-wrap h5 {
@@ -2511,6 +2511,13 @@ h3.upper-title {
 	float: left;
     width: 48.5%;
     margin-right: 1.2%;
+    //border: 1px solid red;
+}
+.post-archive .line-img-wrap {
+	width: 32%;
+}
+.post-archive .line-cont-wrap {
+    width: 65%;
 }
 .post-atcl h5 {
 	font-size: 1.2em;

@@ -6,6 +6,7 @@ use App\Item;
 use App\Post;
 use App\PostRelation;
 use App\PostCategory;
+use App\PostCategorySecond;
 use App\Tag;
 use App\TagRelation;
 use App\PostTagRelation;
@@ -21,7 +22,7 @@ use DB;
 class PostController extends Controller
 {
     
-    public function __construct(Item $item, Post $post, PostRelation $postRel, PostCategory $postCate, Tag $tag, TagRelation $tagRel, PostTagRelation $postTagRel)
+    public function __construct(Item $item, Post $post, PostRelation $postRel, PostCategory $postCate, PostCategorySecond $postCateSec, Tag $tag, TagRelation $tagRel, PostTagRelation $postTagRel)
     {
         //$this->middleware('search');
         
@@ -30,6 +31,7 @@ class PostController extends Controller
         $this->postRel = $postRel;
         
         $this->postCate = $postCate;
+        $this->postCateSec = $postCateSec;
         $this->tag = $tag;
         $this->tagRel = $tagRel;
         $this->postTagRel = $postTagRel;
@@ -45,7 +47,7 @@ class PostController extends Controller
     
     public function index()
     {
-    	if(Ctm::isEnv('product') || Ctm::isEnv('alpha')) abort(404);
+    	//if(Ctm::isEnv('product') || Ctm::isEnv('alpha')) abort(404);
         
         $whereArr = $this->postWhere;
         
@@ -59,7 +61,7 @@ class PostController extends Controller
         
         return view('main.post.archive', compact('postRels', 'postCates'));
         
-        //-------------------------------------------------------------------------
+        // ============================================================================================
         
         if(!isset($item)) {
             abort(404);
@@ -344,7 +346,7 @@ class PostController extends Controller
     
     public function show($postId)
     {
-    	if(Ctm::isEnv('product') || Ctm::isEnv('alpha')) abort(404);
+    	//if(Ctm::isEnv('product') || Ctm::isEnv('alpha')) abort(404);
         
         
         //get Post
@@ -385,6 +387,13 @@ class PostController extends Controller
         
         //Cate
         $postCate = $this->postCate->find($postRel->cate_id);
+        $postCate->increment('view_count');
+        
+        //CateSec
+        if($postRel->catesec_id) {
+        	$postCateSec = $this->postCateSec->find($postRel->catesec_id);
+        	$postCateSec->increment('view_count');
+        }
         
         //Tag
         $tags = null;
@@ -441,7 +450,7 @@ class PostController extends Controller
         	・idsがセット：必ずそれらが入力順に先頭表示。不足分は(ワード + タグ/カテ/子カテ)のランダムから
             ・idsが空：(ワード + タグ/カテ/子カテ)のランダム
             ・検索ワードが空：タグ/カテ/子カテのランダム
-            ・タグは1〜3個目までが連結対象
+            ・タグは1〜3個目までが連結対象(0~2)
             ・親カテセットの時は子カテ必須
         */
         
@@ -619,24 +628,35 @@ class PostController extends Controller
     }
     
     
-    public function category($slug)
+    public function category($slug, Request $request)
     {
-    	if(Ctm::isEnv('product') || Ctm::isEnv('alpha')) abort(404);
+    	//if(Ctm::isEnv('product') || Ctm::isEnv('alpha')) abort(404);
         
-        $postCate = $this->postCate->where('slug', $slug)->first();
+        $secId = $request->has('sec') ? $request->input('sec') : 0;
+        $postWhere = $this->postWhere;
+        
+        if($secId) {
+        	$postCate = $this->postCateSec->find($secId);
+         	$postWhere['catesec_id'] = $postCate->id;   
+        }
+        else {
+        	$postCate = $this->postCate->where('slug', $slug)->first();
+         	$postWhere['cate_id'] = $postCate->id;   
+        }
         
         if(collect($postCate)->isEmpty())
         	abort(404);
         
-        
-        $postWhere = $this->postWhere;
-        $postWhere['cate_id'] = $postCate->id;
         
         $postRels = $this->postRel->where($postWhere)->orderBy('created_at','DESC')->paginate($this->itemPerPage);
         
         //bigTitle(H1)をセットする
         //$postRels = $this->setBigTitleToRel($postRels);
         
+        $postCate->increment('view_count');
+        
+        //For Sidebar
+        $postCates = $this->postCate->all();
         
         // Meta ====================
         $metaTitle = isset($postCate->meta_title) ? $postCate->meta_title : $postCate->name . '｜植木買うならグリーンロケット';
@@ -644,7 +664,7 @@ class PostController extends Controller
         $metaKeyword = $postCate->meta_keyword;
         
         
-        return view('main.post.archive', compact('postRels', 'postCate', 'metaTitle', 'metaDesc', 'metaKeyword'));
+        return view('main.post.archive', compact('postRels', 'postCate', 'postCates', 'metaTitle', 'metaDesc', 'metaKeyword'));
     }
     
     

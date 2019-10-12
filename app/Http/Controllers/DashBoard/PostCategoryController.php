@@ -24,7 +24,7 @@ class PostCategoryController extends Controller
     
     public function index()
     {
-        //$cates = Category::orderBy('id', 'desc')->paginate($this->perPage);
+        //$cates = $this->postCate->orderBy('id', 'desc')->paginate($this->perPage);
         $cates = $this->postCate->orderBy('id', 'desc')->get();
         
         return view('dashboard.postCategory.index', ['cates'=>$cates]);

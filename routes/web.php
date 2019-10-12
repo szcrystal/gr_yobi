@@ -28,16 +28,16 @@ Route::delete('dashboard/register/{id}', 'DashBoard\MainController@destroy');
 Route::get('dashboard/logout', 'DashBoard\MainController@getLogout');
 
 //Setting
-Route::resource('dashboard/settings', 'DashBoard\SettingController');
+Route::resource('dashboard/settings/index', 'DashBoard\SettingController');
 
 //Top Setting
-Route::resource('dashboard/top-settings', 'DashBoard\TopSettingController');
-
-//Consignor
-Route::resource('dashboard/consignors', 'DashBoard\ConsignorController');
+Route::resource('dashboard/settings/top-settings', 'DashBoard\TopSettingController');
 
 //MailTemplate
-Route::resource('dashboard/mails', 'DashBoard\MailTemplateController');
+Route::resource('dashboard/settings/mails', 'DashBoard\MailTemplateController');
+    
+//Consignor
+Route::resource('dashboard/consignors', 'DashBoard\ConsignorController');
 
 //DeliveryGroup
 Route::resource('dashboard/dgs', 'DashBoard\DeliveryGroupController');

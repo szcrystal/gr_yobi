@@ -28,20 +28,22 @@ class PostCategorySecController extends Controller
     public function index()
     {
         //$cates = Category::orderBy('id', 'desc')->paginate($this->perPage);
-        $cates = $this->postCateSec->orderBy('id', 'desc')->get();
+        $subCates = $this->postCateSec->orderBy('id', 'desc')->get();
         
-        return view('dashboard.postCategorySec.index', ['cates'=>$cates]);
+        return view('dashboard.postCategorySec.index', compact('subCates') );
     }
 
     public function show($id)
     {
-        $cate = $this->postCateSec->find($id);
+    	$cates = $this->postCate->all();
+        $subCate = $this->postCateSec->find($id);
         
 //        $snaps = $this->itemImg->where(['item_id'=>$id, 'type'=>3])->get();
 //        $imgCount = $this->setting->get()->first()->snap_category;
         
+        $edit = $id;
         
-        return view('dashboard.postCategorySec.form', ['cate'=>$cate, /*'imgCount'=>$imgCount, 'snaps'=>$snaps, */'id'=>$id, 'edit'=>1]);
+        return view('dashboard.postCategorySec.form', compact('cates', 'subCate', 'id', 'edit') );
     }
     
     
@@ -49,6 +51,8 @@ class PostCategorySecController extends Controller
     {
         //$imgCount = $this->setting->get()->first()->snap_category;
         $cates = $this->postCate->all();
+        
+        //$postSubCates = 
         
         return view('dashboard.postCategorySec.form', compact('cates'));
     }
@@ -64,8 +68,8 @@ class PostCategorySecController extends Controller
         $editId = $request->has('edit_id') ? $request->input('edit_id') : 0;
         
         $rules = [
-            'name' => 'required|unique:categories,name,'.$editId.'|max:255',
-            'slug' => 'required|alpha_dash|unique:categories,slug,'.$editId.'|max:255', /* 注意:unique */
+            'name' => 'required|unique:post_category_seconds,name,'.$editId.'|max:255',
+            'slug' => 'required|alpha_dash|unique:post_category_seconds,slug,'.$editId.'|max:255', /* 注意:unique */
         ];
         
         $messages = [
@@ -194,7 +198,7 @@ class PostCategorySecController extends Controller
         }
         //Snap END ===========================================
 
-        return redirect('dashboard/post-categories/sec'.$cateId)->with('status', $status);
+        return redirect('dashboard/post-categories/sec/'.$cateId)->with('status', $status);
     }
     
     

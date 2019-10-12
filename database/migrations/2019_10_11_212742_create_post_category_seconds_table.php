@@ -37,6 +37,15 @@ class CreatePostCategorySecondsTable extends Migration
             
             $table->timestamps();
         });
+        
+        DB::table('post_category_seconds')->insert([
+        	'parent_id' => 1,
+            'name' => 'お知らせ',
+            'link_name' => 'お知らせ',
+            'slug' => 'news',
+            'created_at' => date('Y-m-d H:i:s', time()),
+            'updated_at' => date('Y-m-d H:i:s', time()),
+        ]);
     }
 
     /**

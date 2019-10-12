@@ -39,8 +39,9 @@ class CreatePostCategoriesTable extends Migration
         
         
         DB::table('post_categories')->insert([
-            'name' => '記事の植木',
-            'slug' => 'kiji-ueki',
+            'name' => 'インフォメーション',
+            'link_name' => 'インフォメーション',
+            'slug' => 'information',
             'created_at' => date('Y-m-d H:i:s', time()),
             'updated_at' => date('Y-m-d H:i:s', time()),
         ]);

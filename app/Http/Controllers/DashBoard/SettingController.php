@@ -164,7 +164,7 @@ class SettingController extends Controller
         }
          
         
-        return redirect('dashboard/settings/')->with('status', $status);
+        return redirect('dashboard/settings/index')->with('status', $status);
     }
 
     /**

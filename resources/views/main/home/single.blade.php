@@ -519,7 +519,7 @@ use App\TopSetting;
         @if(count($posts) > 0)
             <div class="similar-post mt-3 mb-3 pt-1">
                 <div class="mt-4 floar">
-                    <h4>「{{ $itemTitle }}」に関する記事</h4>
+                    <h4>" {{ $itemTitle }} " に関する記事</h4>
                     <?php 
                         //キャッシュアイテムはItemControllerでchunkされている
                     ?>

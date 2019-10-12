@@ -23,7 +23,7 @@
     <div class="mb-3">
         
         <div class="mb-3 text-right">
-            <a href="{{url('dashboard/categories/post/create')}}" class="btn btn-info">新規追加</a>
+            <a href="{{url('dashboard/post-categories/create')}}" class="btn btn-info">新規追加</a>
         </div>
                            
             <div class="table-responsive">
@@ -33,6 +33,7 @@
                             <th>ID</th>
                             <th>カテゴリー名</th>
                             <th>スラッグ</th>
+                            <th>View数</th>
                             {{-- <th>おすすめ</th> --}}
                             <th></th>
                             <th></th>
@@ -51,6 +52,10 @@
                                                     
                                 <td>
                                     {{ $cate->slug }}
+                                </td>
+                                
+                                <td>
+                                    {{ $cate->view_count }}
                                 </td>
                                 
                                 {{--

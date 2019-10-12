@@ -5,6 +5,7 @@
 <?php 
 use App\Category;
 use App\CategorySecond;
+use App\PostCategorySecond;
 
 //    if($type == 'item') {
 //        $name = $orgObj->title;
@@ -220,7 +221,7 @@ use App\CategorySecond;
                 <div class="block-all-wrap pt-1">
                 	
                     <span class="text-small">
-                        ・入力された1つ目中タイトルから、次に入力される中タイトルまでが1つのアウトライン（段落）となり、目次内等で区分けされます。紹介用ブロックも同様です。<br>
+                	・入力された1つ目中タイトルから、次に入力される中タイトルまでが1つのアウトライン（段落）となり、目次内等で区分けされます。紹介用ブロックも同様です。<br>
                         ・1つのアウトラインの中で1つ以上の中タイトルが入力されることが前提となります。<br>
                         ・最後の中タイトルに対してブロック入力が1つもない場合、更新可能ですが警告が出ます。（タイトルだけ存在し内容がないというオモテにて不恰好な表示となります。）<br>
                         ・画像の横幅について
@@ -288,10 +289,8 @@ use App\CategorySecond;
             <hr class="mt-3">
             
             <fieldset class="form-group mt-5 mb-0 pt-2">
-                
-                <label>記事カテゴリー <span class="text-danger text-big">*</span></label>
-                
-                <select class="form-control col-md-6{{ $errors->has('cate_id') ? ' is-invalid' : '' }}" name="cate_id">
+                <label>記事 親カテゴリー <span class="text-danger text-big">*</span></label>
+                <select class="form-control select-first col-md-6{{ $errors->has('cate_id') ? ' is-invalid' : '' }}" name="cate_id" data-text="post">
                     <option disabled selected>選択して下さい</option>
                     
                     @foreach($postCates as $cate)
@@ -324,7 +323,48 @@ use App\CategorySecond;
             </fieldset>
             
             
-            <div class="clearfix tag-wrap mt-4">
+            <fieldset class="form-group mt-3 mb-0 pt-3">
+                <label>記事 子カテゴリー</label>
+                <select class="form-control select-second col-md-6{{ $errors->has('catesec_id') ? ' is-invalid' : '' }}" name="catesec_id" data-text="post">
+                    <option selected value="0">選択して下さい</option>
+                    <?php
+                        if(Ctm::isOld()) {
+                            $postSubCates = PostCategorySecond::where('parent_id', old('cate_id'))->get();
+                        }
+                        
+                    ?>
+                    
+                    @foreach($postSubCates as $cateSec)
+                        <?php
+                            $selected = '';
+                            if(Ctm::isOld()) {
+                                if(old('catesec_id') == $cateSec->id)
+                                    $selected = ' selected';
+                            }
+                            else {
+                                if(isset($postRel) && $postRel->catesec_id == $cateSec->id) {
+                                    $selected = ' selected';
+                                }
+                            }
+                        ?>
+                        
+                        <option value="{{ $cateSec->id }}"{{ $selected }}>{{ $cateSec->name }}</option>
+                    @endforeach
+                    
+                </select>
+                <span class="text-warning"></span>
+                
+                @if ($errors->has('catesec_id'))
+                    <div class="help-block text-danger">
+                        <span class="fa fa-exclamation form-control-feedback"></span>
+                        <span>{{ $errors->first('catesec_id') }}</span>
+                    </div>
+                @endif
+                
+            </fieldset>
+            
+            
+            <div class="clearfix tag-wrap mt-4 pt-1">
                 <div class="tag-group form-group{{ $errors->has('tag-group') ? ' is-invalid' : '' }}">
                     <label for="tag-group" class="control-label">タグ</label>
                     
@@ -356,15 +396,16 @@ use App\CategorySecond;
                 </div>
             </div><?php //tagwrap ?>
             
+            <hr>
             
             <?php //========================================================= ?>
             
             <h5>商品の紐付け</h5>
-            <fieldset class="form-group mt-2 pt-0">
+            
+            <fieldset class="form-group mt-4 pt-0">
+                <label>商品 親カテゴリー {{--<span class="text-danger text-big">*</span>--}}</label>
                 
-                <label>商品 親カテゴリー <span class="text-danger text-big">*</span></label>
-                
-                <select class="form-control select-first col-md-6{{ $errors->has('item_cate_id') ? ' is-invalid' : '' }}" name="item_cate_id">
+                <select class="form-control select-first col-md-6{{ $errors->has('item_cate_id') ? ' is-invalid' : '' }}" name="item_cate_id" data-text="item">
                     <option value="0" selected>選択して下さい</option>
                     
                     @foreach($itemCates as $cate)
@@ -385,7 +426,7 @@ use App\CategorySecond;
                     @endforeach
                     
                 </select>
-                <span class="text-warning">&nbsp;</span>
+                <span class="text-orange">&nbsp;</span>
                 
                 @if ($errors->has('item_cate_id'))
                     <div class="help-block text-danger">
@@ -398,11 +439,11 @@ use App\CategorySecond;
             
             <fieldset class="form-group mt-3 pt-1">
                 
-                <label>商品 子カテゴリー <span class="text-danger text-big">*</span></label>
+                <label>商品 子カテゴリー {{--<span class="text-danger text-big">*</span>--}}</label>
                 
                 <input type="hidden" name="item_subcate_id" value="0">
                 
-                <select class="form-control select-second col-md-6{{ $errors->has('item_subcate_id') ? ' is-invalid' : '' }}" name="item_subcate_id">
+                <select class="form-control select-second col-md-6{{ $errors->has('item_subcate_id') ? ' is-invalid' : '' }}" name="item_subcate_id" data-text="item">
                     <option selected disabled>選択して下さい</option>
                     <?php
                         if(Ctm::isOld()) {
@@ -472,7 +513,7 @@ use App\CategorySecond;
             
             <hr>
             
-            <h5>メタ</h5>
+            <h5 class="pb-2">メタ設定</h5>
             
             @include('dashboard.shared.meta', ['obj'=> isset($postRel) ? $postRel : null, 'type'=>'post'])
             

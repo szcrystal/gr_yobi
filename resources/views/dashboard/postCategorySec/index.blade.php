@@ -2,6 +2,10 @@
 
 @section('content')
 
+<?php
+use App\PostCategory;
+
+?>
     	
 	{{-- @include('dbd_shared.search') --}}
 
@@ -18,7 +22,7 @@
     <div class="mb-3">
         
         <div class="mb-3 text-right">
-            <a href="{{url('dashboard/categories/sub/create')}}" class="btn btn-info">新規追加</a>
+            <a href="{{url('dashboard/post-categories/sec/create')}}" class="btn btn-info">新規追加</a>
         </div>
         
         @if(session('status'))
@@ -35,7 +39,7 @@
                         <th>子カテゴリー名</th>
                         <th>スラッグ</th>
                         <th>親カテゴリー</th>
-                        <th>おすすめ</th>
+                        <th>View数</th>
                         <th></th>
                         <th></th>
                     </tr>
@@ -57,9 +61,14 @@
                             </td>
                             
                             <td>
-                                {{ $cates->find($subCate->parent_id)->name }}
+                                {{ PostCategory::find($subCate->parent_id)->name }}
                             </td>
                             
+                            <td>
+                                {{ $subCate->view_count }}
+                            </td>
+                            
+                            {{--
                             <td>
                                 @if($subCate->is_top)
                                     <span class="text-success">おすすめ</span><br>
@@ -68,6 +77,7 @@
                                     --
                                 @endif
                             </td>
+                            --}}
 
                             {{--
                             <td>
@@ -81,11 +91,11 @@
 
 
                             <td>
-                                <a href="{{ url('dashboard/categories/sub/'.$subCate->id) }}" class="btn btn-success btn-sm center-block">編集</a>
+                                <a href="{{ url('dashboard/post-categories/sec/'.$subCate->id) }}" class="btn btn-success btn-sm center-block">編集</a>
                             </td>
 
                             <td>
-                                <form role="form" method="POST" action="{{ url('/dashboard/categories/sub/'.$subCate->id) }}">
+                                <form role="form" method="POST" action="{{ url('/dashboard/post-categories/sec/'.$subCate->id) }}">
                                     {{ csrf_field() }}
                                     {{ method_field('DELETE') }}
 

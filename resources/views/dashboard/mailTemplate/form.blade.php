@@ -17,7 +17,7 @@
       <div class="col-sm-12 col-md-6 col-lg-6 col-xl-5 mb-5">
         <div class="bs-component clearfix">
         <div class="pull-left">
-            <a href="{{ url('/dashboard/mails') }}" class="btn bg-white border border-1 border-round border-secondary text-primary"><i class="fa fa-angle-double-left" aria-hidden="true"></i>一覧へ戻る</a>
+            <a href="{{ url('/dashboard/settings/mails') }}" class="btn bg-white border border-1 border-round border-secondary text-primary"><i class="fa fa-angle-double-left" aria-hidden="true"></i>一覧へ戻る</a>
         </div>
     	</div>
     </div>
@@ -43,7 +43,7 @@
     @endif
         
     <div class="col-lg-11">
-        <form class="form-horizontal" role="form" method="POST" action="/dashboard/mails" enctype="multipart/form-data">
+        <form class="form-horizontal" role="form" method="POST" action="/dashboard/settings/mails" enctype="multipart/form-data">
 
             {{ csrf_field() }}
             

@@ -54,9 +54,6 @@
         </div>
         -->
 
-
-
-
         <div class="">
           <div class="table-responsive">
             <table id="dataTable" class="table table-striped table-bordered table-hover bg-white" width="100%" cellspacing="0">
@@ -91,7 +88,7 @@
                   <td>{{ Ctm::changeDate($consignor->created_at, 1) }}</td>
                   --}}
                   
-                  <td><a href="{{url('dashboard/mails/'. $obj->id)}}" class="btn btn-success btn-sm center-block">編集</a></td>
+                  <td><a href="{{url('dashboard/settings/mails/'. $obj->id)}}" class="btn btn-success btn-sm center-block">編集</a></td>
                   <td></td>
                 </tr>
             @endforeach

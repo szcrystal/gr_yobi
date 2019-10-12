@@ -4,6 +4,7 @@
 use App\TopSetting;
 use App\Tag;
 use App\TagRelation;
+use App\PostCategorySecond;
 use App\Setting;
 ?>
 
@@ -74,12 +75,23 @@ use App\Setting;
 
 
 @section('leftbar')
-	<div style="min-height: 750px;" class="post-side-archive bg-light border border-secondary">
-		<ul>
+	<div id="left-bar" style="min-height: 750px;" class="post-side-archive">
+		<div class="">
             @foreach($postCates as $postCate)
-                <li><a href="{{ url('post/category/' . $postCate->slug) }}">{{ $postCate->name }}</a></li>
+            	<?php 
+             	   $postCateSecs = PostCategorySecond::where('parent_id', $postCate->id)->get();
+                ?>
+                
+                <h5><a href="{{ url('post/category/' . $postCate->slug) }}">{{ $postCate->name }}</a></h5>
+                    
+                <ul class="list-unstyled pl-4 pt-1 mb-4 pb-1">
+                    @foreach($postCateSecs as $postCateSec)   
+                    <li class="mb-1"><a href="{{ url('post/category/' . $postCate->slug . '?sec=' .$postCateSec->id) }}">{{ $postCateSec->name }}</a>
+                    @endforeach      
+                </ul>   
+
             @endforeach 
-      	</ul>     
+      	</div>     
     </div>
     
     

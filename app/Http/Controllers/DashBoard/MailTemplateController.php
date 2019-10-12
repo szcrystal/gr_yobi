@@ -124,7 +124,7 @@ class MailTemplateController extends Controller
         $mailId = $mail->id;
         
         
-        return redirect('dashboard/mails/'. $mailId)->with('status', $status);
+        return redirect('dashboard/settings/mails/'. $mailId)->with('status', $status);
     }
 
     /**

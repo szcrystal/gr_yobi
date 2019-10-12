@@ -29,7 +29,7 @@ Artisan::command('setsetting', function () {
     $set = Setting::first();
     
     $set->admin_email = 'red.beryl@zoho.com';
-    $set->admin_forward_email = 'opal@frank.fam.cx';
+    $set->admin_forward_email = 'opal@emerald.wjg.jp';
     $set->is_product = 0;
     $set->analytics_code = '';
     
@@ -72,8 +72,8 @@ Artisan::command('nouseraddr3', function () {
     $this->comment('NoUser change address3 done');
 });
 
-
-Artisan::command('getPotParent', function () {
+//親ポット 'pot_parent_id'に0をセットする
+Artisan::command('setPotParent', function () {
     $items = Item::all();
     $ar = array();
     
@@ -84,7 +84,6 @@ Artisan::command('getPotParent', function () {
         
     	$pots = Item::where(['open_status'=>1, 'is_potset'=>1, 'pot_parent_id'=>$item->id])->get();
     	
-        
         if($pots->isNotEmpty()) {
             foreach($pots as $pot) {
                 if($pot->stock) {
@@ -100,16 +99,15 @@ Artisan::command('getPotParent', function () {
 		//Set 0 ====================        
         if($isPotParent && ! isset($item->pot_parent_id)) {        	
             $item->update(['pot_parent_id' => 0]);
-        	$this->comment($item->id . ': Set Done !');
+        	$this->comment($item->id . ': PotParent:0 Set Done !');
         }
         
         //Set Stock ====================        
-        if($isPotParent) {
-            $item->update(['stock'=>$isStock]);
-            $this->comment($item->id . ': Set Stock Done !');
-        }
+//        if($isPotParent) {
+//            $item->update(['stock'=>$isStock]);
+//            $this->comment($item->id . ': Set Stock Done !');
+//        }
     }
-    
     
     
     //$this->comment('NoUser change address3 done');

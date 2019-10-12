@@ -14,10 +14,14 @@
     </div>
 
     <div class="row">
-      <div class="col-sm-12 col-md-6 col-lg-6 col-xl-5 mb-3">
+      <div class="col-md-12 mb-3">
         <div class="bs-component clearfix">
-            <div class="">  
+            <div class="float-left w-25">  
                 <a href="{{ url('/dashboard/post-categories') }}" class="btn bg-white border border-1 border-secondary border-round text-primary"><i class="fa fa-angle-double-left" aria-hidden="true"></i>一覧へ戻る</a>
+            </div>
+            
+            <div class="float-right w-25 text-right pr-2">
+                <a href="{{url('dashboard/post-categories/create')}}" class="btn btn-info">新規追加</a>
             </div>
             
             {{--

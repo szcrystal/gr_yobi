@@ -10,6 +10,7 @@ use App\CategorySecond;
 use App\Post;
 use App\PostRelation;
 use App\PostCategory;
+use App\PostCategorySecond;
 use App\Tag;
 use App\PostTagRelation;
 
@@ -22,7 +23,7 @@ use Ctm;
 
 class PostController extends Controller
 {
-    public function __construct(Admin $admin, Item $item, Setting $setting, Category $cate, CategorySecond $subCate, Post $post, PostRelation $postRel, PostCategory $postCate, Tag $tag, PostTagRelation $postTagRel)
+    public function __construct(Admin $admin, Item $item, Setting $setting, Category $cate, CategorySecond $subCate, Post $post, PostRelation $postRel, PostCategory $postCate, PostCategorySecond $postCateSec, Tag $tag, PostTagRelation $postTagRel)
     {
         
         $this -> middleware('adminauth');
@@ -37,6 +38,7 @@ class PostController extends Controller
         $this->post = $post;
         $this->postRel = $postRel;
         $this->postCate = $postCate;
+        $this->postCateSec = $postCateSec;
         $this->tag = $tag;
         $this->postTagRel = $postTagRel;
         
@@ -70,6 +72,8 @@ class PostController extends Controller
         
     
         $postRel = $this->postRel->find($id);
+        
+        $postSubCates = $this->postCateSec->where('parent_id', $postRel->cate_id)->get();
 
         $relArr = ['p'=>array()/*, 'b'=>array(), 'c'=>array()*/];
         
@@ -133,7 +137,7 @@ class PostController extends Controller
         
         //$icons = $this->icon->all();
         
-        return view('dashboard.post.form', ['postRel'=>$postRel, 'relArr'=>$relArr, 'postCates'=>$postCates, 'itemCates'=>$itemCates, 'itemSubCates'=>$itemSubCates, 'tagNames'=>$tagNames, 'allTags'=>$allTags, 'blockCount'=>$blockCount, 'id'=>$id, 'edit'=>$edit]);
+        return view('dashboard.post.form', ['postRel'=>$postRel, 'relArr'=>$relArr, 'postCates'=>$postCates, 'postSubCates'=>$postSubCates, 'itemCates'=>$itemCates, 'itemSubCates'=>$itemSubCates, 'tagNames'=>$tagNames, 'allTags'=>$allTags, 'blockCount'=>$blockCount, 'id'=>$id, 'edit'=>$edit]);
     }
    
     public function create()
@@ -187,7 +191,7 @@ class PostController extends Controller
           	'cate_id' => 'required',
             'item_subcate_id' => function($attribute, $value, $fail) use($request) {
                 if($request->input('item_cate_id') && ! $value) {
-                    return $fail('「親カテゴリー」指定時は「子カテゴリー」も選択して下さい。');
+                    return $fail('「商品 親カテゴリー」指定時は「商品 子カテゴリー」も選択して下さい。');
                 } 
             },
             

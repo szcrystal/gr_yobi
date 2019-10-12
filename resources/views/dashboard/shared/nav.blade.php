@@ -29,8 +29,6 @@
         --}}
         
         
-        
-        
         @if(Ctm::checkRole('isSuper'))
             <li class="nav-item" data-toggle="tooltip" data-placement="right" title="管理者設定">
                 <a class="nav-link" href="{{ url('dashboard/register') }}" id="register">
@@ -40,31 +38,45 @@
             </li>
         @endif
         
-        @if(Ctm::checkRole('isAdmin'))
-            <li class="nav-item" data-toggle="tooltip" data-placement="right" title="サイト設定">
-                <a class="nav-link" href="{{ url('dashboard/settings') }}" id="settings">
+        <div class="border border-secondary border-top-0 w-100 mx-auto"></div>
+        
+        <li class="nav-item" data-toggle="tooltip" data-placement="right" title="各種設定">
+          <a class="nav-link nav-link-collapse collapsed" data-toggle="collapse" href="#settings" data-parent="#exampleAccordion">
+            <i class="fa fa-align-left"></i>
+            <span class="nav-link-text">各種設定</span>
+          </a>
+          <ul class="sidenav-second-level collapse mb-3" id="settings">
+            @if(Ctm::checkRole('isAdmin'))
+                <li class="py-0 my-0">
+                    <a href="{{ url('dashboard/settings/index') }}" class="py-2">
+                        <i class="fa fa-dashboard"></i>
+                        <span class="nav-link-text">サイト設定</span>
+                      </a>
+                </li>
+            @endif
+            
+            <li>
+                <a href="{{ url('dashboard/settings/top-settings') }}" class="py-2">
                     <i class="fa fa-dashboard"></i>
-                    <span class="nav-link-text">サイト設定</span>
+                    <span class="nav-link-text">TOP設定</span>
                   </a>
             </li>
-        @endif
-        
-        <li class="nav-item" data-toggle="tooltip" data-placement="right" title="TOP設定">
-            <a class="nav-link" href="{{ url('dashboard/top-settings') }}" id="topSettings">
-            	<i class="fa fa-dashboard"></i>
-                <span class="nav-link-text">TOP設定</span>
-              </a>
+            
+            @if(Ctm::checkRole('isAdmin'))
+                <li>
+                      <a href="{{ url('dashboard/settings/mails') }}" class="py-2">
+                        <i class="fa fa-envelope"></i>
+                        <span class="nav-link-text">メールテンプレート</span>
+                    </a>
+                </li>
+             @endif
+            
+          </ul>
         </li>
         
-        @if(Ctm::checkRole('isAdmin'))
-            <li class="nav-item" data-toggle="tooltip" data-placement="right" title="メールテンプレ">
-                  <a class="nav-link" href="{{ url('dashboard/mails') }}" id="mails">
-                    <i class="fa fa-envelope"></i>
-                    <span class="nav-link-text">メールテンプレート</span>
-                </a>
-            </li>
-            
-            <div class="border border-secondary border-top-0 w-100 mx-auto"></div>
+         <div class="border border-secondary border-top-0 w-100 mx-auto"></div>
+         
+         @if(Ctm::checkRole('isAdmin'))   
             
             <li class="nav-item" data-toggle="tooltip" data-placement="right" title="マスター登録">
               <a class="nav-link nav-link-collapse collapsed" data-toggle="collapse" href="#collapseMaster" data-parent="#exampleAccordion">
@@ -204,15 +216,15 @@
             <i class="fa fa-crop"></i>
             <span class="nav-link-text">商品管理</span>
           </a>
-          <ul class="sidenav-second-level collapse" id="items">
+          <ul class="sidenav-second-level collapse mb-3" id="items">
             <li>
-              <a href="{{ url('dashboard/items') }}">商品一覧</a>
+              <a href="{{ url('dashboard/items') }}" class="py-2">商品一覧</a>
             </li>
             <li>
-              <a href="{{ url('dashboard/items/create') }}">商品新規登録</a>
+              <a href="{{ url('dashboard/items/create') }}" class="py-2">商品新規登録</a>
             </li>
             <li>
-              <a href="{{ url('dashboard/items/pot-set') }}">ポットセット一覧</a>
+              <a href="{{ url('dashboard/items/pot-set') }}" class="py-2">ポットセット一覧</a>
             </li>
             
             
@@ -247,14 +259,14 @@
             <li class="nav-item" data-toggle="tooltip" data-placement="right" title="売上管理">
               <a class="nav-link nav-link-collapse collapsed" data-toggle="collapse" href="#sales" data-parent="#exampleAccordion">
                 <i class="fa fa-yen"></i>
-                <span class="nav-link-text">売上管理</span>
+                <span class="nav-link-text" class="py-2">売上管理</span>
               </a>
-              <ul class="sidenav-second-level collapse" id="sales">
+              <ul class="sidenav-second-level collapse mb-3" id="sales">
                 <li>
-                  <a href="{{ url('dashboard/sales') }}">売上一覧（全データ）</a>
+                  <a href="{{ url('dashboard/sales') }}" class="py-2">売上一覧（全データ）</a>
                 </li>
                 <li>
-                  <a href="{{ url('dashboard/sales?done=0') }}">売上一覧（未処理）</a>
+                  <a href="{{ url('dashboard/sales?done=0') }}" class="py-2">売上一覧（未処理）</a>
                 </li>
             </ul>
             </li> 
@@ -266,37 +278,55 @@
                 <i class="fa fa-user"></i>
                 <span class="nav-link-text">会員管理</span>
               </a>
-              <ul class="sidenav-second-level collapse" id="users">
+              <ul class="sidenav-second-level collapse mb-3" id="users">
                 <li>
-                  <a href="{{ url('dashboard/users') }}">会員一覧</a>
+                  <a href="{{ url('dashboard/users') }}" class="py-2">会員一覧</a>
                 </li>
                 <li>
-                  <a href="{{ url('dashboard/users?no_r=1') }}">非会員一覧</a>
+                  <a href="{{ url('dashboard/users?no_r=1') }}" class="py-2">非会員一覧</a>
                 </li>
                 {{--
                 <li>
-                  <a href="{{ url('dashboard/users/create') }}">会員登録</a>
+                  <a href="{{ url('dashboard/users/create') }}" class="py-2">会員登録</a>
                 </li>
                 --}}
 
               </ul>
             </li> 
             
-            <div class="border border-secondary border-top-0 w-100 mx-auto"></div>
         @endif
         
+        <div class="border border-secondary border-top-0 w-100 mx-auto"></div>
+        
+        <li class="nav-item" data-toggle="tooltip" data-placement="right" title="記事ページ">
+          <a class="nav-link nav-link-collapse collapsed" data-toggle="collapse" href="#posts" data-parent="#exampleAccordion">
+            <i class="fa fa-file"></i>
+            <span class="nav-link-text">記事ページ</span>
+          </a>
+          <ul class="sidenav-second-level collapse mb-3" id="posts">
+            <li>
+              <a href="{{ url('dashboard/posts') }}" class="py-2">記事ページ一覧</a>
+            </li>
+            <li>
+              <a href="{{ url('dashboard/posts/create') }}" class="py-2">記事新規追加</a>
+            </li>
+
+          </ul>
+        </li>
+        
+        <div class="border border-secondary border-top-0 w-100 mx-auto"></div>
         
         <li class="nav-item" data-toggle="tooltip" data-placement="right" title="固定ページ">
           <a class="nav-link nav-link-collapse collapsed" data-toggle="collapse" href="#fixes" data-parent="#exampleAccordion">
             <i class="fa fa-file"></i>
             <span class="nav-link-text">固定ページ</span>
           </a>
-          <ul class="sidenav-second-level collapse" id="fixes">
+          <ul class="sidenav-second-level collapse mb-3" id="fixes">
             <li>
-              <a href="{{ url('dashboard/fixes') }}">固定ページ一覧</a>
+              <a href="{{ url('dashboard/fixes') }}" class="py-2">固定ページ一覧</a>
             </li>
             <li>
-              <a href="{{ url('dashboard/fixes/create') }}">固定ページ新規追加</a>
+              <a href="{{ url('dashboard/fixes/create') }}" class="py-2">固定ページ新規追加</a>
             </li>
 
           </ul>
@@ -311,12 +341,12 @@
                 <i class="fa fa-book"></i>
                 <span class="nav-link-text">メルマガ</span>
               </a>
-              <ul class="sidenav-second-level collapse" id="magazines">
+              <ul class="sidenav-second-level collapse mb-3" id="magazines">
                 <li>
-                  <a href="{{ url('dashboard/magazines') }}">メルマガ一覧</a>
+                  <a href="{{ url('dashboard/magazines') }}" class="py-2">メルマガ一覧</a>
                 </li>
                 <li>
-                  <a href="{{ url('dashboard/magazines/create') }}">メルマガ新規作成</a>
+                  <a href="{{ url('dashboard/magazines/create') }}" class="py-2">メルマガ新規作成</a>
                 </li>
 
               </ul>
@@ -336,25 +366,9 @@
         @endif
         
         
-        @if(Ctm::isEnv('local'))
         <div class="border border-secondary border-top-0 w-100 mx-auto"></div>
         
-        <li class="nav-item" data-toggle="tooltip" data-placement="right" title="記事ページ">
-          <a class="nav-link nav-link-collapse collapsed" data-toggle="collapse" href="#posts" data-parent="#exampleAccordion">
-            <i class="fa fa-file"></i>
-            <span class="nav-link-text">記事ページ</span>
-          </a>
-          <ul class="sidenav-second-level collapse" id="posts">
-            <li>
-              <a href="{{ url('dashboard/posts') }}">記事ページ一覧</a>
-            </li>
-            <li>
-              <a href="{{ url('dashboard/posts/create') }}">記事新規追加</a>
-            </li>
-
-          </ul>
-        </li>
-        @endif
+        
         
       </ul>
       

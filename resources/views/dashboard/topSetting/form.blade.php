@@ -45,7 +45,7 @@
     @endif
         
     <div class="col-lg-12">
-        <form class="form-horizontal" role="form" method="POST" action="/dashboard/top-settings" enctype="multipart/form-data">
+        <form class="form-horizontal" role="form" method="POST" action="/dashboard/settings/top-settings" enctype="multipart/form-data">
         	
          	<div class="form-group">
                 <button type="submit" class="btn btn-primary d-block w-25 mt-5 mb-2 mx-auto"><span class="octicon octicon-sync"></span>更　新</button>

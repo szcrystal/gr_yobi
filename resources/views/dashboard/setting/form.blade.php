@@ -49,7 +49,7 @@
     @endif
         
     <div class="col-lg-12">
-        <form class="form-horizontal" role="form" method="POST" action="/dashboard/settings" enctype="multipart/form-data">
+        <form class="form-horizontal" role="form" method="POST" action="/dashboard/settings/index" enctype="multipart/form-data">
         	
          	<div class="form-group">
                 <div class="">

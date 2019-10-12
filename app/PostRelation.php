@@ -8,6 +8,7 @@ class PostRelation extends Model
 {
     protected $fillable = [
         'cate_id',
+        'catesec_id',
         'type_code',
         'open_status',
         'is_index',

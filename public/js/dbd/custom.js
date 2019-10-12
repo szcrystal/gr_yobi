@@ -560,8 +560,16 @@ var exe = (function() {
         
         changeSelectRelation: function() {
         	var $select = $('.select-first');
-         	var $select2 = $('.select-second'); 
-          
+         	var $select2/* = $('.select-second')*/; 
+          	var isPost = 0;   
+          	
+           	
+                  
+//           	if($select.data('text') == 'post') {
+//               	$select2 = $(".select-second:data-text='post'");
+//                isPost = 1;   
+//            };
+              
 //              var url = $(this).parent('div').find('.link-url').val(); //input type=text
 //            var $frame = $(this).parent('div').find('.link-frame');
 //            //console.log(url);     
@@ -570,18 +578,32 @@ var exe = (function() {
                 var value = $(this).val();
                 var _tokenVal = $('input[name=_token]').val();
                 
-                $(this).next('span').text('! 子カテゴリーも変更して下さい');
+                var switchName = $(this).data('text');
+                //console.log(switchName);
+                
+                if(switchName == 'post') {
+                    $select2 = $('.select-second[data-text=post]');
+                    isPost = 1;
+                }
+                else {
+                	$select2 = $('.select-second[data-text=item]');
+                    isPost = 0;
+                }
+                
+                if(! isPost)
+	                $(this).next('span').text('! 子カテゴリーも変更して下さい');
                 
                 //$('label').text(_tokenVal);
 
 				//controllerでajax処理する場合、_tokenも送る必要がある
                 $.ajax({
-                    url: '/dashboard/items/script',
+                    url: '/dashboard/items/script', //DashBoard/ItemController->postScript()
                     type: "POST",
                     cache: false,
                     data: {
                     	_token: _tokenVal,
                   		selectValue: value,
+                    	isPost: isPost,      
                     },
                     //dataType: "json",
                     success: function(resData){
@@ -668,7 +690,7 @@ var exe = (function() {
                 if(location.pathname != "/") {
                 	var loc = location.pathname.split("/")[2];
 
-                 	//console.log(loc);
+                 	console.log(loc);
                   	
                    	//$('a#'+ loc).addClass('thisActive');
                     

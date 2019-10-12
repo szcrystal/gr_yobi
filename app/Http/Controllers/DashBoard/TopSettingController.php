@@ -288,7 +288,7 @@ class TopSettingController extends Controller
             $num++;
         }
         
-        return redirect('dashboard/top-settings')->with('status', $status);
+        return redirect('dashboard/settings/top-settings')->with('status', $status);
     }
 
     /**

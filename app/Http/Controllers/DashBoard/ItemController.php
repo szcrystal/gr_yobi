@@ -6,6 +6,7 @@ use App\Admin;
 use App\Item;
 use App\Category;
 use App\CategorySecond;
+use App\PostCategorySecond;
 use App\Tag;
 use App\TagRelation;
 use App\Consignor;
@@ -30,7 +31,7 @@ use DateTime;
 
 class ItemController extends Controller
 {
-    public function __construct(Admin $admin, Item $item, Tag $tag, Category $category, CategorySecond $categorySecond, TagRelation $tagRelation, Consignor $consignor, DeliveryGroup $dg, DeliveryGroupRelation $dgRel, ItemImage $itemImg, Setting $setting, ItemStockChange $itemSc, Icon $icon)
+    public function __construct(Admin $admin, Item $item, Tag $tag, Category $category, CategorySecond $categorySecond, PostCategorySecond $postCateSec, TagRelation $tagRelation, Consignor $consignor, DeliveryGroup $dg, DeliveryGroupRelation $dgRel, ItemImage $itemImg, Setting $setting, ItemStockChange $itemSc, Icon $icon)
     {
         
         $this -> middleware('adminauth');
@@ -40,6 +41,7 @@ class ItemController extends Controller
         $this-> item = $item;
         $this->category = $category;
         $this->categorySecond = $categorySecond;
+        $this->postCateSec = $postCateSec;
         $this -> tag = $tag;
         $this->tagRelation = $tagRelation;
         $this->consignor = $consignor;
@@ -706,14 +708,22 @@ class ItemController extends Controller
 	public function postScript(Request $request)
     {
         $cate_id = $request->input('selectValue');
+        $isPost = $request->input('isPost');
         
 //        $allTags = $this->tag->get()->map(function($item){
 //            return $item->name;
 //        })->all();
         
-        $subCates = $this->categorySecond->where(['parent_id'=>$cate_id, ])->get()->map(function($obj) {
-        	return [ $obj->id => $obj->name ];
-        })->all();
+        if($isPost) {
+        	$subCates = $this->postCateSec->where(['parent_id'=>$cate_id, ])->get()->map(function($obj) {
+                return [ $obj->id => $obj->name ];
+            })->all();
+        }
+        else {
+            $subCates = $this->categorySecond->where(['parent_id'=>$cate_id, ])->get()->map(function($obj) {
+                return [ $obj->id => $obj->name ];
+            })->all();
+        }
         
         //$array = [1, 11, 12, 13, 14, 15];
          
