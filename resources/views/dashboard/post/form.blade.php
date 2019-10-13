@@ -29,15 +29,21 @@ use App\PostCategorySecond;
 
     <div class="row">
       <div class="col-md-12 mb-3">
-        <div class="bs-component clearfix">
-            <div class="mb-4">
+        <div class="bs-component">
+        	<div class="clearfix">
+            <div class="mb-4 w-50 float-left">
                 <a href="{{ url('dashboard/posts') }}" class="btn bg-white border border-round border-secondary text-primary"><i class="fa fa-angle-double-left" aria-hidden="true"></i> 一覧へ戻る</a>
-                <br>
-
+            </div>
+            
+            @if($edit)
+            <div class="mb-3 text-right w-50 float-right">
+                <a href="{{url('dashboard/posts/create')}}" class="btn btn-info mr-2 px-4">新規追加</a>
+            </div>
+            @endif
             </div>
     
     		@if($edit)
-                <div class="mt-4 text-right">
+                <div class="mt-4 text-right w-100">
                     <a href="{{ url('post/'. $id) }}" class="btn btn-warning border-round text-white" target="_brank">このページを見る <i class="fa fa-angle-double-right" aria-hidden="true"></i></a>
                 </div>
             @endif
@@ -195,8 +201,7 @@ use App\PostCategorySecond;
                     $n = 0;
                     $midCount = 0;
                     
-                    $retu = $chunkNumArr[$blockKey]
-                    
+                    $retu = $chunkNumArr[$blockKey];
                 ?>
                 
                 <fieldset class="mb-5 form-group">
@@ -221,10 +226,10 @@ use App\PostCategorySecond;
                 <div class="block-all-wrap pt-1">
                 	
                     <span class="text-small">
-                	・入力された1つ目中タイトルから、次に入力される中タイトルまでが1つのアウトライン（段落）となり、目次内等で区分けされます。紹介用ブロックも同様です。<br>
-                        ・1つのアウトラインの中で1つ以上の中タイトルが入力されることが前提となります。<br>
-                        ・最後の中タイトルに対してブロック入力が1つもない場合、更新可能ですが警告が出ます。（タイトルだけ存在し内容がないというオモテにて不恰好な表示となります。）<br>
-                        ・画像の横幅について
+            		・入力された1つ目中タイトルから、次に入力される中タイトルまでが1つの段落となり、目次内等で区分けされます。(紹介用ブロックも同様)<br>
+                        ・1つの段落の中で1つ以上の中タイトルが入力されることが前提となります。<br>
+                        ・最後の中タイトル以降にブロック入力が1つもない場合、更新可能ですが警告が出ます。（タイトルだけで内容がない不恰好なオモテ表示となります。）<br>
+                        {{-- ・画像の横幅について --}}
                     </span>
  
                     @while($n < $blockCount[$blockKey])

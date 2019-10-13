@@ -19,7 +19,7 @@ use App\PostCategorySecond;
             ?>
             
             @if($post->catesec_id)
-            	<a href="{{ url('post/category/'. $postCate->slug . '?sec='. $postCateSec->id) }}"><span class="post-cate">{{ $postCateSec->name }}</span></a>
+            	<a href="{{ url('post/category/'. $postCate->slug . '/'. $postCateSec->slug) }}"><span class="post-cate">{{ $postCateSec->name }}</span></a>
             @else
             	<a href="{{ url('post/category/'.$postCate->slug) }}"><span class="post-cate">{{ $postCate->name }}</span></a>
             @endif

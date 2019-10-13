@@ -39,7 +39,7 @@ use App\PostCategory;
                         <th>子カテゴリー名</th>
                         <th>スラッグ</th>
                         <th>親カテゴリー</th>
-                        <th>View数</th>
+                        {{-- <th>View数</th> --}}
                         <th></th>
                         <th></th>
                     </tr>
@@ -64,9 +64,11 @@ use App\PostCategory;
                                 {{ PostCategory::find($subCate->parent_id)->name }}
                             </td>
                             
+                            {{--
                             <td>
                                 {{ $subCate->view_count }}
                             </td>
+                            --}}
                             
                             {{--
                             <td>

@@ -82,6 +82,7 @@
                 @endif
             </fieldset>
             
+            {{--
             <fieldset class="form-group">
                 <label for="link_name" class="control-label">記事カテゴリーリンク名（メニュー用）</label>
 
@@ -94,6 +95,7 @@
                 </div>
                 @endif
             </fieldset>
+            --}}
 
 
             <fieldset class="form-group">
@@ -106,6 +108,23 @@
                         <span class="fa fa-exclamation form-control-feedback"></span>
                         <span>{{ $errors->first('slug') }}</span>
                     </div>
+                @endif
+            </fieldset>
+            
+            
+            <fieldset class="mb-4 form-group{{ $errors->has('contents') ? ' is-invalid' : '' }}">
+                <label for="contents" class="control-label">コンテンツ</label>
+
+                <?php
+                    $rows = (isset($type) && $type == 'top') ? 20 : 23;
+                ?>
+                
+                <textarea class="form-control" name="contents" rows="{{ $rows }}">{{ Ctm::isOld() ? old('contents') : (isset($cate) ? $cate->contents : '') }}</textarea>
+
+                @if ($errors->has('contents'))
+                    <span class="help-block">
+                        <strong>{{ $errors->first('contents') }}</strong>
+                    </span>
                 @endif
             </fieldset>
             

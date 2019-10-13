@@ -20,11 +20,11 @@ class AddColumnToEtcTen extends Migration
             $table->integer('rank_term_ueki')->after('rank_term')->nullable()->default(30);
         });
 
-		//Setting
-//        Schema::table('settings', function (Blueprint $table) {
-//            $table->integer('seinou_huzai')->after('add_point')->nullable()->default(0);         
-//            $table->integer('seinou_sunday')->after('seinou_huzai')->nullable()->default(0);
-//           
+		//Top Setting
+//        Schema::table('top_settings', function (Blueprint $table) {
+//        	$table->string('post_meta_title')->after('meta_keyword')->nullable()->default(NULL);
+//            $table->text('post_meta_description')->after('post_meta_title')->nullable()->default(NULL);
+//            $table->string('post_meta_keyword')->after('post_meta_description')->nullable()->default(NULL);
 //        });
 
 
@@ -55,6 +55,32 @@ class AddColumnToEtcTen extends Migration
                 $table->dropColumn('rank_term_ueki');
             });
         }
+        
+        /*
+        if (Schema::hasColumn('settings', 'rank_term_ueki')) {
+            Schema::table('settings', function (Blueprint $table) {
+                $table->dropColumn('rank_term_ueki');
+            });
+        }
+        
+        if (Schema::hasColumn('settings', 'rank_term_ueki')) {
+            Schema::table('settings', function (Blueprint $table) {
+                $table->dropColumn('rank_term_ueki');
+            });
+        }
+        
+        if (Schema::hasColumn('settings', 'rank_term_ueki')) {
+            Schema::table('settings', function (Blueprint $table) {
+                $table->dropColumn('rank_term_ueki');
+            });
+        }
+        
+        if (Schema::hasColumn('settings', 'rank_term_ueki')) {
+            Schema::table('settings', function (Blueprint $table) {
+                $table->dropColumn('rank_term_ueki');
+            });
+        }
+        */
         
     }
 }

@@ -72,8 +72,6 @@ class PostController extends Controller
         
     
         $postRel = $this->postRel->find($id);
-        
-        $postSubCates = $this->postCateSec->where('parent_id', $postRel->cate_id)->get();
 
         $relArr = ['p'=>array()/*, 'b'=>array(), 'c'=>array()*/];
         
@@ -115,7 +113,9 @@ class PostController extends Controller
 
 		//Cate
 		$postCates = $this->postCate->all();
+        $postSubCates = $this->postCateSec->where('parent_id', $postRel->cate_id)->get();
         
+        //ItemCate
         $itemCates = $this->category->all();
         $itemSubCates = $this->categorySecond->all();
         
@@ -162,6 +162,7 @@ class PostController extends Controller
         
         
         $postCates = $this->postCate->all();
+        $postSubCates = $this->postCateSec->all();
         
         $itemCates = $this->category->all();
         $itemSubCates = $this->categorySecond->all();
@@ -172,7 +173,7 @@ class PostController extends Controller
         
         
 //        $users = $this->user->where('active',1)->get();
-        return view('dashboard.post.form', ['primaryCount'=>$primaryCount, 'imgCount'=>$imgCount, 'relArr'=>$relArr, 'blockCount'=>$blockCount, 'postCates'=>$postCates, 'itemCates'=>$itemCates, 'itemSubCates'=>$itemSubCates, 'allTags'=>$allTags, 'edit'=>$edit, 'id'=>$id, ]);
+        return view('dashboard.post.form', ['primaryCount'=>$primaryCount, 'imgCount'=>$imgCount, 'relArr'=>$relArr, 'blockCount'=>$blockCount, 'postCates'=>$postCates, 'postSubCates'=>$postSubCates, 'itemCates'=>$itemCates, 'itemSubCates'=>$itemSubCates, 'allTags'=>$allTags, 'edit'=>$edit, 'id'=>$id, ]);
     }
     
     

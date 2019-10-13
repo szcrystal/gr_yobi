@@ -33,7 +33,7 @@
                             <th>ID</th>
                             <th>カテゴリー名</th>
                             <th>スラッグ</th>
-                            <th>View数</th>
+                            {{-- <th>View数</th> --}}
                             {{-- <th>おすすめ</th> --}}
                             <th></th>
                             <th></th>
@@ -54,9 +54,11 @@
                                     {{ $cate->slug }}
                                 </td>
                                 
+                                {{--
                                 <td>
                                     {{ $cate->view_count }}
                                 </td>
+                                --}}
                                 
                                 {{--
                                 <td>

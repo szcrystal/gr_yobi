@@ -2,6 +2,7 @@
 use App\Category;
 use App\CategorySecond;
 use App\PostCategory;
+use App\PostCategorySecond;
 ?>
 
 <div class="">
@@ -15,11 +16,25 @@ use App\PostCategory;
     	@if($typeSec == 'top')
         	<li class="breadcrumb-item active" aria-current="page">記事一覧</li>
         @else
-        	<?php $postCate = PostCategory::find($cateId); ?>
+        	<?php 
+//         		if($typeSec == 'cate') {  
+//         	   		$postCate = PostCategory::find($cateId);
+//              	}
+//               	else {
+//                	$postCate = PostCategory::find($cateId);       
+//            		$postCateSec = PostCategorySecond::find($cateId);
+//             	}      
+            ?>
             
         	<li class="breadcrumb-item"><a href="{{ url('post') }}">記事一覧</a></li>
             
         	@if($typeSec == 'cate')
+            	<li class="breadcrumb-item active" aria-current="page">{{ $postCate->name }}</li>
+            
+            @elseif($typeSec == 'cateSec')
+            	<?php $parentCate = PostCategory::find($postCate->parent_id); ?>
+            	
+                <li class="breadcrumb-item" aria-current="page"><a href="{{ url('post/category/' . $parentCate->slug) }}">{{ $parentCate->name }}</a></li>
             	<li class="breadcrumb-item active" aria-current="page">{{ $postCate->name }}</li>
             
             @elseif($typeSec == 'rank')
@@ -27,6 +42,11 @@ use App\PostCategory;
             
             @elseif($typeSec == 'single')
                 <li class="breadcrumb-item"><a href="{{ url('post/category/'. $postCate->slug) }}">{{ isset($postCate->link_name) ? $postCate->link_name : $postCate->name }}</a></li>
+                @if(isset($postRel->catesec_id))
+                	<?php $postCateSec = PostCategorySecond::find($postRel->catesec_id); ?>
+                	<li class="breadcrumb-item"><a href="{{ url('post/category/'. $postCate->slug . '/' .$postCateSec->slug) }}">{{ $postCateSec->name }}</a></li>
+                @endif
+                
                 <li class="breadcrumb-item active" aria-current="page">{{ $postRel->big_title }}</li>
             
             @endif

@@ -41,7 +41,7 @@ class PostController extends Controller
         $this->itemWhere =['open_status'=>1, 'is_potset'=>0]; //こことSingleとSearch/ArchiveとCtm::isPotParentAndStockにある
         
         
-        $this->itemPerPage = 20;
+        $this->itemPerPage = 2;
         
     }
     
@@ -58,8 +58,25 @@ class PostController extends Controller
         
         $postCates = $this->postCate->all();
         
+        $rankCates = $this->postCateSec->whereNotIn('parent_id', [1])->orderBy('view_count', 'desc')->take(4)->get();
         
-        return view('main.post.archive', compact('postRels', 'postCates'));
+        foreach($rankCates as $k => $rankCate) {
+        	$cateSecPost = $this->postRel->where($whereArr)->where('catesec_id', $rankCate->id)->orderBy('created_at', 'desc')->first();
+            
+            if(collect($cateSecPost)->isNotEmpty()) {
+            	$rankCate->cate_slug = $this->postCate->find($rankCate->parent_id)->slug;
+            	$rankCate->thumb_path = $cateSecPost->thumb_path;
+          		$rankCates[$k] = $rankCate; 
+           	}   
+        }
+        
+        $rankCates = $rankCates->take(4);
+        
+        $rankTags = $this->tag->orderBy('view_count', 'desc')->take(20)->get();
+        
+        $type = 'top';
+        
+        return view('main.post.archive', compact('postRels', 'postCates', 'rankCates', 'rankTags', 'type'));
         
         // ============================================================================================
         
@@ -628,27 +645,39 @@ class PostController extends Controller
     }
     
     
-    public function category($slug, Request $request)
+    public function category($slug, $slugSec=null, Request $request)
     {
     	//if(Ctm::isEnv('product') || Ctm::isEnv('alpha')) abort(404);
+                
+        //if($request->has('sec') && ! $request->input('sec')) abort(404);
         
-        $secId = $request->has('sec') ? $request->input('sec') : 0;
+        $isSec = isset($slugSec) ? 1 : 0;
         $postWhere = $this->postWhere;
         
-        if($secId) {
-        	$postCate = $this->postCateSec->find($secId);
-         	$postWhere['catesec_id'] = $postCate->id;   
+        if($isSec) {
+        	$postCate = $this->postCateSec->where('slug', $slugSec)->first();
+         	
+            if(collect($postCate)->isEmpty()) 
+            	abort(404);
+                
+         	$postWhere['catesec_id'] = $postCate->id;
+          	$type = 'cateSec';     
         }
         else {
         	$postCate = $this->postCate->where('slug', $slug)->first();
-         	$postWhere['cate_id'] = $postCate->id;   
+         	if(collect($postCate)->isEmpty()) abort(404);
+                
+         	$postWhere['cate_id'] = $postCate->id;
+          	$type = 'cate';      
         }
         
-        if(collect($postCate)->isEmpty())
-        	abort(404);
-        
-        
+
         $postRels = $this->postRel->where($postWhere)->orderBy('created_at','DESC')->paginate($this->itemPerPage);
+        
+//        if($secId) { //ページネーションのリンクにqueryをつける
+//        	$postRels->appends(['sec' => $secId]);
+//        }
+        
         
         //bigTitle(H1)をセットする
         //$postRels = $this->setBigTitleToRel($postRels);
@@ -664,7 +693,7 @@ class PostController extends Controller
         $metaKeyword = $postCate->meta_keyword;
         
         
-        return view('main.post.archive', compact('postRels', 'postCate', 'postCates', 'metaTitle', 'metaDesc', 'metaKeyword'));
+        return view('main.post.archive', compact('postRels', 'postCate', 'postCates', 'type', 'metaTitle', 'metaDesc', 'metaKeyword'));
     }
     
     

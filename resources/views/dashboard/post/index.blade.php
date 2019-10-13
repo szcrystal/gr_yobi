@@ -4,6 +4,7 @@
 
 <?php
 use App\PostCategory;
+use App\PostCategorySecond;
 ?>
 
     <div class="text-left">
@@ -82,9 +83,10 @@ use App\PostCategory;
               <thead>
                 <tr>
                   <th style="min-width:2em;">ID</th>
-                  <th>大タイトル</th>
-                  <th>カテゴリー</th>
-                  <th>メタ</th>
+                  <th style="min-width:6em;">大タイトル</th>
+                  <th style="min-width:5em;">カテゴリー</th>
+                  <th>メタ設定</th>
+                  <th>View数</th>
                   <th>作成日</th>
                   <th></th>
                   <th></th>
@@ -122,11 +124,9 @@ use App\PostCategory;
                   	@if(isset($postRel->cate_id))
                     	{{ PostCategory::find($postRel->cate_id)->name }}
                         
-                        {{--
-                        @if(isset($item->subcate_id))
-                        <br><small>{{ $subCates->find($item->subcate_id)->name }}</small>
+                        @if(isset($postRel->catesec_id))
+                        <br><small>{{ PostCategorySecond::find($postRel->catesec_id)->name }}</small>
                         @endif
-                        --}}
                     @endif
                 </td>
                 
@@ -136,12 +136,16 @@ use App\PostCategory;
                 </td>
                 
                 <td>
+                	{{ $postRel->view_count }}
+                </td>
+                
+                <td>
                   	{{ Ctm::changeDate($postRel->created_at, 1) }}
                 </td>
                   
                 <td>
                   	<a href="{{url('dashboard/posts/'. $postRel->id)}}" class="btn btn-success btn-sm center-block">編集</a><br>
-                  	<small class="text-secondary ml-1">ID{{ $postRel->id }}</small>
+                  	<small class="text-secondary ml-1">ID{{ $postRel->id }}/</small>
                 </td>
                 
                 <td></td>

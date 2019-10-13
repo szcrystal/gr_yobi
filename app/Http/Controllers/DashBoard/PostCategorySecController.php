@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\DashBoard;
 
+use App\PostRelation;
 use App\PostCategory;
 use App\PostCategorySecond;
 use App\Setting;
@@ -12,10 +13,11 @@ use App\Http\Controllers\Controller;
 
 class PostCategorySecController extends Controller
 {
-    public function __construct(PostCategory $postCate, PostCategorySecond $postCateSec, Setting $setting)
+    public function __construct(PostRelation $postRel, PostCategory $postCate, PostCategorySecond $postCateSec, Setting $setting)
     {
         $this -> middleware(['adminauth', 'role:isAdmin']);
         
+        $this->postRel = $postRel;
         $this->postCate = $postCate;
         $this->postCateSec = $postCateSec;
         
@@ -68,11 +70,13 @@ class PostCategorySecController extends Controller
         $editId = $request->has('edit_id') ? $request->input('edit_id') : 0;
         
         $rules = [
+        	'parent_id' => 'required',
             'name' => 'required|unique:post_category_seconds,name,'.$editId.'|max:255',
             'slug' => 'required|alpha_dash|unique:post_category_seconds,slug,'.$editId.'|max:255', /* 注意:unique */
         ];
         
         $messages = [
+        	'parent_id.required' => '「親カテゴリー」は必須です。', 
             'name.required' => '「記事 子カテゴリー名」は必須です。',
             'name.unique' => '「記事 子カテゴリー名」が既に存在します。',
         ];
@@ -227,23 +231,21 @@ class PostCategorySecController extends Controller
      */
     public function destroy($id)
     {
-        $name = $this->postCate->find($id)->name;
+        $postCateSecName = $this->postCateSec->find($id)->name;
         
-        $atcls = $this->item->where('subcate_id', $id)->get()->map(function($obj){
-            $obj->subcate_id = null;
-            $obj->save();
+        $this->postRel->where('catesec_id', $id)->get()->map(function($obj){
+            $obj->update(['catesec_id' => 0]);
         });
         
-        $cateDel = $this->cateSec->destroy($id);
+        $cateDel = $this->postCateSec->destroy($id);
         
         //if(Storage::exists('public/subcate/'. $id)) {
-            Storage::deleteDirectory('public/subcate/'. $id); //存在しなければスルーされるようだ
+            //Storage::deleteDirectory('public/subcate/'. $id); //存在しなければスルーされるようだ
         //}
         
-        
-        $status = 'カテゴリー「' . $name . '」';
+        $status = '記事 子カテゴリー「' . $postCateSecName . '」';
         $status .= $cateDel ? 'が削除されました' : 'が削除出来ませんでした。';
         
-        return redirect('dashboard/post-categories/sub')->with('status', $status);
+        return redirect('dashboard/post-categories/sec')->with('status', $status);
     }
 }
