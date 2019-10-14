@@ -1133,8 +1133,15 @@ class CartController extends Controller
 //                },
 //            ],
             
-            'pay_method' => 'required', 
+            'pay_method' => [
+            	'required', 
+                function($attribute, $value, $fail) use($request) {
+                    if ($value == 5 && $request->input('is_huzaioki')) 
+                        return $fail('「お支払い方法：代金引換」は、不在置き了承時は選択出来ません。');
+                },
+            ],   
             'net_bank'=> 'required_if:pay_method,3',
+            
             
 //            'cardno' => 'required_if:pay_method,1|nullable|numeric',
 //            'securitycode' => 'required_if:pay_method,1|nullable|digits_between:3,4|numeric',

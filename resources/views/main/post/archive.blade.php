@@ -4,6 +4,7 @@
 use App\TopSetting;
 use App\Tag;
 use App\TagRelation;
+use App\PostCategory;
 use App\PostCategorySecond;
 use App\Setting;
 ?>
@@ -23,14 +24,27 @@ use App\Setting;
 
 @if(Request::is('post/category/*'))
 	@include('main.shared.bread', ['type'=>'post', 'typeSec'=>$type, 'cateId'=>$postCate->id])
-	<?php $title = $postCate->name; ?>
+	<?php 
+		$title = $postCate->name; 
+  		
+        if($type == 'cate') {
+    		$link = $postCate->slug;
+     	}
+      	else {
+       		$link = PostCategory::find($postCate->parent_id)->slug . '/' .$postCate->slug;
+       	}                     
+  		$link = 'post/category/' . $link;      
+    ?>
 	
 @elseif(Request::has('post/rank-view'))
 	@include('main.shared.bread', ['type'=>'post', 'typeSec'=>'rank', ])
 
 @else
 	@include('main.shared.bread', ['type'=>'post', 'typeSec'=>'top'])
-	<?php $title = '記事一覧'; ?>
+	<?php 
+		$title = '記事一覧';
+  		$link = 'post';      
+    ?>
 @endif
 
 @endsection
@@ -48,6 +62,36 @@ use App\Setting;
         @else
         
         <div class="mb-4">
+        	<ul class="list-unstyled clearfix text-big ml-1 mb-0">
+         		<?php
+           			$normalFormat = '<span class="text-secondary">%s</span>';      
+           			$linkFormat = '<a href="%s">%s</a>';
+              		$ars = ['人気順', '日付順'];         
+              		//Request::has('isdate') ?          
+           		?>
+             	
+              	@foreach($ars as $key => $ar)
+               		<li class="float-left mr-3">   
+                    @if(! $isDate)
+                    	<?php
+                  		$format = ! $key ? //keyが0の時=>人気並びの時
+                    		sprintf($normalFormat, $ar) :    
+                     		sprintf($linkFormat, url($link .'?isdate=1'), $ar);
+                     	?>              
+                	@else
+                 		<?php
+                        $format = ! $key ? //keyが0の時=>人気並びの時
+                        	sprintf($linkFormat, url($link), $ar) :
+                        	sprintf($normalFormat, $ar) ;
+                         ?>                   
+					@endif
+                    
+                    {!! $format !!}
+                    <i class="fal fa-angle-double-right"></i>     
+                	</li>      
+               	@endforeach                   
+         		    
+         	</ul>   
         
             <div class="pagination-wrap pb-4">
                 {{ $postRels->links() }}

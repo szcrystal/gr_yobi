@@ -68,10 +68,49 @@
             
             @include('dashboard.shared.contents')
             
-            <label class="mt-4">TOPメタ設定</label>
+            <label class="mt-4"><i class="fa fa-square text-secondary"></i> TOP-Shopメタ設定</label>
             @include('dashboard.shared.meta')
             
+            <label class="mt-4"><i class="fa fa-square text-secondary"></i> TOP-記事メタ設定</label>
             
+            <fieldset class="form-group{{ $errors->has('post_meta_title') ? ' has-error' : '' }}">
+                <label class="control-label">Meta Title</label>
+
+                <input id="post_meta_title" type="text" class="form-control col-md-12" name="post_meta_title" value="{{ Ctm::isOld() ? old('post_meta_title') : (isset($setting) ? $setting->post_meta_title : '') }}">
+
+                @if ($errors->has('post_meta_title'))
+                    <div class="text-danger">
+                        <span class="fa fa-exclamation form-control-feedback"></span>
+                        <span>{{ $errors->first('post_meta_title') }}</span>
+                    </div>
+                @endif
+            </fieldset>
+
+            <fieldset class="form-group{{ $errors->has('post_meta_description') ? ' has-error' : '' }}">
+                <label class="control-label">Meta Description</label>
+
+                <textarea id="post_meta_description" type="text" class="form-control col-md-12" name="post_meta_description" rows="6">{{ Ctm::isOld() ? old('post_meta_description') : (isset($setting) ? $setting->post_meta_description : '') }}</textarea>
+
+                @if ($errors->has('post_meta_description'))
+                    <div class="text-danger">
+                        <span class="fa fa-exclamation form-control-feedback"></span>
+                        <span>{{ $errors->first('post_meta_description') }}</span>
+                    </div>
+                @endif
+            </fieldset>
+
+            <fieldset class="form-group{{ $errors->has('post_meta_keyword') ? ' has-error' : '' }}">
+                <label class="control-label">Meta KeyWord<small class="ml-3">（,半角カンマで区切って下さい）</small></label>
+
+                <input id="post_meta_keyword" type="text" class="form-control col-md-12" name="post_meta_keyword" value="{{ Ctm::isOld() ? old('post_meta_keyword') : (isset($setting) ? $setting->post_meta_keyword : '') }}">
+
+                @if ($errors->has('post_meta_keyword'))
+                    <div class="text-danger">
+                        <span class="fa fa-exclamation form-control-feedback"></span>
+                        <span>{{ $errors->first('post_meta_keyword') }}</span>
+                    </div>
+                @endif
+            </fieldset>
             
 
             

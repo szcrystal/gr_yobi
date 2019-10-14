@@ -127,8 +127,9 @@ use App\Icon;
         
     </div>
     
-
+	
     <div class="favorite">
+    
         <?php
         	//お気に入り確認
             $isFav = 0;
@@ -156,14 +157,17 @@ use App\Icon;
                 $on = ' d-inline';
                 $off = ' d-none';
                 $str = 'お気に入りに登録';
-            }               
+            } 
         ?>
 
+		{{--
         <span class="fav fav-on{{ $on }}" data-id="{{ $item->id }}"><i class="fal fa-heart"></i></span>
         <span class="fav fav-off{{ $off }}" data-id="{{ $item->id }}"><i class="fas fa-heart"></i></span>
         <span class="loader"><i class="fas fa-square"></i></span>
-        <small class="fav-str">{{-- $str --}}</small>    
+        <small class="fav-str"></small>
+        --}}
     </div>
+
 
     {{-- <span class="fav-temp"><a href="{{ url('login') }}"><i class="far fa-heart"></i></a></span> --}}
     

@@ -21,11 +21,11 @@ class AddColumnToEtcTen extends Migration
         });
 
 		//Top Setting
-//        Schema::table('top_settings', function (Blueprint $table) {
-//        	$table->string('post_meta_title')->after('meta_keyword')->nullable()->default(NULL);
-//            $table->text('post_meta_description')->after('post_meta_title')->nullable()->default(NULL);
-//            $table->string('post_meta_keyword')->after('post_meta_description')->nullable()->default(NULL);
-//        });
+        Schema::table('top_settings', function (Blueprint $table) {
+        	$table->string('post_meta_title')->after('meta_keyword')->nullable()->default(NULL);
+            $table->text('post_meta_description')->after('post_meta_title')->nullable()->default(NULL);
+            $table->string('post_meta_keyword')->after('post_meta_description')->nullable()->default(NULL);
+        });
 
 
     }
@@ -38,6 +38,7 @@ class AddColumnToEtcTen extends Migration
      */
     public function down()
     {
+    	//Setting
         if (Schema::hasColumn('settings', 'post_block')) {
             Schema::table('settings', function (Blueprint $table) {
                 $table->dropColumn('post_block');
@@ -56,31 +57,25 @@ class AddColumnToEtcTen extends Migration
             });
         }
         
-        /*
-        if (Schema::hasColumn('settings', 'rank_term_ueki')) {
-            Schema::table('settings', function (Blueprint $table) {
-                $table->dropColumn('rank_term_ueki');
+        //Top Setting
+        if (Schema::hasColumn('top_settings', 'post_meta_title')) {
+            Schema::table('top_settings', function (Blueprint $table) {
+                $table->dropColumn('post_meta_title');
             });
         }
         
-        if (Schema::hasColumn('settings', 'rank_term_ueki')) {
-            Schema::table('settings', function (Blueprint $table) {
-                $table->dropColumn('rank_term_ueki');
+        if (Schema::hasColumn('top_settings', 'post_meta_description')) {
+            Schema::table('top_settings', function (Blueprint $table) {
+                $table->dropColumn('post_meta_description');
             });
         }
         
-        if (Schema::hasColumn('settings', 'rank_term_ueki')) {
-            Schema::table('settings', function (Blueprint $table) {
-                $table->dropColumn('rank_term_ueki');
+        if (Schema::hasColumn('top_settings', 'post_meta_keyword')) {
+            Schema::table('top_settings', function (Blueprint $table) {
+                $table->dropColumn('post_meta_keyword');
             });
         }
         
-        if (Schema::hasColumn('settings', 'rank_term_ueki')) {
-            Schema::table('settings', function (Blueprint $table) {
-                $table->dropColumn('rank_term_ueki');
-            });
-        }
-        */
         
     }
 }

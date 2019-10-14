@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Main;
 
+use App\Setting;
+use App\TopSetting;
 use App\Item;
 use App\Post;
 use App\PostRelation;
@@ -22,7 +24,7 @@ use DB;
 class PostController extends Controller
 {
     
-    public function __construct(Item $item, Post $post, PostRelation $postRel, PostCategory $postCate, PostCategorySecond $postCateSec, Tag $tag, TagRelation $tagRel, PostTagRelation $postTagRel)
+    public function __construct(Setting $setting, TopSetting $topSetting, Item $item, Post $post, PostRelation $postRel, PostCategory $postCate, PostCategorySecond $postCateSec, Tag $tag, TagRelation $tagRel, PostTagRelation $postTagRel)
     {
         //$this->middleware('search');
         
@@ -36,6 +38,11 @@ class PostController extends Controller
         $this->tagRel = $tagRel;
         $this->postTagRel = $postTagRel;
         
+        $this->setting = $setting;
+        $this->set = $this->setting->first();
+        
+        $this->topSetting = $topSetting;
+        $this->topSet = $this->topSetting->first();
         
         $this->postWhere = ['open_status'=>1]; 
         $this->itemWhere =['open_status'=>1, 'is_potset'=>0]; //こことSingleとSearch/ArchiveとCtm::isPotParentAndStockにある
@@ -45,19 +52,29 @@ class PostController extends Controller
         
     }
     
-    public function index()
+    public function index(Request $request)
     {
     	//if(Ctm::isEnv('product') || Ctm::isEnv('alpha')) abort(404);
         
+        //$isDate = isset($datePath) ? 1 : 0;
+        $isDate = $request->has('isdate') ? 1 : 0;
+        
         $whereArr = $this->postWhere;
         
-        $postRels = $this->postRel->where($whereArr)->orderBy('created_at','DESC')->paginate($this->itemPerPage);
+        $target = $isDate ? 'created_at' : 'view_count';
         
+        $postRels = $this->postRel->where($whereArr)->orderBy($target, 'DESC')->paginate($this->itemPerPage);
+        
+        if($isDate) { //ページネーションのリンクにqueryをつける
+            $postRels->appends(['isdate' => 1]);
+        }
         //bigTitle(H1)をセットする
         //$postRels = $this->setBigTitleToRel($postRels);
         
+        //Category All
         $postCates = $this->postCate->all();
         
+        //Category Ranking -----
         $rankCates = $this->postCateSec->whereNotIn('parent_id', [1])->orderBy('view_count', 'desc')->take(4)->get();
         
         foreach($rankCates as $k => $rankCate) {
@@ -71,12 +88,20 @@ class PostController extends Controller
         }
         
         $rankCates = $rankCates->take(4);
+        //Category Ranking END -----
         
+        //Tag Ranking
         $rankTags = $this->tag->orderBy('view_count', 'desc')->take(20)->get();
         
+        //Meta
+        $metaTitle = $this->topSet->post_meta_title . ' | 植木買うならグリーンロケット';
+        $metaDesc = $this->topSet->post_meta_description;
+        $metaKeyword = $this->topSet->post_meta_keyword;
+        
+        //Type
         $type = 'top';
         
-        return view('main.post.archive', compact('postRels', 'postCates', 'rankCates', 'rankTags', 'type'));
+        return view('main.post.archive', compact('isDate', 'postRels', 'postCates', 'rankCates', 'rankTags', 'metaTitle', 'metaDesc', 'metaKeyword', 'type'));
         
         // ============================================================================================
         
@@ -651,7 +676,11 @@ class PostController extends Controller
                 
         //if($request->has('sec') && ! $request->input('sec')) abort(404);
         
+        //子供カテゴリーかどうかを確認
         $isSec = isset($slugSec) ? 1 : 0;
+        //Date並びか確認
+        $isDate = $request->has('isdate') ? 1 : 0;
+        
         $postWhere = $this->postWhere;
         
         if($isSec) {
@@ -671,12 +700,12 @@ class PostController extends Controller
           	$type = 'cate';      
         }
         
-
-        $postRels = $this->postRel->where($postWhere)->orderBy('created_at','DESC')->paginate($this->itemPerPage);
+		$target = $isDate ? 'created_at' : 'view_count';
+        $postRels = $this->postRel->where($postWhere)->orderBy($target, 'DESC')->paginate($this->itemPerPage);
         
-//        if($secId) { //ページネーションのリンクにqueryをつける
-//        	$postRels->appends(['sec' => $secId]);
-//        }
+        if($isDate) { //ページネーションのリンクにqueryをつける
+        	$postRels->appends(['isdate' => 1]);
+        }
         
         
         //bigTitle(H1)をセットする
@@ -693,7 +722,7 @@ class PostController extends Controller
         $metaKeyword = $postCate->meta_keyword;
         
         
-        return view('main.post.archive', compact('postRels', 'postCate', 'postCates', 'type', 'metaTitle', 'metaDesc', 'metaKeyword'));
+        return view('main.post.archive', compact('postRels', 'postCate', 'postCates', 'isDate', 'type', 'metaTitle', 'metaDesc', 'metaKeyword'));
     }
     
     

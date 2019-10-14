@@ -643,8 +643,12 @@ use App\DeliveryGroup;
                         ■下記の商品につきまして
                         <ul class="mt-3 pl-4">
                             <li class="mb-3 text-kon text-bold">「ご希望日程」が日曜日の場合は、下記1商品につき{{ number_format($seinouObj->sundayFee) }}円増しとなります。
-                            <li>不在置きを了承頂ける場合はチェックをして下さい。<br>
-                            <span class="text-bold text-extra-big d-inline-block mt-1">※チェック時は1商品につき{{ number_format($seinouObj->huzaiokiFee) }}円引きとなります。</span><br><span class="">その際、下に表示される枠内に不在時の荷物の置き場所を記載して下さい。</span>
+                            <li>不在置きを了承頂ける場合はチェックをして下さい。
+                            	<ul class="text-small">
+                            	<li class="mb-1 mt-2"><span class="text-extra-big"><b class="text-big">チェック時は1商品につき{{ number_format($seinouObj->huzaiokiFee) }}円引きとなります。</b></span></li>
+                            	<li class="mb-1">下に表示される枠内に不在時の荷物の置き場所を記載して下さい。</li>
+                             	<li class="mb-1">お支払い方法の「代金引換」はご利用出来ません。</li>
+                              	<ul>      
                         </ul>
                     </div>
                     
