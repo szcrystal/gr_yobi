@@ -12,6 +12,8 @@ $imgUrl = config('app.url') . Storage::url($obj->thumb_path);
 
 $ogType = $type == 'postSingle' ? 'article' : 'website';
 
+$og = 'twitter';
+
 ?>
 
 
@@ -19,13 +21,13 @@ $ogType = $type == 'postSingle' ? 'article' : 'website';
 
 <?php /* image or summary_large_image*/ ?>
 
-<meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:site" content="@szzs5" /> <?php /* shop8463 */ ?>
+<meta name="{{ $og }}:card" content="summary_large_image" />
+<meta name="{{ $og }}:site" content="@szzs5" /> <?php /* shop8463 */ ?>
 
-<meta property="og:url" content="{{ $url }}" /> 
-<meta property="og:title" content="{{ $title }}" />
-<meta property="og:description" content="{{ $description }}" />
-<meta property="og:image" content="{{ $imgUrl }}" />
-<meta property="og:type" content="{{ $ogType }}" />
-<meta property="og:site_name" content="{{ config('app.name') }}" />
+<meta property="{{ $og }}:url" content="{{ $url }}" /> 
+<meta property="{{ $og }}:title" content="{{ $title }}" />
+<meta property="{{ $og }}:description" content="{{ $description }}" />
+<meta property="{{ $og }}:image" content="{{ $imgUrl }}" />
+<meta property="{{ $og }}:type" content="{{ $ogType }}" />
+<meta property="{{ $og }}:site_name" content="{{ config('app.name') }}" />
 
