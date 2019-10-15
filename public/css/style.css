@@ -2569,6 +2569,12 @@ h3.upper-title {
 .post-rank-cate:nth-of-type(4) {
 	margin-right: 0;
 }
+.post-rank-cate h5 {
+	font-size: 1.1em;
+}
+.post-main-archive .tags {
+	font-size: 0.9em;
+}
 
 /* login */
 .login {

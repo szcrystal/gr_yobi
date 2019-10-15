@@ -261,7 +261,7 @@ for SP
     #left-bar {
         float: none;
         width: 100%;
-        margin: 5em auto 0;
+        margin: 4.5em auto 0;
         font-size: 1.1em;
         //border: 1px solid orange;
     }
@@ -1402,6 +1402,35 @@ ORG END ======================== */
     	float: none;
         width: 100%;
         margin: 0;
+    }
+    .post-main-archive {
+        float: none;
+        width: 100%;
+        margin-left: 0;
+    }
+    .post-side-archive {
+        float: none;
+        width: 100%;
+        //width: 24%; /* $left-barで指定済 */
+    }
+    .post-main-archive .post-atcl {
+    	width: 100%;	
+    }
+    .post-side .tags {
+    	font-size: 115%;
+    }
+    /* post-archive 関連 */
+    .post-rank-cate {
+        float: left;
+        width: 32.4%;
+        margin-right: 1.2%;
+        //border: 1px solid red;
+    }
+    .post-rank-cate:nth-of-type(3n) {
+        margin-right: 0;
+    }
+    .post-rank-cate:nth-of-type(4) {
+        margin-right: 1.2%;
     }
     
     .relate-item .main-atcl {

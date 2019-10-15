@@ -48,7 +48,7 @@ class PostController extends Controller
         $this->itemWhere =['open_status'=>1, 'is_potset'=>0]; //こことSingleとSearch/ArchiveとCtm::isPotParentAndStockにある
         
         
-        $this->itemPerPage = 2;
+        $this->itemPerPage = 16;
         
     }
     
@@ -75,19 +75,22 @@ class PostController extends Controller
         $postCates = $this->postCate->all();
         
         //Category Ranking -----
-        $rankCates = $this->postCateSec->whereNotIn('parent_id', [1])->orderBy('view_count', 'desc')->take(4)->get();
+        $takeNum = Ctm::isAgent('sp') ? 6 : 4;
+        $rankCates = array();
         
-        foreach($rankCates as $k => $rankCate) {
-        	$cateSecPost = $this->postRel->where($whereArr)->where('catesec_id', $rankCate->id)->orderBy('created_at', 'desc')->first();
+        $cateSecs = $this->postCateSec->whereNotIn('parent_id', [1])->orderBy('view_count', 'desc')->get();
+        
+        foreach($cateSecs as $cateSec) {
+        	$cateSecPost = $this->postRel->where($whereArr)->where('catesec_id', $cateSec->id)->orderBy('created_at', 'desc')->first();
             
             if(collect($cateSecPost)->isNotEmpty()) {
-            	$rankCate->cate_slug = $this->postCate->find($rankCate->parent_id)->slug;
-            	$rankCate->thumb_path = $cateSecPost->thumb_path;
-          		$rankCates[$k] = $rankCate; 
+            	$cateSec->cate_slug = $this->postCate->find($cateSec->parent_id)->slug;
+            	$cateSec->thumb_path = $cateSecPost->thumb_path;
+          		$rankCates[] = $cateSec; 
            	}   
         }
         
-        $rankCates = $rankCates->take(4);
+        $rankCates = collect($rankCates)->take($takeNum);
         //Category Ranking END -----
         
         //Tag Ranking
@@ -631,12 +634,13 @@ class PostController extends Controller
         $metaDesc = $postRel->meta_description;
         $metaKeyword = $postRel->meta_keyword;
         
+        $type = 'postSingle';
 		
         $postRel->increment('view_count');
         //$postRel->save();
 		
         
-        return view('main.post.single', compact('postRel', 'postArr', 'postCate', 'tags', 'relatePosts', 'relateItems', 'metaTitle', 'metaDesc', 'metaKeyword'));
+        return view('main.post.single', compact('postRel', 'postArr', 'postCate', 'tags', 'relatePosts', 'relateItems', 'metaTitle', 'metaDesc', 'metaKeyword', 'type'));
         
         
         		

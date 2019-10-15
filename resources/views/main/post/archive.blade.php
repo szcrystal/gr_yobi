@@ -52,7 +52,7 @@ use App\Setting;
 
 @section('content')
 
-<div class="post-wrap clearfix top-cont">
+<div class="post-wrap clearfix">
 
     <div class="post-main-archive">
     	<h2 class="mb-3 card-header">{{ $title }}</h2>
@@ -122,7 +122,7 @@ use App\Setting;
         </div>
         
         	@if(isset($type) && $type != 'top' && isset($postCate->contents))
-                <div class="text-small bg-light border border-gray py-2 px-3 mt-5 clearfix">
+                <div class="text-small bg-light border border-gray py-2 px-3 mt-3 clearfix">
                     <p class="p-0 m-0">{!! nl2br($postCate->contents) !!}</p>
                 </div>
             @endif
@@ -130,7 +130,7 @@ use App\Setting;
             @if(isset($type) && $type == 'top')
             @if(count($rankCates) > 0)
                 <?php 
-                    $nn = Ctm::isAgent('sp') ? 2 : 4;
+                    $nn = Ctm::isAgent('sp') ? 3 : 4;
                     $rankCatesArr = array_chunk($rankCates->all(), $nn); 
                 ?>
                 
@@ -138,7 +138,7 @@ use App\Setting;
              		<h2 class="mb-3 card-header">人気カテゴリー</h2>
                         
              		@foreach($rankCatesArr as $rankCatesAr) 
-               		<div class="clearfix">        
+               		<div class="clearfix mb-1">        
                         @foreach($rankCatesAr as $rankCate) 
                         	@if(isset($rankCate->thumb_path)) 
                             <div class="post-rank-cate">       
@@ -159,7 +159,7 @@ use App\Setting;
             @endif
             
             @if(count($rankTags) > 0)
-                <div class="rnk-tag mb-5">
+                <div class="mb-5">
                     <h2 class="mb-3 card-header">人気タグ</h2>
                     <div class="tags mt-2 mb-1">
                         @include('main.shared.tag', ['tags'=>$rankTags, 'num'=>0])
@@ -178,7 +178,7 @@ use App\Setting;
 
 
 @section('leftbar')
-	<div id="left-bar" style="min-height: 750px;" class="post-side-archive">
+	<div id="left-bar" style="min-height: 550px;" class="post-side-archive">
 		<div class="">
             @foreach($postCates as $postCate)
             	<?php 
@@ -190,6 +190,8 @@ use App\Setting;
                 <ul class="list-unstyled pl-3 pt-1 mb-4 pb-1">
                     @foreach($postCateSecs as $postCateSec)   
                     <li class="mb-1"><a href="{{ url('post/category/' . $postCate->slug . '/' . $postCateSec->slug) }}">{{ $postCateSec->name }}</a>
+                    </li>
+                    
                     @endforeach      
                 </ul>   
 

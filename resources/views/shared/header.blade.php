@@ -13,12 +13,13 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>@if(isset($metaTitle)){{ $metaTitle }}@endif</title>
-    
     @if(isset($metaDesc))
-    <meta name="description" content="{{ str_replace(PHP_EOL, '', $metaDesc) }}">
-    @endif
+    <?php $metaDesc = str_replace("\r\n", '', $metaDesc); ?>
     
+    <meta name="description" content="{{ $metaDesc }}">
+    @endif
     @if(isset($metaKeyword))
+    
     <meta name="keywords" content="{{ $metaKeyword }}">
     @endif
     
@@ -46,6 +47,11 @@
     @if(Ctm::isAgent('all'))
     <link href="{{ asset('css/style-sp.css' . $getNow) }}" rel="stylesheet">
 	@endif
+	
+	@if(isset($type) && $type == 'postSingle')
+		@include('main.shared.twitterCard', ['obj'=>$postRel])
+	@endif
+	
 
     <!-- Scripts -->
     <script>
