@@ -493,6 +493,31 @@
             
             <h4 class="mt-5 pt-4"><span class="text-info">■</span> Other</h4>
             <hr>
+            
+            <fieldset class="mb-4 form-group{{ $errors->has('twitter_id') ? ' has-error' : '' }}">
+                <label>Twitter ID <small>@不要（@以降の英数文字を入力して下さい）</small></label><br>
+                @ <input class="form-control d-inline-block col-md-6{{ $errors->has('twitter_id') ? ' is-invalid' : '' }}" name="twitter_id" value="{{ Ctm::isOld() ? old('twitter_id') : (isset($setting) ? $setting->twitter_id : '') }}">
+
+                @if ($errors->has('twitter_id'))
+                    <div class="text-danger">
+                        <span class="fa fa-exclamation form-control-feedback"></span>
+                        <span>{{ $errors->first('twitter_id') }}</span>
+                    </div>
+                @endif
+            </fieldset>
+            
+            <fieldset class="mb-5 form-group{{ $errors->has('fb_app_id') ? ' has-error' : '' }}">
+                <label>FB APP ID</label><br>
+                <input class="form-control d-inline-block col-md-6{{ $errors->has('fb_app_id') ? ' is-invalid' : '' }}" name="fb_app_id" value="{{ Ctm::isOld() ? old('fb_app_id') : (isset($setting) ? $setting->fb_app_id : '') }}">
+
+                @if ($errors->has('fb_app_id'))
+                    <div class="text-danger">
+                        <span class="fa fa-exclamation form-control-feedback"></span>
+                        <span>{{ $errors->first('fb_app_id') }}</span>
+                    </div>
+                @endif
+            </fieldset>
+            
             <fieldset class="mt-1 mb-4 form-group{{ $errors->has('analytics_code') ? ' has-error' : '' }}">
                 <label for="analytics_code" class="control-label">Googleコード</label>
 

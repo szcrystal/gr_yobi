@@ -53,6 +53,8 @@ class Setting extends Model
         'fix_need',
         'fix_other',
         
+        'twitter_id',
+        'fb_app_id',
         'analytics_code',
 
     ];

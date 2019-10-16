@@ -2,11 +2,13 @@
 use App\Setting;
 use App\TopSetting;
 
+$set = Setting::first();
+
 $valArs = [
 'url' => Request::url(),
 'title' => $type == 'postSingle' ? $obj->big_title : $obj->title,
 'description' => str_replace("\r\n", "", $obj->meta_description), /*trim($description) PHP_EOL */
-'image' => config('app.url') . Storage::url($obj->thumb_path),
+'image' => asset(Storage::url($obj->thumb_path))/*config('app.url') . Storage::url($obj->thumb_path)*/,
 'type' => $type == 'postSingle' ? 'article' : 'website',
 'site_name' => config('app.name'),
 ];
@@ -18,11 +20,12 @@ $optionArs = ['url', 'title', 'description', 'image', 'type', 'site_name'];
 
 
 
-<meta property="fb:app_id" content="App-ID" /><?php /* 15文字の半角数字 */ ?>
+<meta property="fb:app_id" content="{{ $set->fb_app_id }}" />{{-- 15文字の半角数字 --}}
 
 <meta name="twitter:card" content="summary_large_image" /><?php /* image or summary_large_image*/ ?>
 
-<meta name="twitter:site" content="@---" /><?php /* shop8463 */ ?>
+<meta name="twitter:site" content="{{ '@' . $set->twitter_id }}" /><?php /* shop8463 */ ?>
+
 
 
 @foreach($ogArs as $ogAr)

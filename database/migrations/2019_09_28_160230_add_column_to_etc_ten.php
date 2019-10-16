@@ -18,6 +18,9 @@ class AddColumnToEtcTen extends Migration
             $table->integer('post_block')->after('snap_block_c')->nullable()->default(5);
             $table->integer('rank_term')->after('rewrite_time')->nullable()->default(30);
             $table->integer('rank_term_ueki')->after('rank_term')->nullable()->default(30);
+            
+            $table->string('twitter_id')->after('fix_other')->nullable()->default(NULL);
+            $table->string('fb_app_id')->after('twitter_id')->nullable()->default(NULL);
         });
 
 		//Top Setting
@@ -54,6 +57,18 @@ class AddColumnToEtcTen extends Migration
         if (Schema::hasColumn('settings', 'rank_term_ueki')) {
             Schema::table('settings', function (Blueprint $table) {
                 $table->dropColumn('rank_term_ueki');
+            });
+        }
+        
+        if (Schema::hasColumn('settings', 'twitter_id')) {
+            Schema::table('settings', function (Blueprint $table) {
+                $table->dropColumn('twitter_id');
+            });
+        }
+        
+        if (Schema::hasColumn('settings', 'fb_app_id')) {
+            Schema::table('settings', function (Blueprint $table) {
+                $table->dropColumn('fb_app_id');
             });
         }
         

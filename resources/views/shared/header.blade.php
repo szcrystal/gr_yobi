@@ -41,8 +41,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.10.0/css/lightbox.css" rel="stylesheet">
     @endif
     
-    <?php //$getNow = '?up=' . time(); ?>
-    
+    {{-- $getNowはlayout.app.blade内で --}}
     <link href="{{ asset('css/style.css'. $getNow) }}" rel="stylesheet">
     
     @if(Ctm::isAgent('all'))
@@ -50,10 +49,9 @@
 	@endif
 	
 	@if(isset($type) && $type == 'postSingle')
-		@include('main.shared.twitterCard', ['obj'=>$postRel])
+    	@include('main.shared.twitterCard', ['obj'=>$postRel])
 	@endif
 	
-
     <!-- Scripts -->
     <script>
         window.Laravel = <?php echo json_encode([
