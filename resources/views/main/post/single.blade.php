@@ -52,9 +52,15 @@ use App\TopSetting;
     <header>
         <h1>{{ $postRel->big_title }}</h1>
         
-        <div class="mt-2 mb-3 pl-1">
-            <span class="post-date">{{ Ctm::changeDate($postRel->created_at, 1) }}</span>        
-            <a href="{{ url('post/category/'.$postCate->slug) }}"><span class="post-cate">{{ $postCate->name }}</span></a>
+        <div class="mt-2 mb-3 pl-1 clearfix">
+            <div class="float-left w-50">
+                <span class="post-date">{{ Ctm::changeDate($postRel->created_at, 1) }}</span>        
+                <a href="{{ url('post/category/'.$postCate->slug) }}"><span class="post-cate">{{ $postCate->name }}</span></a>
+            </div>
+            
+            <div class="float-right w-50 pr-1">
+            	@include('main.shared.socialBtn', ['title'=>$postRel->big_title])
+            </div>
         </div>
     </header>
     
