@@ -1458,6 +1458,10 @@ ORG END ======================== */
 /*        margin-right: 1.2%;*/
 /*    }*/
     
+    .social-wrap > div {
+    	width: 100%;
+     	float: none;  
+    }
     
     /* Login */    
     .login {

@@ -2435,14 +2435,14 @@ h3.upper-title {
 /* Post post-single ********** */
 .post-main {
 	float: left;
-    width: 67%;
+    width: 64%;
     margin-right: 3%;
     //border: 1px solid orange;
 }
 .post-side {
 	float: right;
     //border: 1px solid blue;
-    width: 30%;
+    width: 33%;
 }
 .post-main-archive {
 	float: right;
@@ -2473,7 +2473,7 @@ h3.upper-title {
 }
 .post-main section h1 {
 	padding-bottom: 0.1em;
-    border-bottom: 1px solid #cdcdcd;
+    //border-bottom: 1px solid #cdcdcd;
 }
 .post-main section h2 {
 	 font-size: 1.3em;
@@ -2575,18 +2575,22 @@ h3.upper-title {
 .post-main-archive .tags {
 	font-size: 0.9em;
 }
+.social-wrap > div {
+	width: 50%;
+	float: left;
+}
 
 /* Social BTN */
 .social-btn {
     display: block;
     float: right;
-    font-size: 0.7em;
-    width: 8.5em;
-    //height: 2em;
-    //line-height: 1.3em;
+    font-size: 1.3em;
+    width: 2.2em;
+    height: 2.2em;
+    line-height: 2.2em;
     margin-left: 0.4em;
-    padding: 3px 0.2em 0;
-    border-radius: 3px;
+    //padding: 3px 0.2em;
+    border-radius: 50%;
     color: #fff;
     text-align: center;
 }
@@ -2606,16 +2610,22 @@ h3.upper-title {
 .twitter {
     background: #55acee;
 }
-.fb{
+.fb {
     background: #3b5998;
 }
-.line{
+.line {
+	margin-right: 0.1em;
     background: #09B701;
-    background-image: url(/images/social/square-default.png);
+    //background-image: url(/images/social/square-default.png);
     background-repeat: no-repeat;
-    background-position: 5px 3px;
+    background-position: 5px 4px;
     background-size: 17px 17px;
-    padding-left: 1.1em;
+    //padding-left: 1.1em;
+}
+.line img {
+	width: 93%;
+	height: 93%;
+	margin-top: -3px;
 }
 
 

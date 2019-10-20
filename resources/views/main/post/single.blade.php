@@ -52,13 +52,13 @@ use App\TopSetting;
     <header>
         <h1>{{ $postRel->big_title }}</h1>
         
-        <div class="mt-2 mb-3 pl-1 clearfix">
-            <div class="float-left w-50">
+        <div class="mt-2 mb-3 pl-1 social-wrap clearfix">
+            <div class="">
                 <span class="post-date">{{ Ctm::changeDate($postRel->created_at, 1) }}</span>        
                 <a href="{{ url('post/category/'.$postCate->slug) }}"><span class="post-cate">{{ $postCate->name }}</span></a>
             </div>
             
-            <div class="float-right w-50 pr-1">
+            <div class="">
             	@include('main.shared.socialBtn', ['title'=>$postRel->big_title])
             </div>
         </div>
@@ -227,7 +227,7 @@ use App\TopSetting;
 <div class="post-side">
 
     <div class="relate-post mb-5">
-        <h4>こんな他の記事もあります</h4>
+        <h4>関連記事</h4>
         @foreach($relatePosts as $relatePost)
             @include('main.shared.atclPost', ['post'=>$relatePost])
         @endforeach

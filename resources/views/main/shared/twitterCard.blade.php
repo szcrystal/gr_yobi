@@ -4,12 +4,22 @@ use App\TopSetting;
 
 $set = Setting::first();
 
+$imgUrl = '';
+
+if($type == 'postSingle') {
+    $imgUrl = $postRel->thumb_path;
+}
+elseif($type == 'single') {
+    $imgUrl = $item->main_img;
+}
+
+
 $valArs = [
 'url' => Request::url(),
-'title' => $type == 'postSingle' ? $obj->big_title : $obj->title,
-'description' => str_replace("\r\n", "", $obj->meta_description), /*trim($description) PHP_EOL */
-'image' => asset(Storage::url($obj->thumb_path))/*config('app.url') . Storage::url($obj->thumb_path)*/,
-'type' => $type == 'postSingle' ? 'article' : 'website',
+'title' => $metaTitle,
+'description' => $metaDesc, /* trim($description) PHP_EOL */
+'image' => asset(Storage::url($imgUrl)), /* config('app.url') . Storage::url($obj->thumb_path)*/
+'type' => $type == 'top' ? 'website' : 'article',
 'site_name' => config('app.name'),
 ];
 

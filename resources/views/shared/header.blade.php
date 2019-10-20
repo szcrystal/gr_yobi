@@ -48,10 +48,13 @@
     <link href="{{ asset('css/style-sp.css' . $getNow) }}" rel="stylesheet">
 	@endif
 	
-	@if(isset($type) && $type == 'postSingle')
-    	@include('main.shared.twitterCard', ['obj'=>$postRel])
+	@if(isset($type))
+		@if($type == 'postSingle' || $type == 'single')
+			@include('main.shared.twitterCard', [])
+      	@endif                  
 	@endif
-	
+
+
     <!-- Scripts -->
     <script>
         window.Laravel = <?php echo json_encode([
