@@ -48,8 +48,8 @@ class PostController extends Controller
     
     public function index()
     {
-    	if(Ctm::isEnv('product') || Ctm::isEnv('alpha')) 
-        	return view('errors.dashboard');
+//    	if(Ctm::isEnv('product') || Ctm::isEnv('alpha')) 
+//        	return view('errors.dashboard');
         
             
         $postRels = $this->postRel->orderBy('id', 'desc')->get();
@@ -67,8 +67,8 @@ class PostController extends Controller
     
     public function show($id)
     {
-    	if(Ctm::isEnv('product') || Ctm::isEnv('alpha')) 
-        	return view('errors.dashboard');
+//    	if(Ctm::isEnv('product') || Ctm::isEnv('alpha')) 
+//        	return view('errors.dashboard');
         
     
         $postRel = $this->postRel->find($id);
@@ -142,8 +142,8 @@ class PostController extends Controller
    
     public function create()
     {
-    	if(Ctm::isEnv('product') || Ctm::isEnv('alpha')) 
-        	return view('errors.dashboard');
+//    	if(Ctm::isEnv('product') || Ctm::isEnv('alpha')) 
+//        	return view('errors.dashboard');
         
         
 		$id = 0;
