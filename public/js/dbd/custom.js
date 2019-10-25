@@ -590,8 +590,8 @@ var exe = (function() {
                     isPost = 0;
                 }
                 
-                if(! isPost)
-	                $(this).next('span').text('! 子カテゴリーも変更して下さい');
+                //if(! isPost)
+                $(this).next('span').text('! 子カテゴリーも変更して下さい');
                 
                 //$('label').text(_tokenVal);
 

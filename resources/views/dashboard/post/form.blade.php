@@ -316,7 +316,7 @@ use App\PostCategorySecond;
                     @endforeach
                     
                 </select>
-                <span class="text-warning"></span>
+                <span class="text-orange">&nbsp;</span>
                 
                 @if ($errors->has('cate_id'))
                     <div class="help-block text-danger">
