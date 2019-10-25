@@ -42,7 +42,7 @@ use App\PostCategorySecond;
             
             @elseif($typeSec == 'single')
                 <li class="breadcrumb-item"><a href="{{ url('post/category/'. $postCate->slug) }}">{{ isset($postCate->link_name) ? $postCate->link_name : $postCate->name }}</a></li>
-                @if(isset($postRel->catesec_id))
+                @if(isset($postRel->catesec_id) && $postRel->catesec_id)
                 	<?php $postCateSec = PostCategorySecond::find($postRel->catesec_id); ?>
                 	<li class="breadcrumb-item"><a href="{{ url('post/category/'. $postCate->slug . '/' .$postCateSec->slug) }}">{{ $postCateSec->name }}</a></li>
                 @endif

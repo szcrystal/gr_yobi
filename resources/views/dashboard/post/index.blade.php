@@ -124,8 +124,8 @@ use App\PostCategorySecond;
                   	@if(isset($postRel->cate_id))
                     	{{ PostCategory::find($postRel->cate_id)->name }}
                         
-                        @if(isset($postRel->catesec_id))
-                        <br><small>{{ PostCategorySecond::find($postRel->catesec_id)->name }}</small>
+                        @if(isset($postRel->catesec_id) && $postRel->catesec_id)
+                            <br><small>{{ PostCategorySecond::find($postRel->catesec_id)->name }}</small>
                         @endif
                     @endif
                 </td>

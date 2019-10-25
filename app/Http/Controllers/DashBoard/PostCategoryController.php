@@ -60,8 +60,8 @@ class PostCategoryController extends Controller
         $editId = $request->has('edit_id') ? $request->input('edit_id') : 0;
         
         $rules = [
-            'name' => 'required|unique:categories,name,'.$editId.'|max:255',
-            'slug' => 'required|alpha_dash|unique:categories,slug,'.$editId.'|max:255', /* 注意:unique */
+            'name' => 'required|unique:post_categories,name,'.$editId.'|max:255',
+            'slug' => 'required|alpha_dash|unique:post_categories,slug,'.$editId.'|max:255', /* 注意:unique */
         ];
         
         $messages = [

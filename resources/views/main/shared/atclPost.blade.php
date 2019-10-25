@@ -30,7 +30,7 @@ use App\PostCategorySecond;
     </div>
     
     <div class="mt-2">
-    	閲覧数 <i class="fal fa-eye"></i> {{ $post->view_count }} <span class="post-date text-small ml-3">{{ Ctm::changeDate($post->created_at, 1) }}</span>
+    	閲覧数 <i class="fal fa-eye"></i> {{ $post->view_count }}
     </div>
     
 </div>
