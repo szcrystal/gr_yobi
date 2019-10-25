@@ -177,7 +177,7 @@ use App\TopSetting;
                 <section class="mt-4">
                     
                     @if(isset($post['h2']->title))
-                        <h1 id="{{ $n }}" class="mb-3"><i class="fas fa-check text-kon"></i> {{ $post['h2']->title }} {{ $n }}</h1>
+                        <h1 id="{{ $n }}" class="mb-3"><i class="fas fa-check text-kon"></i> {{ $post['h2']->title }}</h1>
                     @endif
                     
                     <?php $nn = 1; ?>
@@ -186,7 +186,7 @@ use App\TopSetting;
                         
                         <div id="{{ $n.'-'.$nn }}" class="pt-1 pb-3 pl-1">
                             @if(isset($contPost->title))
-                                <h2>{{ $contPost->title }} {{ $n.'-'.$nn }}</h2>
+                                <h2>{{ $contPost->title }}</h2>
                             @endif
                             
                             @if(isset($contPost->img_path))
