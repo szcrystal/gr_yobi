@@ -1,4 +1,6 @@
 <?php
+use App\Setting;
+
 	$class = '';
 	if(isset($type) && $type == 'single') {
     	$class = ' class="single-colop"';
@@ -15,8 +17,9 @@
                 </a>
                 
                 <span style="font-size: 2em; vertical-align:-3px">
-                	<a href="https://twitter.com/shop8463" target="_brank"><i class="fab fa-twitter"></i></a>
+                	<a href="https://twitter.com/{{ Setting::first()->twitter_id }}" target="_brank"><i class="fab fa-twitter"></i></a>
                     <a href="https://www.facebook.com/8463andgreenrocket/" target="_brank"><i class="fab fa-facebook"></i></a>
+                    <a href="https://www.instagram.com/{{ Setting::first()->instagram_id }}" target="_brank"><i class="fab fa-instagram"></i></a>
                 </span>
                 
                 @if(Ctm::isLocal())
