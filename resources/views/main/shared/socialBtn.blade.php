@@ -9,7 +9,7 @@ $thisUrl = $switch ? 'http://emerald.wjg.jp/' : Request::url();
 
 <div class="clearfix pr-1">
     <div class="line social-btn">
-    <a class="" href="https://line.me/R/msg/text/?{{ $title }}{{ $thisUrl }}"><img src="{{ asset('/images/social/round-default.png') }}" class=""></a>
+    <a class="" href="https://line.me/R/msg/text/?{{ $thisUrl }}"><img src="{{ asset('/images/social/round-default.png') }}" class=""></a>
     </div>
     
     <div class="fb social-btn">

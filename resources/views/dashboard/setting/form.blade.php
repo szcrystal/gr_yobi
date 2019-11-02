@@ -506,14 +506,26 @@
                 @endif
             </fieldset>
             
-            <fieldset class="mb-5 form-group{{ $errors->has('fb_app_id') ? ' has-error' : '' }}">
-                <label>FB APP ID</label><br>
+            <fieldset class="mb-4 form-group{{ $errors->has('fb_app_id') ? ' has-error' : '' }}">
+                <label>FB App ID</label><br>
                 <input class="form-control d-inline-block col-md-6{{ $errors->has('fb_app_id') ? ' is-invalid' : '' }}" name="fb_app_id" value="{{ Ctm::isOld() ? old('fb_app_id') : (isset($setting) ? $setting->fb_app_id : '') }}">
 
                 @if ($errors->has('fb_app_id'))
                     <div class="text-danger">
                         <span class="fa fa-exclamation form-control-feedback"></span>
                         <span>{{ $errors->first('fb_app_id') }}</span>
+                    </div>
+                @endif
+            </fieldset>
+            
+            <fieldset class="mb-5 form-group{{ $errors->has('instagram_id') ? ' has-error' : '' }}">
+                <label>インスタグラム ID</label><br>
+                <input class="form-control d-inline-block col-md-6{{ $errors->has('instagram_id') ? ' is-invalid' : '' }}" name="instagram_id" value="{{ Ctm::isOld() ? old('instagram_id') : (isset($setting) ? $setting->instagram_id : '') }}">
+
+                @if ($errors->has('instagram_id'))
+                    <div class="text-danger">
+                        <span class="fa fa-exclamation form-control-feedback"></span>
+                        <span>{{ $errors->first('instagram_id') }}</span>
                     </div>
                 @endif
             </fieldset>

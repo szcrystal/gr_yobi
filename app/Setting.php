@@ -55,6 +55,7 @@ class Setting extends Model
         
         'twitter_id',
         'fb_app_id',
+        'instagram_id',
         'analytics_code',
 
     ];

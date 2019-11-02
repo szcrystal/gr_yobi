@@ -34,10 +34,6 @@ use App\TopSetting;
 <div class="post-wrap clearfix mt-4">
 
 <?php
-
-//	echo count($postArr);
-//    exit;
-
     $chunkNum = 0;
     $chunkNumArr = ['a'=>1/*, 'b'=>3, 'c'=>3*/];
     
@@ -56,10 +52,6 @@ use App\TopSetting;
             <div class="">
                 <span class="post-date">{{ Ctm::changeDate($postRel->created_at, 1) }}</span>        
                 <a href="{{ url('post/category/'.$postCate->slug) }}"><span class="post-cate">{{ $postCate->name }}</span></a>
-            </div>
-            
-            <div class="">
-            	@include('main.shared.socialBtn', ['title'=>$postRel->big_title])
             </div>
         </div>
     </header>
@@ -218,7 +210,11 @@ use App\TopSetting;
             
             @endif
         @endforeach
-
+        
+        <div class="clearfix">
+            @include('main.shared.socialBtn', ['title'=>$postRel->big_title])
+        </div>
+        
 	</div><!--sec-wrap -->
 </article>
 </div>

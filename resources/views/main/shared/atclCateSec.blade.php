@@ -75,9 +75,11 @@ use App\Icon;
         {{ Ctm::shortStr($cateSec->name, $strNum) }}
     </a></h3>
     
+    {{--
     <p>
         <a href="{{ url('category/' . $category->slug) }}">{{ $category->name }}</a>
     </p>
+    --}}
     
     {{--
     @if(isset($item->icon_id) && $item->icon_id != '')
@@ -94,12 +96,12 @@ use App\Icon;
         
     <div class="price">
         <?php
-            $isPotParent = $potsArr['isPotParent'];
-            $thisItem = $item;
+            //$isPotParent = $potsArr['isPotParent'];
+            $thisItem = $cateSec->min_price_item;
             
-            if($isPotParent) {
-                $thisItem = $potsArr['pots']->sortBy('price')->first();
-            }
+//            if($isPotParent) {
+//                $thisItem = $potsArr['pots']->sortBy('price')->first();
+//            }
         ?>
         
         @if($isSale || isset($thisItem->sale_price))
@@ -120,9 +122,7 @@ use App\Icon;
         @endif
         </span>
         <span class="show-yen">円(税込)
-        @if($isPotParent)
         〜
-        @endif
         </span>
         
     </div>

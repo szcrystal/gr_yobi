@@ -21,6 +21,7 @@ class AddColumnToEtcTen extends Migration
             
             $table->string('twitter_id')->after('fix_other')->nullable()->default(NULL);
             $table->string('fb_app_id')->after('twitter_id')->nullable()->default(NULL);
+            $table->string('instagram_id')->after('twitter_id')->nullable()->default(NULL);
         });
 
 		//Top Setting

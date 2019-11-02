@@ -588,9 +588,10 @@ class CustomController extends Controller
         $cateUekis = CategorySecond::where('parent_id', 1)->get();
 
         foreach($cateUekis as $k => $cateUeki) {
+            
         	$items = Item::where([/*'open_status'=>1, 'is_potset'=>0, */'subcate_id'=>$cateUeki->id])->get()->all();
 			
-            //pot親であれば子ポットObjもitemsにMergeする。SalesDBは子ポットのIDでDBセットされるので
+            //pot親であれば子ポットObjもitemsにMergeする。SalesDBは子ポットのIDでDBセットされているので
             foreach($items as $item) {
             	extract(Ctm::isPotParentAndStock($item->id)); //[$isPotParent, $isStock, $pots]
                 
@@ -599,6 +600,11 @@ class CustomController extends Controller
                 }
             }
 
+            //pot親を除いた最小Priceを取得する
+            $noPotItems = collect($items)->whereNotInStrict('pot_parent_id', [0])->sortBy('price')->first();
+            //echo $noPotItems->price;
+            //print_r($noPotItems->values()->all());
+            //exit;
             
             $sum = 0;
             $saleCount = 0;
@@ -630,6 +636,9 @@ class CustomController extends Controller
             $cateUeki->total_price = $sum;
         	$cateUeki->sale_count = $saleCount;
             $cateUeki->is_stock = $stock ? 1 : 0;
+            
+            $cateUeki->min_price_item = $noPotItems;
+            //$cateUeki->min_price = $noPotItems->price;
             
             $cateUekis[$k] = $cateUeki;
         	//$cateSecSum[$cateUeki->id] = Item::where('subcate_id', $cateUeki->id)->sum('sale_count'); 
