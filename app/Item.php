@@ -40,6 +40,7 @@ class Item extends Model
         'dg_id',
         'is_delifee',
         'is_once',
+        'once_price',
         'factor',
         'is_once_recom',
         'deli_plan_text',

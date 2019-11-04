@@ -12,10 +12,13 @@ $getNow = ! Ctm::isEnv('product') ? '?up=' . time() : '';
 
 <body>
 
-{{--
-<div id="fb-root"></div>
-<script async defer crossorigin="anonymous" src="https://connect.facebook.net/ja_JP/sdk.js#xfbml=1&version=v4.0"></script>
---}}
+@if(isset(Setting::first()->btn_color))
+<style>
+    .btn-kon {
+        background: #{!! Setting::first()->btn_color !!};
+    }
+</style>
+@endif
 
 <div id="app" class="{{ $cartAllClass }}">
             
@@ -49,6 +52,7 @@ $getNow = ! Ctm::isEnv('product') ? '?up=' . time() : '';
     </div>
 
 @include('shared.footer')
+
 </div><!-- for sp-fix-wrap -->
 </div><!-- id app -->
 

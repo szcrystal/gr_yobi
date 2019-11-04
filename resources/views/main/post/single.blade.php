@@ -212,7 +212,7 @@ use App\TopSetting;
         @endforeach
         
         <div class="clearfix">
-            @include('main.shared.socialBtn', ['title'=>$postRel->big_title])
+            @include('main.shared.socialBtn', ['title'=>$postRel->big_title, 'naming'=>'記事'])
         </div>
         
 	</div><!--sec-wrap -->

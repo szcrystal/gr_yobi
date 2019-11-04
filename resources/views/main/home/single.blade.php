@@ -123,14 +123,14 @@ use App\TopSetting;
                                         </h3>
                                         
                                         <div class="price-meta">
-                                            <?php $obj = $potSet; ?>
-                                            @include('main.shared.priceMeta')
+                                            <?php //$obj = $potSet; ?>
+                                            @include('main.shared.priceMeta', ['obj'=>$potSet])
                                         </div>
                                         
                                         @if(isset($potSet->icon_id) && $potSet->icon_id != '')
                                             <div class="icons">
                                                 <?php //$obj = $potSet; ?>
-                                                @include('main.shared.icon')
+                                                @include('main.shared.icon', ['obj'=>$potSet])
                                             </div>
                                         @endif
                                         
@@ -318,6 +318,7 @@ use App\TopSetting;
                             
                             <?php
                             	$disabled = $isPotSet ? ' disabled' : '';
+
                             ?>
                             
                             <button id="mainCartBtn" type="submit" class="btn btn-custom btn-kon text-center col-md-12"{{ $disabled }}><i class="fal fa-cart-arrow-down"></i> カートに入れる</button>
@@ -332,11 +333,13 @@ use App\TopSetting;
                    
                    </div><!-- form-wrap -->
                     
-                    
-                    
                     <div class="tags mt-4 mb-1">
                         <?php $num = 0; ?>
                         @include('main.shared.tag')
+                    </div>
+                    
+                    <div class="clearfix mt-4">
+                        @include('main.shared.socialBtn', ['title'=>$itemTitle, 'naming'=>'商品'])
                     </div>
                     
                     <?php

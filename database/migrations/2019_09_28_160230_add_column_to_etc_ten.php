@@ -21,7 +21,9 @@ class AddColumnToEtcTen extends Migration
             
             $table->string('twitter_id')->after('fix_other')->nullable()->default(NULL);
             $table->string('fb_app_id')->after('twitter_id')->nullable()->default(NULL);
-            $table->string('instagram_id')->after('twitter_id')->nullable()->default(NULL);
+            $table->string('instagram_id')->after('fb_app_id')->nullable()->default(NULL);
+            
+            $table->string('btn_color')->after('kare_ensure')->nullable()->default(NULL);
         });
 
 		//Top Setting
@@ -31,7 +33,10 @@ class AddColumnToEtcTen extends Migration
             $table->string('post_meta_keyword')->after('post_meta_description')->nullable()->default(NULL);
         });
 
-
+        //Item
+        Schema::table('items', function (Blueprint $table) {
+            $table->integer('once_price')->after('is_once')->nullable()->default(NULL);
+        });
     }
 
 
@@ -73,6 +78,18 @@ class AddColumnToEtcTen extends Migration
             });
         }
         
+        if (Schema::hasColumn('settings', 'instagram_id')) {
+            Schema::table('settings', function (Blueprint $table) {
+                $table->dropColumn('instagram_id');
+            });
+        }
+        
+        if (Schema::hasColumn('settings', 'btn_color')) {
+            Schema::table('settings', function (Blueprint $table) {
+                $table->dropColumn('btn_color');
+            });
+        }
+        
         //Top Setting
         if (Schema::hasColumn('top_settings', 'post_meta_title')) {
             Schema::table('top_settings', function (Blueprint $table) {
@@ -89,6 +106,13 @@ class AddColumnToEtcTen extends Migration
         if (Schema::hasColumn('top_settings', 'post_meta_keyword')) {
             Schema::table('top_settings', function (Blueprint $table) {
                 $table->dropColumn('post_meta_keyword');
+            });
+        }
+        
+        //Item
+        if (Schema::hasColumn('items', 'once_price')) {
+            Schema::table('items', function (Blueprint $table) {
+                $table->dropColumn('once_price');
             });
         }
         

@@ -433,7 +433,7 @@ for SP
     	position: fixed;
         left: 0;
         bottom: 44px;
-        height: 52px;
+        height: 58px;
         line-height: 0;
         z-index: 998;
         font-size: 1.2em;
@@ -459,7 +459,7 @@ for SP
     	margin-bottom: 44px;
     }
     #colop.single-colop {
-    	margin-bottom: 96px;
+    	margin-bottom: 102px;
     }
     .icon-belt {
     	width: 100%;

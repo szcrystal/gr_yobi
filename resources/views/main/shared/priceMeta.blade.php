@@ -7,7 +7,7 @@ use App\DeliveryGroupRelation;
 $isSale = Setting::get()->first()->is_sale; 
 ?>
 
-                            
+<div>
 @if(isset($obj->sale_price))
     <small class="text-white bg-enji py-1 px-2 mr-1">セール商品</small>
     <strike class="text-small">{{ number_format(Ctm::getPriceWithTax($obj->price)) }}</strike>
@@ -25,8 +25,19 @@ $isSale = Setting::get()->first()->is_sale;
 @endif
 </span>
 <span class="text-small">円&nbsp;(税込)</span>
+</div>
 
-<br><span class="text-middle">
+@if(isset($obj->once_price))
+<div class="clearfix p-2 my-2 text-small bg-kon-light">
+    <span class="float-left text-small text-kon">同梱包可能商品と同時購入で</span>
+    <span class="float-right">
+        <span class="text-bold text-enji">{{ number_format(Ctm::getPriceWithTax($obj->price)) }}</span>
+        <span class="text-small">円&nbsp;(税込)</span>
+    </span>
+</div>
+@endif
+
+<span class="text-middle">
 @if($obj->is_delifee)
 	送料無料</span>
 @else

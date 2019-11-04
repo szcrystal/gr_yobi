@@ -709,7 +709,7 @@ use App\CategorySecond;
                     </div>
             </fieldset>
             
-            <fieldset class="form-group mb-2">
+            <fieldset class="form-group mt-3 mb-2">
                     <div class="checkbox">
                         <label>
                             <?php
@@ -727,6 +727,18 @@ use App\CategorySecond;
                             <input type="checkbox" name="is_once" value="1"{{ $checked }}> 同梱包可能
                         </label>
                     </div>
+            </fieldset>
+            
+            <fieldset class="mb-4 form-group">
+                <label for="factor" class="control-label">同梱包値引き金額</label>
+                <input class="form-control col-md-6{{ $errors->has('once_price') ? ' is-invalid' : '' }}" name="once_price" value="{{ Ctm::isOld() ? old('once_price') : (isset($item) ? $item->once_price : '') }}" placeholder="">
+                
+                @if ($errors->has('once_price'))
+                    <div class="text-danger">
+                        <span class="fa fa-exclamation form-control-feedback"></span>
+                        <span>{{ $errors->first('once_price') }}</span>
+                    </div>
+                @endif
             </fieldset>
             
             <fieldset class="form-group mb-3">

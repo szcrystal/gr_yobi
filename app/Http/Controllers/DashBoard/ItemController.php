@@ -209,11 +209,13 @@ class ItemController extends Controller
                 },
             ],
             
-            'factor' => 'required|numeric',
-            
             'price' => 'required|numeric',
             'cost_price' => 'nullable|numeric',
             'sale_price' => 'nullable|numeric',
+            
+            'factor' => 'required|numeric',
+            'once_price' => 'nullable|numeric',
+            
             'stock' => 'nullable|numeric',
             'stock_reset_month' => [
                 function($attribute, $value, $fail) use($request) {

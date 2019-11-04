@@ -13,6 +13,7 @@
         //Sp -> headNavSp.php
     ?>
     <div class="fixed-top">
+    
     <div class="site-description {{ Ctm::isEnv('alpha') ? 'text-danger' : '' }}">
     	<p>植木買うならグリーンロケット：グリーンロケットは初めての植木、お庭づくりを全力で応援します。</p>
     </div>

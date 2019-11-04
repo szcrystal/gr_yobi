@@ -20,10 +20,10 @@ class Setting extends Model
         'sale_per',
         'is_point',
         'point_per',
-        
-        'kare_ensure',
-        'bank_info',
         'cot_per',
+        'kare_ensure',
+        'btn_color',
+        'bank_info',
         
         'rewrite_time',
         'rank_term',

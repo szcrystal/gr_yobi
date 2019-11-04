@@ -160,6 +160,7 @@ return [
         'pot_count' => '「ポット数」',
         'dg_id' => '「配送区分」',
         'is_once' => '「同梱包可能」',
+        'once_price'=> '「同梱包値引き金額」',
         'factor' => '「係数」',
         'price' => '「価格」',
         'cost_price' => '「仕入れ値」',

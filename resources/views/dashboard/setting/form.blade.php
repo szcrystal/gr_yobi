@@ -230,6 +230,18 @@
                 @endif
             </fieldset>
             
+            <fieldset class="mt-5 mb-4 form-group{{ $errors->has('btn_color') ? ' has-error' : '' }}">
+                <label>カートに入れるボタンの色<span class="text-small">（半角英数字、「&#35;」不要です）</span></label><br>
+                &#35; <input class="form-control d-inline-block col-md-4{{ $errors->has('btn_color') ? ' is-invalid' : '' }}" name="btn_color" value="{{ Ctm::isOld() ? old('btn_color') : (isset($setting) ? $setting->btn_color : '') }}"> <span></span>
+
+                @if ($errors->has('btn_color'))
+                    <div class="text-danger">
+                        <span class="fa fa-exclamation form-control-feedback"></span>
+                        <span>{{ $errors->first('btn_color') }}</span>
+                    </div>
+                @endif
+            </fieldset>
+            
             
             <fieldset class="mt-5 mb-4 form-group{{ $errors->has('bank_info') ? ' has-error' : '' }}">
                     <label for="bank_info" class="control-label">銀行振込先</label>

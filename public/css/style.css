@@ -584,6 +584,9 @@ body {
 .bg-orange {
 	background: navajowhite;
 }
+.bg-kon-light {
+    background: #E3EDEF;
+}
 .bg-blue {
 	background: paleturquoise;
 }
@@ -2582,13 +2585,13 @@ h3.upper-title {
 
 /* Social BTN */
 .social-btn {
-    display: block;
-    float: right;
+    display: inline-block;
+    //float: right;
     font-size: 1.3em;
     width: 2.2em;
     height: 2.2em;
     line-height: 2.2em;
-    margin-left: 0.4em;
+    margin-right: 0.7em;
     //padding: 3px 0.2em;
     border-radius: 50%;
     color: #fff;
@@ -2614,7 +2617,7 @@ h3.upper-title {
     background: #3b5998;
 }
 .line {
-	margin-right: 0.1em;
+	margin-right: 0;
     background: #09B701;
     //background-image: url(/images/social/square-default.png);
     background-repeat: no-repeat;

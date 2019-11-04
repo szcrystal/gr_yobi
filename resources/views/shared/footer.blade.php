@@ -16,10 +16,10 @@ use App\Setting;
                     <b style="font-size: 1.1em;">{{ config('app.name', 'グリーンロケット') }}</b>
                 </a>
                 
-                <span style="font-size:2em; vertical-align:-3px">
+                <span style="font-size:2em; vertical-align:-2px">
                 	<a href="https://twitter.com/{{ Setting::first()->twitter_id }}" target="_brank"><i class="fab fa-twitter"></i></a>
                     <a href="https://www.facebook.com/8463andgreenrocket/" target="_brank"><i class="fab fa-facebook"></i></a>
-                    <a href="https://www.instagram.com/{{ Setting::first()->instagram_id }}" target="_brank" style="vertical-align:-2px;"><i class="fab fa-instagram text-big"></i></a>
+                    <a href="https://www.instagram.com/{{ Setting::first()->instagram_id }}" target="_brank" style="vertical-align:-2px;"><i class="fab fa-instagram text-big pl-1"></i></a>
                 </span>
                 
                 @if(Ctm::isLocal())

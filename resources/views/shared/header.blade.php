@@ -51,7 +51,7 @@
     @if(Ctm::isAgent('all'))
     <link href="{{ asset('css/style-sp.css' . $getNow) }}" rel="stylesheet">
 	@endif
-	
+	 
 	@if(isset($type))
 		@if($type == 'postSingle' || $type == 'single')
 			@include('main.shared.twitterCard', [])

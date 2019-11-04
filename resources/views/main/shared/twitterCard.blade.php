@@ -1,6 +1,7 @@
 <?php
 use App\Setting;
 use App\TopSetting;
+use App\Item;
 
 $set = Setting::first();
 
@@ -10,7 +11,8 @@ if($type == 'postSingle') {
     $imgUrl = $postRel->thumb_path;
 }
 elseif($type == 'single') {
-    $imgUrl = $item->main_img;
+    $imgUrl = Item::find($id)->main_img;
+    //echo $id;
 }
 
 
@@ -23,8 +25,20 @@ $valArs = [
 'site_name' => config('app.name'),
 ];
 
-$ogArs = ['og', 'twitter', 'fb'];
-$optionArs = ['url', 'title', 'description', 'image', 'type', 'site_name'];
+$ogArs = [
+'og',
+'twitter',
+'fb'
+];
+
+$optionArs = [
+'url',
+'title',
+'description',
+'image',
+'type',
+'site_name'
+];
 
 ?>
 
