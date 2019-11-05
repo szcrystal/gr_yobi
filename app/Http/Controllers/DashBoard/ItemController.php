@@ -216,7 +216,7 @@ class ItemController extends Controller
             'factor' => 'required|numeric',
             'once_price' => 'nullable|numeric',
             
-            'stock' => 'nullable|numeric',
+            'stock' => 'nullable|integer',
             'stock_reset_month' => [
                 function($attribute, $value, $fail) use($request) {
                     if($value == '') {
@@ -232,7 +232,7 @@ class ItemController extends Controller
                     }
                 },
             ],
-            'stock_reset_count' => 'nullable|numeric',
+            'stock_reset_count' => 'nullable|integer|required_with:stock_reset_month', /* |min:1 =>0にリセットするという場合もあるか */
             'point_back' => 'nullable|numeric',
             
             'pot_parent_id' => 'required_with:is_potset|nullable|numeric|integer',
@@ -251,7 +251,7 @@ class ItemController extends Controller
         $messages = [
          	'title.required' => '「商品名」を入力して下さい。',
             'cate_id.required' => '「カテゴリー」を選択して下さい。',
-            
+            'stock_reset_count.required_with' => '「在庫入荷月」入力時は「在庫リセット数」は必須です。',
             //'post_thumb.filenaming' => '「サムネイル-ファイル名」は半角英数字、及びハイフンとアンダースコアのみにして下さい。',
             //'post_movie.filenaming' => '「動画-ファイル名」は半角英数字、及びハイフンとアンダースコアのみにして下さい。',
             //'slug.unique' => '「スラッグ」が既に存在します。',

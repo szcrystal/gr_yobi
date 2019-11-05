@@ -165,6 +165,8 @@ return [
         'price' => '「価格」',
         'cost_price' => '「仕入れ値」',
         'stock' => '「在庫」',
+        'stock_reset_month' => '「在庫入荷月」',
+        'stock_reset_count' => '「在庫リセット数」',
         'point_back' => '「ポイント」',
         'slug' => '「スラッグ」',
         'category' => '「カテゴリー」',
