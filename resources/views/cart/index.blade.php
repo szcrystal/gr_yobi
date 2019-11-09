@@ -5,7 +5,7 @@
 <div id="main" class="cart-index">
 
 
-<div class="top-cont clearfix">
+<div class="top-cont">
 
 @include('cart.shared.guide', ['active'=>1])
 
@@ -33,6 +33,9 @@
     </div>
 @endif
 
+<div class="clearfix">
+<div class="confirm-left">
+
 <form id="with1" class="form-horizontal" role="form" method="POST" action="{{ url('shop/cart') }}">
       {{ csrf_field() }}
                         
@@ -42,7 +45,6 @@
     	<tbody>
         	<?php $disabled = ''; ?>
 
-     		
      		@foreach($itemData as $key => $item)    
                 <tr class="clearfix {{ $errors->has('no_delivery.'. $key) ? 'tr-danger-border' : '' }}">
                     <th>
@@ -53,10 +55,9 @@
                         
                         <?php 
                             $obj = $item;
-                            $urlId = $item->is_potset ? $item->pot_parent_id : $item->id; 
+                            $urlId = $item->is_potset ? $item->pot_parent_id : $item->id;
                         ?>
                         
-  
                         <div>
                             <a href="{{ url('item/'. $urlId) }}">{!! Ctm::getItemTitle($item, 1) !!}</a>
                             <br>
@@ -107,6 +108,8 @@
                                             @endfor
                                         </select>
                                         </label>
+                                        
+                                        <button class="btn px-2" type="submit" name="re_calc" value="1"{{ $disabled }}>更新</button>
                                                                                 
                                         @if ($errors->has('last_item_count'))
                                             <div class="help-block text-danger">
@@ -121,7 +124,26 @@
                             </div>
                             
                             <div class="mt-1">
-                            	<span class="text-small"><b>小計<span class="text-small">（税込）</b>：</span></span>¥{{ number_format( $item->total_price ) }}
+                                <?php $red = ''; ?>
+                                
+                                @if(! isset($item->sale_price) && isset($item->is_once_down))
+                                    <?php $red = 'text-danger'; ?>
+                                    <p class="m-0 p-0 text-small {{ $red }}">同梱包割引</p>
+                                @endif
+                                
+                                @if(isset($item->is_huzaioki))
+                                    @if($item->is_huzaioki)
+                                        <?php $red = 'text-danger'; ?>
+                                        <p class="m-0 p-0 text-small {{ $red }}">不在置きを了承する</p>
+                                    @else
+                                        <p class="m-0 p-0 text-small {{ $red }}">不在置きを了承しない<br>
+                                        <span class="text-danger">不在置きを了承すると¥3,300 OFF</span>
+                                        </p>
+                                    @endif
+                                @endif
+
+                            	<span class="text-small"><b>小計<span class="text-small">（税込）</b>：</span></span>
+                                <span class="{{ $red }}">¥{{ number_format( $item->total_price ) }}</span>
                             </div>
                             
                             
@@ -139,15 +161,75 @@
          
          </table>
     </div>
+
+</div>{{-- confirm-left --}}
          
-         
-         
+<div class="confirm-right">
+    
+    <div class="clearfix">
+        <input type="hidden" name="from_cart" value="1">
+
+        @if($disabled)
+            <div class="text-right mb-1">
+                <span class="text-small text-danger"><i class="fas fa-exclamation-triangle"></i> <b>売切れ商品をカートから削除して下さい。</b></span>
+            </div>
+        @endif
+
+        
+        <button class="btn btn-block btn-custom btn-kon mb-4 py-3 px-2" type="submit" name="regist_off" value="1" formaction="{{ url('shop/form') }}"{{ $disabled }}>購入手続きへ進む</button>
+        
+        @if(Auth::check())
+            
+        @else
+            <?php
+                $arrow = Ctm::isAgent('sp') ? '<i class="far fa-arrow-alt-down"></i>' : '<i class="far fa-arrow-alt-right"></i>';
+            ?>
+            
+            {{--
+            <div class="table-responsive">
+                <table class="table">
+                    <tr>
+                        <th rowspan="1" class="border-0">会員登録がまだの方 {!! $arrow !!}</th>
+                        <td class="border-0">
+                            <button class="btn btn-block btn-kon mb-0 py-3 px-10" type="submit" name="regist_on" value="1" formaction="{{ url('shop/form') }}"{{ $disabled }}>購入手続きへ <i class="fal fa-angle-double-right"></i></button>
+                        </td>
+                   </tr>
+             --}}
+                   
+               {{--
+               <tr class="border-0">
+                    <td class="border-0">
+                        <button class="btn btn-block btn-white mb-3 py-2 px-5" type="submit" name="regist_off" value="1" formaction="{{ url('shop/form') }}"{{ $disabled }}>会員登録せずに購入手続きへ <i class="fal fa-angle-double-right"></i></button>
+                    </td>
+                </tr>
+                --}}
+             
+             {{--
+                    <tr>
+                        <th class="border-0">会員登録がお済みの方 {!! $arrow !!}</th>
+                        <td class="border-0">
+                        <a href="{{ url('login?to_cart=1') }}" class="btn btn-block btn-custom mb-2 py-3 px-10">ログインする</a>
+            --}}
+                        {{--
+                        <button class="btn btn-block btn-custom mb-3 py-2" type="submit" name="to_cart" value="shop/cart" formaction="{{ url('login') }}">ログインする</button>
+                        --}}
+             {{--
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            --}}
+            
+        @endif
+        
+    </div>
+    
 	<div class="table-responsive table-foot">
 	<table class="table">
          <tbody class="clearfix">
          	<tr>
-          		<th class="text-right text-big">
-                	小計   
+          		<th class="text-left text-big">
+                	商品合計
                 </th>
                 
             	<td class="text-big">
@@ -162,20 +244,25 @@
                 --}}
           	</tr>
             
-            @if(isset($deliFee))
+            
                 <tr>
-                    <th class="text-right text-big">
+                    <th class="text-left text-big">
                     	送料
                     </th>
                     
                     <td class="text-big">
-                    	<b>¥{{ number_format($deliFee) }}</b>
+                        @if(isset($deliFee))
+                            <b>¥{{ number_format($deliFee) }}</b>
+                        @else
+                            <b class="text-enji">含まれておりません</b>
+                        @endif
                     </td>
-                    
+            
+            {{--
                 </tr>
                 
                 <tr>
-                    <th class="text-right text-big">
+                    <th class="text-left text-big">
                     	合計 <small>(小計+送料)</small>
                     </th>
                     
@@ -184,135 +271,112 @@
                     </td>
                     
                 </tr>
+            
             @else
             	<tr>
-                	<td colspan="2" class="text-right pt-0">
+                	<td colspan="2" class="text-left pt-0">
                         <span class="text-enji text-small"><i class="fas fa-exclamation-triangle"></i> <b>送料は含まれておりません</b></span>
                     </td>
                 </tr>
             @endif
-           
-           
+
             <tr>
-            	<th class="pt-3 text-right text-big"><span class="d-inline-block pt-1">配送先都道府県</span></th>
+            	<th class="pt-3 text-left text-big"><span class="d-inline-block pt-1">配送先都道府県</span></th>
                 <td class="pt-3">                
-                    <div class="select-wrap w-100 p-0 m-0">
-                        {{-- <label class="control-label mb-0 text-small d-inline col-md-6"><b>配送先都道府県</b></label> --}}
                     
-                        <select id="pref" class="form-control d-inline{{ $errors->has('pref_id') ? ' is-invalid' : '' }}" name="pref_id">
-                            <option selected value="0">選択</option>
-                            <?php
-    //                            use App\Prefecture;
-    //                            $prefs = Prefecture::all();  
-                            ?>
-                            @foreach($prefs as $pref)
-                                <?php
-                                    $selected = '';
-                                    if(Ctm::isOld()) {
-                                        if(old('pref_id') == $pref->id)
-                                            $selected = ' selected';
-                                    }
-                                    else {
-                                        if(isset($prefId) && $prefId == $pref->id) {
-                                        //if(Session::has('all.data.user')  && session('all.data.user.prefecture') == $pref->name) {
-                                            $selected = ' selected';
-                                        }
-                                    }
-                                ?>
-                                <option value="{{ $pref->id }}"{{ $selected }}>{{ $pref->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    
-                    @if ($errors->has('pref_id'))
-                        <div class="help-block text-danger">
-                            <span class="fa fa-exclamation form-control-feedback"></span>
-                            <span>{{ $errors->first('pref_id') }}</span>
-                        </div>
-                    @endif
                     
                 </td>   
             </tr>
+            --}}
             
             <tr>
             	<th class="clearfix pt-3">
-                	@if(! isset($deliFee))
-                    	<b><i class="far fa-angle-double-right float-right text-big text-enji"></i></b>
-                        <div class="cart-note">
-                            <span class="text-enji"><i class="fas fa-exclamation-triangle"></i> 数量変更は「数量」を、送料確認は「配送先都道府県」を選択して「再計算」を押して下さい。</span>
-                        </div>
-                        
-                    @endif
+                	
                 </th>
                 
                 <td class="pt-3">
-                	<button class="btn px-2 w-100 bg-enji" type="submit" name="re_calc" value="1"{{ $disabled }}><i class="fal fa-redo"></i> 再計算</button>
-                	{{--
-                    <button class="btn px-2 w-100 bg-enji" type="submit" name="delifee_calc" value="1"{{ $disabled }}><b>送料計算</b></button>
-                    --}}
+                	
                 </td>
             </tr>
            
          </tbody>        
 	</table>
+    </div>
     
-    
-    
-</div>
-
-<div class="clearfix mt-3 cart-btn-wrap">
-	
-	<div class="clearfix">
-        <input type="hidden" name="from_cart" value="1">
-
-		@if($disabled)
-            <div class="text-right mb-1">
-            	<span class="text-small text-danger"><i class="fas fa-exclamation-triangle"></i> <b>売切れ商品をカートから削除して下さい。</b></span>
+    <div class="bg-white clearfix py-2 px-3">
+        @if(! isset($deliFee))
+            <div class="cart-note text-left mb-2">
+                <span class="text-enji"><i class="fas fa-exclamation-triangle"></i> 送料確認は「配送先都道府県」を選択して「送料計算」を押して下さい。</span>
             </div>
-        @endif
-
-        @if(Auth::check())
-            <button class="btn btn-block btn-custom btn-kon mb-4 py-3 px-10" type="submit" name="regist_off" value="1" formaction="{{ url('shop/form') }}"{{ $disabled }}>購入手続きへ <i class="fal fa-angle-double-right"></i></button>
-        @else
-        	<?php
-            	$arrow = Ctm::isAgent('sp') ? '<i class="far fa-arrow-alt-down"></i>' : '<i class="far fa-arrow-alt-right"></i>';
-            ?>
             
-            <div class="table-responsive">
-                <table class="table">
-                    <tr>
-                        <th rowspan="1" class="border-0">会員登録がまだの方 {!! $arrow !!}</th>
-                        <td class="border-0">
-                        	<button class="btn btn-block btn-kon mb-0 py-3 px-10" type="submit" name="regist_on" value="1" formaction="{{ url('shop/form') }}"{{ $disabled }}>購入手続きへ <i class="fal fa-angle-double-right"></i></button>
-                        </td>
-                   </tr>
-                   
-                   {{--
-                   <tr class="border-0">
-                        <td class="border-0">
-                        	<button class="btn btn-block btn-white mb-3 py-2 px-5" type="submit" name="regist_off" value="1" formaction="{{ url('shop/form') }}"{{ $disabled }}>会員登録せずに購入手続きへ <i class="fal fa-angle-double-right"></i></button>
-                        </td>               
-                    </tr>
-                    --}}
-                    
-                    <tr>
-                        <th class="border-0">会員登録がお済みの方 {!! $arrow !!}</th>      
-                        <td class="border-0">	
-                        <a href="{{ url('login?to_cart=1') }}" class="btn btn-block btn-custom mb-2 py-3 px-10">ログインする</a>
-                        {{--
-                        <button class="btn btn-block btn-custom mb-3 py-2" type="submit" name="to_cart" value="shop/cart" formaction="{{ url('login') }}">ログインする</button>
-                        --}}
-                        </td>               
-                    </tr>	      
-                </table>
-            </div>
         @endif
         
-	</div>
+        <div class="select-wrap w-100 p-0 mb-3">
+            <label class="control-label mb-0 text-small d-inline w-50"><b>配送先都道府県</b></label>
+            <select style="width:63%;" id="pref" class="form-control d-inline{{ $errors->has('pref_id') ? ' is-invalid' : '' }}" name="pref_id">
+                <option selected value="0">選択</option>
+                <?php
+    //                            use App\Prefecture;
+    //                            $prefs = Prefecture::all();
+                ?>
+                @foreach($prefs as $pref)
+                    <?php
+                        $selected = '';
+                        if(Ctm::isOld()) {
+                            if(old('pref_id') == $pref->id)
+                                $selected = ' selected';
+                        }
+                        else {
+                            if(isset($prefId) && $prefId == $pref->id) {
+                            //if(Session::has('all.data.user')  && session('all.data.user.prefecture') == $pref->name) {
+                                $selected = ' selected';
+                            }
+                        }
+                    ?>
+                    <option value="{{ $pref->id }}"{{ $selected }}>{{ $pref->name }}</option>
+                @endforeach
+            </select>
+        </div>
+        
+        @if ($errors->has('pref_id'))
+            <div class="help-block text-danger">
+                <span class="fa fa-exclamation form-control-feedback"></span>
+                <span>{{ $errors->first('pref_id') }}</span>
+            </div>
+        @endif
     
+        <button class="btn btn-block px-2 col-md-11 m-auto bg-enji" type="submit" name="re_calc" value="1"{{ $disabled }}>送料計算</button>
+        
+        {{--
+        <button class="btn px-2 w-100 bg-enji" type="submit" name="delifee_calc" value="1"{{ $disabled }}><b>送料計算</b></button>
+        --}}
     
+    </div>
     
-    <div class="">
+
+    <div class="table-responsive table-foot text-extra-big">
+        <table class="table mb-0 pb-0">
+             <tbody class="clearfix">
+                <tr>
+                    <th class="text-left text-big">
+                        <b>合計 <small>(税込)</small></b>
+                    </th>
+                    
+                    <td class="text-big text-danger">
+                        <b>¥{{ number_format($allPrice + $deliFee) }}</b>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>{{-- confirm-right --}}
+
+</div>{{-- clear --}}
+
+<div class="clearfix mt-3 cart-btn-wrap">
+
+    <div class="clearfix">
 		<input type="hidden" name="uri" value="{{ $uri }}">
 		<a href="{{ url($uri)}}" class="btn border border-secondary bg-white my-2"><i class="fal fa-angle-double-left"></i> 買い物を続ける</a>
 	</div>
@@ -352,8 +416,7 @@
  
 
 
-</div>
-
+</div>{{-- top-cont --}}
 
 
 </div>

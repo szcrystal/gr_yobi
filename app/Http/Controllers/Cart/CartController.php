@@ -258,19 +258,30 @@ class CartController extends Controller
         
         $isSale = $this->set->is_sale;
         $price = 0;
+        //$seinouFee = 0;
         
         if(isset($item->sale_price)) {
             $price = Ctm::getPriceWithTax($item->sale_price);
+            //ORG : $price = Ctm::getPriceWithTax($item->sale_price);
         }
         else {
+            $itemPrice = isset($item->is_once_down) ? $item->once_price : $item->price;
+            
             if($isSale) {
-                $price = Ctm::getSalePriceWithTax($item->price);
+                $price = Ctm::getSalePriceWithTax($itemPrice);
+                //ORG : $price = Ctm::getSalePriceWithTax($item->price);
             }
             else {
-                $price = Ctm::getPriceWithTax($item->price);
+                $price = Ctm::getPriceWithTax($itemPrice);
+                //ORG : $price = Ctm::getPriceWithTax($item->price);
             }
         }
         
+        if(isset($item->is_huzaioki) && $item->is_huzaioki) {
+            $seinouObj = Ctm::getSeinouObj();
+            $price = $price - $seinouObj->huzaiokiFee;
+        }
+
         return $price;
     }
     /* END 値段 商品金額 算出 Sale or Normal Price **************************************************************** */
@@ -1281,6 +1292,9 @@ class CartController extends Controller
         $seinouSundayAllPrice = 0;
         $seinouHuzaiAllPrice = 0;
         
+//        print_r($itemSes);
+//        exit;
+        
         foreach($itemSes as $key => $val) {
         	
             //西濃-加減算用の調整する金額
@@ -1294,7 +1308,15 @@ class CartController extends Controller
             
          	//カウント 個数  送料計算用
          	$obj->count = $val['item_count'];
-          	
+          
+            //同梱包割引の有無
+            if(isset($val['is_once_down']))
+                $obj->is_once_down = $val['is_once_down'];
+                
+            //西濃不在置きの有無
+            if(isset($val['is_huzaioki']))
+                $obj->is_huzaioki = $val['is_huzaioki'];
+            
             //トータルプライス Singleの商品金額x個数の金額  
             $itemTotalPrice = $val['item_total_price'];
             
@@ -1338,8 +1360,9 @@ class CartController extends Controller
                 }
                 
                 //if(isset($data['is_huzaioki'][$obj->id])) {
-                if(isset($data['is_huzaioki'])) {
-                	if($data['is_huzaioki']) {
+                //if(isset($data['is_huzaioki'])) {
+                if(isset($obj->is_huzaioki)) {
+                	if($obj->is_huzaioki) {
                     	//item_total_price(商品金額x個数)をここでsessionに上書きするとズレが出るので、down_priceとして新データをsessionに入れる
                     	$seinouHuzaiDownPrice = $this->seinouObj->huzaiokiFee * $obj->count;
                         
@@ -1347,7 +1370,7 @@ class CartController extends Controller
                         //$itemTotalPrice -= $seinouHuzaiDownPrice;
                     }
                     
-                    $obj->is_huzaioki = $data['is_huzaioki'];
+                    //$obj->is_huzaioki = $data['is_huzaioki'];
                 }
             }
             
@@ -1367,7 +1390,7 @@ class CartController extends Controller
             $itemSes[$key]['seinou_sunday_up_price'] = $seinouSundayUpPrice;
             $itemSes[$key]['seinou_huzai_down_price'] = $seinouHuzaiDownPrice;
             
-            $itemSes[$key]['is_huzaioki'] = isset($obj->is_huzaioki) ? $obj->is_huzaioki : null;
+            //$itemSes[$key]['is_huzaioki'] = isset($obj->is_huzaioki) ? $obj->is_huzaioki : null;
             
             
             //送料計算用とConfirm画面表示用に使用するObjの配列
@@ -1682,6 +1705,9 @@ class CartController extends Controller
          	$request->session()->put('all.regist', $regist); //session入れ
           	*/
             
+//            print_r(session('item.data'));
+//            exit;
+            
             session(['all.from_cart'=>$request->input('from_cart')]); //session入れ
             
            	foreach($data['last_item_count'] as $key => $val) {   
@@ -1689,7 +1715,18 @@ class CartController extends Controller
              
              	//個数 * 値段の再計算（再計算を押さずに購入手続きした時）
               	$itemId = $data['last_item_id'][$key];
+            
                 $itemObj = $this->item->find($itemId);
+                
+                //同梱包値引きSwitchをitemObjに入れる
+                if(session('item.data.'.$key.'.is_once_down') !== null) {
+                    $itemObj->is_once_down = session('item.data.'.$key.'.is_once_down');
+                }
+                
+                //西濃不在置きSwitchをitemObjに入れる
+                if(session('item.data.'.$key.'.is_huzaioki') !== null) {
+                    $itemObj->is_huzaioki = session('item.data.'.$key.'.is_huzaioki');
+                }
                 
                 $lastPrice = $this->getItemPrice($itemObj); //セールならセール金額　通常なら通常金額 1円の時のSale計算は矛盾が出るので除外
 //                echo $lastPrice;
@@ -1789,15 +1826,23 @@ class CartController extends Controller
         
         //時間指定の選択肢　西濃運輸の不在置きチェック
         $dgGroup = array();
-        $dgSeinou = array();
+        $seinouHuzaiSes = array();
+        $seinouNoHuzaiSes = array();
         
         foreach($sesItems as $item) {
+            //if(isset($item->is_huzaioki)) echo $item->is_huzaioki;
+            
         	$dgId = $this->item->find($item['item_id'])->dg_id;
             
             // Seinou Correct **************************
             //西濃なら
-            if($dgId == $this->seinouObj->id) {
-            	$dgSeinou[] = $item['item_id'];
+            //if($dgId == $this->seinouObj->id) {
+            if(isset($item['is_huzaioki'])) {
+                if($item['is_huzaioki'])
+                    $seinouHuzaiSes[] = $item;
+                else
+                    $seinouNoHuzaiSes[] = $item;
+            	//$dgSeinou[] = $item['item_id'];
             }
             
             //時間指定可能なら
@@ -1817,7 +1862,7 @@ class CartController extends Controller
 
 		$metaTitle = 'ご注文情報の入力' . '｜植木買うならグリーンロケット';
      
-     	return view('cart.form', [/*'regist'=>$regist, */'payMethod'=>$payMethod, 'pmChilds'=>$pmChilds, 'prefs'=>$prefs, 'userObj'=>$userObj, 'codCheck'=>$codCheck, 'dgGroup'=>$dgGroup, 'dgSeinou'=>$dgSeinou, 'regCardDatas'=>$regCardDatas, 'regCardErrors'=>$regCardErrors, 'cardErrors'=>$cardErrors, 'metaTitle'=>$metaTitle]);   
+     	return view('cart.form', [/*'regist'=>$regist, */'payMethod'=>$payMethod, 'pmChilds'=>$pmChilds, 'prefs'=>$prefs, 'userObj'=>$userObj, 'codCheck'=>$codCheck, 'dgGroup'=>$dgGroup, 'seinouHuzaiSes'=>$seinouHuzaiSes, 'seinouNoHuzaiSes'=>$seinouNoHuzaiSes, 'regCardDatas'=>$regCardDatas, 'regCardErrors'=>$regCardErrors, 'cardErrors'=>$cardErrors, 'metaTitle'=>$metaTitle]);
     }
     
     
@@ -1868,26 +1913,56 @@ class CartController extends Controller
                 $data['from_item'] = $datas['from_item'];
             	$data['item_id'] = $v;
                 $data['uri'] = $datas['uri'];
+                
+                if(isset($datas['is_huzaioki']))
+                    $data['is_huzaioki'] = $datas['is_huzaioki'];
             
-            
+                //---------------------------------------------
                 if($request->session()->has('item.data')) { //一度カートに入れ、別商品を再度カートに入れた時
                     
                     if(! in_array($data, session('item.data'))) {
-    //                    echo "abc";
-    //                     print_r($data);   
+    //                     print_r($data);
     //                     print_r(session('item.data'));   
     //                    exit;
-                        $request->session()->push('item.data', $data);
+                        
+                        //同梱包値引きの判別 既にある商品と比較する
+                        $thisI = $this->item->find($data['item_id']);
+                        $ss = session('item.data');
+
+                        foreach($ss as $ssKey => $ssVal) {
+                            $i = $this->item->find($ssVal['item_id']);
+                            
+                            if(! isset($thisI->sale_price)) {
+                                if($thisI->dg_id == $i->dg_id && isset($thisI->once_price) && isset($i->once_price)) {
+                                    $data['is_once_down'] = $data['item_id'];
+                                    $ss[$ssKey]['is_once_down'] = $ssVal['item_id'];
+                                    break;
+                                }
+                            }
+                        }
+                        
+                        $ss[] = $data;
+                        $request->session()->put('item.data', $ss); //session入れ
+                        
+//                        print_r(session('item.data')); //session item.data.0.is_once_down
+//                        exit;
+                        
+                        //ORG ---
+                        //$request->session()->push('item.data', $data);
+   
                      }   
                 }
                 else { //初カートの時
     //                echo "bbb";
     //                print_r(session('item.data'));
     //                exit;
-                    $request->session()->push('item.data', $data);
+                    $request->session()->push('item.data', $data); //session入れ
                 }
             
             }
+            
+//            print_r(session('item.data'));
+//            exit;
             
             $request->session()->put('org_url', $datas['uri']);
         }
@@ -1930,6 +2005,13 @@ class CartController extends Controller
             //sessionからobjectを取得して配列に入れる
             foreach($itemSes as $key => $val) {
                 $obj = $this->item->find($val['item_id']);
+                
+                if(isset($val['is_once_down']))
+                    $obj['is_once_down'] = $val['is_once_down'];
+                
+                
+                if(isset($val['is_huzaioki']))
+                    $obj['is_huzaioki'] = $val['is_huzaioki'];
                 
                 if($submit) { //再計算の時
                 	$obj['count'] = $data['last_item_count'][$key];

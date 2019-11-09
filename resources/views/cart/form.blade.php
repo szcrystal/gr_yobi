@@ -44,7 +44,8 @@ use App\DeliveryGroup;
 @endif
 
 
-<div class="">
+<div class="clearfix">
+<div class="confirm-left">
 <form id="with1" class="form-horizontal" role="form" method="POST" action="{{ url('shop/confirm') }}">
     {{ csrf_field() }}
     
@@ -105,13 +106,15 @@ use App\DeliveryGroup;
 <?php //新規会員登録 =================================================== ?>
 @else
 
-<h3 class="mb-3 card-header">お客様情報</h3>
-
 <input type="hidden" name="use_point" value="0">
+
+<div class="bg-secondary">
+    <h3 class="">お客様情報</h3>
+</div>
 
 <div class="table-responsive table-custom">
     <table class="table table-borderd border p-0 m-0">
-    	
+        
         <tr class="form-group">
         	<th>会員登録</th>
         	<td>
@@ -370,32 +373,14 @@ use App\DeliveryGroup;
         </div>         
          
          
-         
-         {{--
-         <tr class="form-group">
-             <th>住所3（）</th>
-               <td>
-                <input type="text" class="form-control col-md-12{{ $errors->has('user.address_3') ? ' is-invalid' : '' }}" name="user[address_3]" value="{{ Ctm::isOld() ? old('user.address_3') : (Session::has('all.data.user') ? session('all.data.user.address_3') : '') }}" placeholder="例）GRビル 101号">
-                
-                @if ($errors->has('user.address_3'))
-                    <div class="help-block text-danger">
-                        <span class="fa fa-exclamation form-control-feedback"></span>
-                        <span>{{ $errors->first('user.address_3') }}</span>
-                    </div>
-                @endif
-            </td>
-         </tr>
-         --}}
-         
-        </table>
-        </div>
-         
-         
 @endif {{-- AuthCheck --}}                     
         
         <div class="receiver">
-            <h3 class="mt-4 card-header">お届け先</h3>     
-                 
+            <div class="bg-secondary">
+            <h3 class="">お届け先</h3>
+            </div>
+            
+            <div class="ml-20per">
             <fieldset class="form-group mt-3 py-1 pl-1">
                     <?php                            
                         $checked = '';
@@ -436,7 +421,8 @@ use App\DeliveryGroup;
                             <span>上記登録先住所に配送をご希望の場合は「登録先と同じ」にチェックをして下さい。</span>
                         </div>
                     @endif
-            </fieldset>     
+            </fieldset>
+            </div>
         
             <div class="table-responsive table-custom receiver-wrap">
                 <table class="table table-borderd border">
@@ -588,8 +574,11 @@ use App\DeliveryGroup;
          
 
         <div class="pt-2">
-            <h3 class="card-header mt-4">配送希望日時</h3>
+            <div class="bg-secondary">
+            <h3 class="">配送希望日時</h3>
+            </div>
             
+            <div class="ml-20per">
             <fieldset class="mb-4 mt-3 col-md-7 form-group{{ $errors->has('plan_date') ? ' has-error' : '' }}">
                 <label for="plan_date" class="control-label">■ご希望日程<span class="text-small"></span></label>
                 
@@ -633,30 +622,32 @@ use App\DeliveryGroup;
                 @endif
 
             </fieldset>
-                
-            @if(count($dgSeinou) > 0)
+            
+            <?php $seinouObj = Ctm::getSeinouObj(); ?>
+            
+            @if(count($seinouHuzaiSes) > 0)
                 <fieldset class="form-group mt-3 mb-2 px-3 py-2{{ $errors->has('is_huzaioki.*') ? ' border border-danger' : '' }}">
-                    
-                    <?php $seinouObj = Ctm::getSeinouObj(); ?>
-                    
                     <div class="pb-3">
                         ■下記の商品につきまして
-                        <ul class="mt-3 pl-4">
+                        <ul class="mt-3 pl-0 list-unstyled">
                             <li class="mb-3 text-kon text-bold">「ご希望日程」が日曜日の場合は、下記1商品につき{{ number_format($seinouObj->sundayFee) }}円増しとなります。
+                            {{--
                             <li>不在置きを了承頂ける場合はチェックをして下さい。
                             	<ul class="text-small">
                             	<li class="mb-1 mt-2"><span class="text-extra-big"><b class="text-big">チェック時は1商品につき{{ number_format($seinouObj->huzaiokiFee) }}円引きとなります。</b></span></li>
                             	<li class="mb-1">下に表示される枠内に不在時の荷物の置き場所を記載して下さい。</li>
                              	<li class="mb-1">お支払い方法の「代金引換」はご利用出来ません。</li>
-                              	<ul>      
+                              	<ul>
+                            </li>
+                            --}}
                         </ul>
                     </div>
                     
                     <div>
-                        @foreach($dgSeinou as $sk => $seinouItemId)
+                        @foreach($seinouHuzaiSes as $sesKey => $sesVal)
                             
                             <?php 
-                                $si = Item::find($seinouItemId);
+                                $si = Item::find($sesVal['item_id']);
                                 $siTitle = Ctm::getItemTitle($si);
                             ?>
                             
@@ -667,13 +658,14 @@ use App\DeliveryGroup;
                                 
                                 <span class="text-big text-bold">{{ $siTitle }}</span><br>
                                 <span class="">[{{ $si->number }}]</span>
-                                
+                                <p class="text-danger text-small mt-2 p-0">不在置きを了承する</p>
                                 <input type="hidden" name="seinouItemTitle[]" value="{{ $siTitle }}">
                             </div>
 
                         @endforeach
                         
                         <?php
+                        /*
                             $checked = '';
                             if(Ctm::isOld()) {
                                 if(old('is_huzaioki'))
@@ -684,8 +676,10 @@ use App\DeliveryGroup;
                                     $checked = ' checked';
                                 }
                             }
+                        */
                         ?>
                        	
+                        {{--
                         <div class="mt-3 pt-1">
                             <input type="hidden" name="is_huzaioki" value="0">
                             
@@ -701,11 +695,12 @@ use App\DeliveryGroup;
                         
                             <input type="hidden" name="is_seinou" value="1">
                         </div>
+                        --}}
                         
-                        <div class="mt-1 huzai-comment-wrap">
-                        	<span class="text-small ml-1">不在時の置き場所を記載して下さい</span>
+                        <div class="pt-2 huzai-comment-wrap col-md-8 pl-0">
+                        	<p class="ml-1 mb-1">不在時の置き場所を記載して下さい<em>必須</em></p>
                             <fieldset class="form-group">
-                                <textarea id="huzai_comment" class="form-control col-md-9{{ $errors->has('huzai_comment') ? ' is-invalid' : '' }}" name="huzai_comment" rows="6" placeholder="例：玄関前、門扉の裏、玄関右側入り庭ウッドデッキ付近・・など">{{ Ctm::isOld() ? old('huzai_comment') : (Session::has('all.data.huzai_comment') ? session('all.data.huzai_comment') : '') }}</textarea>
+                                <textarea id="huzai_comment" class="form-control {{ $errors->has('huzai_comment') ? ' is-invalid' : '' }}" name="huzai_comment" rows="6" placeholder="例：玄関前、門扉の裏、玄関右側入り庭ウッドデッキ付近・・など">{{ Ctm::isOld() ? old('huzai_comment') : (Session::has('all.data.huzai_comment') ? session('all.data.huzai_comment') : '') }}</textarea>
                                 
                                 @if ($errors->has('huzai_comment'))
                                     <div class="help-block text-danger receiver-error">
@@ -718,7 +713,35 @@ use App\DeliveryGroup;
                     </div>
                     
                 </fieldset>
+                
             @endif
+            
+            @if(count($seinouHuzaiSes) > 0)
+                <fieldset class="form-group mt-3 mb-2 px-3 py-2{{ $errors->has('is_huzaioki.*') ? ' border border-danger' : '' }}">
+                    <div class="">
+                        @foreach($seinouNoHuzaiSes as $sesKey => $sesVal)
+                            
+                            <?php
+                                $si = Item::find($sesVal['item_id']);
+                                $siTitle = Ctm::getItemTitle($si);
+                            ?>
+                            
+                            <div class="clearfix mb-3 ml-1">
+                                <div class="float-left mr-2">
+                                    @include('main.shared.smallThumbnail', ['item'=>$si])
+                                </div>
+                                
+                                <span class="text-big text-bold">{{ $siTitle }}</span><br>
+                                <span class="">[{{ $si->number }}]</span>
+                                <p class="text-small mt-2 p-0">不在置きを了承しない</p>
+                                <input type="hidden" name="seinouItemTitle[]" value="{{ $siTitle }}">
+                            </div>
+                        @endforeach
+                        
+                    </div>
+                </fieldset>
+            @endif
+            
 				
             @if(count($dgGroup) > 0)
                 <fieldset class="form-group mt-3 mb-2 px-3 py-2{{ $errors->has('plan_time.*') ? ' border border-danger' : '' }}">
@@ -726,6 +749,50 @@ use App\DeliveryGroup;
                     <p class="mb-1 pb-2">■下記の商品につきまして、ご希望配送時間の指定ができます。</p>
                     
                     @foreach($dgGroup as $key => $val)
+                        
+                        <div class="pb-1 mt-2 mb-2 ml-1">
+                            <?php
+                                $timeTable = DeliveryGroup::find($key)->time_table;
+                                $timeTable = explode(",", $timeTable);
+                            ?>
+                            
+                            <span class="deliRadioWrap">
+                                <input id="radio-deli-{{ $key }}-no" type="radio" name="plan_time[{{$key}}]" value="希望なし" class="deliRadio" checked>
+                                <label for="radio-deli-{{ $key }}-no" class="radios">希望なし</label>
+                                
+                                {{--
+                                <input type="radio" name="plan_time[{{$key}}]" class="deliRadio" value="希望なし" checked><span class="mr-3"> 希望なし</span>
+                                --}}
+                            </span>
+                            
+                            @foreach($timeTable as $k => $table)
+                                <?php
+                                    $checked = '';
+                                    
+                                    if( Ctm::isOld()) {
+                                        if( old('plan_time.'.$key) == $table) {
+                                            $checked = ' checked';
+                                        }
+                                    }
+                                    elseif(Session::has('all.data.plan_time.'.$key)) {
+                                        if(session('all.data.plan_time.'.$key) == $table) {
+                                            $checked = ' checked';
+                                        }
+                                    }
+                                 ?>
+                                
+                                <span class="deliRadioWrap">
+                                    <input id="radio-deli-{{ $key }}-{{ $k }}" type="radio" name="plan_time[{{$key}}]" value="{{ $table }}" class="deliRadio" {{ $checked }}>
+                                    <label for="radio-deli-{{ $key }}-{{ $k }}" class="radios">{{ $table }}</label>
+                                    
+                                    {{--
+                                    <input type="radio" name="plan_time[{{$key}}]" class="deliRadio" value="{{ $table }}" {{ $checked }}> <span class="mr-3">{{ $table }}</span>
+                                    --}}
+                                </span>
+                            @endforeach
+                                
+                        </div>
+                        
                         <div class="mb-4 pb-1">
                         
                             @if(session()->has('item.data') && count(session('item.data')) > 0)
@@ -749,49 +816,6 @@ use App\DeliveryGroup;
                                  @endforeach
                             @endif
                              
-                            
-                            <div class="mb-4 ml-1">
-                                <?php
-                                    $timeTable = DeliveryGroup::find($key)->time_table;
-                                    $timeTable = explode(",", $timeTable);
-                                ?>
-                                
-                                <span class="deliRadioWrap">
-                                    <input id="radio-deli-{{ $key }}-no" type="radio" name="plan_time[{{$key}}]" value="希望なし" class="deliRadio" checked>
-                                    <label for="radio-deli-{{ $key }}-no" class="radios">希望なし</label>
-                                    
-                                    {{--
-                                    <input type="radio" name="plan_time[{{$key}}]" class="deliRadio" value="希望なし" checked><span class="mr-3"> 希望なし</span>
-                                    --}}
-                                </span>
-                                
-                                @foreach($timeTable as $k => $table)
-                                    <?php 
-                                        $checked = '';
-                                        
-                                        if( Ctm::isOld()) {
-                                            if( old('plan_time.'.$key) == $table) {
-                                                $checked = ' checked';
-                                            }
-                                        }
-                                        elseif(Session::has('all.data.plan_time.'.$key)) {
-                                            if(session('all.data.plan_time.'.$key) == $table) {
-                                                $checked = ' checked';
-                                            }
-                                        }
-                                     ?>
-                                    
-                                    <span class="deliRadioWrap">
-                                        <input id="radio-deli-{{ $key }}-{{ $k }}" type="radio" name="plan_time[{{$key}}]" value="{{ $table }}" class="deliRadio" {{ $checked }}>
-                                        <label for="radio-deli-{{ $key }}-{{ $k }}" class="radios">{{ $table }}</label>
-                                        
-                                        {{--
-                                        <input type="radio" name="plan_time[{{$key}}]" class="deliRadio" value="{{ $table }}" {{ $checked }}> <span class="mr-3">{{ $table }}</span>
-                                        --}}
-                                    </span>
-                                @endforeach
-                                    
-                            </div>
                     	</div>
                         
                      @endforeach
@@ -806,11 +830,16 @@ use App\DeliveryGroup;
                 </fieldset>
             @endif
             
+            </div>{{-- ml-20per --}}
+            
             </div>
                 
             <div class="pt-2">
-            	<h3 class="card-header mt-3">その他コメント</h3>
+                <div class="bg-secondary">
+            	<h3 class="">その他コメント</h3>
+                </div>
                 
+                <div class="ml-20per">
                 <fieldset class="form-group my-3">
                     <textarea id="user_comment" class="form-control{{ $errors->has('user_comment') ? ' is-invalid' : '' }}" name="user_comment" rows="10">{{ Ctm::isOld() ? old('user_comment') : (Session::has('all.data.user_comment') ? session('all.data.user_comment') : '') }}</textarea>
                     
@@ -821,11 +850,16 @@ use App\DeliveryGroup;
                         </div>
                     @endif
                 </fieldset>
+                </div>
             </div>
                 
                 
             <div class="pt-2">
+                <div class="bg-secondary">
             	<h3 class="card-header mt-4">お支払い方法</h3>
+                </div>
+             
+                <div class="ml-20per">
                 <a href="{{ url('about-pay?from-cart=1') }}" class="d-inline-block mt-2 ml-1 text-small" target="_brank">お支払についてのご注意はこちら <i class="fal fa-angle-double-right"></i></a>
                     
                     @if ($errors->has('pay_method'))
@@ -1179,6 +1213,7 @@ use App\DeliveryGroup;
                          @endforeach
                     
                 	</fieldset>
+                 </div>{{-- ml-20per --}}
                 </div>
                 
 		{{--
@@ -1190,13 +1225,18 @@ use App\DeliveryGroup;
         </div>
        
     </form>
-    
+</div>{{-- left --}}
+
+<div class="confirm-right">
+
 </div>
+
+</div>{{-- clear --}}
 
 
 @includeWhen(Ctm::isEnv('local'), 'cart.shared.backBtn', ['urlForBack'=>'cart', 'textForBack'=>'カートに戻る'])
 
-</div>
+
 
 </div>
 </div>

@@ -48,7 +48,7 @@
                  	<th>
                     	@include('main.shared.smallThumbnail')
                     </th>
-                    
+
                     <td>
                         <div>
                             {!! Ctm::getItemTitle($item, 1) !!}
@@ -58,7 +58,23 @@
                         </div>
                         
                         <p class="m-0 p-0 text-big"><span class="text-small">数量：</span>{{ $item->count }}</p>
-                        <p class="m-0 p-0 text-big"><span class="text-small">金額（税込）：</span>¥{{ number_format( $item->item_total_price ) }}</p>
+                        
+                        <?php $red = ''; ?>
+                        
+                        @if(! isset($item->sale_price) && isset($item->is_once_down))
+                            <?php $red = 'text-danger'; ?>
+                            <p class="m-0 p-0 {{ $red }}"><span class="text-small">同梱包割引</span></p>
+                        @endif
+                        
+                        @if($item->is_huzaioki)
+                            <?php $red = 'text-danger'; ?>
+                            <p class="m-0 p-0 {{ $red }}"><span class="text-small">不在置きを了承する</span></p>
+                        @endif
+                        
+                        <p class="m-0 p-0 text-big">
+                            <span class="text-small">金額（税込）：</span>
+                            <span class="{{ $red }}">¥{{ number_format( $item->item_total_price ) }}</span>
+                        </p>
                     </td>
                     
                     

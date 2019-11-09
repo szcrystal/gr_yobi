@@ -85,7 +85,11 @@ select.form-control:focus {
   	pointer-events: none;
 }
 .select-cart-count { /* cart-index 数量 */
-	width: 15%;
+	width: 35%;
+}
+.select-cart-count + .btn {
+    color: #18206F;
+    background: none !important;
 }
 
 /* IE11 */
@@ -457,21 +461,21 @@ body {
 	font-size: 1.1em;
 }
 .table-foot tr th {
-	width: 77%;
+	width: 35%;
     font-weight: normal;
     padding-right: 0;
 }
 .table-foot tr td {
-	//text-align: right;
+	text-align: right;
     padding-left: 1.2em;
 }
 .cart-note {
-	float: right;
-    text-align: left;
+/*	float: right;*/
+/*    text-align: left;*/
     font-size: 0.9em;
-	border: 2px solid #C15360;
-    padding: 0.1em 0 0.1em 0.8em;
-    width: 53%;
+/*	border: 2px solid #C15360;*/
+    padding: 0.1em 0 0.1em;
+    width: 100%;
     margin-right: 0.5em;
 }
 
@@ -489,7 +493,8 @@ body {
 	content: "";
 	height: 0;
 }
-.table-custom th em {
+.table-custom th em,
+.huzai-comment-wrap em {
 	display: block;
 	font-size: 0.9em;
 	line-height: 0.9em;
@@ -501,10 +506,43 @@ body {
 	padding: 0.3em 0.2em;
 	float: right;
 }
+.huzai-comment-wrap em {
+    display: inline-block;
+    float: none;
+    margin-left: 1.5em;
+}
 .table-custom th small {
 	display: block;
     margin-top: 0.3em;
 }
+
+/* cart-form */
+.cart-form h3 {
+    display: inline-block;
+    width: 22%;
+    border: none !important;
+    background: #fff;
+    margin: 0 !important;
+    padding: 0 0 2px !important;
+    font-weight: normal;
+    font-size: 1.3em;
+}
+.cart-form h3 > span {
+    background: #fff;
+}
+.cart-form .table-custom,
+.ml-20per {
+    margin-left: 22%;
+    width: 78%;
+}
+.cart-form .table-custom th {
+    padding-left: 0.2em;
+}
+/*.ml-20per {*/
+/*    margin-left: 20%;*/
+/*    width: 80%;*/
+/*}*/
+
 
 .px-10 {
 	padding-left: 7.5em;
@@ -541,7 +579,7 @@ body {
 .btn-cart-del {
 	background: none;
     border: 0;
-    font-size: 1.3em;
+    font-size: 1.6em;
     padding-top: 0;
     padding-right: 0;
     line-height: 0;
@@ -642,13 +680,22 @@ body {
 	width: 27%;
 }
 
-.confirm .confirm-left {
+/*.confirm .confirm-left {*/
+.confirm-left {
 	float: left;
-	width: 63%;
+	width: 65%;
+}
+/*.confirm .confirm-right {*/
+.confirm-right {
+	float: right;
+	width: 33%;
+    padding: 1.2em;
+    border: 1px solid #ccc;
+    border-radius: 0.2em;
+    background: #E3EDF0;
 }
 .confirm .confirm-right {
-	float: right;
-	width: 35%;
+    background: #F5F5F5;
 }
 
 .confirm .confirm-right .table-normal.show-price tbody th { /* shop confirm ポイント利用などのテーブルのth */
@@ -719,7 +766,7 @@ img.img-fluid + div {
 }
 
 .huzai-comment-wrap {
-	display: none;
+/*	display: none;*/
 }
 
 /*.thumb-prev .no-img {*/

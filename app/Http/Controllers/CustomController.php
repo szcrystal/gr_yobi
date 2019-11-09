@@ -84,8 +84,9 @@ class CustomController extends Controller
     
     static function getItemPrice($obj)
     {
-    	$isSale = Setting::get()->first()->is_sale; 
-
+    	$isSale = Setting::get()->first()->is_sale;
+        
+        //$itemPrice = isset($obj->is_once_down) ? $obj->once_price : (isset($obj->sale_price) ? $obj->sale_price : $obj->price);
                                                     
         if(isset($obj->sale_price)) {
             $price = number_format(CustomController::getPriceWithTax($obj->sale_price));
@@ -96,7 +97,6 @@ class CustomController extends Controller
             else
                 $price = number_format(CustomController::getPriceWithTax($obj->price));
         }
-        
         
         return $price;
     }

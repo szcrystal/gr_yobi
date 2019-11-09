@@ -5,6 +5,7 @@ use App\Setting;
 	if(isset($type) && $type == 'single') {
     	$class = ' class="single-colop"';
     }
+
 ?>
 
 <footer id="colop"{!! $class !!}>

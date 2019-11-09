@@ -248,6 +248,53 @@ use App\TopSetting;
                     	@if(! $isPotSet)
                   			
                             @if($item->stock > 0)
+                                
+                                <?php $seinouObj = Ctm::getSeinouObj(); ?>
+                                
+                                @if($item->dg_id == $seinouObj->id)
+                                    
+                                    <fieldset class="mb-2 form-group clearfix text-left">
+                                    
+                                        <div class="ml-1 mb-3 bg-white border border-gray py-2 px-3">
+                                            <p class="mb-1">不在置きを了承頂ける場合はチェックをして下さい。</p>
+                                            
+                                            <ul class="text-small pl-4 mb-0">
+                                                <li class="mb-1"><span class="text-big"><b class="text-big">チェック時は{{ number_format($seinouObj->huzaiokiFee) }}円引きとなります。</b></span></li>
+                                                <li class="mb-1">購入中に表示される枠内に不在時の置き場所を記載して下さい。</li>
+                                                <li class="mb-1">お支払い方法「代金引換」はご利用出来ません。</li>
+                                            <ul>
+                                        </div>
+                                    
+                                        <?php
+                                            $checked = '';
+                                            if(Ctm::isOld()) {
+                                                if(old('is_huzaioki'))
+                                                    $checked = ' checked';
+                                            }
+                                            else {
+                                                if(Session::has('all.data.is_huzaioki')  && session('all.data.is_huzaioki')) {
+                                                    $checked = ' checked';
+                                                }
+                                            }
+                                        ?>
+                                        
+                                        <div class="mt-0 pt-0 float-right w-50">
+                                            <input type="hidden" name="is_huzaioki" value="0">
+                                            
+                                            <input id="check-huzaioki-0" type="checkbox" name="is_huzaioki" value="1"{{ $checked }}>
+                                            <label for="check-huzaioki-0" class="checks ml-1 mr-0"><b class="text-big">不在置きを了承する</b></label>
+                                            
+                                            @if ($errors->has('is_huzaioki'))
+                                                <div class="help-block text-danger">
+                                                    <span class="fa fa-exclamation form-control-feedback"></span>
+                                                    <span>{{ $errors->first('is_huzaioki') }}</span>
+                                                </div>
+                                            @endif
+                                        
+                                            <input type="hidden" name="is_seinou" value="1">
+                                        </div>
+                                    </fieldset>
+                                @endif
 
                                 <fieldset class="mb-3 form-group clearfix text-right">
                                     <label>数量
