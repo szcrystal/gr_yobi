@@ -45,62 +45,87 @@ use App\DeliveryGroup;
 
 
 <div class="clearfix">
-<div class="confirm-left">
 <form id="with1" class="form-horizontal" role="form" method="POST" action="{{ url('shop/confirm') }}">
     {{ csrf_field() }}
-    
-    <?php 
-//    print_r($itemData); 
-//    exit;
-//    echo session('all.all_price'). "///";
-//    echo session('all.regist');
+
+<div class="confirm-left">
+
+@if(Auth::check())
+
+<div class="clearfix mb-3">
+    <h3>お届け先</h3>
+    <div></div>
+</div>
+
+<div class="ml-20per pl-1">
+    <?php
+        $checked = '';
+        if(Ctm::isOld()) {
+             if(old('destination'))
+                $checked = ' checked';
+        }
+        else {
+            if(Session::has('all.data.destination') && session('all.data.destination'))
+                $checked = ' checked';
+                
+        }
     ?>
     
-
     
-@if(Auth::check())
-<h3 class="mb-3 card-header">会員登録情報</h3>
-<div class="table-responsive table-normal">
-    <table class="table table-borderd border">
+    <fieldset class="form-group">
+        <div class="">
+            <input id="radio-destination-1" type="radio" name="destination" value="0" checked>
+            <label for="radio-destination-1" class="radios">{{ $userObj->name }} 様</label>
+            <div class="pl-4">
+                〒{{ Ctm::getPostNum( $userObj->post_num) }}<br>
+                住所：{{ $userObj->prefecture }}{{ $userObj->address_1 }}{{ $userObj->address_2 }}<br>
+                TEL：{{ $userObj->tel_num }}
+            </div>
+        </div>
+        
+        <div class="mt-4 mb-1">
+            <input id="radio-destination-2" type="radio" name="destination" value="1"{{ $checked }}>
+            <label for="radio-destination-2" class="radios">別の住所へお届け</label>
+        </div>
+        
+        @if ($errors->has('receiver.*'))
+            <div class="help-block text-danger receiver-error">
+                <span class="fa fa-exclamation form-control-feedback"></span>
+                <span>上記登録先住所に配送をご希望の場合は「登録先と同じ」にチェックをして下さい。</span>
+            </div>
+        @endif
+        
+    </fieldset>
+    
+    <div class="receiver">
+        @include('cart.shared.anotherAddress')
+    </div>
+    
+</div>
+    
 
-        <tr>
-        	<th>氏名</th>
-         	<td>{{ $userObj->name }}</td>   
-        </tr>
-        <tr>
-            <th>電話番号</th>
-             <td>{{ $userObj->tel_num }}</td>   
-        </tr>
-        <tr>
-            <th>住所</th>
-             <td>〒{{ Ctm::getPostNum( $userObj->post_num) }}<br>
-             {{ $userObj->prefecture }}{{ $userObj->address_1 }} {{ $userObj->address_2 }}<br>
-             {{ $userObj->address_3 }}
-             </td>   
-        </tr>
-        <tr>
-            <th>メールアドレス</th>
-             <td>{{ $userObj->email }}</td>   
-        </tr>
-        <tr>
-            <th>ポイントのご利用</th>
-            <td>
-            	<div class="mb-2">
-             	   現在の保持ポイント：<span class="text-primary">{{ $userObj->point }}</span>ポイント
-                </div>
-            	<div class="mb-2">
-                <input class="form-control d-inline col-md-2{{ $errors->has('use_point') ? ' is-invalid' : '' }}" name="use_point" value="{{ Ctm::isOld() ? old('use_point') : (Session::has('all.use_point') ? session('all.use_point') : 0) }}" placeholder=""><span class="mx-1 my-2">ポイント利用する</span>
-                </div>
-               
-                @if ($errors->has('use_point'))
-                    <div class="text-danger">
-                        <span class="fa fa-exclamation form-control-feedback"></span>
-                        <span>{{ $errors->first('use_point') }}</span>
-                    </div>
-                @endif
-            </td>   
-        </tr>
-	</table>
+<div class="clearfix mt-3 mb-3">
+    <h3>ポイント利用</h3>
+    <div></div>
+</div>
+        
+<div class="ml-20per pl-1">
+
+    <div class="mb-2">
+       現在の保持ポイント：<span class="text-primary">{{ $userObj->point }}</span>ポイント
+    </div>
+    <div class="mb-2">
+        <label>ポイント利用する</label>
+        <input class="form-control d-inline col-md-5{{ $errors->has('use_point') ? ' is-invalid' : '' }}" name="use_point" value="{{ Ctm::isOld() ? old('use_point') : (Session::has('all.use_point') ? session('all.use_point') : 0) }}" placeholder="">
+    </div>
+   
+    @if ($errors->has('use_point'))
+        <div class="text-danger">
+            <span class="fa fa-exclamation form-control-feedback"></span>
+            <span>{{ $errors->first('use_point') }}</span>
+        </div>
+    @endif
+
 </div>
 
 <?php //新規会員登録 =================================================== ?>
@@ -108,8 +133,9 @@ use App\DeliveryGroup;
 
 <input type="hidden" name="use_point" value="0">
 
-<div class="bg-secondary">
-    <h3 class="">お客様情報</h3>
+<div class="clearfix mt-3">
+    <h3>お客様情報</h3>
+    <div></div>
 </div>
 
 <div class="table-responsive table-custom">
@@ -213,7 +239,7 @@ use App\DeliveryGroup;
              	{{-- <small>例）1234567ハイフンなし半角数字</small> --}}
              </th>
                <td>
-                <input id="zipcode" type="text" class="form-control col-md-6{{ $errors->has('user.post_num') ? ' is-invalid' : '' }}" name="user[post_num]" value="{{ Ctm::isOld() ? old('user.post_num') : (Session::has('all.data.user') ? session('all.data.user.post_num') : '') }}" placeholder="例）1234567（ハイフンなし半角数字）">
+                <input id="zipcode" type="text" class="form-control col-md-12{{ $errors->has('user.post_num') ? ' is-invalid' : '' }}" name="user[post_num]" value="{{ Ctm::isOld() ? old('user.post_num') : (Session::has('all.data.user') ? session('all.data.user.post_num') : '') }}" placeholder="例）1234567（ハイフンなし半角数字）">
                 
                 @if ($errors->has('user.post_num'))
                     <div class="help-block text-danger">
@@ -227,7 +253,7 @@ use App\DeliveryGroup;
          <tr class="form-group">
              <th>都道府県<em>必須</em></th>
                <td>
-               	<div class="select-wrap col-md-6 p-0">
+               	<div class="select-wrap col-md-12 p-0">
                     <select id="pref" class="form-control select-first{{ $errors->has('user.prefecture') ? ' is-invalid' : '' }}" name="user[prefecture]">
                         <option selected value="0">選択して下さい</option>
                         <?php
@@ -247,6 +273,7 @@ use App\DeliveryGroup;
                                     }
                                 }
                             ?>
+                            
                             <option value="{{ $pref->name }}"{{ $selected }}>{{ $pref->name }}</option>
                         @endforeach
                     </select>
@@ -371,13 +398,12 @@ use App\DeliveryGroup;
              </tr>
             </table>
         </div>         
-         
-         
-@endif {{-- AuthCheck --}}                     
+ 
         
         <div class="receiver">
-            <div class="bg-secondary">
-            <h3 class="">お届け先</h3>
+            <div class="clearfix mt-3">
+                <h3>お届け先</h3>
+                <div></div>
             </div>
             
             <div class="ml-20per">
@@ -471,14 +497,12 @@ use App\DeliveryGroup;
                         </td>
                      </tr>
                      
-                     
-                     
                      <tr class="form-group">
                          <th>配送先郵便番号<em>必須</em>
                          	{{-- <small>例）1234567ハイフンなし半角数字</small> --}}
                          </th>
                            <td>
-                            <input id="zipcode_2" type="text" class="form-control col-md-6{{ $errors->has('receiver.post_num') ? ' is-invalid' : '' }}" name="receiver[post_num]" value="{{ Ctm::isOld() ? old('receiver.post_num') : (Session::has('all.data.receiver') ? session('all.data.receiver.post_num') : '') }}" placeholder="例）1234567（ハイフンなし半角数字）">
+                            <input id="zipcode_2" type="text" class="form-control col-md-12{{ $errors->has('receiver.post_num') ? ' is-invalid' : '' }}" name="receiver[post_num]" value="{{ Ctm::isOld() ? old('receiver.post_num') : (Session::has('all.data.receiver') ? session('all.data.receiver.post_num') : '') }}" placeholder="例）1234567（ハイフンなし半角数字）">
                             
                             @if ($errors->has('receiver.post_num'))
                                 <div class="help-block help-block text-danger receiver-error">
@@ -492,7 +516,7 @@ use App\DeliveryGroup;
                      <tr class="form-group">
                         <th>配送先都道府県<em>必須</em></th>
                         <td>
-                           	<div class="select-wrap col-md-6 p-0">
+                           	<div class="select-wrap col-md-12 p-0">
                                 <select id="pref_2" class="form-control select-first {{ $errors->has('receiver.prefecture') ? ' is-invalid' : '' }}" name="receiver[prefecture]">
                                     <option disabled selected>選択して下さい</option>
 
@@ -572,17 +596,20 @@ use App\DeliveryGroup;
                 </div> 
          </div><!-- receiver -->
          
+@endif {{-- AuthCheck --}}
+
 
         <div class="pt-2">
-            <div class="bg-secondary">
-            <h3 class="">配送希望日時</h3>
+            <div class="clearfix mt-3">
+                <h3>配送希望日時</h3>
+                <div></div>
             </div>
             
             <div class="ml-20per">
-            <fieldset class="mb-4 mt-3 col-md-7 form-group{{ $errors->has('plan_date') ? ' has-error' : '' }}">
+            <fieldset class="mb-4 mt-3 pl-1 form-group{{ $errors->has('plan_date') ? ' has-error' : '' }}">
                 <label for="plan_date" class="control-label">■ご希望日程<span class="text-small"></span></label>
                 
-                <div class="select-wrap col-md-6 p-0">
+                <div class="select-wrap col-md-9 p-0">
                 <select class="form-control {{ $errors->has('plan_date') ? ' is-invalid' : '' }}" name="plan_date">
                     <option value="希望なし（最短出荷）" selected>希望なし（最短出荷）</option>
                         <?php 
@@ -626,11 +653,11 @@ use App\DeliveryGroup;
             <?php $seinouObj = Ctm::getSeinouObj(); ?>
             
             @if(count($seinouHuzaiSes) > 0)
-                <fieldset class="form-group mt-3 mb-2 px-3 py-2{{ $errors->has('is_huzaioki.*') ? ' border border-danger' : '' }}">
+                <fieldset class="form-group mt-3 mb-2 pl-1 py-2{{ $errors->has('is_huzaioki.*') ? ' border border-danger' : '' }}">
                     <div class="pb-3">
                         ■下記の商品につきまして
                         <ul class="mt-3 pl-0 list-unstyled">
-                            <li class="mb-3 text-kon text-bold">「ご希望日程」が日曜日の場合は、下記1商品につき{{ number_format($seinouObj->sundayFee) }}円増しとなります。
+                            <li class="mb-3 text-kon text-bold">「ご希望日程」が日曜日の場合は、1商品につき{{ number_format($seinouObj->sundayFee) }}円増しとなります。
                             {{--
                             <li>不在置きを了承頂ける場合はチェックをして下さい。
                             	<ul class="text-small">
@@ -653,12 +680,13 @@ use App\DeliveryGroup;
                             
                             <div class="clearfix mb-3 ml-1">
                                 <div class="float-left mr-2">
-                                    @include('main.shared.smallThumbnail', ['item'=>$si])
+                                    @include('main.shared.smallThumbnail', ['item'=>$si, 'width'=>140])
                                 </div>
                                 
                                 <span class="text-big text-bold">{{ $siTitle }}</span><br>
                                 <span class="">[{{ $si->number }}]</span>
                                 <p class="text-danger text-small mt-2 p-0">不在置きを了承する</p>
+                                
                                 <input type="hidden" name="seinouItemTitle[]" value="{{ $siTitle }}">
                             </div>
 
@@ -697,7 +725,7 @@ use App\DeliveryGroup;
                         </div>
                         --}}
                         
-                        <div class="pt-2 huzai-comment-wrap col-md-8 pl-0">
+                        <div class="pt-2 huzai-comment-wrap pl-0">
                         	<p class="ml-1 mb-1">不在時の置き場所を記載して下さい<em>必須</em></p>
                             <fieldset class="form-group">
                                 <textarea id="huzai_comment" class="form-control {{ $errors->has('huzai_comment') ? ' is-invalid' : '' }}" name="huzai_comment" rows="6" placeholder="例：玄関前、門扉の裏、玄関右側入り庭ウッドデッキ付近・・など">{{ Ctm::isOld() ? old('huzai_comment') : (Session::has('all.data.huzai_comment') ? session('all.data.huzai_comment') : '') }}</textarea>
@@ -717,7 +745,7 @@ use App\DeliveryGroup;
             @endif
             
             @if(count($seinouHuzaiSes) > 0)
-                <fieldset class="form-group mt-3 mb-2 px-3 py-2{{ $errors->has('is_huzaioki.*') ? ' border border-danger' : '' }}">
+                <fieldset class="form-group mt-3 mb-2 pl-1 py-2{{ $errors->has('is_huzaioki.*') ? ' border border-danger' : '' }}">
                     <div class="">
                         @foreach($seinouNoHuzaiSes as $sesKey => $sesVal)
                             
@@ -728,7 +756,7 @@ use App\DeliveryGroup;
                             
                             <div class="clearfix mb-3 ml-1">
                                 <div class="float-left mr-2">
-                                    @include('main.shared.smallThumbnail', ['item'=>$si])
+                                    @include('main.shared.smallThumbnail', ['item'=>$si, 'width'=>140])
                                 </div>
                                 
                                 <span class="text-big text-bold">{{ $siTitle }}</span><br>
@@ -744,7 +772,7 @@ use App\DeliveryGroup;
             
 				
             @if(count($dgGroup) > 0)
-                <fieldset class="form-group mt-3 mb-2 px-3 py-2{{ $errors->has('plan_time.*') ? ' border border-danger' : '' }}">
+                <fieldset class="form-group mt-3 mb-2 pl-1 py-2{{ $errors->has('plan_time.*') ? ' border border-danger' : '' }}">
                 	
                     <p class="mb-1 pb-2">■下記の商品につきまして、ご希望配送時間の指定ができます。</p>
                     
@@ -805,7 +833,7 @@ use App\DeliveryGroup;
                                     
                                     <div class="clearfix mb-2 ml-1">
                                         <div class="float-left mr-2">
-                                            @include('main.shared.smallThumbnail', ['item'=>$i])
+                                            @include('main.shared.smallThumbnail', ['item'=>$i, 'width'=>140])
                                         </div>
                                         
                                         <span class="text-big text-bold">{{ $iTitle }}</span><br>
@@ -835,8 +863,9 @@ use App\DeliveryGroup;
             </div>
                 
             <div class="pt-2">
-                <div class="bg-secondary">
-            	<h3 class="">その他コメント</h3>
+                <div class="clearfix mt-3">
+                    <h3>コメント</h3>
+                    <div></div>
                 </div>
                 
                 <div class="ml-20per">
@@ -855,8 +884,9 @@ use App\DeliveryGroup;
                 
                 
             <div class="pt-2">
-                <div class="bg-secondary">
-            	<h3 class="card-header mt-4">お支払い方法</h3>
+                <div class="clearfix mt-3">
+                    <h3>お支払方法</h3>
+                    <div></div>
                 </div>
              
                 <div class="ml-20per">
@@ -991,7 +1021,7 @@ use App\DeliveryGroup;
                                             <div class="{{ count($cardErrors) > 0 ? ' border border-danger pl-2' : '' }}">
                                             <div class="mb-3">
                                                 <label>カード番号</label>
-                                                <input type="text" id="cardno" class="form-control col-md-5{{ $errors->has('cardno') ? ' is-invalid' : '' }}" name="cardno" value="{{ Ctm::isOld() ? old('cardno') : (Session::has('all.data.cardno') ? session('all.data.cardno') : '') }}" placeholder="例）1234123412341234（ハイフンなし半角数字）">
+                                                <input type="text" id="cardno" class="form-control col-md-12{{ $errors->has('cardno') ? ' is-invalid' : '' }}" name="cardno" value="{{ Ctm::isOld() ? old('cardno') : (Session::has('all.data.cardno') ? session('all.data.cardno') : '') }}" placeholder="例）1234123412341234（ハイフンなし半角数字）">
                                        
                                                 @if ($errors->has('cardno'))
                                                     <div class="help-block text-danger receiver-error">
@@ -1003,7 +1033,7 @@ use App\DeliveryGroup;
                                             
                                             <div class="mb-3">
                                                 <label>セキュリティコード</label>
-                                                <input type="text" id="securitycode" class="form-control col-md-5{{ $errors->has('securitycode') ? ' is-invalid' : '' }}" name="securitycode" value="{{ Ctm::isOld() ? old('securitycode') : (Session::has('all.data.securitycode') ? session('all.data.securitycode') : '') }}" placeholder="例）1234（3〜4桁 半角数字）">
+                                                <input type="text" id="securitycode" class="form-control col-md-12{{ $errors->has('securitycode') ? ' is-invalid' : '' }}" name="securitycode" value="{{ Ctm::isOld() ? old('securitycode') : (Session::has('all.data.securitycode') ? session('all.data.securitycode') : '') }}" placeholder="例）1234（3〜4桁 半角数字）">
                                        
                                                 @if ($errors->has('securitycode'))
                                                     <div class="help-block text-danger receiver-error">
@@ -1025,7 +1055,7 @@ use App\DeliveryGroup;
                                             
                                                 <label class="d-block">有効期限（月/年）</label>
                                                 
-                                                <label class="select-wrap col-md-2 p-0">
+                                                <label class="select-wrap col-md-3 p-0">
                                                 <select id="expire_month" class="form-control d-inline-block {{ $errors->has('expire_month') || $errors->has('expire') ? ' is-invalid' : '' }}" name="expire_month">
                                                     
                                                     @while($mn < 13)
@@ -1054,13 +1084,13 @@ use App\DeliveryGroup;
                                                 
                                                 
                                                 @if ($errors->has('expire_month'))
-                                                    <div class="help-block text-danger col-md-2">
+                                                    <div class="help-block text-danger col-md-3">
                                                         <span class="fa fa-exclamation form-control-feedback"></span>
                                                         <span>{{ $errors->first('expire_month') }}</span>
                                                     </div>
                                                 @endif
                                                 
-                                                <label class="select-wrap col-md-2 p-0">
+                                                <label class="select-wrap col-md-4 p-0">
                                                 <select id="expire_year" class="form-control d-inline-block {{ $errors->has('expire_year') || $errors->has('expire') ? ' is-invalid' : '' }}" name="expire_year">
                                                     
                                                     @while($yn < 11)
@@ -1088,7 +1118,7 @@ use App\DeliveryGroup;
                                                 
                                                 
                                                 @if ($errors->has('expire_year'))
-                                                    <div class="help-block text-danger col-md-2">
+                                                    <div class="help-block text-danger col-md-4">
                                                         <span class="fa fa-exclamation form-control-feedback"></span>
                                                         <span>{{ $errors->first('expire_year') }}</span>
                                                     </div>
@@ -1219,23 +1249,73 @@ use App\DeliveryGroup;
 		{{--
         <input type="hidden" name="regist" value="{{ $regist }}">
         --}}
-        
-        <div>
-        	<button class="btn btn-block btn-kon col-md-4 mb-4 mx-auto py-3" type="submit" name="recognize" value="1">確認する</button>
-        </div>
        
-    </form>
+
 </div>{{-- left --}}
 
 <div class="confirm-right">
+    @if(! Auth::check())
+        <div class="right-gray cart-login">
+            @include('main.shared.userLogin', ['pageType'=>'cart'])
+        </div>
+    @endif
+    
+    <div class="right-blue">
+        <div>
+            <button class="btn btn-block btn-kon mb-4 mx-auto py-3" type="submit" name="recognize" value="1">次へ進む</button>
+        </div>
+        
+        <div class="table-responsive table-foot">
+        <table class="table">
+             <tbody class="clearfix">
+                 <tr>
+                      <th class="text-left text-big">
+                        商品合計
+                    </th>
+                    
+                    <td class="text-big">
+                        <b>¥{{ number_format(1000) }}</b>
+                    </td>
+                  </tr>
 
+                    <tr>
+                        <th class="text-left text-big">送料</th>
+                        
+                        <td class="text-big">
+                            @if(isset($deliFee))
+                                <b>¥{{ number_format($deliFee) }}</b>
+                            @else
+                                <b class="text-enji">含まれておりません</b>
+                            @endif
+                        </td>
+                
+                    </tr>
+                    
+                    {{--
+                    <tr>
+                        <th class="text-left text-big">
+                            合計 <small>(小計+送料)</small>
+                        </th>
+                        
+                        <td class="text-big text-danger">
+                            <b>¥{{ number_format($allPrice + $deliFee) }}</b>
+                        </td>
+                        
+                    </tr>
+                    --}}
+               
+             </tbody>
+        </table>
+        </div>
+    </div>
+    
 </div>
 
+</form>
 </div>{{-- clear --}}
 
 
 @includeWhen(Ctm::isEnv('local'), 'cart.shared.backBtn', ['urlForBack'=>'cart', 'textForBack'=>'カートに戻る'])
-
 
 
 </div>

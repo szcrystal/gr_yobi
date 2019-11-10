@@ -421,14 +421,15 @@ body {
 }
 .table-cart tbody th {
 	background: none;
-    width: 11%;
+    width: 20%;
+    padding-left: 0;
 	//border-bottom: 0 !important;
 }
 .confirm .table-cart tbody th {
 	width: 15%;
 }
 .table-cart tbody th .img-fluid {
-	width: 100%;
+	//width: 100%;
 }
 .table-cart td {
 	//border-left: 0 !important;
@@ -455,7 +456,7 @@ body {
 .table-foot tr th,
 .table-foot tr td {
 	border-top: 0 !important;
-    padding: 0.2em 0.7em;
+    padding: 0.2em 0.2em;
 }
 .table-foot {
 	font-size: 1.1em;
@@ -487,6 +488,9 @@ body {
 .table-foot tr:last-of-type td {
 	//width: 35%;
 }
+.table-custom th {
+    position: relative;
+}
 .table-custom th:after {
 	display: block;
 	clear: both;
@@ -495,21 +499,25 @@ body {
 }
 .table-custom th em,
 .huzai-comment-wrap em {
+    position: absolute;
+    top: 0.75em;
+    right: 1px;
+/*    float: right;*/
 	display: block;
-	font-size: 0.9em;
-	line-height: 0.9em;
+	font-size: 0.85em;
+	line-height: 0.85em;
 	font-style: normal;
 	//background: lightsalmon;
     border: 1px solid #fa828f;
 	color: #fa828f;
     margin-top: 0.2em;
 	padding: 0.3em 0.2em;
-	float: right;
+	
 }
 .huzai-comment-wrap em {
-    display: inline-block;
-    float: none;
-    margin-left: 1.5em;
+/*    display: inline-block;*/
+/*    float: none;*/
+/*    margin-left: 1.5em;*/
 }
 .table-custom th small {
 	display: block;
@@ -518,25 +526,37 @@ body {
 
 /* cart-form */
 .cart-form h3 {
-    display: inline-block;
-    width: 22%;
+    float: left;
+    width: 18%;
     border: none !important;
-    background: #fff;
+    background: none;
     margin: 0 !important;
-    padding: 0 0 2px !important;
+    padding: 0 !important;
     font-weight: normal;
-    font-size: 1.3em;
+    font-size: 1.2em;
+    //line-height: 2.2em;
 }
-.cart-form h3 > span {
-    background: #fff;
+.cart-form h3 + div {
+    float: left;
+    width: 82%;
+    height: 1.4em;
+    background: #f2f2f2;
 }
 .cart-form .table-custom,
 .ml-20per {
-    margin-left: 22%;
-    width: 78%;
+    margin-left: 18%;
+    width: 82%;
 }
 .cart-form .table-custom th {
-    padding-left: 0.2em;
+    padding-left: 0.1em;
+}
+.cart-form .ml-20per .receiver .table-custom {
+    margin-left: 0;
+    width: 100%;
+}
+.cart-form .cart-login fieldset:nth-of-type(2) { /* login passwd部分 */
+    margin-top: -0.7em;
+    margin-bottom: 1.2em;
 }
 /*.ml-20per {*/
 /*    margin-left: 20%;*/
@@ -679,23 +699,33 @@ body {
 .table-custom .table tbody th {
 	width: 27%;
 }
+.cart-form .table-custom .table tbody th {
+    width: 29%;
+}
 
 /*.confirm .confirm-left {*/
 .confirm-left {
 	float: left;
-	width: 65%;
+	width: 66%;
 }
 /*.confirm .confirm-right {*/
 .confirm-right {
 	float: right;
-	width: 33%;
+	width: 32%;
+    min-height: 2em;
+}
+.confirm-right .right-blue,
+.confirm-right .right-gray {
     padding: 1.2em;
     border: 1px solid #ccc;
     border-radius: 0.2em;
+}
+.confirm-right .right-blue {
     background: #E3EDF0;
 }
-.confirm .confirm-right {
-    background: #F5F5F5;
+.confirm-right .right-gray {
+    background: #f2f2f2;
+    margin-bottom: 1.5em;
 }
 
 .confirm .confirm-right .table-normal.show-price tbody th { /* shop confirm ポイント利用などのテーブルのth */
@@ -732,7 +762,9 @@ img.img-fluid + div {
     //border: 1px solid red;
 }
 
-
+.img-wrap-big img {
+    //width: 24%;
+}
 .no-img {
     display: inline-block;
     float: left;
@@ -766,6 +798,7 @@ img.img-fluid + div {
 }
 
 .huzai-comment-wrap {
+    position: relative;
 /*	display: none;*/
 }
 

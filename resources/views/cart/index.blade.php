@@ -48,7 +48,7 @@
      		@foreach($itemData as $key => $item)    
                 <tr class="clearfix {{ $errors->has('no_delivery.'. $key) ? 'tr-danger-border' : '' }}">
                     <th>
-                        @include('main.shared.smallThumbnail')
+                        @include('main.shared.smallThumbnail', ['width'=>140])
                     </th>
                     
                     <td class="clearfix">
@@ -165,6 +165,7 @@
 </div>{{-- confirm-left --}}
          
 <div class="confirm-right">
+<div class="right-blue">
     
     <div class="clearfix">
         <input type="hidden" name="from_cart" value="1">
@@ -370,6 +371,7 @@
         </table>
     </div>
 
+</div>
 </div>{{-- confirm-right --}}
 
 </div>{{-- clear --}}

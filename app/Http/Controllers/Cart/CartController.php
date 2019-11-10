@@ -1129,7 +1129,8 @@ class CartController extends Controller
             //'receiver.address_2' => 'required_with:destination|max:255',
             //'receiver.address_3' => 'max:255',
             
-            'huzai_comment' => 'required_if:is_huzaioki,1|max:30000' ,
+            //'huzai_comment' => 'required_if:is_huzaioki,1|max:30000' ,
+            'huzai_comment' => 'required|max:30000' ,
             'user_comment' => 'max:30000',
             
 //            'user_comment' => [
