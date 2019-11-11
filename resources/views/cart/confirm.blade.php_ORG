@@ -9,7 +9,7 @@
 
 <div id="main" class="cart-all cart-confirm">
 
-<div class="clearfix mb-5">
+<div class="clearfix">
 
 @include('cart.shared.guide', ['active'=>3])
 
@@ -27,19 +27,12 @@
 @endif
 
 <div class="confirm-left">
-    <div class="clearfix">
+    <div class="clearfix mt-3">
         <h3>お届け先</h3>
         <div></div>
     </div>
     
-    <div class="ml-20per mt-1 pl-1">
-        <div class="text-right">
-            <?php
-                $target = isset($data['destination']) && $data['destination'] ? 'delivery-add' : 'user-info';
-            ?>
-            <a class="btn confirm-edit-btn" href="{{ url('shop/form#' . $target) }}">変更</a>
-        </div>
-        
+    <div class="ml-20per mt-2 pl-1">
         <div class="">
             @if(isset($data['destination']) && $data['destination'])
                 <span>{{ $data['receiver']['name'] }} 様</span><br>
@@ -57,17 +50,13 @@
     </div>
     
     
-    <div class="clearfix mt-4">
+    <div class="clearfix mt-3">
         <h3>お支払方法</h3>
         <div></div>
     </div>
     
-    <div class="mt-1">
+    <div class="mt-2">
         <div class="table-responsive table-custom">
-            <div class="text-right">
-                <a class="btn confirm-edit-btn" href="{{ url('shop/form#pay-method') }}">変更</a>
-            </div>
-            
             <table class="table">
                 <tr>
                     <th class="{{ count($errors) > 0 ? 'alert-danger' : '' }}">
@@ -122,11 +111,7 @@
         <div></div>
     </div>
     
-    <div class="table-responsive table-custom clearfix mt-1">
-        <div class="text-right">
-            <a class="btn confirm-edit-btn" href="{{ url('shop/cart') }}">変更</a>
-        </div>
-        
+    <div class="table-responsive table-custom clearfix mt-2">
     <table class="table">
         <tbody>
             @foreach($itemData as $item)
@@ -176,11 +161,7 @@
         <div></div>
     </div>
     
-    <div class="table-responsive table-custom mt-1">
-        <div class="text-right">
-            <a class="btn confirm-edit-btn" href="{{ url('shop/form#delivery-info') }}">変更</a>
-        </div>
-        
+    <div class="table-responsive table-custom mt-2">
         <table class="table">
             <tbody>
                 <tr>
@@ -265,37 +246,16 @@
     </div>
     
     
-    @if(isset($data['huzai_comment']) && $data['huzai_comment'] != '')
-        <div class="clearfix mt-3">
-            <h3>不在置き場所</h3>
-            <div></div>
-        </div>
-        
-        <div class="ml-20per mt-1">
-            <div class="text-right">
-                <a class="btn confirm-edit-btn" href="#">変更</a>
-            </div>
-            
-            <p style="min-height:8em;" class="pt-0 pb-1 px-2">
-                {!! nl2br($data['huzai_comment']) !!}
-            </p>
-        </div>
-    @endif
-    
     @if(isset($data['user_comment']) && $data['user_comment'] != '')
         <div class="clearfix mt-3">
             <h3>コメント</h3>
             <div></div>
         </div>
         
-        <div class="ml-20per mt-1">
-            <div class="text-right">
-                <a class="btn confirm-edit-btn" href="{{ url('shop/form#comment') }}">変更</a>
-            </div>
-            
-            <p style="min-height:8em;" class="pt-0 pb-1 px-2">
+        <div class="ml-20per">
+            <div style="min-height:8em;" class="p-2">
                 {!! nl2br($data['user_comment']) !!}
-            </p>
+            </div>
         </div>
     @endif
 
@@ -305,12 +265,7 @@
             <div></div>
         </div>
         
-        <div class="ml-20per pl-1 mt-1">
-            <div class="text-right">
-                <a class="btn confirm-edit-btn" href="{{ url('shop/form#user-info') }}">変更</a>
-            </div>
-            
-            <div>
+        <div class="ml-20per pl-1 mt-2">
             {{ $userArr['name'] }}（{{ $userArr['hurigana'] }}）&nbsp;様<br>
             〒{{ Ctm::getPostNum($userArr['post_num']) }}<br>
             {{ $userArr['prefecture'] }}{{ $userArr['address_1'] }}{{ $userArr['address_2'] }}<br>
@@ -321,8 +276,6 @@
             <br>
             <p class="m-0 pt-1">メールマガジンの登録を{{ isset($userArr['magazine']) ? 'する' : 'しない' }}</p>
             @endif
-            
-            </div>
         </div>
 
         {{--
@@ -379,6 +332,61 @@
     @endif
     
     
+	<h5 class="card-header mb-3 py-2">ご注文の商品</h5>
+	<div class="table-responsive table-cart">
+        <table class="table bg-white">
+        	{{--
+            <thead>
+                <tr>
+                    <th colspan="2">商品名</th>
+                </tr>
+            </thead>  
+            --}}
+            
+            <tbody>
+                 
+                 @foreach($itemData as $item)
+                 	
+                    <?php //$obj = $item; ?>
+                      
+                 <tr>
+                 	<th>
+                    	@include('main.shared.smallThumbnail')
+                    </th>
+
+                    <td>
+                        <div>
+                            {!! Ctm::getItemTitle($item, 1) !!}
+                            <br>
+                            <span class="mr-2">[ {{ $item->number }} ]</span>
+                            ¥{{ Ctm::getItemPrice($item) }}（税込）
+                        </div>
+                        
+                        <p class="m-0 p-0 text-big"><span class="text-small">数量：</span>{{ $item->count }}</p>
+                        
+                        <?php $red = ''; ?>
+                        
+                        @if(! isset($item->sale_price) && isset($item->is_once_down))
+                            <?php $red = 'text-danger'; ?>
+                            <p class="m-0 p-0 {{ $red }}"><span class="text-small">同梱包割引</span></p>
+                        @endif
+                        
+                        @if($item->is_huzaioki)
+                            <?php $red = 'text-danger'; ?>
+                            <p class="m-0 p-0 {{ $red }}"><span class="text-small">不在置きを了承する</span></p>
+                        @endif
+                        
+                        <p class="m-0 p-0 text-big">
+                            <span class="text-small">金額（税込）：</span>
+                            <span class="{{ $red }}">¥{{ number_format( $item->item_total_price ) }}</span>
+                        </p>
+                    </td>
+                   </tr> 
+                 @endforeach
+                              
+             </tbody>
+        </table>
+	</div>
 
 </div><!-- left -->
 
@@ -386,102 +394,13 @@
 
 <div class="confirm-right">
     <div class="right-gray">
-        
-        <div class="">
-        <?php
-            $isCard = 0;
-            if($data['pay_method'] == 1) {
-                if(! isset($data['card_seq']) || (isset($data['card_seq']) && $data['card_seq'] == 99)) {
-                    $isCard = 1;
-                }
-            }
-        ?>
-
-        @if($isCard)
-            <form id="getTokenForm">
-
-                @foreach($cardInfo as $key => $ci)
-                    <input id="{{ $key }}" type="hidden" name="{{ $key }}" value="{{ $ci }}">
-                @endforeach
-
-                <div class="">
-                    {{--
-                    <small class="col-md-5 mx-auto d-block px-5 mb-1 confirm-small">
-                        上記ご注文内容で注文を確定します。<br>
-                        <b>「注文する」ボタンをクリックすると注文を確定します。</b>
-                    </small>
-                    --}}
-                    
-                    <div class="loader-wrap">
-                        <span class="loader mr-3"><i class="fas fa-square mr-1"></i> 処理中..</span>
-                    </div>
-                
-                    <?php
-                        $isProduct = Setting::get()->first()->is_product ? 1 : 0;
-                    ?>
-                    
-                    <input type="button" id="card-submit" class="btn btn-block btn-orange mt-0 mb-4 py-3" data-product="{{ $isProduct }}" value="注文を確定する">
-                    
-                    {{--
-                    <button class="btn btn-block btn-enji col-md-4 mb-4 mx-auto py-2" type="submit" name="regist_off" value="1"{{ $disabled }} onclick="doPurchase()">注文する</button>
-                    --}}
-                </div>
-
-            </form>
-        @endif
-
-        <form id="purchaseForm" class="form-horizontal" role="form" method="POST" action="{{ $actionUrl }}">
-            {{ csrf_field() }}
-            
-            @foreach($settles as $key => $settle)
-                <input type="hidden" name="{{ $key }}" value="{{ $settle }}">
-            @endforeach
-            
-            <input type="hidden" value="" id="token" name="token">
-            
-            @if(! $isCard)
-                <?php
-                    $disabled = '';
-                    if(count($errors) > 0) {
-                        $disabled = ' disabled';
-                    }
-                ?>
-                
-                    @if($errors->has('konbiniLimit'))
-                        <span class="mx-auto d-block px-5 confirm-small text-danger text-small">
-                            {{ $errors->first('konbiniLimit') }}<br>
-                            戻ってお支払い方法か購入商品を変更して下さい。
-                        </span>
-                    @elseif($errors->has('gmoLimit'))
-                        <span class="mx-auto d-block px-5 confirm-small text-danger text-small">
-                            {{ $errors->first('gmoLimit') }}<br>
-                            戻ってお支払い方法か購入商品/数量を変更して下さい。
-                        </span>
-                    @else
-                        {{--
-                        <span class="mx-auto d-block px-5 confirm-small text-small">
-                        上記ご注文内容で注文を確定します。<br>
-                        <b>「注文する」ボタンをクリックすると注文を確定します。</b>
-                        </span>
-                        --}}
-                    @endif
-
-                    
-                <div class="loader-wrap">
-                    <span class="loader mr-3"><i class="fas fa-square mr-1"></i> 処理中..</span>
-                </div>
-                
-                <button id="exist-submit" class="btn btn-block btn-orange mb-4 py-3" type="submit"{{ $disabled }}>注文を確定する</button>
-            @endif
-          
-        </form>
-    </div>
     
-    <div class="table-responsive show-price table-foot">
+    <div class="table-responsive show-price table-custom">
         <table class="table">
+            
             <tbody>
             <tr>
-                <th>商品合計</th>
+                <th>商品金額合計（税込）</th>
                  <td>¥{{ number_format($allPrice) }}</td>
             </tr>
             <tr>
@@ -511,56 +430,52 @@
             
             @elseif($data['pay_method'] == 4)
                 <tr>
-                    <th>手数料</th>
+                    <th>後払い手数料</th>
                     <td>¥{{ number_format($codFee) }}</td>
                 </tr>
             
             @elseif($data['pay_method'] == 5)
                 <tr>
-                    <th>手数料</th>
+                    <th>代引き手数料</th>
                     <td>¥{{ number_format($codFee) }}</td>
                 </tr>
             @endif
             
             @if(Auth::check())
-                <tr>
-                    <th>利用ポイント</th>
-                    <td>{{ $usePoint }}</td>
-                </tr>
+            <tr>
+                <th>ポイント利用</th>
+                 <td>{{ $usePoint }}</td>
+            </tr>
             @endif
             
+            <tr>
+                <th>注文金額合計（税込）</th>
+                <td class="text-danger text-big{{ count($errors) > 0 ? ' alert-danger' : '' }}">
+                      ¥{{ number_format($allPrice + $deliFee + $codFee - $usePoint - $seinouHuzaiAllPrice + $seinouSundayAllPrice) }}
+                </td>
+            </tr>
             </tbody>
         </table>
     </div>
 
-    <hr>
+    @if($regist || Auth::check())
+        <div class="table-responsive table-normal show-price mt-3">
+            <table class="table border table-borderd bg-white">
 
-    <div class="table-responsive table-foot show-price mt-3">
-        <table class="table">
-            <tr>
-                <th class="text-big"><b>合計<small>（税込）</small></b></th>
-                <td class="text-danger text-extra-big{{ count($errors) > 0 ? ' alert-danger' : '' }}">
-                     <b class="text-big"> ¥{{ number_format($allPrice + $deliFee + $codFee - $usePoint - $seinouHuzaiAllPrice + $seinouSundayAllPrice) }}</b>
-                </td>
-            </tr>
+                @if(Auth::check())
+                <tr>
+                    <th>ポイント残高</th>
+                     <td>{{ $userArr['point'] - $usePoint }}</td>
+                </tr>
+                @endif
+                <tr>
+                    <th>ポイント発生</th>
+                    <td>{{ $addPoint }}</td>
+                </tr>
+            </table>
+        </div>
+    @endif
 
-            @if(Auth::check())
-            <tr>
-                <th>ポイント残高</th>
-                 <td>{{ $userArr['point'] - $usePoint }}</td>
-            </tr>
-            @endif
-            
-            @if($regist || Auth::check())
-            <tr>
-                <th>ポイント発生</th>
-                <td>{{ $addPoint }}</td>
-            </tr>
-            @endif
-        </table>
-    </div>
-
-    {{--
     <div class="table-responsive table-normal show-price mt-3">
         <table class="table border table-borderd bg-white"> 
             <tr>
@@ -588,18 +503,237 @@
             @endif
         </table>
     </div>
-    --}}
 
 </div>
 </div><!-- right -->
 
 
+<div class="confirm-left">
+<h5 class="card-header mb-3 py-2 mt-4">配送情報</h5>
+<div class="table-responsive table-cart mt-3">
+    <table class="table table-borderd border bg-white">
+    	<thead>
+     	   <tr><th>お届け先</th></tr>
+        </thead>
+        
+        <tbody>
+        	<tr>
+            <td>
+        
+@if(isset($data['destination']) && $data['destination'])
+    〒{{ Ctm::getPostNum($data['receiver']['post_num']) }}<br>
+    {{ $data['receiver']['prefecture'] }}&nbsp;
+    {{ $data['receiver']['address_1'] }}&nbsp;
+    {{ $data['receiver']['address_2'] }}<br>
+    {{-- $data['receiver']['address_3'] --}}
+    <span class="d-block mt-2">{{ $data['receiver']['name'] }} 様</span>
+    TEL : {{ $data['receiver']['tel_num'] }}
+    
+@else
+	〒{{ Ctm::getPostNum($userArr['post_num']) }}<br>
+	{{ $userArr['prefecture'] }}&nbsp;
+    {{ $userArr['address_1'] }}&nbsp;
+    {{ $userArr['address_2'] }}<br>
+    {{-- $userArr['address_3'] --}}
+    <span class="d-block mt-2">{{ $userArr['name'] }} 様</span>
+    TEL : {{ $userArr['tel_num'] }}
+    
+@endif
+	</td>
+	</tr>
+         </tbody> 
+    </table>
+</div>
+
+
+<div class="table-responsive table-normal mt-3">
+    <table class="table table-borderd border bg-white">
+    	
+        
+        <tbody>
+        	<tr>
+            	<th class="font-weight-normal">ご希望日程</th>
+                <td>
+                	<b>
+                    @if(isset($data['plan_date']))
+                        {{ $data['plan_date'] }}<br>
+                    @else
+                        最短出荷<br>
+                    @endif
+					</b>
+                </td>
+            </tr>
+            
+            <?php
+//            	print_r($itemData);
+//                exit;
+            ?>
+            
+            {{--
+            @if(isset($data['is_seinou']))
+                <tr>
+                    <th class="font-weight-normal" rowspan="2">不在置き</th>
+                    <td>
+                        <div class="">
+                            <ul class="mb-1 list-unstyled text-small">
+                                @foreach($data['seinouItemTitle'] as $seinouItemTitle)
+                                    <li>
+                                        <i class="fal fa-angle-double-right"></i> {{ $seinouItemTitle }}
+                                        
+                                    </li>
+                                @endforeach
+                            </ul>
+                            
+                            <b class="d-block">[ 不在置きを{{ $data['is_huzaioki'] ? '了承する' : '了承しない' }} ]</b>
+                        </div>
+                    </td>  
+                </tr>
+                
+                <tr>
+                    <td class="border-top-0 mt-0 pt-0">
+                        <p class="text-small p-0 m-2">
+                        	不在置きの場所：<br>
+                            <span class="text-big">{!! nl2br($data['huzai_comment']) !!}</span>
+                        </p>
+                        
+                        @if(Ctm::isSeinouSunday($data['plan_date']))
+                            <small class="d-inline-block text-enji mt-1 pt-1">＊上記１商品につきまして
+                                <ul class="pl-4 mb-0 pb-0">
+                                    <li>不在置きを了承するの場合は、{{ number_format(Ctm::getSeinouObj()->huzaiokiFee) }}円引きとなります。
+                                    <li>配送ご希望日程が日曜日の場合は、{{ number_format(Ctm::getSeinouObj()->sundayFee) }}円増しとなります。
+                                </ul>
+                            </small>
+                        @endif
+                    </td>
+                </tr>
+			@endif
+            --}}
+            
+            @if(isset($data['plan_time']) && count($data['plan_time']) > 0)
+            	<tr>
+                	<th class="font-weight-normal">ご希望時間</th>
+                    <td>
+                        @foreach($data['planTimeItemTitle'] as $k => $planTimeTitleArr) 
+                            <div class="mb-3"> 
+                                <ul class="mb-1 list-unstyled text-small">
+                                    @foreach($planTimeTitleArr as $planTimeTitle)
+                                        <li>
+                                            <i class="fal fa-angle-double-right"></i> {{ $planTimeTitle }}
+                                        </li>
+                                    @endforeach
+                                </ul>
+                                
+                                <b>[ {{ $data['plan_time'][$k] }} ]</b>
+                            </div>
+                        @endforeach
+                
+                	</td>
+            	</tr>
+            @endif
+            
+
+        </tbody>
+    </table>
+</div>
 
 
 
-</div>{{-- clear --}}
+</div>
+
+
+
+
+</div>
+
+<div class="mt-5">
+<?php
+	$isCard = 0;
+    if($data['pay_method'] == 1) {
+    	if(! isset($data['card_seq']) || (isset($data['card_seq']) && $data['card_seq'] == 99)) {
+        	$isCard = 1;
+        }
+    }
+?>
+
+@if($isCard)
+<form id="getTokenForm">
+
+	@foreach($cardInfo as $key => $ci)
+    	<input id="{{ $key }}" type="hidden" name="{{ $key }}" value="{{ $ci }}">
+	@endforeach
+
+	<div class="">
+        <small class="col-md-5 mx-auto d-block px-5 mb-1 confirm-small">
+            上記ご注文内容で注文を確定します。<br>
+            <b>「注文する」ボタンをクリックすると注文を確定します。</b>
+        </small>
+        
+        <div class="loader-wrap">
+	        <span class="loader mr-3"><i class="fas fa-square mr-1"></i> 処理中..</span>
+  		</div>
+    
+    	<?php
+        	$isProduct = Setting::get()->first()->is_product ? 1 : 0;
+        ?>
+        <input type="button" id="card-submit" class="btn btn-block btn-enji col-md-4 mb-4 mx-auto py-3" data-product="{{ $isProduct }}" value="注文する">
+        
+        {{--
+        <button class="btn btn-block btn-enji col-md-4 mb-4 mx-auto py-2" type="submit" name="regist_off" value="1"{{ $disabled }} onclick="doPurchase()">注文する</button>
+        --}}
+	</div>
+
+</form>
+@endif
+
+<form id="purchaseForm" class="form-horizontal" role="form" method="POST" action="{{ $actionUrl }}">
+    {{ csrf_field() }}
+    
+    @foreach($settles as $key => $settle)
+    	<input type="hidden" name="{{ $key }}" value="{{ $settle }}">
+    @endforeach
+    
+    <input type="hidden" value="" id="token" name="token">
+    
+    @if(! $isCard)
+    	<?php        	
+            $disabled = '';
+            if(count($errors) > 0) {
+            	$disabled = ' disabled';
+            }
+        ?>
+        
+    	<small class="col-md-5 mx-auto d-block px-5 mb-1 confirm-small">
+            @if($errors->has('konbiniLimit'))
+                <span class="text-danger text-big">
+                    {{ $errors->first('konbiniLimit') }}<br>
+                    戻ってお支払い方法か購入商品を変更して下さい。
+                </span>
+            @elseif($errors->has('gmoLimit'))
+                <span class="text-danger text-big">
+                    {{ $errors->first('gmoLimit') }}<br>
+                    戻ってお支払い方法か購入商品/数量を変更して下さい。
+                </span>
+            @else
+                上記ご注文内容で注文を確定します。<br>
+                <b>「注文する」ボタンをクリックすると注文を確定します。</b>
+            @endif
+        </small>
+
+            
+        <div class="loader-wrap">
+            <span class="loader mr-3"><i class="fas fa-square mr-1"></i> 処理中..</span>
+        </div>
+        
+    	<button id="exist-submit" class="btn btn-block btn-enji col-md-4 mb-4 mx-auto py-3" type="submit"{{ $disabled }}>注文する</button>
+    @endif
+  
+</form>
+
+
 
 @includeWhen(Ctm::isEnv('local'), 'cart.shared.backBtn', ['urlForBack'=>'form', 'textForBack'=>'お客様情報の入力に戻る'])
+
+</div>
 
 
 </div>

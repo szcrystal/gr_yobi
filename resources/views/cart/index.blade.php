@@ -229,12 +229,12 @@
 	<table class="table">
          <tbody class="clearfix">
          	<tr>
-          		<th class="text-left text-big">
+          		<th class="text-left">
                 	商品合計
                 </th>
                 
-            	<td class="text-big">
-                	<b>¥{{ number_format($allPrice) }}</b>
+            	<td class="">
+                	¥{{ number_format($allPrice) }}
                 </td>
              	
                 {{--
@@ -246,22 +246,19 @@
           	</tr>
             
             
-                <tr>
-                    <th class="text-left text-big">
-                    	送料
-                    </th>
-                    
-                    <td class="text-big">
-                        @if(isset($deliFee))
-                            <b>¥{{ number_format($deliFee) }}</b>
-                        @else
-                            <b class="text-enji">含まれておりません</b>
-                        @endif
-                    </td>
+            <tr>
+                <th class="text-left">送料</th>
+                
+                <td class="">
+                    @if(isset($deliFee))
+                        ¥{{ number_format($deliFee) }}
+                    @else
+                        <b class="text-big text-enji">含まれておりません</b>
+                    @endif
+                </td>
+            </tr>
             
             {{--
-                </tr>
-                
                 <tr>
                     <th class="text-left text-big">
                     	合計 <small>(小計+送料)</small>
@@ -273,38 +270,29 @@
                     
                 </tr>
             
-            @else
-            	<tr>
-                	<td colspan="2" class="text-left pt-0">
-                        <span class="text-enji text-small"><i class="fas fa-exclamation-triangle"></i> <b>送料は含まれておりません</b></span>
+                @else
+                    <tr>
+                        <td colspan="2" class="text-left pt-0">
+                            <span class="text-enji text-small"><i class="fas fa-exclamation-triangle"></i> <b>送料は含まれておりません</b></span>
+                        </td>
+                    </tr>
+                @endif
+
+                <tr>
+                    <th class="pt-3 text-left text-big"><span class="d-inline-block pt-1">配送先都道府県</span></th>
+                    <td class="pt-3">
+                        
+                        
                     </td>
                 </tr>
-            @endif
-
-            <tr>
-            	<th class="pt-3 text-left text-big"><span class="d-inline-block pt-1">配送先都道府県</span></th>
-                <td class="pt-3">                
-                    
-                    
-                </td>   
-            </tr>
             --}}
             
-            <tr>
-            	<th class="clearfix pt-3">
-                	
-                </th>
-                
-                <td class="pt-3">
-                	
-                </td>
-            </tr>
-           
          </tbody>        
 	</table>
     </div>
     
-    <div class="bg-white clearfix py-2 px-3">
+    <div class="bg-white clearfix py-3 px-3 mb-4">
+        
         @if(! isset($deliFee))
             <div class="cart-note text-left mb-2">
                 <span class="text-enji"><i class="fas fa-exclamation-triangle"></i> 送料確認は「配送先都道府県」を選択して「送料計算」を押して下さい。</span>
@@ -314,7 +302,7 @@
         
         <div class="select-wrap w-100 p-0 mb-3">
             <label class="control-label mb-0 text-small d-inline w-50"><b>配送先都道府県</b></label>
-            <select style="width:63%;" id="pref" class="form-control d-inline{{ $errors->has('pref_id') ? ' is-invalid' : '' }}" name="pref_id">
+            <select style="width:60%;" id="pref" class="form-control ml-1 d-inline{{ $errors->has('pref_id') ? ' is-invalid' : '' }}" name="pref_id">
                 <option selected value="0">選択</option>
                 <?php
     //                            use App\Prefecture;
@@ -334,6 +322,7 @@
                             }
                         }
                     ?>
+                    
                     <option value="{{ $pref->id }}"{{ $selected }}>{{ $pref->name }}</option>
                 @endforeach
             </select>
@@ -346,7 +335,7 @@
             </div>
         @endif
     
-        <button class="btn btn-block px-2 col-md-11 m-auto bg-enji" type="submit" name="re_calc" value="1"{{ $disabled }}>送料計算</button>
+        <button class="btn btn-block px-2 col-md-11 m-auto bg-enji mb-2" type="submit" name="re_calc" value="1"{{ $disabled }}>送料計算</button>
         
         {{--
         <button class="btn px-2 w-100 bg-enji" type="submit" name="delifee_calc" value="1"{{ $disabled }}><b>送料計算</b></button>
@@ -354,8 +343,9 @@
     
     </div>
     
-
-    <div class="table-responsive table-foot text-extra-big">
+    <hr>
+    
+    <div class="table-responsive table-foot">
         <table class="table mb-0 pb-0">
              <tbody class="clearfix">
                 <tr>
@@ -363,8 +353,8 @@
                         <b>合計 <small>(税込)</small></b>
                     </th>
                     
-                    <td class="text-big text-danger">
-                        <b>¥{{ number_format($allPrice + $deliFee) }}</b>
+                    <td class="text-extra-big text-danger">
+                        <b class="text-big">¥{{ number_format($allPrice + $deliFee) }}</b>
                     </td>
                 </tr>
             </tbody>

@@ -2,7 +2,7 @@
    <table class="table table-borderd border">
 
        <tr class="form-group">
-            <th>氏名<em>必須</em></th>
+            <th>配送先氏名<em>必須</em></th>
               <td>
                <input type="text" class="form-control col-md-12{{ $errors->has('receiver.name') ? ' is-invalid' : '' }}" name="receiver[name]" value="{{ Ctm::isOld() ? old('receiver.name') : (Session::has('all.data.receiver') ? session('all.data.receiver.name') : '') }}" placeholder="例）山田太郎">
               
@@ -16,7 +16,7 @@
         </tr>
      
          <tr class="form-group">
-            <th>フリガナ<em>必須</em></th>
+            <th>配送先フリガナ<em>必須</em></th>
               <td>
                <input type="text" class="form-control col-md-12{{ $errors->has('receiver.hurigana') ? ' is-invalid' : '' }}" name="receiver[hurigana]" value="{{ Ctm::isOld() ? old('receiver.hurigana') : (Session::has('all.data.receiver') ? session('all.data.receiver.hurigana') : '') }}" placeholder="例）ヤマダタロウ">
                
@@ -30,7 +30,7 @@
         </tr>
         
         <tr class="form-group">
-            <th>電話番号<em>必須</em>
+            <th>配送先電話番号<em>必須</em>
                {{-- <small>例）09012345678ハイフンなし半角数字</small> --}}
             </th>
               <td>
@@ -48,7 +48,7 @@
         
         
         <tr class="form-group">
-            <th>郵便番号<em>必須</em>
+            <th>配送先郵便番号<em>必須</em>
                {{-- <small>例）1234567ハイフンなし半角数字</small> --}}
             </th>
               <td>
@@ -64,7 +64,7 @@
         </tr>
         
         <tr class="form-group">
-           <th>都道府県<em>必須</em></th>
+           <th>配送先都道府県<em>必須</em></th>
            <td>
                <div class="select-wrap col-md-12 p-0">
                    <select id="pref_2" class="form-control select-first {{ $errors->has('receiver.prefecture') ? ' is-invalid' : '' }}" name="receiver[prefecture]">
@@ -99,7 +99,7 @@
         </tr>
         
         <tr class="form-group">
-            <th>住所1<small>（都市区それ以降）</small><em>必須</em></th>
+            <th>配送先住所1<small>（都市区それ以降）</small><em>必須</em></th>
               <td>
                <input id="address_2" type="text" class="form-control col-md-12{{ $errors->has('receiver.address_1') ? ' is-invalid' : '' }}" name="receiver[address_1]" value="{{ Ctm::isOld() ? old('receiver.address_1') : (Session::has('all.data.receiver') ? session('all.data.receiver.address_1') : '') }}" placeholder="例）小美玉市下吉影1-1">
                
@@ -113,7 +113,7 @@
         </tr>
         
         <tr class="form-group">
-            <th>住所2<small>（建物/マンション名等）</small></th>
+            <th>配送先住所2<small>（建物/マンション名等）</small></th>
               <td>
                <input type="text" class="form-control col-md-12{{ $errors->has('receiver.address_2') ? ' is-invalid' : '' }}" name="receiver[address_2]" value="{{ Ctm::isOld() ? old('receiver.address_2') : (Session::has('all.data.receiver') ? session('all.data.receiver.address_2') : '') }}" placeholder="例）GRビル 101号">
                

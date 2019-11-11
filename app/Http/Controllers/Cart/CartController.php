@@ -596,7 +596,7 @@ class CartController extends Controller
                     'plan_date' => isset($allData['plan_date']) ? $allData['plan_date'] : null,
                     'plan_time' => $oneSesData['plan_time'],
                     
-                    'is_huzaioki' => $oneSesData['is_huzaioki'],
+                    'is_huzaioki' => isset($oneSesData['is_huzaioki']) ? $oneSesData['is_huzaioki'] : null,
                     
                     'deli_done' => 0,
                     'pay_done' => 0,

@@ -377,6 +377,146 @@ body {
     //border: 1px solid orange;
 }
 
+
+/* Custom All =========== */
+.px-10 {
+    padding-left: 7.5em;
+    padding-right: 7.5em;
+}
+.btn-block {
+    font-size: 1.05em;
+}
+.btn-custom,
+.btn-kon,
+.btn-pink,
+.btn-white {
+    color: #fff;
+    border-radius: 0;
+    cursor: pointer;
+}
+.btn-custom {
+    background: #3a3b3c;
+}
+.btn-kon {
+    background: #18206F; /* =>blue */
+}
+.btn-pink {
+    background: #fa828f; /* =>pink */
+    /*background: #18206F;*/ /* =>blue */
+}
+.btn-white {
+    background: #fff;
+/*    border: 2px solid #fa828f;*/
+/*    color: #fa828f;*/
+    border: 2px solid #18206F;
+    color: #18206F;
+}
+.btn-cart-del {
+    background: none;
+    border: 0;
+    font-size: 1.6em;
+    padding-top: 0;
+    padding-right: 0;
+    line-height: 0;
+}
+.btn-line {
+    border: 1px solid #8a8a8a;
+    background: #fff;
+}
+.btn-enji {
+    background: #C15360;
+    color: #fff;
+    border-radius: 0;
+    cursor: pointer;
+}
+.btn-orange {
+    background: #DE4C45;
+    color: #fff;
+}
+.btn-blue {
+    background: #506EA8;
+}
+.text-big {
+    font-size: 1.1em;
+}
+.text-extra-big {
+    font-size: 1.2em;
+}
+.text-small {
+    font-size: 0.9em;
+}
+.text-extra-small {
+    font-size: 0.7em;
+}
+.text-bold {
+    font-weight: bold;
+}
+.bg-gray {
+    background: #8f8f8f;
+}
+.bg-enji {
+    background: #C15360;
+    color: #fff;
+}
+.bg-orange {
+    background: navajowhite;
+}
+.bg-kon-light {
+    background: #E3EDEF;
+}
+.bg-blue {
+    background: paleturquoise;
+}
+.text-enji {
+    color: #C15360;
+}
+.text-kon {
+    color: #18206F;
+}
+.text-blue {
+    color: #506EA8;
+}
+.text-brown {
+    color: sienna;
+}
+.text-gray {
+    color: #afafaf;
+}
+.text-warn {
+    color: #F1A916;
+}
+.border-gray {
+    border-color: #ddd;
+}
+
+
+/* Shop ******* */
+#guide {
+    margin: 1em 0 3em;
+}
+#guide br {
+    display: none;
+}
+#guide > div {
+    width: 25%;
+    color: #cfcfcf;
+    font-size: 1.1em;
+}
+#guide .active-page {
+    color: #333;
+}
+#guide > div div {
+    background: #cfcfcf;
+    height: 5px;
+    width: 100%;
+    margin-bottom: 0.3em;
+}
+#guide .active-page div {
+    background: #333;
+}
+/* Custom All END =========== */
+
+
 /*.table,*/
 /*.table th,*/
 /*.table td {*/
@@ -468,7 +608,9 @@ body {
 }
 .table-foot tr td {
 	text-align: right;
-    padding-left: 1.2em;
+    font-weight: normal;
+    font-size: 1.05em;
+    padding-left: 0.2em;
 }
 .cart-note {
 /*	float: right;*/
@@ -483,7 +625,7 @@ body {
 .table-foot tr:last-of-type th,
 .table-foot tr:last-of-type td {
 	border-bottom: 0 !important;
-    padding-top: 1.4em;
+    //padding-top: 1.4em;
 }
 .table-foot tr:last-of-type td {
 	//width: 35%;
@@ -525,7 +667,8 @@ body {
 }
 
 /* cart-form */
-.cart-form h3 {
+.cart-form h3,
+.cart-confirm h3 {
     float: left;
     width: 18%;
     border: none !important;
@@ -536,19 +679,24 @@ body {
     font-size: 1.2em;
     //line-height: 2.2em;
 }
-.cart-form h3 + div {
+.cart-form h3 + div,
+.cart-confirm h3 + div {
     float: left;
     width: 82%;
     height: 1.4em;
     background: #f2f2f2;
 }
 .cart-form .table-custom,
+.cart-confirm .table-custom,
 .ml-20per {
     margin-left: 18%;
     width: 82%;
+    //position: relative;
 }
-.cart-form .table-custom th {
+.cart-form .table-custom th,
+.cart-confirm .table-custom th {
     padding-left: 0.1em;
+    //border: 1px solid red !important;
 }
 .cart-form .ml-20per .receiver .table-custom {
     margin-left: 0;
@@ -563,144 +711,24 @@ body {
 /*    width: 80%;*/
 /*}*/
 
-
-.px-10 {
-	padding-left: 7.5em;
-    padding-right: 7.5em;
-}
-.btn-block {
-	font-size: 1.05em;
-}
-.btn-custom,
-.btn-kon,
-.btn-pink,
-.btn-white {
-    color: #fff;
-    border-radius: 0;
-    cursor: pointer;
-}
-.btn-custom {
-	background: #3a3b3c;
-}
-.btn-kon {
-	background: #18206F; /* =>blue */
-}
-.btn-pink {
-	background: #fa828f; /* =>pink */
-	/*background: #18206F;*/ /* =>blue */
-}
-.btn-white {
-    background: #fff;
-/*    border: 2px solid #fa828f;*/
-/*    color: #fa828f;*/
-	border: 2px solid #18206F;
-    color: #18206F;
-}
-.btn-cart-del {
-	background: none;
-    border: 0;
-    font-size: 1.6em;
-    padding-top: 0;
-    padding-right: 0;
-    line-height: 0;
-}
-.btn-line {
-	border: 1px solid #8a8a8a;
-    background: #fff;
-}
-.btn-enji {
-	background: #C15360;
-    color: #fff;
-    border-radius: 0;
-    cursor: pointer;
-}
-.btn-blue {
-	background: #506EA8;
-}
-.text-big {
-	font-size: 1.1em;
-}
-.text-extra-big {
-	font-size: 1.2em;
-}
-.text-small {
-	font-size: 0.9em;
-}
-.text-extra-small {
-	font-size: 0.7em;
-}
-.text-bold {
-	font-weight: bold;
-}
-.bg-gray {
-	background: #8f8f8f;
-}
-.bg-enji {
-	background: #C15360;
-    color: #fff;
-}
-.bg-orange {
-	background: navajowhite;
-}
-.bg-kon-light {
-    background: #E3EDEF;
-}
-.bg-blue {
-	background: paleturquoise;
-}
-.text-enji {
-	color: #C15360;
-}
-.text-kon {
-	color: #18206F;
-}
-.text-blue {
-	color: #506EA8;
-}
-.text-brown {
-	color: sienna;
-}
-.text-gray {
-	color: #afafaf;
-}
-.text-warn {
-	color: #F1A916;
-}
-.border-gray {
-	border-color: #ddd;
-}
-
-
-/* Shop ******* */
-#guide {
-	margin: 1em 0 3em;
-}
-#guide br {
-	display: none;
-}
-#guide > div {
-	width: 25%;
-	color: #cfcfcf;
-	font-size: 1.1em;
-}
-#guide .active-page {
-	color: #333;
-}
-#guide > div div {
-	background: #cfcfcf;
-	height: 5px;
-    width: 100%;
-    margin-bottom: 0.3em;
-}
-#guide .active-page div {
-	background: #333;
-}
-
 .table-custom .table tbody th {
-	width: 27%;
+    width: 27%;
 }
 .cart-form .table-custom .table tbody th {
     width: 29%;
+}
+.cart-confirm .table-custom .table tbody th {
+    width: 24% !important;
+}
+
+.confirm-edit-btn {
+    border: 1px solid #0079c3;
+    color: #0079c3;
+    font-size: 0.85em;
+    padding: 0.3em 0.7em 0.2em;
+}
+.confirm-edit-btn:hover {
+    border-color: #aaa;
 }
 
 /*.confirm .confirm-left {*/
@@ -1684,7 +1712,7 @@ img.img-fluid + div {
     }
 }
 .loader-wrap {
-	height: 1em;
+	height: 0;
     line-height: 4.2em;
     text-align: center;
     position: relative;
@@ -1717,7 +1745,7 @@ img.img-fluid + div {
 	left: 27%;
 }
 .loader .fas {
-    color: #C15360;
+    color: #DE4C45;
 	-webkit-animation: rt 1s infinite linear alternate-reverse;
     animation: rt 1s infinite linear alternate-reverse;
 }
