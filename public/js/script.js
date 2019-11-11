@@ -765,7 +765,9 @@ var exe = (function() {
             });
             
             
-            //shop 会員登録 Y or N
+            //shop 会員登録 Y or N ==========================
+            //会員登録Y/Nをcheckboxにする時のコード
+            /*
             var $checkRegistY = $('#check-regist-y');
             var $registTarget = $('.regist-frame');
             
@@ -780,16 +782,16 @@ var exe = (function() {
             $checkRegistY.on('change', function(){
             	$registTarget.slideToggle(100);
             });
-            
+            */
             
             //会員登録Y/Nをradioにする時のコード
-            /*
+            
             var $radioRegist = $('.registRadio');
             var $registTarget = $('.regist-frame');
              
             var registVal = $('.registRadio:checked').val();
             
-            console.log(registVal);
+            //console.log(registVal);
             
             //load時
             if($radioRegist.length) {
@@ -804,15 +806,14 @@ var exe = (function() {
             
             //change時
             $radioRegist.on('change', function(e){
-            	console.log($(this).val());
+            	//console.log($(this).val());
                 
             	if($(this).val() == 1)
 	            	$registTarget.slideDown(100);
                 else
                 	$registTarget.stop().slideUp(100);
-                
             });
-            */
+            
             
             
             //shop 不在時置き場所コメント checkbox

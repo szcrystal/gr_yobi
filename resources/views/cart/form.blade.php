@@ -91,7 +91,7 @@ use App\DeliveryGroup;
             @if ($errors->has('receiver.*'))
                 <div class="help-block text-danger receiver-error">
                     <span class="fa fa-exclamation form-control-feedback"></span>
-                    <span>上記登録先住所に配送をご希望の場合は「登録先と同じ」にチェックをして下さい。</span>
+                    <span class="text-small">上記登録先住所に配送をご希望の場合は、上記先頭のチェックをONにして下さい。</span>
                 </div>
             @endif
             
@@ -466,7 +466,7 @@ use App\DeliveryGroup;
                 @if ($errors->has('receiver.*'))
                     <div class="help-block text-danger receiver-error">
                         <span class="fa fa-exclamation form-control-feedback"></span>
-                        <span>上記登録先住所に配送をご希望の場合は「登録先と同じ」にチェックをして下さい。</span>
+                        <span class="text-small">上記登録先住所に配送をご希望の場合は「お客様情報と同じ」にチェックをして下さい。</span>
                     </div>
                 @endif
         </fieldset>
@@ -1047,10 +1047,13 @@ use App\DeliveryGroup;
                                                     if(Session::has('all.data.temp_is_regist_card') && session('all.data.temp_is_regist_card'))
                                                         $checked = ' checked';
                                                 }
+                                                
+                                                $word = Auth::check() ? '' : '会員登録をして、';
+                                                $red = Auth::check() ? '' : 'text-enji';
                                             ?>
                                             
                                             <input id="check-regist-card" type="checkbox" name="is_regist_card" value="1"{{ $checked }}>
-                                            <label for="check-regist-card" class="checks">このクレジットカード情報を登録する</label>
+                                            <label for="check-regist-card" class="checks {{ $red }}">{{ $word }}このクレジットカードを登録する</label>
                                             
                                             {{--
                                             <input type="checkbox" name="is_regist_card" value="1"{{ $checked }}> このクレジットカード情報を登録する
