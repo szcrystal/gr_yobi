@@ -808,12 +808,12 @@ ORG END ======================== */
     	font-size: 1.2em;
     }
     .table-cart .btn {
-    	font-size: 0.85em;
+    	font-size: 0.95em;
         width: 100%;
     }
     .table-cart .btn-cart-del {
-    	font-size: 1.5em;
-        padding-right: 0;
+    	font-size: 2em;
+        padding-right: 0.2em;
     }
     .table-cart .btn .fal { /* 再計算等のアイコン */
     	//display: none;
@@ -822,7 +822,7 @@ ORG END ======================== */
         vertical-align: 1px;
     }
     .table-cart tbody th {
-    	width: 18%;
+    	//width: 18%;
     }
     .cart-index .table-cart td:last-of-type,
 	.cart-index .table-foot td:last-of-type {
@@ -837,8 +837,13 @@ ORG END ======================== */
     }
     
     .select-cart-count { /* cart-index 数量 */
-        width: 28%;
+        width: 60%;
     }
+    .select-cart-count + .btn { /* 更新ボタン */
+        width: 20%;
+        //border: 1px solid red;
+    }
+    
     .checks {
     	margin-left: 0.2em;
     }
@@ -852,23 +857,27 @@ ORG END ======================== */
     
     .table-foot tr th,
     .table-foot tr td {
-        padding: 0.2em 0.7em;
+        //padding: 0.2em 0.7em;
     }
     .table-foot tr th {
-        width: 65%;
+        //width: 65%;
     }
     .table-foot tr td {
     	padding-left: 0.2em;
         text-align: right;
     }
     .cart-note {
-    	float: left;
+    	//float: left;
         padding-left: 0.2em;
         padding-right: 0.1em;
-        font-size: 0.85em;
-        width: 92%;
+        font-size: 0.95em;
+        width: 100%;
         margin-right: 0.1em;
     }
+    .select-pref {
+        width: 70%;
+    }
+    
     
     .cart-btn-wrap > div:first-of-type .table {
         table-layout: fixed;
@@ -914,10 +923,57 @@ ORG END ======================== */
     	width: 25% !important;
     }
     
-    .confirm .confirm-left,
-    .confirm .confirm-right {
+    .confirm-left,
+    .confirm-right {
         float: none;
         width: 100%;
+    }
+    .confirm-right {
+        margin-top: 2em;
+    }
+    
+    .cart-form h3,
+    .cart-confirm h3 {
+        width: 100%;
+        background: #f2f2f2;
+        padding: 0.1em 0.2em !important;
+    }
+    .cart-form h3 + div,
+    .cart-confirm h3 + div {
+        display: none;
+    }
+    .cart-form .table-custom,
+    .cart-confirm .table-custom,
+    .ml-20per {
+        margin-left: 0;
+        width: 100%;
+    }
+    
+    .cart-form .table-custom tr th {
+        width: 97% !important;
+        //border: 1px solid red !important;
+        margin: auto;
+    }
+    .cart-form .table-custom th small,
+    .cart-confirm .table-custom th small {
+        display: inline;
+    }
+    
+    .cart-confirm .table-custom .table tbody th {
+        display: inline-block;
+        width: 25% !important;
+    }
+    .cart-confirm .table-custom tr th img {
+        width: 100%;
+    }
+    .cart-confirm .table-custom .table tbody td {
+        display: inline-block;
+        width: 75% !important;
+        margin-right: 0 !important;
+        //border: 1px solid red !important;
+    }
+    .cart-confirm .table-custom tr {
+        //border: 1px solid red !important;
     }
     
     .confirm .confirm-right .table-normal.show-price tbody th { /* shop confirm ポイント利用などのテーブルのth */

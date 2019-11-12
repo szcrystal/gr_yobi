@@ -78,9 +78,8 @@
                         @endif
                     </th>
                     <td style="padding-top:0.6em;">
-                        @if($regist && $data['pay_method'] == 1 && $data['card_seq'] == 99)
-                            カードの登録：
-                            {{ isset($data['is_regist_card']) ? 'する' : 'しない' }}
+                        @if(/*$regist && */$data['pay_method'] == 1 && $data['card_seq'] == 99)
+                            カードの登録：{{ isset($data['is_regist_card']) ? 'する' : 'しない' }}
                         
                         @elseif($data['pay_method'] == 2)
                             {{-- コンビニ決済手数料 --}}
@@ -259,13 +258,12 @@
                     </tr>
                 @endif
                 
-
             </tbody>
         </table>
     </div>
     
     
-    @if(isset($data['huzai_comment']) && $data['huzai_comment'] != '')
+    @if(isset($data['is_seinou']) && isset($data['huzai_comment']) && $data['huzai_comment'] != '')
         <div class="clearfix mt-3">
             <h3>不在置き場所</h3>
             <div></div>
@@ -273,7 +271,17 @@
         
         <div class="ml-20per mt-1">
             <div class="text-right">
-                <a class="btn confirm-edit-btn" href="#">変更</a>
+                <a class="btn confirm-edit-btn" href="{{ url('shop/form#huzaioki') }}">変更</a>
+            </div>
+            
+            <div class="mb-3">
+                <ul class="mb-1 list-unstyled">
+                    @foreach($data['seinouHuzaiTitle'] as $shTitle)
+                        <li class="mb-2">
+                            <i class="fal fa-angle-double-right"></i> {{ $shTitle }}<br>
+                        </li>
+                    @endforeach
+                </ul>
             </div>
             
             <p style="min-height:8em;" class="pt-0 pb-1 px-2">
@@ -290,7 +298,7 @@
         
         <div class="ml-20per mt-1">
             <div class="text-right">
-                <a class="btn confirm-edit-btn" href="{{ url('shop/form#comment') }}">変更</a>
+                <a class="btn confirm-edit-btn" href="{{ url('shop/form#other-comment') }}">変更</a>
             </div>
             
             <p style="min-height:8em;" class="pt-0 pb-1 px-2">

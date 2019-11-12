@@ -91,6 +91,9 @@ select.form-control:focus {
     color: #18206F;
     background: none !important;
 }
+.select-pref {
+    width: 60%;
+}
 
 /* IE11 */
 @media all and (-ms-high-contrast:none) {
@@ -576,7 +579,7 @@ body {
     
 }
 .confirm .table-cart .table {
-	border: 1px solid #e3e3e3;
+	//border: 1px solid #e3e3e3;
 }
 
 /* cart-index部分 */
@@ -621,6 +624,7 @@ body {
     width: 100%;
     margin-right: 0.5em;
 }
+
 
 .table-foot tr:last-of-type th,
 .table-foot tr:last-of-type td {
@@ -835,6 +839,12 @@ img.img-fluid + div {
 /*    height: 160px;*/
 /*    line-height: 160px;*/
 /*}*/
+
+.anchor {
+    display: block;
+    padding-top: 70px;
+    margin-top: -70px;
+}
 
 
 /* header */

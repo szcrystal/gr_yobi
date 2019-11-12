@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Auth;
 
 use Illuminate\Http\Request;
 
+use Validator;
+
 class LoginController extends Controller
 {
     /*
@@ -56,7 +58,12 @@ class LoginController extends Controller
             //'title.required' => '「商品名」を入力して下さい。',
         ];
         
-        $this->validate($request, $rules, $messages);
+        //$this->validate($request, $rules, $messages);
+        $v = Validator::make($request->all(), $rules, $messages);
+        if($v->fails())
+            return redirect()->back()->withErrors($v, 'login')->withInput();
+        
+        
         $data = $request->all();
         
         $credentials = $request->only('email', 'password');
@@ -68,11 +75,10 @@ class LoginController extends Controller
 
         if (Auth::attempt($credentials, $remember)) { // 認証に成功した
             return redirect()->intended($prevUrl);
-            
         }
         else {
-        	$errors = ['認証できません。メールアドレス・パスワードを確認して下さい。'];
-        	return redirect()->back()->withInput()->withErrors($errors);
+        	$errors = ['認証できません。ご入力内容を確認して下さい。'];
+        	return redirect()->back()->withInput()->withErrors($errors, 'login');
         }
     }
     

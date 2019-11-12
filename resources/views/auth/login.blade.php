@@ -9,7 +9,10 @@
 			
             <p class="my-3 pb-1 mx-1">メールアドレスとパスワードを入力してログインして下さい。</p>
             
-            @include('main.shared.userLogin', ['pageType'=>'user'])
+            <form method="POST" action="{{ route('login') }}">
+                @csrf
+                @include('main.shared.userLogin', ['pageType'=>'user'])
+            </form>
             
             
         </div>

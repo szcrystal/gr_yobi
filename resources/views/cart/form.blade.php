@@ -26,6 +26,11 @@ use App\DeliveryGroup;
     </div>
 @endif
 
+<?php
+//print_r($errors);
+//exit;
+?>
+
 @if (count($errors) > 0)
     <div class="alert alert-danger">
         <i class="far fa-exclamation-triangle"></i>
@@ -45,8 +50,10 @@ use App\DeliveryGroup;
 
 
 <div class="clearfix">
-<form id="with1" class="form-horizontal" role="form" method="POST" action="{{ url('shop/confirm') }}">
+
+<form id="user-input" class="form-horizontal" role="form" method="POST" action="{{ url('shop/confirm') }}">
     {{ csrf_field() }}
+
 
 <div class="confirm-left">
 
@@ -74,7 +81,7 @@ use App\DeliveryGroup;
         
         <fieldset class="form-group">
             <div class="">
-                <input id="radio-destination-1" type="radio" name="destination" value="0" checked>
+                <input id="radio-destination-1" type="radio" name="destination" value="0" checked form="user-input">
                 <label for="radio-destination-1" class="radios">{{ $userObj->name }} 様</label>
                 <div class="pl-4">
                     〒{{ Ctm::getPostNum( $userObj->post_num) }}<br>
@@ -84,7 +91,7 @@ use App\DeliveryGroup;
             </div>
             
             <div class="mt-4 mb-1">
-                <input id="radio-destination-2" type="radio" name="destination" value="1"{{ $checked }}>
+                <input id="radio-destination-2" type="radio" name="destination" value="1"{{ $checked }} form="user-input">
                 <label for="radio-destination-2" class="radios">別の住所へお届け</label>
             </div>
             
@@ -116,7 +123,7 @@ use App\DeliveryGroup;
         </div>
         <div class="mb-2">
             <label>ポイント利用する</label>
-            <input class="form-control d-inline col-md-5{{ $errors->has('use_point') ? ' is-invalid' : '' }}" name="use_point" value="{{ Ctm::isOld() ? old('use_point') : (Session::has('all.use_point') ? session('all.use_point') : 0) }}" placeholder="">
+            <input class="form-control d-inline col-md-5{{ $errors->has('use_point') ? ' is-invalid' : '' }}" name="use_point" value="{{ Ctm::isOld() ? old('use_point') : (Session::has('all.use_point') ? session('all.use_point') : 0) }}" placeholder="" form="user-input">
         </div>
        
         @if ($errors->has('use_point'))
@@ -146,7 +153,7 @@ use App\DeliveryGroup;
             <tr class="form-group">
                  <th>氏名<em>必須</em></th>
                    <td>
-                    <input class="form-control col-md-12{{ $errors->has('user.name') ? ' is-invalid' : '' }}" name="user[name]" value="{{ Ctm::isOld() ? old('user.name') : (Session::has('all.data.user') ? session('all.data.user.name') : '') }}" placeholder="例）山田太郎">
+                    <input class="form-control col-md-12{{ $errors->has('user.name') ? ' is-invalid' : '' }}" name="user[name]" value="{{ Ctm::isOld() ? old('user.name') : (Session::has('all.data.user') ? session('all.data.user.name') : '') }}" placeholder="例）山田太郎" form="user-input">
                    
                     @if ($errors->has('user.name'))
                         <div class="text-danger">
@@ -160,7 +167,7 @@ use App\DeliveryGroup;
               <tr class="form-group">
                  <th>フリガナ<em>必須</em></th>
                    <td>
-                    <input type="text" class="form-control col-md-12{{ $errors->has('user.hurigana') ? ' is-invalid' : '' }}" name="user[hurigana]" value="{{ Ctm::isOld() ? old('user.hurigana') : (Session::has('all.data.user') ? session('all.data.user.hurigana') : '') }}" placeholder="例）ヤマダタロウ">
+                    <input type="text" class="form-control col-md-12{{ $errors->has('user.hurigana') ? ' is-invalid' : '' }}" name="user[hurigana]" value="{{ Ctm::isOld() ? old('user.hurigana') : (Session::has('all.data.user') ? session('all.data.user.hurigana') : '') }}" placeholder="例）ヤマダタロウ" form="user-input">
                     
                     @if ($errors->has('user.hurigana'))
                         <div class="text-danger">
@@ -176,7 +183,7 @@ use App\DeliveryGroup;
                     {{-- <small>例）09012345678ハイフンなし半角数字</small> --}}
                  </th>
                    <td>
-                    <input type="text" class="form-control col-md-12{{ $errors->has('user.tel_num') ? ' is-invalid' : '' }}" name="user[tel_num]" value="{{ Ctm::isOld() ? old('user.tel_num') : (Session::has('all.data.user') ? session('all.data.user.tel_num') : '') }}" placeholder="例）09012345678（ハイフンなし半角数字）">
+                    <input type="text" class="form-control col-md-12{{ $errors->has('user.tel_num') ? ' is-invalid' : '' }}" name="user[tel_num]" value="{{ Ctm::isOld() ? old('user.tel_num') : (Session::has('all.data.user') ? session('all.data.user.tel_num') : '') }}" placeholder="例）09012345678（ハイフンなし半角数字）" form="user-input">
                     
                     @if ($errors->has('user.tel_num'))
                         <div class="help-block text-danger">
@@ -192,7 +199,7 @@ use App\DeliveryGroup;
                     {{-- <small>例）1234567ハイフンなし半角数字</small> --}}
                  </th>
                    <td>
-                    <input id="zipcode" type="text" class="form-control col-md-12{{ $errors->has('user.post_num') ? ' is-invalid' : '' }}" name="user[post_num]" value="{{ Ctm::isOld() ? old('user.post_num') : (Session::has('all.data.user') ? session('all.data.user.post_num') : '') }}" placeholder="例）1234567（ハイフンなし半角数字）">
+                    <input id="zipcode" type="text" class="form-control col-md-12{{ $errors->has('user.post_num') ? ' is-invalid' : '' }}" name="user[post_num]" value="{{ Ctm::isOld() ? old('user.post_num') : (Session::has('all.data.user') ? session('all.data.user.post_num') : '') }}" placeholder="例）1234567（ハイフンなし半角数字）" form="user-input">
                     
                     @if ($errors->has('user.post_num'))
                         <div class="help-block text-danger">
@@ -207,7 +214,7 @@ use App\DeliveryGroup;
                  <th>都道府県<em>必須</em></th>
                    <td>
                     <div class="select-wrap col-md-12 p-0">
-                        <select id="pref" class="form-control select-first{{ $errors->has('user.prefecture') ? ' is-invalid' : '' }}" name="user[prefecture]">
+                        <select id="pref" class="form-control select-first{{ $errors->has('user.prefecture') ? ' is-invalid' : '' }}" name="user[prefecture]" form="user-input">
                             <option selected value="0">選択して下さい</option>
                             <?php
         //                        use App\Prefecture;
@@ -244,7 +251,7 @@ use App\DeliveryGroup;
              <tr class="form-group">
                  <th>住所1<small>（都市区それ以降）</small><em>必須</em></th>
                    <td>
-                    <input id="address" type="text" class="form-control col-md-12{{ $errors->has('user.address_1') ? ' is-invalid' : '' }}" name="user[address_1]" value="{{ Ctm::isOld() ? old('user.address_1') : (Session::has('all.data.user') ? session('all.data.user.address_1') : '') }}" placeholder="例）小美玉市下吉影1-1">
+                    <input id="address" type="text" class="form-control col-md-12{{ $errors->has('user.address_1') ? ' is-invalid' : '' }}" name="user[address_1]" value="{{ Ctm::isOld() ? old('user.address_1') : (Session::has('all.data.user') ? session('all.data.user.address_1') : '') }}" placeholder="例）小美玉市下吉影1-1" form="user-input">
                     
                     @if ($errors->has('user.address_1'))
                         <div class="help-block text-danger">
@@ -258,7 +265,7 @@ use App\DeliveryGroup;
              <tr class="form-group">
                  <th>住所2<small>（建物/マンション名等）</small></th>
                    <td>
-                    <input type="text" class="form-control col-md-12{{ $errors->has('user.address_2') ? ' is-invalid' : '' }}" name="user[address_2]" value="{{ Ctm::isOld() ? old('user.address_2') : (Session::has('all.data.user') ? session('all.data.user.address_2') : '') }}" placeholder="例）GRビル 101号">
+                    <input type="text" class="form-control col-md-12{{ $errors->has('user.address_2') ? ' is-invalid' : '' }}" name="user[address_2]" value="{{ Ctm::isOld() ? old('user.address_2') : (Session::has('all.data.user') ? session('all.data.user.address_2') : '') }}" placeholder="例）GRビル 101号" form="user-input">
                     
                     @if ($errors->has('user.address_2'))
                         <div class="help-block text-danger">
@@ -273,7 +280,7 @@ use App\DeliveryGroup;
              <tr class="form-group">
                  <th>メールアドレス<em>必須</em></th>
                    <td>
-                    <input type="email" class="form-control col-md-12{{ $errors->has('user.email') ? ' is-invalid' : '' }}" name="user[email]" value="{{ Ctm::isOld() ? old('user.email') : (Session::has('all.data.user') ? session('all.data.user.email') : '') }}" placeholder="例）abcde@example.com">
+                    <input type="email" class="form-control col-md-12{{ $errors->has('user.email') ? ' is-invalid' : '' }}" name="user[email]" value="{{ Ctm::isOld() ? old('user.email') : (Session::has('all.data.user') ? session('all.data.user.email') : '') }}" placeholder="例）abcde@example.com" form="user-input">
                     
                     @if ($errors->has('user.email'))
                         <div class="help-block text-danger">
@@ -318,7 +325,7 @@ use App\DeliveryGroup;
                         
                         {{--
                         <input type="hidden" name="regist" value="0">
-                        <input id="check-regist-y" type="checkbox" name="regist" value="1"{{ $registChecked }}>
+                        <input id="check-regist-y" type="checkbox" name="regist" value="1"{{ $registChecked }} form="user-input">
                         <label for="check-regist-y" class="checks">会員登録する</label>
                         --}}
                             
@@ -337,50 +344,55 @@ use App\DeliveryGroup;
                             
                             
                         <span class="deliRadioWrap">
-                            <input id="radio-regist-y" type="radio" name="regist" value="1" class="registRadio" checked>
+                            <input id="radio-regist-y" type="radio" name="regist" value="1" class="registRadio" checked form="user-input">
                             <label for="radio-regist-y" class="radios">する</label>
                         </span>
                         
                         <span class="deliRadioWrap">
-                            <input id="radio-regist-n" type="radio" name="regist" value="0" class="registRadio" {{ $registChecked }}>
+                            <input id="radio-regist-n" type="radio" name="regist" value="0" class="registRadio" {{ $registChecked }} form="user-input">
                             <label for="radio-regist-n" class="radios">しない</label>
                         </span>
                         
                         <p class="mt-2 mb-0 text-small">＊会員登録をすると住所やクレジットカードの登録、お気に入りの永続使用が可能です。</p>
                     </td>
                 </tr>
-                
-                <tr class="form-group">
-                    <th>パスワード<em>必須</em></th>
-                    <td>
-                        <input type="password" class="form-control col-md-12{{ $errors->has('user.password') ? ' is-invalid' : '' }}" name="user[password]" value="{{ Ctm::isOld() ? old('user.password') : (Session::has('all.data.user') ? session('all.data.user.password') : '') }}" placeholder="8文字以上（半角）">
-                                            
-                        @if ($errors->has('user.password'))
-                            <div class="help-block text-danger">
-                                <span class="fa fa-exclamation form-control-feedback"></span>
-                                <span>{{ $errors->first('user.password') }}</span>
-                            </div>
-                        @endif
-                    </td>
-                </tr>
-                 
-                <tr class="form-group">
-                     <th>パスワードの確認<em>必須</em></th>
-                       <td>
-                        <input type="password" class="form-control col-md-12{{ $errors->has('user.password_confirmation') ? ' is-invalid' : '' }}" name="user[password_confirmation]" value="{{ Ctm::isOld() ? old('user.password_confirmation') : (Session::has('all.data.user') ? session('all.data.user.password_confirmation') : '') }}">
-                        
-                        @if ($errors->has('user.password_confirmation'))
-                            <div class="help-block text-danger">
-                                <span class="fa fa-exclamation form-control-feedback"></span>
-                                <span>{{ $errors->first('user.password_confirmation') }}</span>
-                            </div>
-                        @endif
-                    </td>
-                </tr>
             </table>
-        </div>
+            </div>
+            
+            <div class="regist-frame">
+                <div class="table-responsive table-custom">
+                <table class="table table-borderd border p-0 m-0">
+                    <tr class="form-group">
+                        <th>パスワード<em>必須</em></th>
+                        <td>
+                            <input type="password" class="form-control col-md-12{{ $errors->has('user.password') ? ' is-invalid' : '' }}" name="user[password]" value="{{ Ctm::isOld() ? old('user.password') : (Session::has('all.data.user') ? session('all.data.user.password') : '') }}" placeholder="8文字以上（半角）" form="user-input">
+                                                
+                            @if ($errors->has('user.password'))
+                                <div class="help-block text-danger">
+                                    <span class="fa fa-exclamation form-control-feedback"></span>
+                                    <span>{{ $errors->first('user.password') }}</span>
+                                </div>
+                            @endif
+                        </td>
+                    </tr>
+                     
+                    <tr class="form-group">
+                         <th>パスワードの確認<em>必須</em></th>
+                           <td>
+                            <input type="password" class="form-control col-md-12{{ $errors->has('user.password_confirmation') ? ' is-invalid' : '' }}" name="user[password_confirmation]" value="{{ Ctm::isOld() ? old('user.password_confirmation') : (Session::has('all.data.user') ? session('all.data.user.password_confirmation') : '') }}" form="user-input">
                             
-        <div class="table-responsive table-custom">
+                            @if ($errors->has('user.password_confirmation'))
+                                <div class="help-block text-danger">
+                                    <span class="fa fa-exclamation form-control-feedback"></span>
+                                    <span>{{ $errors->first('user.password_confirmation') }}</span>
+                                </div>
+                            @endif
+                        </td>
+                    </tr>
+                </table>
+                </div>
+                            
+            <div class="table-responsive table-custom">
             <p class="text-small mb-0 mt-2"><i class="fas fa-square"></i> 当店からのお知らせを希望しますか？</p>
                 
             <table class="table table-borderd border p-0 m-0">
@@ -401,7 +413,7 @@ use App\DeliveryGroup;
                             }
                         ?>
                         
-                        <input id="check-magazine" type="checkbox" name="user[magazine]" value="1"{{ $checked }}>
+                        <input id="check-magazine" type="checkbox" name="user[magazine]" value="1"{{ $checked }} form="user-input">
                         <label for="check-magazine" class="checks">登録する</label>
                         
                         {{--
@@ -418,6 +430,8 @@ use App\DeliveryGroup;
                  </tr>
             </table>
         </div>
+        
+        </div>{{-- regist-frame --}}
 
     </div>{{-- id --}}
             
@@ -444,12 +458,12 @@ use App\DeliveryGroup;
                 ?>
                 
                 <div class="mb-2">
-                    <input id="radio-destination-1" type="radio" name="destination" value="0" checked>
+                    <input id="radio-destination-1" type="radio" name="destination" value="0" checked form="user-input">
                     <label for="radio-destination-1" class="radios">お客様情報と同じ</label>
                 </div>
                 
                 <div class="">
-                    <input id="radio-destination-2" type="radio" name="destination" value="1"{{ $checked }}>
+                    <input id="radio-destination-2" type="radio" name="destination" value="1"{{ $checked }} form="user-input">
                     <label for="radio-destination-2" class="radios">別の住所へお届け</label>
                 </div>
                 
@@ -492,7 +506,7 @@ use App\DeliveryGroup;
             <label for="plan_date" class="control-label">■ご希望日程<span class="text-small"></span></label>
             
             <div class="select-wrap col-md-9 p-0">
-            <select class="form-control {{ $errors->has('plan_date') ? ' is-invalid' : '' }}" name="plan_date">
+            <select class="form-control {{ $errors->has('plan_date') ? ' is-invalid' : '' }}" name="plan_date" form="user-input">
                 <option value="希望なし（最短出荷）" selected>希望なし（最短出荷）</option>
                     <?php
                         $days = array();
@@ -538,15 +552,15 @@ use App\DeliveryGroup;
         ?>
         
         @if(count($seinouHuzaiSes) > 0)
-            <div class="form-group mt-3 mb-2 pl-1 py-2{{ $errors->has('is_huzaioki.*') ? ' border border-danger' : '' }}">
+            <div id="huzaioki" class="form-group mt-3 mb-2 pl-1 py-2{{ $errors->has('is_huzaioki.*') ? ' border border-danger' : '' }}">
                 
-                <input type="hidden" name="is_seinou" value="1">
-                <input type="hidden" name="is_huzaioki" value="1">
+                <input type="hidden" name="is_seinou" value="1" form="user-input">
+                <input type="hidden" name="is_huzaioki" value="1" form="user-input">
                 
                 <div class="pb-3">
                     ■下記の商品につきまして
-                    <ul class="mt-3 pl-0 list-unstyled">
-                        <li class="mb-3 text-kon text-bold">「ご希望日程」が日曜日の場合は、1商品につき{{ number_format($seinouObj->sundayFee) }}円増しとなります。
+                    <ul class="mt-1 mb-0 pl-0 list-unstyled">
+                        <li class="mb-2 text-kon text-bold">「ご希望日程」が日曜日の場合は、1商品につき{{ number_format($seinouObj->sundayFee) }}円増しとなります。
                         {{--
                         <li>不在置きを了承頂ける場合はチェックをして下さい。
                             <ul class="text-small">
@@ -559,7 +573,7 @@ use App\DeliveryGroup;
                     </ul>
                 </div>
                 
-                <div>
+                <div class="">
                     @foreach($seinouHuzaiSes as $sesKey => $sesVal)
                         
                         <?php
@@ -576,7 +590,7 @@ use App\DeliveryGroup;
                             <span class="">[{{ $si->number }}]</span>
                             <p class="text-danger text-small mt-2 p-0">不在置きを了承する</p>
                             
-                            <input type="hidden" name="seinouItemTitle[]" value="{{ $siTitle }}">
+                            <input type="hidden" name="seinouHuzaiTitle[]" value="{{ $siTitle }}" form="user-input">
                         </div>
 
                     @endforeach
@@ -600,7 +614,7 @@ use App\DeliveryGroup;
                     <div class="mt-3 pt-1">
                         <input type="hidden" name="is_huzaioki" value="0">
                         
-                        <input id="check-huzaioki-0" type="checkbox" name="is_huzaioki" value="1"{{ $checked }}>
+                        <input id="check-huzaioki-0" type="checkbox" name="is_huzaioki" value="1"{{ $checked }} form="user-input">
                         <label for="check-huzaioki-0" class="checks ml-1"><b class="text-big">不在置きを了承する</b></label>
                         
                         @if ($errors->has('is_huzaioki'))
@@ -610,14 +624,14 @@ use App\DeliveryGroup;
                             </div>
                         @endif
                     
-                        <input type="hidden" name="is_seinou" value="1">
+                        <input type="hidden" name="is_seinou" value="1" form="user-input">
                     </div>
                     --}}
                     
                     <div class="pt-2 huzai-comment-wrap pl-0">
                         <p class="ml-1 mb-1">不在時の置き場所を記載して下さい<em>必須</em></p>
                         <fieldset class="form-group">
-                            <textarea id="huzai_comment" class="form-control {{ $errors->has('huzai_comment') ? ' is-invalid' : '' }}" name="huzai_comment" rows="6" placeholder="例：玄関前、門扉の裏、玄関右側入り庭ウッドデッキ付近・・など">{{ Ctm::isOld() ? old('huzai_comment') : (Session::has('all.data.huzai_comment') ? session('all.data.huzai_comment') : '') }}</textarea>
+                            <textarea id="huzai_comment" class="form-control {{ $errors->has('huzai_comment') ? ' is-invalid' : '' }}" name="huzai_comment" rows="6" placeholder="例：玄関前、門扉の裏、玄関右側入り庭ウッドデッキ付近・・など" form="user-input">{{ Ctm::isOld() ? old('huzai_comment') : (Session::has('all.data.huzai_comment') ? session('all.data.huzai_comment') : '') }}</textarea>
                             
                             @if ($errors->has('huzai_comment'))
                                 <div class="help-block text-danger receiver-error">
@@ -651,7 +665,8 @@ use App\DeliveryGroup;
                             <span class="text-big text-bold">{{ $siTitle }}</span><br>
                             <span class="">[{{ $si->number }}]</span>
                             <p class="text-small mt-2 p-0">不在置きを了承しない</p>
-                            <input type="hidden" name="seinouItemTitle[]" value="{{ $siTitle }}">
+                            
+                            <input type="hidden" name="seinouNoHuzaiTitle[]" value="{{ $siTitle }}" form="user-input">
                         </div>
                     @endforeach
                     
@@ -678,7 +693,7 @@ use App\DeliveryGroup;
                         ?>
                         
                         <span class="deliRadioWrap">
-                            <input id="radio-deli-{{ $key }}-no" type="radio" name="plan_time[{{$key}}]" value="希望なし" class="deliRadio" checked>
+                            <input id="radio-deli-{{ $key }}-no" type="radio" name="plan_time[{{$key}}]" value="希望なし" class="deliRadio" checked form="user-input">
                             <label for="radio-deli-{{ $key }}-no" class="radios">希望なし</label>
                             
                             {{--
@@ -703,7 +718,7 @@ use App\DeliveryGroup;
                              ?>
                             
                             <span class="deliRadioWrap">
-                                <input id="radio-deli-{{ $key }}-{{ $k }}" type="radio" name="plan_time[{{$key}}]" value="{{ $table }}" class="deliRadio" {{ $checked }}>
+                                <input id="radio-deli-{{ $key }}-{{ $k }}" type="radio" name="plan_time[{{$key}}]" value="{{ $table }}" class="deliRadio" {{ $checked }} form="user-input">
                                 <label for="radio-deli-{{ $key }}-{{ $k }}" class="radios">{{ $table }}</label>
                                 
                                 {{--
@@ -733,7 +748,7 @@ use App\DeliveryGroup;
                                     <span class="">[{{ $i->number }}]</span>
                                 </div>
                                 
-                                <input type="hidden" name="planTimeItemTitle[{{ $key }}][]" value="{{ $iTitle }}">
+                                <input type="hidden" name="planTimeItemTitle[{{ $key }}][]" value="{{ $iTitle }}" form="user-input">
                              @endforeach
                         @endif
                          
@@ -756,24 +771,24 @@ use App\DeliveryGroup;
 </div>{{-- id --}}
 
 
-<div id="comment" class="pt-2">
-        <div class="clearfix mt-3">
-            <h3>コメント</h3>
-            <div></div>
+<div id="other-comment" class="pt-2">
+    <div class="clearfix mt-3">
+        <h3>コメント</h3>
+        <div></div>
+    </div>
+    
+    <div class="ml-20per">
+        <div class="form-group my-3">
+            <textarea id="user_comment" class="form-control{{ $errors->has('user_comment') ? ' is-invalid' : '' }}" name="user_comment" rows="10" form="user-input">{{ Ctm::isOld() ? old('user_comment') : (Session::has('all.data.user_comment') ? session('all.data.user_comment') : '') }}</textarea>
+            
+            @if ($errors->has('user_comment'))
+                <div class="help-block text-danger receiver-error">
+                    <span class="fa fa-exclamation form-control-feedback"></span>
+                    <span>{{ $errors->first('user_comment') }}</span>
+                </div>
+            @endif
         </div>
-        
-        <div class="ml-20per">
-            <fieldset class="form-group my-3">
-                <textarea id="user_comment" class="form-control{{ $errors->has('user_comment') ? ' is-invalid' : '' }}" name="user_comment" rows="10">{{ Ctm::isOld() ? old('user_comment') : (Session::has('all.data.user_comment') ? session('all.data.user_comment') : '') }}</textarea>
-                
-                @if ($errors->has('user_comment'))
-                    <div class="help-block text-danger receiver-error">
-                        <span class="fa fa-exclamation form-control-feedback"></span>
-                        <span>{{ $errors->first('user_comment') }}</span>
-                    </div>
-                @endif
-            </fieldset>
-        </div>
+    </div>
 </div>
                 
                 
@@ -814,7 +829,7 @@ use App\DeliveryGroup;
                 <div class="mb-3">
                        
                     @if($method->id == 1)
-                        <input id="radio-pay-{{ $method->id }}" type="radio" name="pay_method" value="{{ $method->id }}" class="payMethodRadio"{{ $checked }}>
+                        <input id="radio-pay-{{ $method->id }}" type="radio" name="pay_method" value="{{ $method->id }}" class="payMethodRadio"{{ $checked }} form="user-input">
                         <label for="radio-pay-{{ $method->id }}" class="radios">{{ $method->name }}</label>
                         
                         {{--
@@ -853,7 +868,7 @@ use App\DeliveryGroup;
                                         ?>
                                          
                                         <div class="mb-4 pb-1">
-                                            <input id="use-card-{{ $k }}" type="radio" name="card_seq" class="useCardRadio" value="{{ $seqNum }}"{{ $checked }}>
+                                            <input id="use-card-{{ $k }}" type="radio" name="card_seq" class="useCardRadio" value="{{ $seqNum }}"{{ $checked }} form="user-input">
                                             <label for="use-card-{{ $k }}" class="radios">
                                                 カード番号： <span>{{ $regCardDatas['CardNo'][$k] }}</span>
                                             </label>
@@ -895,12 +910,12 @@ use App\DeliveryGroup;
                                     }
                                 ?>
                             
-                                <input id="use-new-card" type="radio" name="card_seq" class="useCardRadio" value="99"{{ $checked }}>
+                                <input id="use-new-card" type="radio" name="card_seq" class="useCardRadio" value="99"{{ $checked }} form="user-input">
                                 <label for="use-new-card" class="radios">新しいクレジットカードを使う</label>
                             @else
                                 <?php $ml = ' ml-2'; ?>
                                 
-                                <input type="hidden" name="card_seq" value="99">
+                                <input type="hidden" name="card_seq" value="99" form="user-input">
                             @endif
                             
                             <div class="wrap-new-card mt-3 pl-1{{ $ml }}">
@@ -915,7 +930,7 @@ use App\DeliveryGroup;
                                 <div class="{{ count($cardErrors) > 0 ? ' border border-danger pl-2' : '' }}">
                                 <div class="mb-3">
                                     <label>カード番号</label>
-                                    <input type="text" id="cardno" class="form-control col-md-12{{ $errors->has('cardno') ? ' is-invalid' : '' }}" name="cardno" value="{{ Ctm::isOld() ? old('cardno') : (Session::has('all.data.cardno') ? session('all.data.cardno') : '') }}" placeholder="例）1234123412341234（ハイフンなし半角数字）">
+                                    <input type="text" id="cardno" class="form-control col-md-12{{ $errors->has('cardno') ? ' is-invalid' : '' }}" name="cardno" value="{{ Ctm::isOld() ? old('cardno') : (Session::has('all.data.cardno') ? session('all.data.cardno') : '') }}" placeholder="例）1234123412341234（ハイフンなし半角数字）" form="user-input">
                            
                                     @if ($errors->has('cardno'))
                                         <div class="help-block text-danger receiver-error">
@@ -927,7 +942,7 @@ use App\DeliveryGroup;
                                 
                                 <div class="mb-3">
                                     <label>セキュリティコード</label>
-                                    <input type="text" id="securitycode" class="form-control col-md-12{{ $errors->has('securitycode') ? ' is-invalid' : '' }}" name="securitycode" value="{{ Ctm::isOld() ? old('securitycode') : (Session::has('all.data.securitycode') ? session('all.data.securitycode') : '') }}" placeholder="例）1234（3〜4桁 半角数字）">
+                                    <input type="text" id="securitycode" class="form-control col-md-12{{ $errors->has('securitycode') ? ' is-invalid' : '' }}" name="securitycode" value="{{ Ctm::isOld() ? old('securitycode') : (Session::has('all.data.securitycode') ? session('all.data.securitycode') : '') }}" placeholder="例）1234（3〜4桁 半角数字）" form="user-input">
                            
                                     @if ($errors->has('securitycode'))
                                         <div class="help-block text-danger receiver-error">
@@ -950,7 +965,7 @@ use App\DeliveryGroup;
                                     <label class="d-block">有効期限（月/年）</label>
                                     
                                     <label class="select-wrap col-md-3 p-0">
-                                    <select id="expire_month" class="form-control d-inline-block {{ $errors->has('expire_month') || $errors->has('expire') ? ' is-invalid' : '' }}" name="expire_month">
+                                    <select id="expire_month" class="form-control d-inline-block {{ $errors->has('expire_month') || $errors->has('expire') ? ' is-invalid' : '' }}" name="expire_month" form="user-input">
                                         
                                         @while($mn < 13)
                                             <?php
@@ -985,7 +1000,7 @@ use App\DeliveryGroup;
                                     @endif
                                     
                                     <label class="select-wrap col-md-3 p-0">
-                                    <select id="expire_year" class="form-control d-inline-block {{ $errors->has('expire_year') || $errors->has('expire') ? ' is-invalid' : '' }}" name="expire_year">
+                                    <select id="expire_year" class="form-control d-inline-block {{ $errors->has('expire_year') || $errors->has('expire') ? ' is-invalid' : '' }}" name="expire_year" form="user-input">
                                         
                                         @while($yn < 11)
                                             <?php
@@ -1018,7 +1033,8 @@ use App\DeliveryGroup;
                                         </div>
                                     @endif
                                     
-                                    <input type="hidden" name="expire" value="">
+                                    <input type="hidden" name="expire" value="" form="user-input">
+                                    
                                     @if ($errors->has('expire'))
                                         <div class="help-block text-danger">
                                             <span class="fa fa-exclamation form-control-feedback"></span>
@@ -1052,7 +1068,7 @@ use App\DeliveryGroup;
                                                 $red = Auth::check() ? '' : 'text-enji';
                                             ?>
                                             
-                                            <input id="check-regist-card" type="checkbox" name="is_regist_card" value="1"{{ $checked }}>
+                                            <input id="check-regist-card" type="checkbox" name="is_regist_card" value="1"{{ $checked }} form="user-input">
                                             <label for="check-regist-card" class="checks {{ $red }}">{{ $word }}このクレジットカードを登録する</label>
                                             
                                             {{--
@@ -1076,7 +1092,7 @@ use App\DeliveryGroup;
                             {{--
                             <div class="mb-3">
                                 <label>カード名義人</label>
-                                <input type="text" id="holdername" class="form-control col-md-6{{ $errors->has('holdername') ? ' is-invalid' : '' }}" name="holdername" value="{{ Ctm::isOld() ? old('holdername') : (Session::has('all.data.holdername') ? session('all.data.holdername') : '') }}" placeholder="例：tarou yamada">
+                                <input type="text" id="holdername" class="form-control col-md-6{{ $errors->has('holdername') ? ' is-invalid' : '' }}" name="holdername" value="{{ Ctm::isOld() ? old('holdername') : (Session::has('all.data.holdername') ? session('all.data.holdername') : '') }}" placeholder="例：tarou yamada" form="user-input">
                        
                                 @if ($errors->has('holdername'))
                                     <div class="help-block text-danger receiver-error">
@@ -1086,7 +1102,7 @@ use App\DeliveryGroup;
                                 @endif
                             </div>
                             
-                            <input type="hidden" value="1" name="tokennumber" id="tokennumber">
+                            <input type="hidden" value="1" name="tokennumber" id="tokennumber" form="user-input">
                             --}}
                             
                         </div>
@@ -1095,7 +1111,7 @@ use App\DeliveryGroup;
                     
                     
                     @elseif(! $codCheck && $method->id == 5)
-                        <input id="radio-pay-{{ $method->id }}" type="radio" name="pay_method" value="{{ $method->id }}" class="payMethodRadio" disabled>
+                        <input id="radio-pay-{{ $method->id }}" type="radio" name="pay_method" value="{{ $method->id }}" class="payMethodRadio" disabled form="user-input">
                         <label for="radio-pay-{{ $method->id }}" class="radios">{{ $method->name }}</label>
                         
                         {{--
@@ -1105,7 +1121,7 @@ use App\DeliveryGroup;
                         <span class="text-secondary text-small ml-0"><i class="fas fa-exclamation-circle"></i> ご注文商品の代金引換不可</span>
                         
                     @else
-                        <input id="radio-pay-{{ $method->id }}" type="radio" name="pay_method" value="{{ $method->id }}" class="payMethodRadio"{{ $checked }}>
+                        <input id="radio-pay-{{ $method->id }}" type="radio" name="pay_method" value="{{ $method->id }}" class="payMethodRadio"{{ $checked }} form="user-input">
                         <label for="radio-pay-{{ $method->id }}" class="radios">{{ $method->name }}</label>
                         
                         
@@ -1127,7 +1143,7 @@ use App\DeliveryGroup;
                                      ?>
                                     
                                     <span class="deliRadioWrap">
-                                        <input type="radio" name="net_bank" class="pmcRadio" value="{{ $pmChild->id }}" {{ $ch }}> <span class="mr-3">{{ $pmChild->name }}</span>
+                                        <input type="radio" name="net_bank" class="pmcRadio" value="{{ $pmChild->id }}" {{ $ch }} form="user-input"> <span class="mr-3">{{ $pmChild->name }}</span>
                                     </span>
                                 @endforeach
                             </div>
@@ -1151,12 +1167,13 @@ use App\DeliveryGroup;
 </div>{{-- left --}}
 
 <div class="confirm-right">
+    
     @if(! Auth::check())
         <div class="right-gray cart-login">
             @include('main.shared.userLogin', ['pageType'=>'cart'])
         </div>
     @endif
-    
+
     <div class="right-blue">
         <div>
             <button class="btn btn-block btn-kon mb-4 mx-auto py-3" type="submit" name="recognize" value="1">次へ進む</button>
@@ -1166,7 +1183,7 @@ use App\DeliveryGroup;
         <table class="table">
              <tbody class="clearfix">
                  <tr>
-                      <th class="text-left text-big">
+                    <th class="text-left text-big">
                         商品合計
                     </th>
                     
@@ -1175,7 +1192,7 @@ use App\DeliveryGroup;
                     </td>
                   </tr>
 
-                    <tr>
+                <tr>
                         <th class="text-left text-big">送料</th>
                         
                         <td class="text-big">
@@ -1185,7 +1202,6 @@ use App\DeliveryGroup;
                                 <b class="text-enji">含まれておりません</b>
                             @endif
                         </td>
-                
                     </tr>
                     
                     {{--
@@ -1197,7 +1213,6 @@ use App\DeliveryGroup;
                         <td class="text-big text-danger">
                             <b>¥{{ number_format($allPrice + $deliFee) }}</b>
                         </td>
-                        
                     </tr>
                     --}}
                
@@ -1205,10 +1220,13 @@ use App\DeliveryGroup;
         </table>
         </div>
     
-    </div>
+    </div>{{-- blue --}}
+</form>
+
+
 </div>
 
-</form>
+
 </div>{{-- clear --}}
 
 

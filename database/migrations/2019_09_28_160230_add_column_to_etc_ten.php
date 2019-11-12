@@ -37,6 +37,11 @@ class AddColumnToEtcTen extends Migration
         Schema::table('items', function (Blueprint $table) {
             $table->integer('once_price')->after('is_once')->nullable()->default(NULL);
         });
+        
+        //Sale
+        Schema::table('sales', function (Blueprint $table) {
+            $table->integer('is_once_down')->after('is_huzaioki')->nullable()->default(NULL);
+        });
     }
 
 
@@ -116,6 +121,12 @@ class AddColumnToEtcTen extends Migration
             });
         }
         
+        //Sale
+        if (Schema::hasColumn('sales', 'is_once_down')) {
+            Schema::table('sales', function (Blueprint $table) {
+                $table->dropColumn('is_once_down');
+            });
+        }
         
     }
 }

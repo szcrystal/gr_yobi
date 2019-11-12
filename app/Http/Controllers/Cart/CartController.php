@@ -31,6 +31,7 @@ use Delifee;
 use Exception;
 use Validator;
 use DateTime;
+use Route;
 
 use Illuminate\Validation\Rule;
 
@@ -596,7 +597,8 @@ class CartController extends Controller
                     'plan_date' => isset($allData['plan_date']) ? $allData['plan_date'] : null,
                     'plan_time' => $oneSesData['plan_time'],
                     
-                    'is_huzaioki' => isset($oneSesData['is_huzaioki']) ? $oneSesData['is_huzaioki'] : null,
+                    'is_huzaioki' => isset($oneSesData['is_huzaioki']) ? $oneSesData['is_huzaioki'] : null, //不在割引
+                    'is_once_down' => isset($oneSesData['is_once_down']) ? $oneSesData['is_once_down'] : null, //同梱包割引
                     
                     'deli_done' => 0,
                     'pay_done' => 0,
@@ -1091,6 +1093,43 @@ class CartController extends Controller
 //    	if($request->isMethod('get')) {
 //        	abort(404);
 //        }
+
+        $loginBtn = $request->has('loginBtn') ? 1 : 0;
+        
+        if($loginBtn) {
+            $rules = [
+                'email' => 'required|email|max:255',
+                'password' => 'required|min:8',
+            ];
+
+            $messages = [];
+
+            //$this->validate($request, $rules, $messages);
+            $v = Validator::make($request->all(), $rules, $messages);
+            if($v->fails()) {
+                return redirect()->back()->withErrors($v, 'login')->withInput();
+            }
+
+            $data = $request->all();
+
+            $credentials = $request->only('email', 'password');
+            $credentials['active'] = 1;
+
+            $remember = $request->has('remember') ? 1 : 0;
+
+            $prevUrl = $request->has('to_cart') ? '/shop/form' : $data['previous'];
+
+            if (Auth::attempt($credentials, $remember)) { // 認証に成功した
+                return redirect()->intended($prevUrl)->withInput();
+            }
+            else {
+                $errors = ['認証できません。ご入力内容を確認して下さい。'];
+                return redirect()->back()->withInput()->withErrors($errors, 'login');
+            }
+
+            //Route::post('login', 'Auth\LoginController@login');
+            //return redirect()->action('Auth\LoginController@login');        
+        }
     
     	$pt=0; //ポイント
     	if(Auth::check()) {
@@ -1130,7 +1169,7 @@ class CartController extends Controller
             //'receiver.address_3' => 'max:255',
             
             //'huzai_comment' => 'required_if:is_huzaioki,1|max:30000' ,
-            'huzai_comment' => 'required|max:30000' ,
+            'huzai_comment' => 'required_if:is_huzaioki,1|max:30000' ,
             'user_comment' => 'max:30000',
             
 //            'user_comment' => [
@@ -1210,7 +1249,7 @@ class CartController extends Controller
             'pay_method.required' => '「お支払い方法」を選択して下さい。',
             'use_point.max' => '「ポイント」が保持ポイントを超えています。',
             'net_bank.required_if'=> '「お支払い方法」ネットバンク決済の銀行を選択して下さい。',
-            'huzai_comment.required_if' => '「不在置きを了承する」時は置き場所を記載して下さい。',
+            'huzai_comment.required_if' => '「不在時の置き場所」は必須です。',
             'user_comment.max' => '「コメント」の文字数が長すぎます。',
             
 //            'cardno.required_if' => '「カード番号」は必須です。',
@@ -1927,16 +1966,20 @@ class CartController extends Controller
     //                    exit;
                         
                         //同梱包値引きの判別 既にある商品と比較する
-                        $thisI = $this->item->find($data['item_id']);
+                        $thisI = $this->item->find($data['item_id']); //postで入ってきた商品
                         $ss = session('item.data');
 
                         foreach($ss as $ssKey => $ssVal) {
-                            $i = $this->item->find($ssVal['item_id']);
+                            $i = $this->item->find($ssVal['item_id']); //既にカートにある商品
                             
-                            if(! isset($thisI->sale_price)) {
-                                if($thisI->dg_id == $i->dg_id && isset($thisI->once_price) && isset($i->once_price)) {
+                            if(! isset($thisI->sale_price)) { //sale_priceが一番優先なのでこれがセットされていない時に進行
+                                if($thisI->dg_id == $i->dg_id && $thisI->is_once && isset($thisI->once_price)) { //既にカートにある商品にonce_priceが設定されていなくてもdg_idが同じであれば進める
                                     $data['is_once_down'] = $data['item_id'];
-                                    $ss[$ssKey]['is_once_down'] = $ssVal['item_id'];
+                                    
+                                    if(! isset($i->sale_price) && $i->is_once && isset($i->once_price)) {
+                                        $ss[$ssKey]['is_once_down'] = $ssVal['item_id'];
+                                    }
+                                    
                                     break;
                                 }
                             }
@@ -1944,6 +1987,7 @@ class CartController extends Controller
                         
                         $ss[] = $data;
                         $request->session()->put('item.data', $ss); //session入れ
+                        
                         
 //                        print_r(session('item.data')); //session item.data.0.is_once_down
 //                        exit;

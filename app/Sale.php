@@ -23,6 +23,7 @@ class Sale extends Model
         'plan_date',
         'plan_time',
         'is_huzaioki',
+        'is_once_down',
 
         'pay_method',
         'deli_fee',

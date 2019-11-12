@@ -295,14 +295,15 @@
         
         @if(! isset($deliFee))
             <div class="cart-note text-left mb-2">
-                <span class="text-enji"><i class="fas fa-exclamation-triangle"></i> 送料確認は「配送先都道府県」を選択して「送料計算」を押して下さい。</span>
+                <p class="text-enji mb-0"><i class="fas fa-exclamation-triangle"></i> 送料確認は「配送先都道府県」を選択して「送料計算」を押して下さい。</p>
             </div>
             
         @endif
         
-        <div class="select-wrap w-100 p-0 mb-3">
-            <label class="control-label mb-0 text-small d-inline w-50"><b>配送先都道府県</b></label>
-            <select style="width:60%;" id="pref" class="form-control ml-1 d-inline{{ $errors->has('pref_id') ? ' is-invalid' : '' }}" name="pref_id">
+        <div>
+            <label class="control-label mb-0 text-small d-inline"><b>配送先都道府県</b></label>
+            <label class="select-wrap select-pref p-0 mb-3">
+            <select id="pref" class="form-control ml-1 d-inline{{ $errors->has('pref_id') ? ' is-invalid' : '' }}" name="pref_id">
                 <option selected value="0">選択</option>
                 <?php
     //                            use App\Prefecture;
@@ -326,6 +327,7 @@
                     <option value="{{ $pref->id }}"{{ $selected }}>{{ $pref->name }}</option>
                 @endforeach
             </select>
+            </label>
         </div>
         
         @if ($errors->has('pref_id'))

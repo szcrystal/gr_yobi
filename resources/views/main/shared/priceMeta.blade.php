@@ -31,7 +31,7 @@ $isSale = Setting::get()->first()->is_sale;
 <div class="clearfix p-2 my-2 text-small bg-kon-light">
     <span class="float-left text-small text-kon">同梱包可能商品と同時購入で</span>
     <span class="float-right">
-        <span class="text-bold text-enji">{{ number_format(Ctm::getPriceWithTax($obj->once_price)) }}</span>
+        <span class="text-big text-bold text-enji">{{ number_format(Ctm::getPriceWithTax($obj->once_price)) }}</span>
         <span class="text-small">円&nbsp;(税込)</span>
     </span>
 </div>

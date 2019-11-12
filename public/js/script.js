@@ -1083,8 +1083,8 @@ var exe = (function() {
             
             //$('h2').text(w +'/'+ h);
             //console.log(w +'/'+ h);
-            
-                               
+        
+        //$(window).on('load', function() {
         	//アンカーリンクのfix headerのずれを直す
             var fixH = $('.fixed-top').height();
            	var url = $(location).attr('href');
@@ -1095,8 +1095,29 @@ var exe = (function() {
                 
                 if(target.length){
                     //var pos = Math.floor(target.offset().top) - fixHeight;
-                    var pos = target.offset().top - fixH;
-                    $("html, body").scrollTop(pos);
+                    //$(window).on("load", function(target) {
+                        
+                        var sabun = 0;
+                        /*
+                        var $regist = $('.regist-frame:first');
+                        if($regist.is(':hidden')) {
+                            console.log('bbb');
+                            sabun += $regist.height();
+                        }
+                        
+                        var $receiver = $('.receiver-wrap:hidden');
+                        if($receiver.length) {
+                            console.log('aaa');
+                            sabun += $receiver.height();
+                        }
+                        */
+                        var pos = target.offset().top - fixH;
+                        
+                        console.log(sabun);
+                        
+                        $("html, body").scrollTop(pos);
+                        console.log(pos);
+                    //});
                     //$("html, body").animate({scrollTop:pos}, 500);
                 }
             }
@@ -1105,15 +1126,17 @@ var exe = (function() {
             if(url.indexOf("#") != -1) {
             	var anchor = url.split("#");
             	var target = $('#' + anchor[anchor.length - 1]);
+
+                console.log(target.length);
+                setAnchor(target);
                 
-            	setAnchor(target);
-                
+
                 /*
                 var anchor = url.split("#");
                 var target = $('#' + anchor[anchor.length - 1]);
-                                
+
                 fixH = fixH + 10;
-                
+
                 if(target.length){
                     //var pos = Math.floor(target.offset().top) - fixHeight;
                     var pos = target.offset().top - fixH;
@@ -1122,6 +1145,7 @@ var exe = (function() {
                 }
                 */
             }
+
             
             
             /* Postの目次 アンカーリンク */
@@ -1152,10 +1176,11 @@ var exe = (function() {
 })();
 
 
+
 $(function(e){ //ready
     
     //exe.autoComplete();
-    exe.getWH();
+    
     
     if(! exe.isSpTab('sp')) { //Not SP
     	exe.scrollFunc();
@@ -1195,7 +1220,12 @@ $(function(e){ //ready
     // SlickSlider & LightBox END ======
     
     exe.getCardToken();
+    
+    
+    exe.getWH();
 });
+
+
 
 
 /* Easing */

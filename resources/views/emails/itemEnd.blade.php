@@ -50,7 +50,11 @@
 商品番号: {{ $itemModel->find($sale->item_id)->number }}<br>
 商品名: {{ Ctm::getItemTitle($itemModel->find($sale->item_id)) }}<br>
 数量: {{ $sale->item_count}}<br>
-金額：¥{{ number_format($sale->total_price) }}（税込）<br>
+金額：¥{{ number_format($sale->total_price) }}（税込）
+@if($sale->is_once_down)
+[同梱包割引]
+@endif
+<br>
 
 @if(isset($sale->plan_time))
 ご希望配送時間：{{ $sale->plan_time }}<br>
