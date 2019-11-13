@@ -14,5 +14,6 @@ class SendMailFlag extends Model
         'type',
 		'information',
         'information_foot',
+        'add_point',
     ];
 }

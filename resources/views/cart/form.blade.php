@@ -59,7 +59,7 @@ use App\DeliveryGroup;
 
 @if(Auth::check())
 
-<div id="delivery-add">
+<div id="delivery-add" class="mb-5">
     <div class="clearfix mb-3">
         <h3>お届け先</h3>
         <div></div>
@@ -109,8 +109,9 @@ use App\DeliveryGroup;
         </div>
         
     </div>
-        
+</div>{{-- id --}}
 
+<div id="use-point" class="mb-4">
     <div class="clearfix mt-3 mb-3">
         <h3>ポイント利用</h3>
         <div></div>
@@ -141,7 +142,7 @@ use App\DeliveryGroup;
 
     <input type="hidden" name="use_point" value="0">
 
-    <div id="user-info">
+<div id="user-info">
     <div class="clearfix">
         <h3>お客様情報</h3>
         <div></div>
@@ -551,127 +552,135 @@ use App\DeliveryGroup;
             $seinouObj = Ctm::getSeinouObj();
         ?>
         
-        @if(count($seinouHuzaiSes) > 0)
-            <div id="huzaioki" class="form-group mt-3 mb-2 pl-1 py-2{{ $errors->has('is_huzaioki.*') ? ' border border-danger' : '' }}">
-                
-                <input type="hidden" name="is_seinou" value="1" form="user-input">
-                <input type="hidden" name="is_huzaioki" value="1" form="user-input">
-                
-                <div class="pb-3">
-                    ■下記の商品につきまして
-                    <ul class="mt-1 mb-0 pl-0 list-unstyled">
-                        <li class="mb-2 text-kon text-bold">「ご希望日程」が日曜日の場合は、1商品につき{{ number_format($seinouObj->sundayFee) }}円増しとなります。
-                        {{--
-                        <li>不在置きを了承頂ける場合はチェックをして下さい。
-                            <ul class="text-small">
-                            <li class="mb-1 mt-2"><span class="text-extra-big"><b class="text-big">チェック時は1商品につき{{ number_format($seinouObj->huzaiokiFee) }}円引きとなります。</b></span></li>
-                            <li class="mb-1">下に表示される枠内に不在時の荷物の置き場所を記載して下さい。</li>
-                            <li class="mb-1">お支払い方法の「代金引換」はご利用出来ません。</li>
-                            <ul>
-                        </li>
-                        --}}
-                    </ul>
-                </div>
-                
-                <div class="">
-                    @foreach($seinouHuzaiSes as $sesKey => $sesVal)
-                        
-                        <?php
-                            $si = Item::find($sesVal['item_id']);
-                            $siTitle = Ctm::getItemTitle($si);
-                        ?>
-                        
-                        <div class="clearfix mb-3 ml-1">
-                            <div class="float-left mr-2">
-                                @include('main.shared.smallThumbnail', ['item'=>$si, 'width'=>140])
-                            </div>
-                            
-                            <span class="text-big text-bold">{{ $siTitle }}</span><br>
-                            <span class="">[{{ $si->number }}]</span>
-                            <p class="text-danger text-small mt-2 p-0">不在置きを了承する</p>
-                            
-                            <input type="hidden" name="seinouHuzaiTitle[]" value="{{ $siTitle }}" form="user-input">
-                        </div>
-
-                    @endforeach
-                    
+        @if(count($seinouHuzaiSes) > 0 || count($seinouNoHuzaiSes) > 0)
+        <div class="clearfix mb-4">
+        
+            <div class="pb-3">
+                ■下記の商品につきまして
+                <ul class="mt-1 mb-0 pl-0 list-unstyled">
+                    <li class="mb-2 text-kon text-bold">「ご希望日程」が日曜日の場合は、1商品につき{{ number_format($seinouObj->sundayFee) }}円増しとなります。
                     <?php
                     /*
-                        $checked = '';
-                        if(Ctm::isOld()) {
-                            if(old('is_huzaioki'))
-                                $checked = ' checked';
-                        }
-                        else {
-                            if(Session::has('all.data.is_huzaioki')  && session('all.data.is_huzaioki')) {
-                                $checked = ' checked';
-                            }
-                        }
+                    <li>不在置きを了承頂ける場合はチェックをして下さい。
+                        <ul class="text-small">
+                        <li class="mb-1 mt-2"><span class="text-extra-big"><b class="text-big">チェック時は1商品につき{{ number_format($seinouObj->huzaiokiFee) }}円引きとなります。</b></span></li>
+                        <li class="mb-1">下に表示される枠内に不在時の荷物の置き場所を記載して下さい。</li>
+                        <li class="mb-1">お支払い方法の「代金引換」はご利用出来ません。</li>
+                        <ul>
+                    </li>
                     */
                     ?>
-                    
-                    {{--
-                    <div class="mt-3 pt-1">
-                        <input type="hidden" name="is_huzaioki" value="0">
-                        
-                        <input id="check-huzaioki-0" type="checkbox" name="is_huzaioki" value="1"{{ $checked }} form="user-input">
-                        <label for="check-huzaioki-0" class="checks ml-1"><b class="text-big">不在置きを了承する</b></label>
-                        
-                        @if ($errors->has('is_huzaioki'))
-                            <div class="help-block text-danger">
-                                <span class="fa fa-exclamation form-control-feedback"></span>
-                                <span>{{ $errors->first('is_huzaioki') }}</span>
-                            </div>
-                        @endif
-                    
-                        <input type="hidden" name="is_seinou" value="1" form="user-input">
-                    </div>
-                    --}}
-                    
-                    <div class="pt-2 huzai-comment-wrap pl-0">
-                        <p class="ml-1 mb-1">不在時の置き場所を記載して下さい<em>必須</em></p>
-                        <fieldset class="form-group">
-                            <textarea id="huzai_comment" class="form-control {{ $errors->has('huzai_comment') ? ' is-invalid' : '' }}" name="huzai_comment" rows="6" placeholder="例：玄関前、門扉の裏、玄関右側入り庭ウッドデッキ付近・・など" form="user-input">{{ Ctm::isOld() ? old('huzai_comment') : (Session::has('all.data.huzai_comment') ? session('all.data.huzai_comment') : '') }}</textarea>
-                            
-                            @if ($errors->has('huzai_comment'))
-                                <div class="help-block text-danger receiver-error">
-                                    <span class="fa fa-exclamation form-control-feedback"></span>
-                                    <span>{{ $errors->first('huzai_comment') }}</span>
-                                </div>
-                            @endif
-                        </fieldset>
-                    </div>
-                    
-                </div>
-                
+                </ul>
             </div>
-        @endif
-        
-        @if(count($seinouNoHuzaiSes) > 0)
-            <fieldset class="form-group mt-3 mb-2 pl-1 py-2{{ $errors->has('is_huzaioki.*') ? ' border border-danger' : '' }}">
-                <div class="">
-                    @foreach($seinouNoHuzaiSes as $sesKey => $sesVal)
+            
+            @if(count($seinouHuzaiSes) > 0)
+                <fieldset id="huzaioki" class="form-group mt-2 mb-2 pl-1{{ $errors->has('is_huzaioki.*') ? ' border border-danger' : '' }}">
+                    
+                    <input type="hidden" name="is_seinou" value="1" form="user-input">
+                    <input type="hidden" name="is_huzaioki" value="1" form="user-input">
+                    
+                    <div class="">
+                        @foreach($seinouHuzaiSes as $sesKey => $sesVal)
+                            
+                            <?php
+                                $si = Item::find($sesVal['item_id']);
+                                $siTitle = Ctm::getItemTitle($si);
+                            ?>
+                            
+                            <div class="clearfix mb-2 ml-1">
+                                <div class="float-left mr-2">
+                                    @include('main.shared.smallThumbnail', ['item'=>$si, 'width'=>140])
+                                </div>
+                                
+                                <span class="text-big text-bold">{{ $siTitle }}</span><br>
+                                <span class="">[{{ $si->number }}]</span>
+                                <p class="text-danger text-small mt-2 p-0">不在置きを了承する</p>
+                                
+                                <input type="hidden" name="seinouHuzaiTitle[]" value="{{ $siTitle }}" form="user-input">
+                            </div>
+
+                        @endforeach
                         
                         <?php
-                            $si = Item::find($sesVal['item_id']);
-                            $siTitle = Ctm::getItemTitle($si);
+                        /*
+                            $checked = '';
+                            if(Ctm::isOld()) {
+                                if(old('is_huzaioki'))
+                                    $checked = ' checked';
+                            }
+                            else {
+                                if(Session::has('all.data.is_huzaioki')  && session('all.data.is_huzaioki')) {
+                                    $checked = ' checked';
+                                }
+                            }
+                        */
                         ?>
                         
-                        <div class="clearfix mb-3 ml-1">
-                            <div class="float-left mr-2">
-                                @include('main.shared.smallThumbnail', ['item'=>$si, 'width'=>140])
-                            </div>
+                        {{--
+                        <div class="mt-3 pt-1">
+                            <input type="hidden" name="is_huzaioki" value="0">
                             
-                            <span class="text-big text-bold">{{ $siTitle }}</span><br>
-                            <span class="">[{{ $si->number }}]</span>
-                            <p class="text-small mt-2 p-0">不在置きを了承しない</p>
+                            <input id="check-huzaioki-0" type="checkbox" name="is_huzaioki" value="1"{{ $checked }} form="user-input">
+                            <label for="check-huzaioki-0" class="checks ml-1"><b class="text-big">不在置きを了承する</b></label>
                             
-                            <input type="hidden" name="seinouNoHuzaiTitle[]" value="{{ $siTitle }}" form="user-input">
+                            @if ($errors->has('is_huzaioki'))
+                                <div class="help-block text-danger">
+                                    <span class="fa fa-exclamation form-control-feedback"></span>
+                                    <span>{{ $errors->first('is_huzaioki') }}</span>
+                                </div>
+                            @endif
+                        
+                            <input type="hidden" name="is_seinou" value="1" form="user-input">
                         </div>
-                    @endforeach
+                        --}}
+                        
+                        <div class="pt-1 huzai-comment-wrap pl-0 mb-2 pb-3">
+                            <p class="ml-1 mb-2">不在時の置き場所を記載して下さい<em>必須</em></p>
+                            <fieldset class="form-group">
+                                <textarea id="huzai_comment" class="form-control {{ $errors->has('huzai_comment') ? ' is-invalid' : '' }}" name="huzai_comment" rows="6" placeholder="例：玄関前、門扉の裏、玄関右側入り庭ウッドデッキ付近・・など" form="user-input">{{ Ctm::isOld() ? old('huzai_comment') : (Session::has('all.data.huzai_comment') ? session('all.data.huzai_comment') : '') }}</textarea>
+                                
+                                @if ($errors->has('huzai_comment'))
+                                    <div class="help-block text-danger receiver-error">
+                                        <span class="fa fa-exclamation form-control-feedback"></span>
+                                        <span>{{ $errors->first('huzai_comment') }}</span>
+                                    </div>
+                                @endif
+                            </fieldset>
+                        </div>
+                        
+                    </div>
                     
-                </div>
-            </fieldset>
+                </fieldset>
+            @endif
+        
+            @if(count($seinouNoHuzaiSes) > 0)
+                <fieldset class="form-group mt-2 mb-2 pl-1{{ $errors->has('is_huzaioki.*') ? ' border border-danger' : '' }}">
+                    <div class="">
+                        @foreach($seinouNoHuzaiSes as $sesKey => $sesVal)
+                            
+                            <?php
+                                $si = Item::find($sesVal['item_id']);
+                                $siTitle = Ctm::getItemTitle($si);
+                            ?>
+                            
+                            <div class="clearfix mb-2 ml-1">
+                                <div class="float-left mr-2">
+                                    @include('main.shared.smallThumbnail', ['item'=>$si, 'width'=>140])
+                                </div>
+                                
+                                <span class="text-big text-bold">{{ $siTitle }}</span><br>
+                                <span class="">[{{ $si->number }}]</span>
+                                <p class="text-small mt-2 p-0">不在置きを了承しない</p>
+                                
+                                <input type="hidden" name="seinouNoHuzaiTitle[]" value="{{ $siTitle }}" form="user-input">
+                            </div>
+                        @endforeach
+                        
+                    </div>
+                </fieldset>
+            @endif
+        
+        </div>
         @endif
         
         <?php
@@ -771,7 +780,7 @@ use App\DeliveryGroup;
 </div>{{-- id --}}
 
 
-<div id="other-comment" class="pt-2">
+<div id="other-comment" class="pt-2 mb-5">
     <div class="clearfix mt-3">
         <h3>コメント</h3>
         <div></div>
@@ -792,7 +801,7 @@ use App\DeliveryGroup;
 </div>
                 
                 
-<div id="pay-method" class="pt-2">
+<div id="pay-method" class="pt-2 mb-5">
     <div class="clearfix mt-3">
         <h3>お支払方法</h3>
         <div></div>
@@ -1112,7 +1121,7 @@ use App\DeliveryGroup;
                     
                     @elseif(! $codCheck && $method->id == 5)
                         <input id="radio-pay-{{ $method->id }}" type="radio" name="pay_method" value="{{ $method->id }}" class="payMethodRadio" disabled form="user-input">
-                        <label for="radio-pay-{{ $method->id }}" class="radios">{{ $method->name }}</label>
+                        <label style="cursor:default; color:#afafaf;" for="radio-pay-{{ $method->id }}" class="radios">{{ $method->name }}</label>
                         
                         {{--
                         <input type="radio" name="pay_method" class="payMethodRadio ml-2" value="{{ $method->id }}" disabled> {{ $method->name }}
@@ -1188,33 +1197,33 @@ use App\DeliveryGroup;
                     </th>
                     
                     <td class="text-big">
-                        <b>¥{{ number_format(1000) }}</b>
+                        <b>¥{{ number_format($allPrice) }}</b>
                     </td>
                   </tr>
 
                 <tr>
-                        <th class="text-left text-big">送料</th>
-                        
-                        <td class="text-big">
-                            @if(isset($deliFee))
-                                <b>¥{{ number_format($deliFee) }}</b>
-                            @else
-                                <b class="text-enji">含まれておりません</b>
-                            @endif
-                        </td>
-                    </tr>
+                    <th class="text-left text-big">送料</th>
                     
-                    {{--
-                    <tr>
-                        <th class="text-left text-big">
-                            合計 <small>(小計+送料)</small>
-                        </th>
-                        
-                        <td class="text-big text-danger">
-                            <b>¥{{ number_format($allPrice + $deliFee) }}</b>
-                        </td>
-                    </tr>
-                    --}}
+                    <td class="text-big">
+                        @if(isset($deliFee))
+                            <b>¥{{ number_format($deliFee) }}</b>
+                        @else
+                            <b class="text-enji">含まれておりません</b>
+                            <?php $deliFee = 0; ?>
+                        @endif
+                    </td>
+                </tr>
+                
+                <tr>
+                    <th class="text-left text-big">
+                        <b>合計 <small>(税込)</small></b>
+                    </th>
+                    
+                    <td class="text-extra-big text-danger">
+                        <b class="text-big">¥{{ number_format($allPrice + $deliFee) }}</b>
+                    </td>
+                </tr>
+                
                
              </tbody>
         </table>

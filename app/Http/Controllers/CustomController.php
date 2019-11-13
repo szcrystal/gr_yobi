@@ -22,6 +22,7 @@ use Mail;
 use DateTime;
 use Auth;
 use Ctm;
+use Cookie;
 
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -656,6 +657,56 @@ class CustomController extends Controller
         return $sorted;
     }
     
+    //最近チェックしたのCookie => ! 現在使用していない !
+    static function getCookieItems($separateNum, $itemId = null)
+    {
+        //Cookie 最近チェックしたアイテム　最近見た CacheではなくCookieなので注意===================
+        
+        $cookieArr = array();
+        $cookieItems = null;
+        
+        $getNum = $separateNum;
+        $whereArr = ['open_status'=>1, 'is_potset'=>0];
+        //$getNum = Ctm::isAgent('sp') ? 8 : 8;
+        
+        $itemId = isset($itemId) ? $itemId : 0;
+        
+        $cookieIds = Cookie::get('item_ids');
+//        echo $cookieIds;
+//        exit;
+        
+        if(isset($cookieIds) && $cookieIds != '') {
+            $cookieArr = explode(',', $cookieIds);
+            
+            $chunkNum = Ctm::isAgent('sp') ? $getNum/2 : $getNum;
+            
+            //Viewに渡すItems
+            $cookieItems = Item::whereIn('id', $cookieArr)->whereNotIn('id', [$itemId])->where($whereArr)->orderByRaw("FIELD(id, $cookieIds)")->take($getNum)->get()->chunk($chunkNum);
+        }
+        
+        if(! in_array($itemId, $cookieArr)) { //配列にidがない時 or cachIdsが空の時
+            $count = array_unshift($cookieArr, $itemId); //配列の最初に追加
+            
+            if($count > 16) {
+                $cookieArr = array_slice($cookieArr, 0, 16); //16個分を切り取る
+            }
+        }
+        else { //配列にidがある時
+            $index = array_search($itemId, $cookieArr); //key取得
+            
+            //$split = array_splice($cacheIds, $index, 1); //keyからその要素を削除
+            unset($cookieArr[$index]);
+            $cookieArr = array_values($cookieArr);
+            
+            $count = array_unshift($cookieArr, $itemId); //配列の最初に追加
+        }
+        
+        $cookieIds = implode(',', $cookieArr);
+        
+        Cookie::queue(Cookie::make('item_ids', $cookieIds, config('app.cookie_time') )); //43200->1ヶ月 appにcookie_timeをセットしているが、設定変更後artisan config:cacheをする必要があるので直接時間指定した方がいいのかもしれない
+        
+        return $cookieItems;
+    }
     
     static function customPaginate($itemAll, $perPage, $request)
     {

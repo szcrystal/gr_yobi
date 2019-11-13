@@ -42,6 +42,11 @@ class AddColumnToEtcTen extends Migration
         Schema::table('sales', function (Blueprint $table) {
             $table->integer('is_once_down')->after('is_huzaioki')->nullable()->default(NULL);
         });
+        
+        //SendMailFlags
+        Schema::table('send_mail_flags', function (Blueprint $table) {
+            $table->integer('add_point')->after('information_foot')->nullable()->default(NULL);
+        });
     }
 
 
@@ -125,6 +130,13 @@ class AddColumnToEtcTen extends Migration
         if (Schema::hasColumn('sales', 'is_once_down')) {
             Schema::table('sales', function (Blueprint $table) {
                 $table->dropColumn('is_once_down');
+            });
+        }
+        
+        //SendMailFlag
+        if (Schema::hasColumn('send_mail_flags', 'add_point')) {
+            Schema::table('send_mail_flags', function (Blueprint $table) {
+                $table->dropColumn('add_point');
             });
         }
         

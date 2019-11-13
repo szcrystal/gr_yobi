@@ -35,23 +35,26 @@
     <div class="ml-20per mt-1 pl-1">
         <div class="text-right">
             <?php
-                $target = isset($data['destination']) && $data['destination'] ? 'delivery-add' : 'user-info';
+                $target = isset($data['destination']) && $data['destination'] ? 'delivery-add' : 'delivery-add';
             ?>
             <a class="btn confirm-edit-btn" href="{{ url('shop/form#' . $target) }}">変更</a>
         </div>
         
         <div class="">
             @if(isset($data['destination']) && $data['destination'])
-                <span>{{ $data['receiver']['name'] }} 様</span><br>
+                <span>{{ $data['receiver']['name'] }} 様</span>
+                <p class="mt-1 mb-0">
                 〒{{ Ctm::getPostNum($data['receiver']['post_num']) }}<br>
                 {{ $data['receiver']['prefecture'] }}{{ $data['receiver']['address_1'] }}{{ $data['receiver']['address_2'] }}<br>
                 TEL : {{ $data['receiver']['tel_num'] }}
+                </p>
             @else
-                <span>{{ $userArr['name'] }} 様</span><br>
+                <span>{{ $userArr['name'] }} 様</span>
+                <p class="mt-1 mb-0">
                 〒{{ Ctm::getPostNum($userArr['post_num']) }}<br>
                 {{ $userArr['prefecture'] }}{{ $userArr['address_1'] }}{{ $userArr['address_2'] }}<br>
                 TEL : {{ $userArr['tel_num'] }}
-                
+                </p>
             @endif
         </div>
     </div>
@@ -77,7 +80,7 @@
                             <br><span class="text-small">{{ $pmChild->find($data['net_bank'])->name }}</span>
                         @endif
                     </th>
-                    <td style="padding-top:0.6em;">
+                    <td>
                         @if(/*$regist && */$data['pay_method'] == 1 && $data['card_seq'] == 99)
                             カードの登録：{{ isset($data['is_regist_card']) ? 'する' : 'しない' }}
                         
@@ -92,7 +95,8 @@
                         @elseif($data['pay_method'] == 5)
                             {{-- 代引き手数料 --}}
                             ¥{{ number_format($codFee) }}
-                            
+                        @elseif($data['pay_method'] == 6)
+                            手数料：お客様負担
                         @endif
                     </td>
                 </tr>
@@ -158,9 +162,16 @@
                        @endif
                        
                        <p class="m-0 p-0 text-big">
-                           <span class="text-small">金額（税込）：</span>
+                           <span class="text-small">小計（税込）：</span>
                            <span class="{{ $red }}">¥{{ number_format( $item->item_total_price ) }}</span>
                        </p>
+                       
+                       @if(isset($item->seinou_sunday_price) && $item->seinou_sunday_price)
+                            <p class="m-0 p-0 text-big">
+                                <span class="text-small">日曜日指定：</span>
+                                <span>+¥{{ number_format( $item->seinou_sunday_price ) }}</span>
+                            </p>
+                       @endif
                    </td>
                 </tr>
             @endforeach
@@ -175,7 +186,7 @@
         <div></div>
     </div>
     
-    <div class="table-responsive table-custom mt-1">
+    <div class="table-responsive table-custom check-time mt-1">
         <div class="text-right">
             <a class="btn confirm-edit-btn" href="{{ url('shop/form#delivery-info') }}">変更</a>
         </div>
@@ -185,7 +196,7 @@
                 <tr>
                     <th class="font-weight-normal">ご希望日程</th>
                     <td>
-                        <span>
+                        <span class="text-big">
                         @if(isset($data['plan_date']))
                             {{ $data['plan_date'] }}<br>
                         @else
@@ -243,9 +254,9 @@
                                 <div class="mb-3">
                                     <ul class="mb-1 list-unstyled">
                                         @foreach($planTimeTitleArr as $planTimeTitle)
-                                            <li class="mb-2">
+                                            <li class="mb-2 pb-1">
                                                 <i class="fal fa-angle-double-right"></i> {{ $planTimeTitle }}<br>
-                                                <span>{{ $data['plan_time'][$k] }}</span>
+                                                <span class="text-big">{{ $data['plan_time'][$k] }}</span>
                                             </li>
                                         @endforeach
                                     </ul>
@@ -277,7 +288,7 @@
             <div class="mb-3">
                 <ul class="mb-1 list-unstyled">
                     @foreach($data['seinouHuzaiTitle'] as $shTitle)
-                        <li class="mb-2">
+                        <li class="mb-1">
                             <i class="fal fa-angle-double-right"></i> {{ $shTitle }}<br>
                         </li>
                     @endforeach
@@ -497,16 +508,18 @@
                 <td>¥{{ number_format($deliFee) }}</td>
             </tr>
             
+            {{--
             @if($seinouHuzaiAllPrice)
             	<tr>
                 	<th>不在置き割引</th>
                     <td>¥{{ number_format($seinouHuzaiAllPrice) }}</td>
                 </tr>
             @endif
+            --}}
             
             @if($seinouSundayAllPrice)
             	<tr>
-                	<th>日曜配達割増</th>
+                	<th>日曜配達</th>
                     <td>¥{{ number_format($seinouSundayAllPrice) }}</td>
                 </tr>
             @endif
@@ -548,7 +561,7 @@
             <tr>
                 <th class="text-big"><b>合計<small>（税込）</small></b></th>
                 <td class="text-danger text-extra-big{{ count($errors) > 0 ? ' alert-danger' : '' }}">
-                     <b class="text-big"> ¥{{ number_format($allPrice + $deliFee + $codFee - $usePoint - $seinouHuzaiAllPrice + $seinouSundayAllPrice) }}</b>
+                     <b class="text-big"> ¥{{ number_format($totalFee) }}</b>
                 </td>
             </tr>
 

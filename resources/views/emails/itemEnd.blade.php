@@ -24,21 +24,23 @@
 【ご注文番号】：{{ $saleRel->order_number }}<br>
 【ご注文日】：{{ date('Y/m/d', time()) }}<br>
 【ご注文者】：{{ $user->name }} 様<br><br>
-【お届け先】： 
+【お届け先】
 <div style="margin: 0 0 1.5em 1.0em;">
+{{ $receiver->name }} 様<br>
+<p style="margin-top:0.1em">
 〒{{ Ctm::getPostNum($receiver->post_num) }}<br>
-{{ $receiver->prefecture }}{{ $receiver->address_1 }}<span style="margin-left:0.3em">{{ $receiver->address_2 }}</span><br>
-<p style="margin-top:0.2em">{{ $receiver->name }} 様</p>
+{{ $receiver->prefecture }}{{ $receiver->address_1 }}{{ $receiver->address_2 }}
+</p>
 </div>
 
 @if(isset($sales->first()->plan_date))
-【ご希望配送日】：
+【ご希望配送日】
 <div style="margin: 0 0 1.0em 1.0em;">
 {{ $sales->first()->plan_date }}
 </div>
 @endif
 
-【ご注文商品】： 
+【ご注文商品】
 <?php
 	$num = 1;
 	$isHuzai = 0;
@@ -47,9 +49,9 @@
 @foreach($sales as $sale)
 <div style="margin: 0 0 1.5em 1.0em;">
 <div>{{ $num }}.</div>
-商品番号: {{ $itemModel->find($sale->item_id)->number }}<br>
-商品名: {{ Ctm::getItemTitle($itemModel->find($sale->item_id)) }}<br>
-数量: {{ $sale->item_count}}<br>
+商品番号：{{ $itemModel->find($sale->item_id)->number }}<br>
+商品名：{{ Ctm::getItemTitle($itemModel->find($sale->item_id)) }}<br>
+数量：{{ $sale->item_count}}<br>
 金額：¥{{ number_format($sale->total_price) }}（税込）
 @if($sale->is_once_down)
 [同梱包割引]
@@ -70,32 +72,40 @@
     @endif
 @endif
 
+@if(isset($sale->seinou_sunday) && $sale->seinou_sunday)
+<br>
+日曜日指定：+¥{{ number_format($sale->seinou_sunday) }}
+@endif
+
 </div>
 <?php $num++; ?>
 @endforeach
 
 
 @if($isHuzai && isset($saleRel->huzai_comment) && $saleRel->huzai_comment != '')
-    【不在置き場所】：
+    【不在置き場所】
     <div style="margin: 0 0 1.0em 1.0em;">
     {!! nl2br($saleRel->huzai_comment) !!}
     </div>
 @endif
 
 @if(isset($saleRel->user_comment) && $saleRel->user_comment != '')
-    【コメント】：
+    【コメント】
     <div style="margin: 0 0 1.0em 1.0em;">
     {!! nl2br($saleRel->user_comment) !!}
     </div>
 @endif
 
-【ご注文金額】：
+【ご注文金額】
 <div style="margin: 0 0 1.0em 1.0em;">
 商品金額合計：￥{{ number_format($saleRel->all_price) }} <br>
 送料：￥{{ number_format($saleRel->deli_fee) }}<br>
+
+{{--
 @if($saleRel->seinou_huzai)
 不在置き割引：￥{{ number_format($saleRel->seinou_huzai) }}<br>
 @endif
+--}}
 
 @if($saleRel->seinou_sunday)
 日曜配達割増：￥{{ number_format($saleRel->seinou_sunday) }}<br>
@@ -109,31 +119,33 @@
 代引手数料：￥{{ number_format($saleRel->cod_fee) }}<br>
 @endif
 @if($saleRel->is_user)
-ポイント利用：{{ $saleRel->use_point }} ポイント<br>
+利用ポイント：{{ $saleRel->use_point }} ポイント<br>
 @endif
 
-<?php
-$allTotal = $saleRel->all_price + $saleRel->deli_fee + $saleRel->cod_fee - $saleRel->use_point + $saleRel->seinou_sunday - $saleRel->seinou_huzai;
-?>
 
-<b style="display:block; font-size:1.1em; margin-top:0.5em;">ご注文金額合計：￥{{ number_format($allTotal) }} （税込）</b>
+<b style="display:block; font-size:1.1em; margin-top:0.5em;">ご注文金額合計：￥{{ number_format($saleRel->total_price) }} （税込）</b>
 </div>
-【お支払方法】：{{ $pmModel->find($saleRel->pay_method)->name }} 
+【お支払方法】
+<div style="margin: 0 0 1.0em 1.0em;">
+{{ $pmModel->find($saleRel->pay_method)->name }}
+
 @if($saleRel->pay_method == 3)
-（{{ $pmChildModel->find($saleRel->pay_method_child)->name }}）
+    （{{ $pmChildModel->find($saleRel->pay_method_child)->name }}）
 @elseif($saleRel->pay_method == 6)
-<div style="margin: 0 0 1.5em 0.8em;">
-お振込先は、改めてお知らせ致します。
-</div>
+    <div style="margin: 0 0 1.5em 0.8em;">
+    お振込先は、改めてお知らせ致します。
+    </div>
 @endif
-<br><br>
-<hr>
-<br>
+</div>
+
+<br><hr><br>
+
 @if($isUser)
 {!! nl2br( $footer ) !!}
 @endif
 
-<br><br><br><br>
+<br><br><br>
+
 {!! nl2br($setting->mail_footer) !!}
 
 

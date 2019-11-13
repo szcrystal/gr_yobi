@@ -29,15 +29,17 @@
 	【キャンセル日】：{{ Ctm::changeDate($saleRelCancel->created_at, 1) }}<br>
 @endif
 【ご注文者】：{{ $user->name }} 様<br><br>
-【お届け先】： 
+【お届け先】
 <div style="margin: 0 0 1.5em 1.0em;">
+{{ $receiver->name }} 様
+<p style="margin-top:0.2em">
 〒{{ Ctm::getPostNum($receiver->post_num) }}<br>
-{{ $receiver->prefecture }}{{ $receiver->address_1 }}<span style="margin-left:0.3em">{{ $receiver->address_2 }}</span><br>
-<p style="margin-top:0.2em">{{ $receiver->name }} 様</p>
+{{ $receiver->prefecture }}{{ $receiver->address_1 }}{{ $receiver->address_2 }}
+</p>
 </div>
 
 
-【ご注文商品】： <br>
+【ご注文商品】
 <?php 
 	$num = 1;
     $isHuzai = 0; 
@@ -45,64 +47,72 @@
 
 @foreach($sales as $sale)
 <div style="margin: 0 0 1.5em 1.0em;">
-<div>{{ $num }}.</div>
+    <div>{{ $num }}.</div>
 
-@if($sale->is_keep)
-    <b>[お取り置き商品]</b><br>
-@endif
-
-商品番号: {{ $itemModel->find($sale->item_id)->number }}<br>
-商品名: {{ Ctm::getItemTitle($itemModel->find($sale->item_id)) }}<br>
-数量: {{ $sale->item_count}}<br>
-金額：¥{{ number_format($sale->total_price) }}（税込）<br>
-
-@if(isset($sale->is_huzaioki))
-	不在置き：
-    @if($sale->is_huzaioki)
-    	了承する
-        <?php $isHuzai = 1; ?>
-    @else
-    	了承しない
+    @if($sale->is_keep)
+        <b>[お取り置き商品]</b><br>
     @endif
-@endif
 
-@if($templ->type_code == 'thanks')
-	@if(isset($sale->deli_start_date) && $sale->deli_start_date)
-        <b>出荷予定日：{{ Ctm::getDateWithYoubi($sale->deli_start_date) }}</b>
-        <br>
+    商品番号：{{ $itemModel->find($sale->item_id)->number }}<br>
+    商品名：{{ Ctm::getItemTitle($itemModel->find($sale->item_id)) }}<br>
+    数量：{{ $sale->item_count}}<br>
+    金額：¥{{ number_format($sale->total_price) }}（税込）
+    @if($sale->is_once_down)
+    [同梱包割引]
     @endif
-@elseif($templ->type_code == 'deliDoneNo' || $templ->type_code == 'deliDone')
-	<?php $d = date('Y-m-d', time()); ?>
-    <b>出荷日：{{ Ctm::getDateWithYoubi($d) }}</b><br>
-@endif
+    <br>
 
-@if($templ->type_code == 'thanks' || $templ->type_code == 'deliDoneNo' || $templ->type_code == 'deliDone')
-    @if(isset($sale->deli_schedule_date) && $sale->deli_schedule_date)
-    	<b>お届け予定日：{{ Ctm::getDateWithYoubi($sale->deli_schedule_date) }}</b><br>
-    @endif
-    
-    @if(isset($sale->deli_company_id) && $sale->deli_company_id)
-        <?php $dc = $dcModel->find($sale->deli_company_id); ?>
-        <br>
-        配送会社：
-        @if($dc->id == 1)
-        	後ほど店舗よりご連絡致します
+    @if(isset($sale->is_huzaioki))
+        不在置き：
+        @if($sale->is_huzaioki)
+            了承する
+            <?php $isHuzai = 1; ?>
         @else
-        	{{ $dc->name }}
+            了承しない
         @endif
         <br>
     @endif
-@endif
 
-@if($templ->type_code == 'deliDone')
-    @if(isset($sale->deli_slip_num) && $sale->deli_slip_num != '')
-    	伝票番号：{{ $sale->deli_slip_num }}<br>
+    @if($templ->type_code == 'thanks' || $templ->type_code == 'deliDoneNo' || $templ->type_code == 'deliDone')
+    <div>
+        <div style="margin:0.2em 0;">
+        @if($templ->type_code == 'thanks')
+            @if(isset($sale->deli_start_date) && $sale->deli_start_date)
+                <b>出荷予定日：{{ Ctm::getDateWithYoubi($sale->deli_start_date) }}</b>
+                <br>
+            @endif
+        @elseif($templ->type_code == 'deliDoneNo' || $templ->type_code == 'deliDone')
+            <?php $d = date('Y-m-d', time()); ?>
+            <b>出荷日：{{ Ctm::getDateWithYoubi($d) }}</b><br>
+        @endif
+
+        @if(isset($sale->deli_schedule_date) && $sale->deli_schedule_date)
+            <b>お届け予定日：{{ Ctm::getDateWithYoubi($sale->deli_schedule_date) }}</b><br>
+        @endif
+        </div>
+        
+        @if(isset($sale->deli_company_id) && $sale->deli_company_id)
+            <?php $dc = $dcModel->find($sale->deli_company_id); ?>
+            配送会社：
+            @if($dc->id == 1)
+                後ほど店舗よりご連絡致します
+            @else
+                {{ $dc->name }}
+            @endif
+            <br>
+        @endif
+    </div>
     @endif
-    @if(isset($dc->url) && $dc->url != '')
-    	お荷物の追跡はこちらから<br>
-    	{{ $dc->url }}
+
+    @if($templ->type_code == 'deliDone')
+        @if(isset($sale->deli_slip_num) && $sale->deli_slip_num != '')
+            伝票番号：{{ $sale->deli_slip_num }}<br>
+        @endif
+        @if(isset($dc->url) && $dc->url != '')
+            お荷物の追跡はこちらから<br>
+            {{ $dc->url }}
+        @endif
     @endif
-@endif
 
 </div>
 
@@ -121,30 +131,32 @@
 
 @if(! isset($allCancel))
 	@if($isHuzai && isset($saleRel->huzai_comment) && $saleRel->huzai_comment != '')
-        【不在置き場所】：
+        【不在置き場所】
         <div style="margin: 0 0 1.0em 1.0em;">
         {!! nl2br($saleRel->huzai_comment) !!}
         </div>
     @endif
     
     @if(isset($saleRel->user_comment) && $saleRel->user_comment != '')
-    【コメント】：
+    【コメント】
     <div style="margin: 0 0 1.0em 1.0em;">
     {!! nl2br($saleRel->user_comment) !!}
     </div>
     @endif
 
-    【ご注文金額】：
+    【ご注文金額】
     <div style="margin: 0 0 1.0em 1.0em;">
     商品金額合計：￥{{ number_format($saleRel->all_price) }} <br>
     送料：￥{{ number_format($saleRel->deli_fee) }}<br>
     
+    {{--
     @if($saleRel->seinou_huzai)
     不在置き割引：￥{{ number_format($saleRel->seinou_huzai) }}<br>
     @endif
+    --}}
     
     @if($saleRel->seinou_sunday)
-    日曜配達割増：￥{{ number_format($saleRel->seinou_sunday) }}<br>
+    日曜配達：￥{{ number_format($saleRel->seinou_sunday) }}<br>
     @endif
     
     @if($saleRel->pay_method == 2)
@@ -164,26 +176,31 @@
         	$allTotal = $saleRel->total_price;
         }
         else {
-        	$allTotal = $saleRel->all_price + $saleRel->deli_fee + $saleRel->cod_fee - $saleRel->use_point - $saleRel->seinou_huzai + $saleRel->seinou_sunday;
+        	$allTotal = $saleRel->all_price + $saleRel->deli_fee + $saleRel->cod_fee - $saleRel->use_point/* - $saleRel->seinou_huzai*/ + $saleRel->seinou_sunday;
         }
     ?>
 
     <b style="display:block; font-size:1.1em; margin-top:0.5em;">ご注文金額合計：￥{{ number_format($allTotal) }} （税込）</b>
     </div>
 
-    【お支払方法】：{{ $pmModel->find($saleRel->pay_method)->name }}
-    @if($saleRel->pay_method == 3)
-    	（{{ $pmChildModel->find($saleRel->pay_method_child)->name }}）
-    @elseif($templ->type_code == 'thanks' && $saleRel->pay_method == 6)
-        <div style="margin: 0.5em 0 0.2em 0;">
-        	{!! nl2br($setting['bank_info']) !!}
-        </div>
-    @endif
+    【お支払方法】
+    <div style="margin: 0 0 1.0em 1.0em;">
+        {{ $pmModel->find($saleRel->pay_method)->name }}
+        @if($saleRel->pay_method == 3)
+            （{{ $pmChildModel->find($saleRel->pay_method_child)->name }}）
+        @elseif($templ->type_code == 'thanks' && $saleRel->pay_method == 6)
+            <div style="margin: 0.5em 0 0.2em 0;">
+                {!! nl2br($setting['bank_info']) !!}
+            </div>
+        @endif
+    </div>
     
     @if($templ->type_code == 'payDone')
-    	<br><br>【ご入金確認日】：{{ Ctm::changeDate($saleRel->pay_date, 1) }} <br>
+    【ご入金確認日】
+    <div style="margin: 0 0 1.0em 1.0em;">
+    {{ Ctm::changeDate($saleRel->pay_date, 1) }}
+    </div>
     @endif
-
 @endif
 
 <br>

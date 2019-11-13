@@ -673,29 +673,31 @@ class SaleController extends Controller
         $saleRel = $this->saleRel->find($data['order_id']);
         //$saleRel->pay_done = isset($data['pay_done']) ? $data['pay_done'] : 0;
         
-        if(isset($data['pay_done'])) {
-        	$saleRel['pay_date'] = date('Y-m-d H:i:s', time());
-        }
-        else {
-        	$data['pay_done'] = 0;
-        }
-        
-        $data['seinou_huzai'] = isset($data['seinou_huzai']) ? $data['seinou_huzai'] : 0;
-        $data['seinou_sunday'] = isset($data['seinou_sunday']) ? $data['seinou_sunday'] : 0;
-        
-        //$saleRel->total_price = $saleRel->total_price - $saleRel->deli_fee + $data['deli_fee'];
-        $saleRel['total_price'] = $saleRel->all_price + $data['deli_fee'] + $data['cod_fee'] - $data['use_point'] + $data['adjust_price'] - $data['seinou_huzai'] + $data['seinou_sunday'];
-                
-        /*
-        $saleRel->deli_fee = $data['deli_fee'];
-        $saleRel->information = $data['information'];
-        $saleRel->information_foot = $data['information_foot'];
-        $saleRel->memo = $data['memo'];
-        $saleRel->craim = $data['craim'];
-        */
-        
-        $saleRel->fill($data);
-        $saleRel->save();
+        //if(isset($data['only_up'])) { //更新ボタンを押した時のみ
+            if(isset($data['pay_done'])) {
+                $saleRel['pay_date'] = date('Y-m-d H:i:s', time());
+            }
+            else {
+                $data['pay_done'] = 0;
+            }
+            
+            //$data['seinou_huzai'] = isset($data['seinou_huzai']) ? $data['seinou_huzai'] : 0;
+            $data['seinou_sunday'] = isset($data['seinou_sunday']) ? $data['seinou_sunday'] : 0;
+            
+            //$saleRel->total_price = $saleRel->total_price - $saleRel->deli_fee + $data['deli_fee'];
+            $saleRel['total_price'] = $saleRel->all_price + $data['deli_fee'] + $data['cod_fee'] - $data['use_point'] + $data['adjust_price']/* - $data['seinou_huzai']*/ + $data['seinou_sunday'];
+                    
+            /*
+            $saleRel->deli_fee = $data['deli_fee'];
+            $saleRel->information = $data['information'];
+            $saleRel->information_foot = $data['information_foot'];
+            $saleRel->memo = $data['memo'];
+            $saleRel->craim = $data['craim'];
+            */
+            
+            $saleRel->fill($data);
+            $saleRel->save();
+        //}
         
         //プレビュー表示 --------------------------------------------------------
         if($withPreview) {
@@ -750,10 +752,21 @@ class SaleController extends Controller
             	$sales = $this->sale->find($data['sale_ids']);
                 
                 foreach($sales as $sale) {
+                    
                     if($templ->type_code == 'deliDoneNo' || $templ->type_code == 'deliDone') {
                         $sale->deli_done = 1; //deli_doneがされた商品をフォローメールするので必ず必要
                         $sale->deli_sended_date = date('Y-m-d H:i:s', time());
                         $sale ->save();
+                        
+                        //配送時点でユーザーにpoint加算する
+                        $sr = $saleRel->find($sale->salerel_id);
+                        $addPoint = 0;
+                        if($sr->is_user) {
+                            $srUser = $this->user->find($sr->user_id);
+                            $srUser->increment('point', $sale->add_point);
+                            $addPoint = $sale->add_point;
+                        }
+                        
                     }
                     /*
                     elseif($templ->type_code == 'cancel') { //キャンセルの時ポイントを戻す
@@ -782,6 +795,7 @@ class SaleController extends Controller
                             'templ_code'=>$templ->type_code, 
                             'information'=>$data['information'], 
                             'information_foot'=>$data['information_foot'],
+                            'add_point' => isset($addPoint) ? $addPoint : null,
                         ]
                     );
              

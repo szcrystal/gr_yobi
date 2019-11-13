@@ -32,6 +32,7 @@ use Exception;
 use Validator;
 use DateTime;
 use Route;
+use Cookie;
 
 use Illuminate\Validation\Rule;
 
@@ -327,6 +328,7 @@ class CartController extends Controller
      	
       	$regist = $all['regist']; 
        	$allPrice = $all['all_price']; //商品合計のみの金額。SessionにTotalPrice（送料、手数料、マイナスポイント）は入れていない
+        $totalFee = $all['total_fee'];
         $deliFee = $all['deli_fee'];
         $codFee = $all['cod_fee'];
         //$takeChargeFee = $all['take_charge_fee'];
@@ -380,7 +382,7 @@ class CartController extends Controller
         	$userId = $uObj->id;
          	
             $uObj->decrement('point', $usePoint);
-          	$uObj->increment('point', $addPoint);
+          	//$uObj->increment('point', $addPoint); //追加pointは配送後に加算する
             
             if($isCardRegist) { //カード登録時
 				$uObj->increment('card_regist_count', 1);
@@ -408,7 +410,7 @@ class CartController extends Controller
             
             if($regist) {   
                 $userData['password'] = bcrypt($userData['password']);
-      			$userData['point'] = $addPoint;
+      			//$userData['point'] = $addPoint; //=>pointは配送後に加算する
                 
                 if($isCardRegist) { //カード登録時
 					$userData['card_regist_count'] = 1;
@@ -498,7 +500,7 @@ class CartController extends Controller
        
 
        
-       	//SaleRelationのcreate -------
+       	//SaleRelationのcreate  ========================
         if(Ctm::isAgent('sp')) {
         	$agentType = 1;
         }
@@ -511,7 +513,7 @@ class CartController extends Controller
         
     	$saleRel = $this->saleRel->create([
             'order_number' => $orderNumber, //コンビニなし
-            'regist' =>$all['regist'],
+            'regist' =>$regist,
             'user_id' =>$userId,
             'is_user' => $isUser,
             'receiver_id' => $receiverId, 
@@ -523,10 +525,11 @@ class CartController extends Controller
             //'take_charge_fee' => $takeChargeFee,
             'use_point' => $usePoint,
             'add_point' => $addPoint,
-            'seinou_huzai' => $allData['s_huzai_price'],
-            'seinou_sunday' => $allData['s_sunday_price'],
-            'all_price' => $allPrice, //商品withTax x 個数 の合計　送料等は含まれない
-            'total_price' => $allPrice + $deliFee + $codFee - $usePoint - $allData['s_huzai_price'] + $allData['s_sunday_price'], //送料 手数料　含む全ての合計 SessionにTotalPrice（送料、手数料、マイナスポイント）は入れていない
+            'seinou_huzai' => $all['s_huzai_price'],
+            'seinou_sunday' => $all['s_sunday_price'],
+            'all_price' => $allPrice, //商品withTax x 個数 の合計　同梱包割引／不在置きは含まれる。送料等は含まれない。
+            'total_price' => $totalFee, //送料 手数料 日曜配達　含む全ての合計
+                //$allPrice + $deliFee + $codFee - $usePoint - $allData['s_huzai_price'] + $allData['s_sunday_price']
             'destination' => $destination,
             'huzai_comment' => isset($allData['huzai_comment']) ? $allData['huzai_comment'] : null,
             'user_comment' => $allData['user_comment'],
@@ -554,7 +557,7 @@ class CartController extends Controller
         
 //        $prefectureId = $this->prefecture->where('name', $receiver->prefecture)->first()->id;
         
-        //売上登録処理 Sale create
+        //売上登録処理 Sale create ========================
         foreach($itemData as $key => $oneSesData) {
         	
 //            $oneItemData = array();
@@ -729,6 +732,8 @@ class CartController extends Controller
     public function postCardPay(Request $request)
     {
     	$data = $request->all();
+     
+        //$data['Amount'] => 送信される総合金額
         
         //URL 接続ドメイン ---------------
         //$url = $this->set->is_product ? "https://p01.mul-pay.jp/" : "https://pt01.mul-pay.jp/";
@@ -1247,7 +1252,7 @@ class CartController extends Controller
             'user.prefecture.not_in' => '「都道府県」を選択して下さい。',
             'destination.required_with' => '「配送先」を入力して下さい。', //登録先住所に配送の場合は「登録先住所に配送する」にチェックをして下さい。
             'pay_method.required' => '「お支払い方法」を選択して下さい。',
-            'use_point.max' => '「ポイント」が保持ポイントを超えています。',
+            'use_point.max' => '「ポイントを利用する」が保持ポイントを超えています。',
             'net_bank.required_if'=> '「お支払い方法」ネットバンク決済の銀行を選択して下さい。',
             'huzai_comment.required_if' => '「不在時の置き場所」は必須です。',
             'user_comment.max' => '「コメント」の文字数が長すぎます。',
@@ -1378,40 +1383,34 @@ class CartController extends Controller
             if(isset($data['plan_time']) && isset($data['plan_time'][$obj->dg_id])) {
             	
                 $obj->plan_time = $data['plan_time'][$obj->dg_id];
-                
             }
             
             //西濃運輸の場合に、日曜配送は+1000加算、不在置き了承で商品から-3000
-            if($obj->dg_id == $this->seinouObj->id) {
-            	if(Ctm::isSeinouSunday($data['plan_date'])) {
+            if(isset($obj->is_huzaioki)) { //ORG : if($obj->dg_id == $this->seinouObj->id) {
+            	
+                if(Ctm::isSeinouSunday($data['plan_date'])) { //日曜配達プラス
                 	/* 日曜1000円を送料として捉える場合 **************
                 	$addDeliFee = $this->seinouSundayFee * $obj->count;
-                	
                     $obj->single_deli_fee += $addDeliFee;
                     $seinouSundayDeliFee += $addDeliFee; //最終的なトータルの送料計算用
                     **************************** */
                     
                     /* 日曜1000円を商品金額として捉える場合 ***** */
                     $seinouSundayUpPrice = $this->seinouObj->sundayFee * $obj->count;
-                    
                     $seinouSundayAllPrice += $seinouSundayUpPrice;
-                    //$itemTotalPrice += $seinouSundayUpPrice; 
-                    
+                    //$itemTotalPrice += $seinouSundayUpPrice;
                 }
                 
-                //if(isset($data['is_huzaioki'][$obj->id])) {
-                //if(isset($data['is_huzaioki'])) {
-                if(isset($obj->is_huzaioki)) {
-                	if($obj->is_huzaioki) {
-                    	//item_total_price(商品金額x個数)をここでsessionに上書きするとズレが出るので、down_priceとして新データをsessionに入れる
-                    	$seinouHuzaiDownPrice = $this->seinouObj->huzaiokiFee * $obj->count;
-                        
-                        $seinouHuzaiAllPrice += $seinouHuzaiDownPrice;
-                        //$itemTotalPrice -= $seinouHuzaiDownPrice;
-                    }
+                //ORG : if(isset($data['is_huzaioki'][$obj->id])) { //if(isset($data['is_huzaioki'])) { //if(isset($obj->is_huzaioki)) {
+                if($obj->is_huzaioki) { //不在置きマイナス
+                    //item_total_price(商品金額x個数)をここでsessionに上書きするとズレが出るので、down_priceとして新データをsessionに入れる
+                    $seinouHuzaiDownPrice = $this->seinouObj->huzaiokiFee * $obj->count;
+                    $seinouHuzaiAllPrice += $seinouHuzaiDownPrice;
+                    //$itemTotalPrice -= $seinouHuzaiDownPrice;
+                }
                     
                     //$obj->is_huzaioki = $data['is_huzaioki'];
-                }
+                //}
             }
             
             //トータルプライス Confirm表示用 sessionには入れ直さない 1246行目でSessionから取得する（これ以外にない）ので、Sessionに入れ直すとずれていく
@@ -1444,8 +1443,8 @@ class CartController extends Controller
         session([
         	'item.data'=>$itemSes,
             'all.all_price'=>$allPrice,
-            'all.data.s_sunday_price' => $seinouSundayAllPrice,
-            'all.data.s_huzai_price' => $seinouHuzaiAllPrice,
+            'all.s_sunday_price' => $seinouSundayAllPrice,
+            'all.s_huzai_price' => $seinouHuzaiAllPrice,
         ]);
         // **********************************
         
@@ -1481,13 +1480,17 @@ class CartController extends Controller
         	return redirect('shop/form')->withErrors($errorArr)->withInput();
         }
         
-        
+
         //手数料、送料、ポイントをここで合計する -------------------------
+        //allPrice -> 商品金額x個数=商品金額の合計（同梱包割引、不在置き割引含む）、totalFee ->送料等全て含めた総合金額
         $totalFee = 0;
+        
+        //西濃日曜配達追加 （不在置きは元々商品金額として計算されているので日曜配達分のみプラス）---------
+        $totalFee = $allPrice + $seinouSundayAllPrice/* - $seinouHuzaiAllPrice*/;
         
         //ポイント 使用ポイント減算-----------
         $usePoint = $data['use_point'];
-        $totalFee = $allPrice - $usePoint;
+        $totalFee = $totalFee - $usePoint;
         //ポイント END-----------
         
         //送料 --------------
@@ -1585,8 +1588,17 @@ class CartController extends Controller
         $totalFee = $totalFee + $codFee;
         //代引き END ---------------------
         
+        
         //送料、手数料、ポイントのsession入れ *********************
-        session(['all.deli_fee'=>$deliFee, 'all.cod_fee'=>$codFee, /*'all.take_charge_fee'=>$takeChargeFee,*/ 'all.use_point'=>$usePoint, 'all.add_point'=>$addPoint]);
+        //allPrice -> 商品金額x個数=商品金額の合計（同梱包割引、不在置き割引含む）、totalFee ->送料等全て含めた総合金額
+        session([
+            'all.total_fee'=>$totalFee,
+            'all.deli_fee'=>$deliFee,
+            'all.cod_fee'=>$codFee,
+            'all.use_point'=>$usePoint,
+            'all.add_point'=>$addPoint,
+            //'all.take_charge_fee'=>$takeChargeFee,
+        ]);
 
         
         // Settle 決済 ====================================================
@@ -1703,7 +1715,7 @@ class CartController extends Controller
         $metaTitle = 'ご注文内容の確認' . '｜植木買うならグリーンロケット';
         
         
-        return view('cart.confirm', ['data'=>$data, 'userArr'=>$userArr, 'itemData'=>$itemData, 'regist'=>$regist, 'allPrice'=>$allPrice, 'settles'=>$settles, 'payMethod'=>$payMethod, 'pmChild'=>$pmChild, 'deliFee'=>$deliFee, 'codFee'=>$codFee, 'usePoint'=>$usePoint, 'addPoint'=>$addPoint, 'seinouSundayAllPrice'=>$seinouSundayAllPrice, 'seinouHuzaiAllPrice'=>$seinouHuzaiAllPrice,  'actionUrl'=>$actionUrl, 'cardInfo'=>$cardInfo, 'metaTitle'=>$metaTitle])->withErrors($errors);
+        return view('cart.confirm', ['data'=>$data, 'userArr'=>$userArr, 'itemData'=>$itemData, 'regist'=>$regist, 'totalFee'=>$totalFee, 'allPrice'=>$allPrice, 'settles'=>$settles, 'payMethod'=>$payMethod, 'pmChild'=>$pmChild, 'deliFee'=>$deliFee, 'codFee'=>$codFee, 'usePoint'=>$usePoint, 'addPoint'=>$addPoint, 'seinouSundayAllPrice'=>$seinouSundayAllPrice, 'seinouHuzaiAllPrice'=>$seinouHuzaiAllPrice,  'actionUrl'=>$actionUrl, 'cardInfo'=>$cardInfo, 'metaTitle'=>$metaTitle])->withErrors($errors);
     }
     
     
@@ -1789,6 +1801,9 @@ class CartController extends Controller
             if(! $request->session()->has('all.from_cart')) {
            		abort(404);
            	}
+            else {
+                $allPrice = session('all.all_price');
+            }
         }          
      
      	//PayMethod
@@ -1854,14 +1869,20 @@ class CartController extends Controller
         //itemDataのSession入れ
         $sesItems = session('item.data');
         
-        //代引きが可能かどうかを判定してboolを渡す 代引き可／不可混在の場合は「可能」となる
+        //代引きが可能かどうかを判定してboolを渡す 代引き可／不可混在の場合は「可能」となり、不在置きが一つでもあれば「不可」となる。
         $codCheck = 0;
+        
         foreach($sesItems as $item) {
         	$cod = $this->item->find($item['item_id'])->cod;
-            if($cod) {
+            
+            if(isset($item['is_huzaioki']) && $item['is_huzaioki']) {
+                $codCheck = 0;
+                break;
+            }
+            elseif($cod) {
           		$codCheck = 1;
-            	break;      
-          	}      
+            	//break;
+          	}
         }
         
         //時間指定の選択肢　西濃運輸の不在置きチェック
@@ -1902,13 +1923,14 @@ class CartController extends Controller
 
 		$metaTitle = 'ご注文情報の入力' . '｜植木買うならグリーンロケット';
      
-     	return view('cart.form', [/*'regist'=>$regist, */'payMethod'=>$payMethod, 'pmChilds'=>$pmChilds, 'prefs'=>$prefs, 'userObj'=>$userObj, 'codCheck'=>$codCheck, 'dgGroup'=>$dgGroup, 'seinouHuzaiSes'=>$seinouHuzaiSes, 'seinouNoHuzaiSes'=>$seinouNoHuzaiSes, 'regCardDatas'=>$regCardDatas, 'regCardErrors'=>$regCardErrors, 'cardErrors'=>$cardErrors, 'metaTitle'=>$metaTitle]);
+     	return view('cart.form', ['allPrice'=>$allPrice, 'payMethod'=>$payMethod, 'pmChilds'=>$pmChilds, 'prefs'=>$prefs, 'userObj'=>$userObj, 'codCheck'=>$codCheck, 'dgGroup'=>$dgGroup, 'seinouHuzaiSes'=>$seinouHuzaiSes, 'seinouNoHuzaiSes'=>$seinouNoHuzaiSes, 'regCardDatas'=>$regCardDatas, 'regCardErrors'=>$regCardErrors, 'cardErrors'=>$cardErrors, 'metaTitle'=>$metaTitle]);
     }
     
     
     public function postCart(Request $request)
     {        
         $itemData = array();
+        $itemIds = null;
         $allPrice = 0;
         $prefs = $this->prefecture->all();
         
@@ -2086,10 +2108,13 @@ class CartController extends Controller
                 }
                 */
                 
-                
-				//合計金額を算出
+                //itemIds 下段 最近チェックしたアイテムの取得に使用する
+                $itemIds[] = $obj->id;
+				
+                //合計金額を算出
 				$allPrice += $obj['total_price'];		
                 
+                //下段送料とViewへ渡す用に使用する
                 $itemData[] = $obj;       
             }
             /************
@@ -2126,9 +2151,25 @@ class CartController extends Controller
 //            $allPrice = array_sum($priceArr);
         }
         
+        //Recent Cookie 最近チェックしたアイテム　最近見た CacheではなくCookieなので注意===================
+        $cookieArr = array();
+        $cookieItems = null;
+        
+        $getNum = Ctm::isAgent('sp') ? 4 : 4;
+        $chunkNum = Ctm::isAgent('sp') ? $getNum/2 : $getNum;
+        
+        $whereArr = ['open_status'=>1, 'is_potset'=>0];
+       
+        $cookieIds = Cookie::get('item_ids');
+       
+        if(isset($cookieIds) && $cookieIds != '') {
+           $cookieArr = explode(',', $cookieIds); //orderByRowに渡すものはString
+           $cookieItems = $this->item->whereIn('id', $cookieArr)->where($whereArr)->whereNotIn('id', $itemIds)->orderByRaw("FIELD(id, $cookieIds)")->take($getNum)->get()->chunk($chunkNum);
+        }
+        
         $metaTitle = '買い物カゴの確認' . '｜植木買うならグリーンロケット'; 
         
-        return view('cart.index', ['itemData'=>$itemData, 'allPrice'=>$allPrice, 'uri'=>session('org_url'), 'prefs'=>$prefs, 'prefId'=>$prefId, 'deliFee'=>$deliFee, 'metaTitle'=>$metaTitle]);
+        return view('cart.index', ['itemData'=>$itemData, 'allPrice'=>$allPrice, 'uri'=>session('org_url'), 'prefs'=>$prefs, 'prefId'=>$prefId, 'deliFee'=>$deliFee, 'cookieItems'=>$cookieItems, 'metaTitle'=>$metaTitle]);
         
         //$tax_per = $this->set->tax_per;
 //        print_r($itemSes);

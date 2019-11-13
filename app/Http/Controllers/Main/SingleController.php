@@ -259,7 +259,10 @@ class SingleController extends Controller
         ];
         //Recommend ALL END ============================
         
-        //Cache 最近見た ===================
+        //Cookie 最近チェックしたアイテム　最近見た CacheではなくCookieなので注意===================
+//        $getNum = Ctm::isAgent('sp') ? 8 : 8;
+//        $cacheItems = Ctm::getCookieItems($getNum, $item->id); //$whereArrはこの関数の中で指定している
+        
         $cookieArr = array();
         $cacheItems = null;
         $getNum = Ctm::isAgent('sp') ? 8 : 8;
@@ -274,6 +277,7 @@ class SingleController extends Controller
             
 	        $chunkNum = Ctm::isAgent('sp') ? $getNum/2 : $getNum;
           	
+            //Viewに渡すItems
 	        $cacheItems = $this->item->whereIn('id', $cookieArr)->whereNotIn('id', [$item->id])->where($whereArr)->orderByRaw("FIELD(id, $cookieIds)")->take($getNum)->get()->chunk($chunkNum);
 		}
         
@@ -297,6 +301,7 @@ class SingleController extends Controller
         $cookieIds = implode(',', $cookieArr);
         
         Cookie::queue(Cookie::make('item_ids', $cookieIds, config('app.cookie_time') )); //43200->1ヶ月 appにcookie_timeをセットしているが、設定変更後artisan config:cacheをする必要があるので直接時間指定した方がいいのかもしれない
+        
         
 //        echo env('APP_ENV');
 //        exit;

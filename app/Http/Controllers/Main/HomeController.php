@@ -154,7 +154,7 @@ class HomeController extends Controller
         $rankItems['type'] = 2; 
         $rankItems['slug'] = 'ranking';
         
-        //Recent 最近見た
+        //Recent 最近見た 最近チェックした
         $cookieArr = array();
         $cookieItems = null;
         //$getNum = Ctm::isAgent('sp') ? 6 : 7;

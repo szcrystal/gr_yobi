@@ -341,6 +341,9 @@ use App\PayMethodChild;
                                             	<th>合計金額（税込）</th>
                                                 <td>
                                                 	¥{{ number_format($sale->total_price) }}
+                                                    @if($sale->is_once_down)
+                                                    <span class="text-orange">[同梱包割引]</span>
+                                                    @endif
                                                 </td>
                                             </tr>
                                         </tbody>
@@ -646,8 +649,11 @@ use App\PayMethodChild;
                                     <td>
                                         <fieldset class="mt-1 mb-3 form-group">
                                             <label>不在&nbsp;(-)&nbsp;</label>
-                                            <input class="form-control col-md-5 d-inline{{ $errors->has('seinou_huzai') ? ' is-invalid' : '' }}" name="seinou_huzai" value="{{ Ctm::isOld() ? old('seinou_huzai') : (isset($saleRel->seinou_huzai) ? $saleRel->seinou_huzai : '') }}">
+                                            {{ isset($saleRel->seinou_huzai) ? $saleRel->seinou_huzai : '--' }}
                                             
+                                            {{--
+                                            <input class="form-control col-md-5 d-inline{{ $errors->has('seinou_huzai') ? ' is-invalid' : '' }}" name="seinou_huzai" value="{{ Ctm::isOld() ? old('seinou_huzai') : (isset($saleRel->seinou_huzai) ? $saleRel->seinou_huzai : '') }}">
+                                            --}}
                                             @if ($errors->has('seinou_huzai'))
                                                 <div class="text-danger">
                                                     <span class="fa fa-exclamation form-control-feedback"></span>
