@@ -1122,8 +1122,9 @@ class CartController extends Controller
 
             $remember = $request->has('remember') ? 1 : 0;
 
-            $prevUrl = $request->has('to_cart') ? '/shop/form' : $data['previous'];
-
+            //$prevUrl = $request->has('to_cart') ? '/shop/form' : $data['previous'];
+            $prevUrl = '/shop/form';
+            
             if (Auth::attempt($credentials, $remember)) { // 認証に成功した
                 return redirect()->intended($prevUrl)->withInput();
             }
@@ -1746,11 +1747,24 @@ class CartController extends Controller
             }
         }
         
-        
+        //商品金額(同梱包割引・不在置き計算済み) x 個数　の金額を入れる箱 ==============
         $allPrice = 0;
-          
-      	if($request->has('from_cart') ) { //cartからpostで来た時
-       		$data = $request -> all(); 
+        // ==============================
+        
+      	if($request->has('from_cart') || session()->has('from_login')) { //cartからpostで来た時 or loginから認証後redirectで来た時
+       		
+            if($request->has('from_cart')) {
+                $data = $request->all();
+            }
+            elseif(session()->has('from_login')) {
+                $data = session('cart_data_from_login');
+                
+                session()->forget('from_login');
+                session()->forget('cart_data_from_login');
+            }
+            else {
+                abort(404);
+            }
             
             /* registのボタン分けを無くした
             $regist = $request->has('regist_on') ? 1 : 0;
@@ -1912,14 +1926,6 @@ class CartController extends Controller
             }  
             
         }
-        
-//        print_r($dgGroup);
-//        exit;
-        
-        //$dgGroup = $this->item->groupBy('view_count')->get()->all();        
-//        print_r($dgGroup);
-//        exit;
-
 
 		$metaTitle = 'ご注文情報の入力' . '｜植木買うならグリーンロケット';
      
@@ -1934,7 +1940,13 @@ class CartController extends Controller
         $allPrice = 0;
         $prefs = $this->prefecture->all();
         
+        /* ********************************
+        更新ボタン（青）、送料計算ボタン、ログインして進むボタン（黒）のpostはここを通る(ここに戻る)
+        購入手続きへ進むボタンのみ<button>にform-action=""を設定してshop/formへ進むようにしている
+        ************************************
+        */
         
+        // 送料計算ボタンの時のバリデーション ---------------------
         if($request->has('delifee_calc') /* && ! $request->input('pref_id') */) {
         	//return redirect('shop/cart')->withErrors(['pref_id'=>'選択して下さい'])->withInput();
         	$rules = [
@@ -1948,6 +1960,14 @@ class CartController extends Controller
             ];
         
         	$this->validate($request, $rules);
+        }
+        
+        //ログインして手続きへ　黒ボタンから来た時 -----------------------------
+        if($request->has('from_login')) {
+            $data = $request->all();
+            $request->session()->put('cart_data_from_login', $data);
+
+            return redirect('login?to_cart=1');
         }
         
 
@@ -2155,7 +2175,7 @@ class CartController extends Controller
         $cookieArr = array();
         $cookieItems = null;
         
-        $getNum = Ctm::isAgent('sp') ? 4 : 4;
+        $getNum = Ctm::isAgent('sp') ? 6 : 4;
         $chunkNum = Ctm::isAgent('sp') ? $getNum/2 : $getNum;
         
         $whereArr = ['open_status'=>1, 'is_potset'=>0];
@@ -2170,7 +2190,8 @@ class CartController extends Controller
         $metaTitle = '買い物カゴの確認' . '｜植木買うならグリーンロケット'; 
         
         return view('cart.index', ['itemData'=>$itemData, 'allPrice'=>$allPrice, 'uri'=>session('org_url'), 'prefs'=>$prefs, 'prefId'=>$prefId, 'deliFee'=>$deliFee, 'cookieItems'=>$cookieItems, 'metaTitle'=>$metaTitle]);
-        
+
+/*
         //$tax_per = $this->set->tax_per;
 //        print_r($itemSes);
 //        exit;
@@ -2233,7 +2254,7 @@ class CartController extends Controller
 //            
 //            //$aId = $editId ? $editId : $rand;
 //            //$pre = time() . '-';
-//            $filename = 'item/' . $itemId . '/thumbnail/'/* . $pre*/ . $filename;
+//            $filename = 'item/' . $itemId . '/thumbnail/' . $filename;
 //            //if (App::environment('local'))
 //            $path = $data['main_img']->storeAs('public', $filename);
 //            //else
@@ -2259,7 +2280,7 @@ class CartController extends Controller
 //                    
 //                    //$aId = $editId ? $editId : $rand;
 //                    //$pre = time() . '-';
-//                    $filename = 'item/' . $itemId . '/thumbnail/'/* . $pre*/ . $filename;
+//                    $filename = 'item/' . $itemId . '/thumbnail/' . $filename;
 //                    //if (App::environment('local'))
 //                    $path = $spare->storeAs('public', $filename);
 //                    //else
@@ -2292,58 +2313,20 @@ class CartController extends Controller
 //        }
 //        
 //
-//        
-//        //タグのsave動作
-//        if(isset($data['tags'])) {
-//            $tagArr = $data['tags'];
-//        
-//            foreach($tagArr as $tag) {
-//                
-//                //Tagセット
-//                $setTag = Tag::firstOrCreate(['name'=>$tag]); //既存を取得 or なければ作成
-//                
-//                if(!$setTag->slug) { //新規作成時slugは一旦NULLでcreateされるので、その後idをセットする
-//                    $setTag->slug = $setTag->id;
-//                    $setTag->save();
-//                }
-//                
-//                $tagId = $setTag->id;
-//                $tagName = $tag;
-//
-//
-//                //tagIdがRelationになければセット ->firstOrCreate() ->updateOrCreate()
-//                $tagRel = $this->tagRelation->firstOrCreate(
-//                    ['tag_id'=>$tagId, 'item_id'=>$itemId]
-//                );
-//                /*
-//                $tagRel = $this->tagRelation->where(['tag_id'=>$tagId, 'item_id'=>$itemId])->get();
-//                if($tagRel->isEmpty()) {
-//                    $this->tagRelation->create([
-//                        'tag_id' => $tagId,
-//                        'item_id' => $itemId,
-//                    ]);
-//                }
-//                */
-//
-//                //tagIdを配列に入れる　削除確認用
-//                $tagIds[] = $tagId;
-//            }
-//        
-//            //編集時のみ削除されたタグを消す
-//            if(isset($editId)) {
-//                //元々relationにあったtagがなくなった場合：今回取得したtagIdの中にrelationのtagIdがない場合をin_arrayにて確認
-//                $tagRels = $this->tagRelation->where('item_id', $itemId)->get();
-//                
-//                foreach($tagRels as $tagRel) {
-//                    if(! in_array($tagRel->tag_id, $tagIds)) {
-//                        $tagRel->delete();
-//                    }
-//                }
-//            }
-//        }
-        
-        
+    
         //return view('cart.index', ['data'=>$data ]);
+*/
+
+    }
+    
+    
+    public function postToLoginFromCart(Request $request)
+    {
+        $data = $request->all();
+        
+        $request->session()->put('cart_data_at_login', $data);
+        
+        return redirect('login');
     }
 
     public function postScript(Request $request)

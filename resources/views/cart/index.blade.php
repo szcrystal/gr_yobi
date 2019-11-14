@@ -208,6 +208,14 @@
         
         <button class="btn btn-block btn-custom btn-kon mb-4 py-3 px-2" type="submit" name="regist_off" value="1" formaction="{{ url('shop/form') }}"{{ $disabled }}>購入手続きへ進む</button>
         
+        @if(! Auth::check())
+            {{--
+            <a href="{{ url('login?to_cart=1') }}" class="btn btn-block btn-custom mb-2 py-3">ログインして購入手続きへ進む</a>
+            --}}
+            
+            <button class="btn btn-block btn-custom mb-2 py-3" type="submit" name="from_login" value="1">ログインする</button>
+        @endif
+        
         @if(Auth::check())
             
         @else

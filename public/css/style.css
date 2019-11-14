@@ -414,6 +414,9 @@ body {
     border: 2px solid #18206F;
     color: #18206F;
 }
+.btn-mizuiro {
+    background: #0079c3;
+}
 .btn-cart-del {
     background: none;
     border: 0;
@@ -552,37 +555,57 @@ body {
     font-weight: normal;
     border-bottom: 0 !important;
 }
-.table-cart .table tbody th,
-.table-cart .table tbody td {
+.table-cart tbody th,
+.table-cart tbody td {
 	//border-top-width: 0 !important;
     border-top: 1px solid #e3e3e3 !important;
     border-bottom: 1px solid #e3e3e3 !important;
 }
-.table-cart .table tbody tr:first-of-type th,
-.table-cart .table tbody tr:first-of-type td {
+.table-cart tbody tr:first-of-type th,
+.table-cart tbody tr:first-of-type td {
 	//border-top: 1px solid #e3e3e3 !important;
 }
 .table-cart tbody th {
 	background: none;
-    width: 20%;
+    width: 15%;
     padding-left: 0;
+    padding-right: 0.2em;
+    padding-bottom: 0.8em;
 	//border-bottom: 0 !important;
 }
-.confirm .table-cart tbody th {
-	width: 15%;
+.cart-index .table-cart tbody th {
+    width: 19%;
 }
+.cart-form .table-cart tbody th,
+.cart-confirm .table-cart tbody th {
+    width: 23%;
+    padding-right: 0.2em;
+    padding-bottom: 0.2em;
+}
+.cart-form .table-cart tbody th,
+.cart-form .table-cart tbody td,
+.cart-confirm .table-cart tbody th,
+.cart-confirm .table-cart tbody td {
+    border: 0 !important;
+}
+/*.confirm .table-cart tbody th {*/
+/*	width: 15%;*/
+/*}*/
 .table-cart tbody th .img-fluid {
-	//width: 100%;
+	width: 100%;
 }
-.table-cart td {
-	//border-left: 0 !important;
-    
-}
-.confirm .table-cart .table {
-	//border: 1px solid #e3e3e3;
-}
+/*.table-cart td {*/
+/*	//border-left: 0 !important;*/
+/*    */
+/*}*/
+/*.confirm .table-cart .table {*/
+/*	//border: 1px solid #e3e3e3;*/
+/*}*/
 
 /* cart-index部分 */
+.cart-index .table-cart {
+    min-height: 450px;
+}
 .cart-index .table-cart td:last-of-type,
 .cart-index .table-foot td:last-of-type {
 	//width: 18%;

@@ -503,7 +503,7 @@ use App\DeliveryGroup;
     
     <div class="ml-20per">
             
-        <fieldset class="mb-4 mt-3 pl-1 form-group{{ $errors->has('plan_date') ? ' has-error' : '' }}">
+        <fieldset class="mb-5 pb-1 mt-3 pl-1 form-group{{ $errors->has('plan_date') ? ' has-error' : '' }}">
             <label for="plan_date" class="control-label">■ご希望日程<span class="text-small"></span></label>
             
             <div class="select-wrap col-md-9 p-0">
@@ -689,13 +689,13 @@ use App\DeliveryGroup;
         
             
         @if(count($dgGroup) > 0)
-            <fieldset class="form-group mt-3 mb-2 pl-1 py-2{{ $errors->has('plan_time.*') ? ' border border-danger' : '' }}">
+            <fieldset class="form-group mt-3 mb-1 pl-1 py-2{{ $errors->has('plan_time.*') ? ' border border-danger' : '' }}">
                 
-                <p class="mb-1 pb-2">■下記の商品につきまして、ご希望配送時間の指定ができます。</p>
+                <p class="mb-1 pb-1">■下記の商品につきまして、ご希望配送時間の指定ができます。</p>
                 
                 @foreach($dgGroup as $key => $val)
                     
-                    <div class="pb-1 mt-2 mb-2 ml-1">
+                    <div class="pb-1 mt-2 mb-1 ml-1">
                         <?php
                             $timeTable = DeliveryGroup::find($key)->time_table;
                             $timeTable = explode(",", $timeTable);
@@ -739,8 +739,9 @@ use App\DeliveryGroup;
                     </div>
                     
                     <div class="mb-4 pb-1">
-                    
                         @if(session()->has('item.data') && count(session('item.data')) > 0)
+                            <div class="table-responsive table-cart clearfix">
+                            <table class="table">
                             
                              @foreach($val as $itemId)
                                 <?php
@@ -748,6 +749,34 @@ use App\DeliveryGroup;
                                     $iTitle = Ctm::getItemTitle($i);
                                 ?>
                                 
+                                <tr class="">
+                                    <th class="">
+                                        @include('main.shared.smallThumbnail', ['item'=>$i, 'width'=>140])
+                                    </th>
+                                    
+                                    <td>
+                                    <span class="">{{ $iTitle }}</span><br>
+                                    <span class="">[{{ $i->number }}]</span>
+                                    </td>
+                                    
+                                    <input type="hidden" name="planTimeItemTitle[{{ $key }}][]" value="{{ $iTitle }}" form="user-input">
+                                </tr>
+                                
+                             @endforeach
+                             </table>
+                             </div>
+                        @endif
+                    
+                        {{--
+                        @if(session()->has('item.data') && count(session('item.data')) > 0)
+                            
+                             @foreach($val as $itemId)
+                        --}}
+                                <?php
+//                                    $i = Item::find($itemId);
+//                                    $iTitle = Ctm::getItemTitle($i);
+                                ?>
+                        {{--
                                 <div class="clearfix mb-2 ml-1">
                                     <div class="float-left mr-2">
                                         @include('main.shared.smallThumbnail', ['item'=>$i, 'width'=>140])
@@ -760,6 +789,7 @@ use App\DeliveryGroup;
                                 <input type="hidden" name="planTimeItemTitle[{{ $key }}][]" value="{{ $iTitle }}" form="user-input">
                              @endforeach
                         @endif
+                        --}}
                          
                     </div>
                     

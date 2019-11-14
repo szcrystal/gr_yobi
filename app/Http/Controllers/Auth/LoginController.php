@@ -44,6 +44,14 @@ class LoginController extends Controller
         $this->middleware('guest')->except('logout');
     }
     
+    //get login
+    public function showLoginForm(Request $request)
+    {
+        $metaTitle = 'ログイン' . '｜植木買うならグリーンロケット';
+
+        return view('auth.login', compact('metaTitle'));
+    }
+    
 	public function login(Request $request)
     {
 //        print_r(session()->all());
@@ -74,7 +82,10 @@ class LoginController extends Controller
         $prevUrl = $request->has('to_cart') ? '/shop/form' : $data['previous'];
 
         if (Auth::attempt($credentials, $remember)) { // 認証に成功した
-            return redirect()->intended($prevUrl);
+            if($request->has('to_cart'))
+                return redirect()->intended($prevUrl)->with('from_login', 1);
+            else
+                return redirect()->intended($prevUrl);
         }
         else {
         	$errors = ['認証できません。ご入力内容を確認して下さい。'];

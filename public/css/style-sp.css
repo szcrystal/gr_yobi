@@ -815,23 +815,37 @@ ORG END ======================== */
     	font-size: 2em;
         padding-right: 0.2em;
     }
+    
+    .cart-index .table-cart {
+        min-height: 50px;
+    }
     .table-cart .btn .fal { /* 再計算等のアイコン */
     	//display: none;
     	font-size: 0.8em;
         margin: 0;
         vertical-align: 1px;
     }
-    .table-cart tbody th {
-    	//width: 18%;
-    }
-    .cart-index .table-cart td:last-of-type,
-	.cart-index .table-foot td:last-of-type {
-		//width: 22%;
-    }
     .table-cart tr td {
-    	padding-left: 0.4em;
+        padding-left: 0.4em;
         padding-right: 0.4em;
     }
+    
+    .cart-index .table-cart tbody th,
+    .cart-form .table-cart tbody th,
+    .cart-confirm .table-cart tbody th {
+        width: 24%;
+        padding-right: 0.3em !important;
+        padding-bottom: 0.2em;
+    }
+    .cart-confirm .table-custom.table-payment .table tbody th {
+        width: 38% !important;
+        //background: red;
+    }
+    
+/*    .cart-index .table-cart td:last-of-type,*/
+/*	.cart-index .table-foot td:last-of-type {*/
+/*		//width: 22%;*/
+/*    }*/
     .cart-index .table-cart td .text-enji {
     	font-size: 1.05em;
     }
@@ -876,6 +890,18 @@ ORG END ======================== */
     }
     .select-pref {
         width: 70%;
+    }
+    
+    .cart-index .cart-recent-check .main-atcl {
+        font-size: 0.9em;
+        width: 32.3%;
+        margin-right: 1.2%;
+    }
+    .cart-index .cart-recent-check .main-atcl:nth-of-type(3n) {
+        margin-right: 0;
+    }
+    .cart-index .cart-recent-check .main-atcl:nth-of-type(4) {
+        margin-right: 1.2% !important;
     }
     
     
@@ -961,10 +987,8 @@ ORG END ======================== */
     
     .cart-confirm .table-custom .table tbody th {
         display: inline-block;
-        width: 25% !important;
-    }
-    .cart-confirm .table-custom tr th img {
-        width: 100%;
+        width: 24% !important;
+        padding-top: 0.2em !important;
     }
     .cart-confirm .table-custom .table tbody td {
         display: inline-block;
@@ -972,11 +996,20 @@ ORG END ======================== */
         margin-right: 0 !important;
         //border: 1px solid red !important;
     }
+    
+    .confirm-edit-btn {
+        font-size: 0.9em;
+        padding: 0.3em 1.1em;
+    }
+    
+/*    .cart-confirm .table-custom tr th img {*/
+/*        width: 100%;*/
+/*    }*/
     .cart-confirm .table-custom tr {
         //border: 1px solid red !important;
     }
     
-    .confirm .confirm-right .table-normal.show-price tbody th { /* shop confirm ポイント利用などのテーブルのth */
+    .history-single .confirm-right .table-normal.show-price tbody th { /* shop confirm ポイント利用などのテーブルのth */
     	width: 30%;
         font-size: 0.9em;
     }

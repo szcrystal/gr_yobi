@@ -14,9 +14,9 @@
                 
     @if (count($errors->login) > 0)
         
-        <div class="alert alert-danger">
+        <div class="alert alert-danger text-small">
             <i class="far fa-exclamation-triangle"></i> 確認して下さい。
-            <ul class="pl-4">
+            <ul class="pl-3 pt-1 mb-0">
                 @foreach ($errors->login->all() as $error)
                     <li>{{ $error }}</li>
                 @endforeach
@@ -73,10 +73,10 @@
         <fieldset class="form-group row mt-3">
             <div class="col-md-7 m-auto">
                 
-                @if($isCart)
-                    <input type="hidden" name="to_cart" value="1">
+                @if(Request::has('to_cart')) {{-- url ?to_cart=1 にセットされているto_cart --}}
+                <input type="hidden" name="to_cart" value="1">
                 @endif
-              
+                
                 <input type="hidden" name="previous" value="{{ session('_previous.url') }}">
                 
                 {{-- <input type="submit" name="login1" value="ログイン" form="login" class="btn btn-custom btn-block rounded-0"> --}}

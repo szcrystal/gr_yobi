@@ -104,9 +104,14 @@ use App\Item;
                 
                 <div class="mt-2 float-right col-md-3">
                 	<a href="{{ url('mypage/history/'. $sale->salerel_id) }}" class="btn btn-block border-secondary bg-white text-small mb-3 w-100 rounded-0">
-                    詳細を確認 <i class="fal fa-angle-double-right"></i>
+                    購入詳細を確認 <i class="fal fa-angle-double-right"></i>
                     </a>
                     
+                    <div class="">
+                         <a href="{{ url('item/' . $item->id) }}" class="btn btn-block btn-custom py-2 text-small">もう一度購入 <i class="fal fa-angle-double-right"></i></a>
+                    </div>
+                    
+                    {{--
                     <form class="form-horizontal" role="form" method="POST" action="{{ url('shop/cart') }}">
                         {{ csrf_field() }}
                                                                                
@@ -117,6 +122,8 @@ use App\Item;
                                           
                        <button class="btn btn-custom text-small text-center w-100" type="submit" name="regist_off" value="1">もう一度購入</button>                 
                     </form>
+                    --}}
+                    
                 </div>
             </td>
            

@@ -34,6 +34,10 @@ use App\Item;
             <th>ご注文日</th>
             <td>{{ Ctm::changeDate($saleRel->created_at, 0) }}</td>      
         </tr>
+        <tr>
+            <th>お支払い方法</th>
+            <td>{{ $pm->find($saleRel->pay_method)->name }}</td>
+        </tr>
  
         
         </tbody>
@@ -126,8 +130,11 @@ use App\Item;
                             @endif
                         </span>
                         
+                        <div class="mt-3">
+                             <a href="{{ url('item/' . $item->id) }}" class="btn btn-block btn-custom py-2">もう一度購入</a>
+                        </div>
                         
-                        
+                        {{--
                         <form class="form-horizontal" role="form" method="POST" action="{{ url('shop/cart') }}">
                             {{ csrf_field() }}
                                                                                    
@@ -140,6 +147,8 @@ use App\Item;
                                 <button class="btn btn-block btn-custom py-1" type="submit" name="regist_off" value="1"><i class="fal fa-cart-arrow-down"></i> もう一度購入</button>
                            </div>  
                         </form>
+                        --}}
+                        
                     </div>
                 
                 </td>
@@ -237,13 +246,13 @@ use App\Item;
 
 <div class="confirm-right">
 <h5 class="mb-4">&nbsp;</h5>
-<div class="table-responsive table-normal">
+<div class="table-responsive table-normal show-price">
     <table class="table border table-borderd bg-white">
         
         <tbody>
         <tr>
-            <th><label class="control-label">商品金額合計（税込）</label></th>
-            <td class="w-50">
+            <th><label class="control-label">商品合計</label></th>
+            <td>
             	¥{{ number_format($saleRel->all_price) }}
             </td>
         </tr>
@@ -252,10 +261,17 @@ use App\Item;
             <td>¥{{ number_format($saleRel->deli_fee) }}</td>
         </tr>
         
-        @if($sale->pay_method == 5)
+        @if($saleRel->pay_method == 4 || $saleRel->pay_method == 5)
             <tr>
-                <th><label class="control-label">代引き手数料</label></th>
+                <th><label class="control-label">支払手数料</label></th>
                 <td>¥{{ number_format($saleRel->cod_fee) }}</td>
+            </tr>
+        @endif
+        
+        @if(isset($saleRel->seinou_sunday) && $saleRel->seinou_sunday)
+            <tr>
+                <th><label class="control-label">日曜配達</label></th>
+                <td>¥{{ number_format($saleRel->seinou_sunday) }}</td>
             </tr>
         @endif
         
@@ -267,13 +283,15 @@ use App\Item;
         @endif
         
         <tr>
-            <th><label class="control-label">注文金額合計（税込）</label></th>
+            <th><label class="control-label text-big"><b>合計（税込）</b></label></th>
              <td class="text-danger text-big">
+                <span class="text-big">
                 @if(isset($saleRel->total_price))
                 	¥{{ number_format($saleRel->total_price) }}
                 @else
 	                ¥{{ number_format($saleRel->all_price + $saleRel->deli_fee + $saleRel->cod_fee - $saleRel->use_point) }}
-                @endif 
+                @endif
+                </span>
             </td>
         </tr>
         </tbody>
@@ -281,11 +299,11 @@ use App\Item;
 </div>
 
 @if(isset($saleRel->add_point))
-<div class="table-responsive table-normal mt-3">
+<div class="table-responsive table-normal show-price mt-3">
     <table class="table border table-borderd bg-white">
         <tr>
             <th><label class="control-label">ポイント発生</label></th>
-            <td class="w-50">
+            <td>
 				{{ $saleRel->add_point }}
             </td>
         </tr>
@@ -293,19 +311,18 @@ use App\Item;
 </div>
 @endif
 
-
+{{--
 <div class="table-responsive table-normal mt-3">
     <table class="table border table-borderd bg-white">
-        
         <tr>
             <th><label class="control-label">お支払い方法</label></th>
             <td class="w-50">
             	{{ $pm->find($saleRel->pay_method)->name }}
             </td>
         </tr>
-
     </table>
 </div>
+--}}
 
 </div> {{-- float-right --}}
 

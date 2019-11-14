@@ -162,6 +162,7 @@ Route::get('/cart/thankyou', 'Main\SingleController@endCart');
 
 Route::post('/shop/cart', 'Cart\CartController@postCart');
 Route::get('/shop/cart', 'Cart\CartController@postCart');
+Route::post('/shop/for-user', 'Cart\CartController@postToLoginFromCart');
 
 Route::post('/shop/form', 'Cart\CartController@postForm');
 Route::get('/shop/form', 'Cart\CartController@postForm');

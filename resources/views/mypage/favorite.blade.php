@@ -55,7 +55,7 @@ use App\CategorySecond;
                         $pots = Item::where(['is_potset'=>1, 'pot_parent_id'=>$item->id])->orderBy('price', 'asc')->get();
                     ?>
                     
-                    <td class="clearfix">                	
+                    <td class="clearfix pr-4">
 
                         <div class="float-left col-md-9">
                             <p class="m-0"><i class="fas fa-heart text-enji"></i> {{ Ctm::changeDate($item->fav_created_at, 1) }}</p>
@@ -74,12 +74,13 @@ use App\CategorySecond;
                             <span class="text-small">カテゴリー：</span><a href="{{ url('category/'. $cateSlug) }}" class="d-inline-block py-1">{{ $cateName }}</a>
                          </div>
                             
-                        <div class="fav-btn-wrap float-right col-md-3 p-0">
+                        <div class="fav-btn-wrap float-right col-md-3 p-0 mt-2">
                             <a href="{{ url('item/'.$item->id) }}" class="btn border-secondary bg-white text-small w-100 rounded-0 mb-2">
                                 商品ページへ <i class="fal fa-angle-double-right"></i>
                             </a>
 
                             @if($pots->isEmpty())
+                                {{--
                                 <form class="form-horizontal" role="form" method="POST" action="{{ url('shop/cart') }}">
                                     {{ csrf_field() }}
                                                                                            
@@ -95,6 +96,7 @@ use App\CategorySecond;
                                         <button type="submit" class="btn btn-custom text-small text-center w-100">カートに入れる</button>
                                     @endif  
                                 </form>
+                                --}}
                             @else
                                 <p class="text-extra-small m-0">＊商品ページよりご希望のポットセット数を選択してカートに入れて下さい。</p>
                             @endif

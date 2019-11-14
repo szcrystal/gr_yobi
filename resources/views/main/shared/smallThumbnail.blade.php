@@ -3,9 +3,7 @@
 use App\Item;
 
 
-$width = isset($width) && ! Ctm::isAgent('sp') ? $width : 85;
-    
-
+$width = isset($width) ? $width : 90;
 
 ?>
 

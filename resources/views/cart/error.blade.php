@@ -12,7 +12,7 @@
 
 <div class="clearfix">
 
-@include('cart.guide')
+@include('cart.shared.guide')
 
 
 @if (count($errors) > 0)
@@ -41,8 +41,8 @@
 	                ご注文を正常に進めることができませんでした。<br>
     	            クレジットカード入力情報を再度ご確認の上<br>
                     少し時間を置いてやり直すか<br>別のお支払い方法を選択して下さい。<br><br>
-                    @if(isset($erroeName))
-                        <span class="text-small text-secondary">{{ $erroeName }}</span>
+                    @if(isset($errorName))
+                        <span class="text-small text-secondary">{{ $errorName }}</span>
                     @endif
                 </p>
                 

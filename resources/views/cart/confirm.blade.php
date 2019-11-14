@@ -35,7 +35,10 @@
     <div class="ml-20per mt-1 pl-1">
         <div class="text-right">
             <?php
-                $target = isset($data['destination']) && $data['destination'] ? 'delivery-add' : 'delivery-add';
+                if(Auth::check())
+                    $target = 'delivery-add';
+                else
+                    $target = isset($data['destination']) && $data['destination'] ? 'delivery-add' : 'user-info';
             ?>
             <a class="btn confirm-edit-btn" href="{{ url('shop/form#' . $target) }}">変更</a>
         </div>
@@ -66,7 +69,7 @@
     </div>
     
     <div class="mt-1">
-        <div class="table-responsive table-custom">
+        <div class="table-responsive table-custom table-payment">
             <div class="text-right">
                 <a class="btn confirm-edit-btn" href="{{ url('shop/form#pay-method') }}">変更</a>
             </div>
@@ -125,12 +128,13 @@
         <div></div>
     </div>
     
-    <div class="table-responsive table-custom clearfix mt-1">
+    <div class="ml-20per clearfix mt-1">
         <div class="text-right">
             <a class="btn confirm-edit-btn" href="{{ url('shop/cart') }}">変更</a>
         </div>
         
-    <table class="table">
+        <div class="table-responsive table-cart">
+        <table class="table">
         <tbody>
             @foreach($itemData as $item)
    
@@ -147,7 +151,7 @@
                            ¥{{ Ctm::getItemPrice($item) }}（税込）
                        </div>
                        
-                       <p class="m-0 p-0 text-big"><span class="text-small">数量：</span>{{ $item->count }}</p>
+                       <p class="m-0 p-0"><span class="text-small">数量：</span>{{ $item->count }}</p>
                        
                        <?php $red = ''; ?>
                        
@@ -177,7 +181,9 @@
             @endforeach
             
         </tbody>
-    </table>
+        </table>
+        </div>
+        
     </div>
     
     
@@ -330,9 +336,16 @@
             </div>
             
             <div>
-            {{ $userArr['name'] }}（{{ $userArr['hurigana'] }}）&nbsp;様<br>
+            @if(!Auth::check())
+                <p class="">会員登録：{{ $regist ? 'する' : 'しない' }}</p>
+            @endif
+            
+            {{ $userArr['name'] }}（{{ $userArr['hurigana'] }}）&nbsp;様
+            <p class="py-1 mb-0">
             〒{{ Ctm::getPostNum($userArr['post_num']) }}<br>
-            {{ $userArr['prefecture'] }}{{ $userArr['address_1'] }}{{ $userArr['address_2'] }}<br>
+            {{ $userArr['prefecture'] }}{{ $userArr['address_1'] }}{{ $userArr['address_2'] }}
+            </p>
+            
             TEL：{{ $userArr['tel_num'] }}<br>
             メール：{{ $userArr['email'] }}
             
@@ -532,13 +545,13 @@
             
             @elseif($data['pay_method'] == 4)
                 <tr>
-                    <th>手数料</th>
+                    <th>支払手数料</th>
                     <td>¥{{ number_format($codFee) }}</td>
                 </tr>
             
             @elseif($data['pay_method'] == 5)
                 <tr>
-                    <th>手数料</th>
+                    <th>支払手数料</th>
                     <td>¥{{ number_format($codFee) }}</td>
                 </tr>
             @endif
