@@ -194,6 +194,13 @@ use App\Setting;
                                     ?>
                                 	<b>¥{{ number_format($sale->total_price / $per) }}</b>（税抜）<br>
                                 	<b>¥{{ number_format($sale->total_price) }}</b>（税込）
+                                    @if($sale->is_once_down)
+                                        <span class="text-orange">[同梱包割引]</span>
+                                    @endif
+                                    
+                                    @if(isset($sale->seinou_huzai) && $sale->seinou_huzai)
+                                        <span class="text-orange">[不在置き]</span>
+                                    @endif
                                 </td>
                             </tr>
                             
@@ -247,12 +254,20 @@ use App\Setting;
                                 <th>ご希望配送日時</th>
                                 <td>
                                 	@if(isset($sale->plan_date))
-                                        <p class="mb-2">{{ $sale->plan_date }}</p>
+                                        <p class="mb-2">
+                                            {{ $sale->plan_date }}
+                                            
+                                            @if(isset($sale->seinou_sunday) && $sale->seinou_sunday)
+                                                <span class="text-orange">+{{ number_format($sale->seinou_sunday) }}</span>
+                                            @endif
+                                        </p>
                                     @endif
                                     
                                     @if(isset($sale->deli_time))
                                         {{ $sale->deli_time }}
                                     @endif
+                                    
+                                    
                                 </td>
                             </tr>
                             
@@ -262,6 +277,9 @@ use App\Setting;
                                     <td>
                                         @if($sale->is_huzaioki)
                                             了承する
+                                            @if(isset($sale->seinou_huzai) && $sale->seinou_huzai)
+                                                <span class="text-orange ml-2">-{{ number_format($sale->seinou_huzai) }}</span>
+                                            @endif
                                         @else
                                             了承しない
                                         @endif

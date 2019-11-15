@@ -44,11 +44,17 @@
     @endif
         
     <div class="mb-5">
-        <form class="form-horizontal" role="form" method="POST" action="/dashboard/users/{{$id}}">
+        <form class="form-horizontal" role="form" method="POST" action="/dashboard/users">
 
             {{ csrf_field() }}
-
-            {{ method_field('PUT') }}
+            
+            @if($isUser)
+                <div class="form-group mb-2">
+                    <button type="submit" class="btn btn-primary btn-block mx-auto w-btn w-25">更　新</button>
+                </div>
+                
+                <input type="hidden" name="edit_id" value="{{ $user->id }}">
+            @endif
 
 			<h4 class="mb-1">会員情報</h4>
             	<div class="table-responsive">
@@ -151,10 +157,10 @@
                                 <tr>
                                     <th>残ポイント</th>
                                     <td>
-                                    	{{ $user->point }}
-                                        {{--
+                                    	{{-- $user->point --}}
+                                        
                                     	<input  class="form-control col-md-6{{ $errors->has('cost_price') ? ' is-invalid' : '' }}" name="point" value="{{ Ctm::isOld() ? old('point') : (isset($user) ? $user->point : '') }}">
-                                        --}}
+                                        
                                     </td>   
                                 </tr>
                                 
@@ -204,11 +210,9 @@
                 </div>
    
    				@if($isUser)
-                	{{--
                     <div class="form-group mb-5">
                         <button type="submit" class="btn btn-primary btn-block mx-auto w-btn w-25">更　新</button>
                     </div>
-                    --}}
                 @endif
                 
                 <h4 class="mt-3">購入商品</h4>
@@ -269,13 +273,9 @@
                     </table>
                 </div>
 
-				{{--
-                <div class="form-group mb-5">
-                    <div class="clearfix">
-                        <button type="submit" class="btn btn-primary btn-block mx-auto w-btn w-25">更　新</button>
-                    </div>
-                </div>
-                --}}
+				
+                
+                
                 
 {{ $sales->links() }}
 

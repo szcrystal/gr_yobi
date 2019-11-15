@@ -132,6 +132,9 @@ use App\TopSetting;
 
 
 @section('leftbar')
+    @if(Ctm::isEnv('local'))
+        <a href="{{ url('post') }}">POST</a>
+    @endif
     @include('main.shared.leftbar')
 @endsection
 

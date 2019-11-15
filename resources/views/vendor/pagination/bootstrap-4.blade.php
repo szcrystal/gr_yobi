@@ -1,10 +1,16 @@
 @if ($paginator->hasPages())
     <ul class="pagination">
+        
+        <?php
+            $fa = Request::is('dashboard/*') ? 'fa' : 'fal';
+        ?>
+        
+        
         {{-- Previous Page Link --}}
         @if ($paginator->onFirstPage())
-            <li class="page-item disabled"><span class="page-link"><i class="fal fa-angle-double-left"></i></span></li>
+            <li class="page-item disabled"><span class="page-link"><i class="{{ $fa }} fa-angle-double-left"></i></span></li>
         @else
-            <li class="page-item"><a class="page-link" href="{{ $paginator->previousPageUrl() }}" rel="prev"><i class="fal fa-angle-double-left"></i></a></li>
+            <li class="page-item"><a class="page-link" href="{{ $paginator->previousPageUrl() }}" rel="prev"><i class="{{ $fa }} fa-angle-double-left"></i></a></li>
         @endif
 
         {{-- Pagination Elements --}}
@@ -28,9 +34,9 @@
 
         {{-- Next Page Link --}}
         @if ($paginator->hasMorePages())
-            <li class="page-item"><a class="page-link" href="{{ $paginator->nextPageUrl() }}" rel="next"><i class="fal fa-angle-double-right"></i></a></li>
+            <li class="page-item"><a class="page-link" href="{{ $paginator->nextPageUrl() }}" rel="next"><i class="{{ $fa }} fa-angle-double-right"></i></a></li>
         @else
-            <li class="page-item disabled"><span class="page-link"><i class="fal fa-angle-double-right"></i></span></li>
+            <li class="page-item disabled"><span class="page-link"><i class="{{ $fa }} fa-angle-double-right"></i></span></li>
         @endif
     </ul>
 @endif

@@ -342,14 +342,18 @@ use App\PayMethodChild;
                                                 <td>
                                                 	¥{{ number_format($sale->total_price) }}
                                                     @if($sale->is_once_down)
-                                                    <span class="text-orange">[同梱包割引]</span>
+                                                        <span class="text-orange">[同梱包割引]</span>
+                                                    @endif
+                                                    
+                                                    @if(isset($sale->seinou_huzai) && $sale->seinou_huzai)
+                                                        <span class="text-orange">[不在置き]</span>
                                                     @endif
                                                 </td>
                                             </tr>
                                         </tbody>
                                     </table>
                                     
-                                    <div class="text-center py-0 my-0 border bg-white text-warning open-tgl">MORE <i class="fa fa-caret-down"></i></div>
+                                    <div class="text-center py-0 my-0 border bg-skyblue text-secondary open-tgl">MORE <i class="fa fa-caret-down"></i></div>
                                     
                                     <div class="table-second-wrap">
                                     <table class="table-tyumon w-100 table-striped">
@@ -614,16 +618,21 @@ use App\PayMethodChild;
                             	//$relModel = $allCancel ? $saleRelCancel : $saleRel;
                             ?>
                             
+                            
                             <tr>
                                 <th>商品総合計（税込）[A]</th>
+                                
                                 <?php
                                 	$taxPer = Setting::first()->tax_per;
                                     $taxPer = $taxPer/100 + 1; //$taxPer ->1.08
                                     
+                                    //$huzai = isset($saleRel->seinou_huzai) ? $saleRel->seinou_huzai : 0;
+                                    
                                 	$ap = $saleRel->all_price;
                                     $zeinuki = ceil($ap / $taxPer);
                                 ?>
-                                <td><b style="font-size: 1.2em;">¥{{ number_format($saleRel->all_price) }}<small>（税抜／税：{{ number_format($zeinuki) }}／{{ number_format($ap - $zeinuki) }}）</small></b></td>
+                                <td><b style="font-size: 1.2em;">¥{{ number_format($ap) }}<small>（税抜／税：{{ number_format($zeinuki) }}／{{ number_format($ap - $zeinuki) }}）</small></b></td>
+                                  
                             </tr>
                             
                             <tr>
@@ -648,22 +657,24 @@ use App\PayMethodChild;
                                     <th>西濃運輸 [C]</th>
                                     <td>
                                         <fieldset class="mt-1 mb-3 form-group">
-                                            <label>不在&nbsp;(-)&nbsp;</label>
-                                            {{ isset($saleRel->seinou_huzai) ? $saleRel->seinou_huzai : '--' }}
-                                            
+                                            <label class="mb-0 pb-0 text-normal mr-2">不在&nbsp;(-)&nbsp;</label>
+                                            {{ isset($saleRel->seinou_huzai) ? number_format($saleRel->seinou_huzai) : '--' }}
+                                            <br><small class="mt-0 pt-0">＊商品総合計[A]の中で計算される金額のため変更不可としております。何あれば調整金額にて変更下さい。</small>
                                             {{--
                                             <input class="form-control col-md-5 d-inline{{ $errors->has('seinou_huzai') ? ' is-invalid' : '' }}" name="seinou_huzai" value="{{ Ctm::isOld() ? old('seinou_huzai') : (isset($saleRel->seinou_huzai) ? $saleRel->seinou_huzai : '') }}">
-                                            --}}
+                                            
                                             @if ($errors->has('seinou_huzai'))
                                                 <div class="text-danger">
                                                     <span class="fa fa-exclamation form-control-feedback"></span>
                                                     <span>{{ $errors->first('seinou_huzai') }}</span>
                                                 </div>
                                             @endif
+                                            --}}
+                                            
                                         </fieldset>
                                         
                                         <fieldset class="mt-1 mb-3 form-group">
-                                            <label>日曜&nbsp;(+)&nbsp;</label>
+                                            <label class="text-normal">日曜&nbsp;(+)&nbsp;</label>
                                             <input class="form-control col-md-5 d-inline{{ $errors->has('seinou_sunday') ? ' is-invalid' : '' }}" name="seinou_sunday" value="{{ Ctm::isOld() ? old('seinou_sunday') : (isset($saleRel->seinou_sunday) ? $saleRel->seinou_sunday : '') }}">
                                             
                                             @if ($errors->has('seinou_sunday'))

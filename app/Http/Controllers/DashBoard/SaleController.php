@@ -379,6 +379,20 @@ class SaleController extends Controller
                     //add_pointを戻す
                     $saleRel->decrement('add_point', $saleModel->add_point);
                     
+                    //不在置きなら=>不在置きは商品金額(all_price)に含まれる仕様としている
+                    if($saleModel->seinou_huzai) {
+                        $huzaiPrice = $saleModel->seinou_huzai;
+                        $saleRel->seinou_huzai = $saleRel->seinou_huzai - $huzaiPrice;
+                        $saleRel->save();
+                    }
+                    //日曜配達なら
+                    if($saleModel->seinou_sunday) {
+                        $sundayPrice = $saleModel->seinou_sunday;
+                        $saleRel->seinou_sunday = $saleRel->seinou_sunday - $sundayPrice;
+                        $saleRel->save();
+                    }
+                    
+                    
                     //total
                     $totalFee = $saleRel->all_price + $saleRel->deli_fee - $saleRel->use_point;
                     
@@ -393,7 +407,7 @@ class SaleController extends Controller
                     	$saleRel->save();
                     }
                     
-                	$saleRel->total_price = $totalFee + $saleRel->cod_fee;
+                	$saleRel->total_price = $totalFee + $saleRel->seinou_sunday + $saleRel->cod_fee; //不在置きは商品金額(all_price)に含まれるので、ここでは計算不要
                     $saleRel->save();
                 }
                 else { //全キャンセルの時 saleのis_cancelが全て1の時
@@ -406,7 +420,7 @@ class SaleController extends Controller
                     $src = $this->saleRelCancel->where('salerel_id', $saleRel->id)->first()->toArray();
                 	$saleRel->update($src);
                     
-                    //ここでsaleRelCancelのデータを消すかどうするか 
+                    //ここでsaleRelCancelのデータを消すかどうするか =>現在はしていない。購入時の設定のまま残る。
                 }
 
 
@@ -683,6 +697,9 @@ class SaleController extends Controller
             
             //$data['seinou_huzai'] = isset($data['seinou_huzai']) ? $data['seinou_huzai'] : 0;
             $data['seinou_sunday'] = isset($data['seinou_sunday']) ? $data['seinou_sunday'] : 0;
+            
+            //huzaiを計算するなら下記となるが、なるべくしない方向が良さそう
+            //$data['all_price'] = $saleRel->all_price + $saleRel->seinou_huzai - $data['seinou_huzai'];
             
             //$saleRel->total_price = $saleRel->total_price - $saleRel->deli_fee + $data['deli_fee'];
             $saleRel['total_price'] = $saleRel->all_price + $data['deli_fee'] + $data['cod_fee'] - $data['use_point'] + $data['adjust_price']/* - $data['seinou_huzai']*/ + $data['seinou_sunday'];

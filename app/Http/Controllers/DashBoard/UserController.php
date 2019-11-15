@@ -138,8 +138,8 @@ class UserController extends Controller
         $editId = $request->has('edit_id') ? $request->input('edit_id') : 0;
         
         $rules = [
-            'title' => 'required|max:255',
-            'cate_id' => 'required',
+//            'title' => 'required|max:255',
+//            'cate_id' => 'required',
             //'main_img' => 'filenaming',
         ];
         
@@ -165,143 +165,30 @@ class UserController extends Controller
         }
         
         if($editId) { //update（編集）の時
-            $status = '商品が更新されました！';
-            $item = $this->item->find($editId);
+            $status = 'ユーザーが更新されました！';
+            $user = $this->user->find($editId);
+            
+            $user->update([
+                'point' => $data['point'],
+            ]);
+            
         }
         else { //新規追加の時
-            $status = '商品が追加されました！';
+            $status = 'ユーザーが追加されました！';
             //$data['model_id'] = 1;
             
-            $item = $this->item;
+            //$item = $this->item;
         }
         
-        $item->fill($data);
-        $item->save();
-        $itemId = $item->id;
+//        $item->fill($data);
+//        $item->save();
+        $userId = $user->id;
         
 //        print_r($data['main_img']);
 //        exit;
         
-        //Main-img
-        if(isset($data['main_img'])) {
-                
-            //$filename = $request->file('main_img')->getClientOriginalName();
-            $filename = $data['main_img']->getClientOriginalName();
-            $filename = str_replace(' ', '_', $filename);
-            
-            //$aId = $editId ? $editId : $rand;
-            //$pre = time() . '-';
-            $filename = 'item/' . $itemId . '/thumbnail/'/* . $pre*/ . $filename;
-            //if (App::environment('local'))
-            $path = $data['main_img']->storeAs('public', $filename);
-            //else
-            //$path = Storage::disk('s3')->putFileAs($filename, $request->file('thumbnail'), 'public');
-            //$path = $request->file('thumbnail')->storeAs('', $filename, 's3');
-            
-            $item->main_img = $path;
-            $item->save();
-        }
-        
-        //Spare-img
-        if(isset($data['spare_img'])) {
-            $spares = $data['spare_img'];
-            
-//            print_r($spares);
-//            exit;
-            
-            foreach($spares as $key => $spare) {
-                if($spare != '') {
-            
-                    $filename = $spare->getClientOriginalName();
-                    $filename = str_replace(' ', '_', $filename);
-                    
-                    //$aId = $editId ? $editId : $rand;
-                    //$pre = time() . '-';
-                    $filename = 'item/' . $itemId . '/thumbnail/'/* . $pre*/ . $filename;
-                    //if (App::environment('local'))
-                    $path = $spare->storeAs('public', $filename);
-                    //else
-                    //$path = Storage::disk('s3')->putFileAs($filename, $request->file('thumbnail'), 'public');
-                    //$path = $request->file('thumbnail')->storeAs('', $filename, 's3');
-                    
-                    //$item->spare_img .'_'. $ii = $path;
-                    $item['spare_img_'. $key] = $path;
-                    $item->save();
-                }
 
-            }
-        }
-        
-        //spare画像の削除
-        if(isset($data['del_spareimg'])) {
-            $dels = $data['del_spareimg'];     
-             
-              foreach($dels as $key => $del) {
-                   if($del) {
-                     $imgName = $item['spare_img_'. $key];
-                       if($imgName != '') {
-                         Storage::delete($imgName);
-                     }
-                    
-                       $item['spare_img_'. $key] = '';
-                    $item->save();
-                 }   
-           }
-        }
-        
-
-        
-        //タグのsave動作
-        if(isset($data['tags'])) {
-            $tagArr = $data['tags'];
-        
-            foreach($tagArr as $tag) {
-                
-                //Tagセット
-                $setTag = Tag::firstOrCreate(['name'=>$tag]); //既存を取得 or なければ作成
-                
-                if(!$setTag->slug) { //新規作成時slugは一旦NULLでcreateされるので、その後idをセットする
-                    $setTag->slug = $setTag->id;
-                    $setTag->save();
-                }
-                
-                $tagId = $setTag->id;
-                $tagName = $tag;
-
-
-                //tagIdがRelationになければセット ->firstOrCreate() ->updateOrCreate()
-                $tagRel = $this->tagRelation->firstOrCreate(
-                    ['tag_id'=>$tagId, 'item_id'=>$itemId]
-                );
-                /*
-                $tagRel = $this->tagRelation->where(['tag_id'=>$tagId, 'item_id'=>$itemId])->get();
-                if($tagRel->isEmpty()) {
-                    $this->tagRelation->create([
-                        'tag_id' => $tagId,
-                        'item_id' => $itemId,
-                    ]);
-                }
-                */
-
-                //tagIdを配列に入れる　削除確認用
-                $tagIds[] = $tagId;
-            }
-        
-            //編集時のみ削除されたタグを消す
-            if(isset($editId)) {
-                //元々relationにあったtagがなくなった場合：今回取得したtagIdの中にrelationのtagIdがない場合をin_arrayにて確認
-                $tagRels = $this->tagRelation->where('item_id', $itemId)->get();
-                
-                foreach($tagRels as $tagRel) {
-                    if(! in_array($tagRel->tag_id, $tagIds)) {
-                        $tagRel->delete();
-                    }
-                }
-            }
-        }
-        
-        
-        return redirect('dashboard/items/'. $itemId)->with('status', $status);
+        return redirect('dashboard/users/'. $userId)->with('status', $status);
     }
 
     

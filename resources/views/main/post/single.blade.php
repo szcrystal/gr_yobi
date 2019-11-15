@@ -69,7 +69,7 @@ use App\TopSetting;
                 <section class="intro-wrap">
                     
                     @if(isset($post['h2']->title))
-                        <h1 id="{{ $n }}" class="mb-3"><i class="fas fa-check text-kon"></i> {{ $post['h2']->title }}</h1>
+                        <h1 id="{{ $n }}" class="mb-3"><i class="fas fa-check"></i> {{ $post['h2']->title }}</h1>
                     @endif
                     
                     <?php $nn = 1; ?>
@@ -169,7 +169,7 @@ use App\TopSetting;
                 <section class="mt-4">
                     
                     @if(isset($post['h2']->title))
-                        <h1 id="{{ $n }}" class="mb-3"><i class="fas fa-check text-kon"></i> {{ $post['h2']->title }}</h1>
+                        <h1 id="{{ $n }}" class="mb-3"><i class="fas fa-check"></i> {{ $post['h2']->title }}</h1>
                     @endif
                     
                     <?php $nn = 1; ?>

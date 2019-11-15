@@ -45,6 +45,9 @@ h1 {
     word-wrap: break-word;
     overflow-wrap: break-word;
 }
+.text-normal {
+    font-weight: normal;
+}
 .text-orange {
 	color: darkorange;
 }
@@ -59,6 +62,9 @@ h1 {
 }
 .bg-blue {
 	background: #5cb3ef;
+}
+.bg-skyblue {
+    background: aliceblue;
 }
 .btn-blue {
 	background: #3A9BEB;
@@ -131,6 +137,7 @@ input[type="search"].form-control {
 .table-tyumon th {
 	width: 27%;
 	background: #f1f1f1;
+    font-weight: normal;
 }
 
 label {

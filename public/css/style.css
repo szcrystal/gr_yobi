@@ -251,7 +251,7 @@ input[type=checkbox]:checked + .checks:before {
 ## Links
 --------------------------------------------------------------*/
 a {
-	color: #313131;
+	color: #262626; /*ORG#313131*/
 	text-decoration: none;
 	-webkit-transition: none !important;
     transition: none !important;
@@ -323,7 +323,7 @@ input[type=checkbox] {
 
 /* bg color */
 body {
-	background: #fefffe;
+	background: #fefffe; /*#fefffe*/
 }
 .site-header {
 	background: #fefffe;
@@ -1181,7 +1181,7 @@ img.img-fluid + div {
     font-size: 0.9em;
     text-decoration: none;
     line-height: 2.8em;
-    color: #5a5a5a;
+    color: #3f3f3f;/*ORG#5a5a5a*/
 }
 .main-navi > ul > li:hover > a {
 	opacity: 1;
@@ -2593,8 +2593,8 @@ h3.upper-title {
 /* Post post-single ********** */
 .post-main {
 	float: left;
-    width: 64%;
-    margin-right: 3%;
+    width: 63%;
+    margin-right: 4%;
     //border: 1px solid orange;
 }
 .post-side {
@@ -2620,31 +2620,54 @@ h3.upper-title {
 	//border: 1px solid red;
 }
 .post-main header h1 {
-	font-size: 1.9em;
+	font-size: 1.8em;
 	color: #141d21;
-    background: #e9e5e3;
+/*    background: #e9e5e3;*/
+    background: #efefef;
     padding: 0.1em 0.2em;
 }
 .post-main section h1,
 .post-main header h2 {
-	font-size: 1.6em;
+	font-size: 1.8em;
 }
 .post-main section h1 {
 	padding-bottom: 0.1em;
     //border-bottom: 1px solid #cdcdcd;
 }
 .post-main section h2 {
-	 font-size: 1.3em;
+    font-size: 1.2em;
+    padding-bottom: 0.3em;
+    border-bottom: 1px solid #a8a8a8;
+    margin-bottom: 0.5em;
 }
 .post-main img {
 	width: 100%;
 }
+.post-main section p {
+    font-size: 0.95em;
+    line-height: 2em;
+    margin-bottom: 3em;
+    margin-left: 0.2em;
+    //color: red;
+}
 .post-index { /* 目次 */
 	color: #141d21;
-    border: 1px solid #141d21;
-    background: #e9e5e3;
+/*    border: 1px solid #141d21;*/
+/*    background: #e9e5e3;*/
+    border: 1px solid #cfcfcf;
+    background: #efefef;
     padding: 1em;
 }
+.post-index li {
+    font-size: 1.05em;
+}
+.post-index ul {
+    margin-top: 0.3em;
+}
+.post-index ul li {
+    font-size: 0.95em;
+}
+
 .post-cate {
 	color: #fff;
 	background: #878787;

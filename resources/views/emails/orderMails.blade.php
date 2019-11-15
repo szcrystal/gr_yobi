@@ -170,6 +170,10 @@
     @if($saleRel->is_user)
     	ポイント利用：{{ $saleRel->use_point }}ポイント<br>
     @endif
+    
+    @if($saleRel->adjust_price)
+        調整料：￥{{ number_format($saleRel->adjust_price) }}
+    @endif
 
     <?php
     	if(isset($saleRel->total_price)) {
