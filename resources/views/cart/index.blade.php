@@ -11,20 +11,20 @@
 
 @if(! count($itemData))
 	<div class="col-md-8 mx-auto text-center">
-	<p class="">カートに商品が入っていません</p>
+	<p class="">カートに商品が入っていません。</p>
 	<a href="{{ url('/') }}">HOMEへ戻る <i class="fal fa-angle-double-right"></i></a>
 	</div>
 @else
 
 <?php
-//	print_r($errors->get('no_delivery.*'));
-//    echo $errors->has('no_delivery.*');
-    //exit;
+//	print_r($errors->get('last_item_count'));
+//    echo $errors->has('last_item_count');
+//    exit;
 ?>
 
 @if ($errors->has('no_delivery.*'))
     <div class="alert alert-danger">
-        <i class="far fa-exclamation-triangle"></i> 配送不可の商品があります。
+        <i class="far fa-exclamation-triangle"></i> 配送不可の商品がカート内にあります。
         <ul class="mt-2">
             @foreach ($errors->get('no_delivery.*') as $error)
                 <li>{{ $error[0] }}</li>
@@ -32,6 +32,23 @@
         </ul>
     </div>
 @endif
+
+
+@if ($errors->has('last_item_count.*'))
+    <div class="alert alert-danger">
+        <i class="far fa-exclamation-triangle"></i> 確認して下さい。
+        <ul class="mt-2">
+            <li>売切れの商品がカート内にあります。</li>
+            {{--
+            @foreach ($errors->get('last_item_count.*') as $error)
+                <li>{{ $error[0] }}</li>
+            @endforeach
+            --}}
+        </ul>
+    </div>
+@endif
+
+
 
 <div class="clearfix">
 <div class="confirm-left">
@@ -67,21 +84,21 @@
                         <div class="clearfix mt-2">
                         	<div class="">
                             	
-                            	<fieldset class="form-group p-0 m-0">
+                            	<fieldset class="form-group p-0 m-0{{ $errors->has('last_item_count.'.$key) ? ' border border-danger p-1' : '' }}">
                                 	<input type="hidden" name="last_item_id[]" value="{{ $item->id }}">
                                     
                                 	<span class="text-small"><b>数量</b>：</span>
                                     
                                     
                                     @if(! $item->stock)
-                                        <span class="text-small text-danger"><i class="fas fa-exclamation-triangle"></i> <b>売切れ商品です。カートから削除して進んで下さい。</b></span>
+                                        <span class="text-small text-white bg-danger p-1"><i class="fas fa-exclamation-triangle text-big"></i> <b>売切れ商品です。カートから削除して進んで下さい。</b></span>
                                         <input type="hidden" name="last_item_count[]" value="0">
                                     
                                         <?php $disabled = ' disabled'; ?>
                                     
                                     @else
                                        <label class="select-wrap select-cart-count p-0"> 
-                                        <select class="form-control {{ $errors->has('last_item_count') ? ' is-invalid' : '' }}" name="last_item_count[]">
+                                        <select class="form-control" name="last_item_count[]">
                                                 
                                             <?php
                                                 $max = 100;
@@ -111,8 +128,8 @@
                                         
                                         <button class="btn px-2" type="submit" name="re_calc" value="1"{{ $disabled }}>更新</button>
                                                                                 
-                                        @if ($errors->has('last_item_count'))
-                                            <div class="help-block text-danger">
+                                        @if ($errors->has('last_item_count.'. $key))
+                                            <div class="border border-danger text-danger">
                                                 <span class="fa fa-exclamation form-control-feedback"></span>
                                                 <span>{{ $errors->first('last_item_count.'. $key) }}</span>
                                             </div>
@@ -126,7 +143,7 @@
                             <div class="mt-1">
                                 <?php $red = ''; ?>
                                 
-                                @if(! isset($item->sale_price) && isset($item->is_once_down))
+                                @if(! isset($item->sale_price) && isset($item->is_once_down) && isset($item->once_price))
                                     <?php $red = 'text-danger'; ?>
                                     <p class="m-0 p-0 text-small {{ $red }}">同梱包割引</p>
                                 @endif
@@ -213,7 +230,7 @@
             <a href="{{ url('login?to_cart=1') }}" class="btn btn-block btn-custom mb-2 py-3">ログインして購入手続きへ進む</a>
             --}}
             
-            <button class="btn btn-block btn-custom mb-2 py-3" type="submit" name="from_login" value="1">ログインする</button>
+            <button class="btn btn-block btn-custom mb-2 py-3" type="submit" name="from_login" value="1"{{ $disabled }}>ログインして進む</button>
         @endif
         
         @if(Auth::check())

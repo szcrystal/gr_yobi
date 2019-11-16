@@ -267,7 +267,9 @@ class CartController extends Controller
             //ORG : $price = Ctm::getPriceWithTax($item->sale_price);
         }
         else {
-            $itemPrice = isset($item->is_once_down) ? $item->once_price : $item->price;
+            $itemPrice = isset($item->is_once_down) ?
+                isset($item->once_price) ? $item->once_price : $item->price
+                : $item->price;
             
             if($isSale) {
                 $price = Ctm::getSalePriceWithTax($itemPrice);
@@ -1550,10 +1552,16 @@ class CartController extends Controller
             
             //$codFee += floor($codFee * $taxPer);
             $codMax += $codMax * $taxPer; //後払い上限金額の税計算
-            
+                        
             //NP後払い上限額
             if( ($totalFee + $codFee) > $codMax) {
+                //confirmページにエラーを表示させる場合
             	$errors['gmoLimit'] = 'NP後払い決済の上限額'. number_format($codMax) .'円を超えています。';
+                
+                //formページに戻す場合
+//                return redirect('shop/form')->withErrors([
+//                    'pay_method'=>'NP後払い決済の上限額'. number_format($codMax) .'円を超えています。',
+//                ])->withInput();
             }
         }
         
@@ -1759,8 +1767,9 @@ class CartController extends Controller
             elseif(session()->has('from_login')) {
                 $data = session('cart_data_from_login');
                 
-                session()->forget('from_login');
-                session()->forget('cart_data_from_login');
+                $request->session()->forget('from_login');
+                $request->session()->forget('cart_data_from_login');
+                
             }
             else {
                 abort(404);
@@ -1774,7 +1783,8 @@ class CartController extends Controller
 //            print_r(session('item.data'));
 //            exit;
             
-            session(['all.from_cart'=>$request->input('from_cart')]); //session入れ
+            //場所を下記foreachの下に移動：session(['all.from_cart'=>$request->input('from_cart')]); //session入れ
+            $soldOutAr = array();
             
            	foreach($data['last_item_count'] as $key => $val) {   
             	$request->session()->put('item.data.'.$key.'.item_count', $val); //session入れ 
@@ -1783,6 +1793,11 @@ class CartController extends Controller
               	$itemId = $data['last_item_id'][$key];
             
                 $itemObj = $this->item->find($itemId);
+                
+                
+                if(! $itemObj->stock) {
+                    $soldOutAr['last_item_count.'.$key][] = '売切れ商品です。カートから削除して進んで下さい。';
+                }
                 
                 //同梱包値引きSwitchをitemObjに入れる
                 if(session('item.data.'.$key.'.is_once_down') !== null) {
@@ -1804,6 +1819,15 @@ class CartController extends Controller
              
                 $allPrice += $lastPrice;
             }
+            
+            if(count($soldOutAr) > 0) {
+                //print_r($soldOutAr); exit;
+                return redirect('shop/cart')->withErrors($soldOutAr)->withInput();
+            }
+            
+            //form_cartのsession入れ 一度はpostを通っていることを判別する
+            //session(['all.from_cart'=>$request->input('from_cart')]); //session入れ
+            session(['all.from_cart'=>1]); //session入れ
             //all priceのsession入れ
             $request->session()->put('all.all_price', $allPrice);
        	}
@@ -1941,8 +1965,8 @@ class CartController extends Controller
         $prefs = $this->prefecture->all();
         
         /* ********************************
-        更新ボタン（青）、送料計算ボタン、ログインして進むボタン（黒）のpostはここを通る(ここに戻る)
-        購入手続きへ進むボタンのみ<button>にform-action=""を設定してshop/formへ進むようにしている
+            => 更新ボタン（青）、送料計算ボタン、ログインして進むボタン（黒）のpostはここを通る(ここに戻る)
+            => 購入手続きへ進むボタンのみ<button>にform-action=""を設定してshop/formへ進むようにしている
         ************************************
         */
         
@@ -1962,7 +1986,7 @@ class CartController extends Controller
         	$this->validate($request, $rules);
         }
         
-        //ログインして手続きへ　黒ボタンから来た時 -----------------------------
+        //ログインして手続きへ　黒ボタンから来た時 input dataは渡せないのでSessionに入れる -----------------------------
         if($request->has('from_login')) {
             $data = $request->all();
             $request->session()->put('cart_data_from_login', $data);
@@ -2004,27 +2028,37 @@ class CartController extends Controller
                     
                     if(! in_array($data, session('item.data'))) {
     //                     print_r($data);
-    //                     print_r(session('item.data'));   
-    //                    exit;
+//                         print_r(session('item.data'));
+//                        exit;
                         
                         //同梱包値引きの判別 既にある商品と比較する
                         $thisI = $this->item->find($data['item_id']); //postで入ってきた商品
-                        $ss = session('item.data');
+                        $ss = session('item.data'); //カートにある既存商品
 
                         foreach($ss as $ssKey => $ssVal) {
                             $i = $this->item->find($ssVal['item_id']); //既にカートにある商品
                             
-                            if(! isset($thisI->sale_price)) { //sale_priceが一番優先なのでこれがセットされていない時に進行
-                                if($thisI->dg_id == $i->dg_id && $thisI->is_once && isset($thisI->once_price)) { //既にカートにある商品にonce_priceが設定されていなくてもdg_idが同じであれば進める
-                                    $data['is_once_down'] = $data['item_id'];
+                            //if(! isset($thisI->sale_price)) { //sale_priceが一番優先なのでこれがセットされていない時に進行
+                                //['consignor_id'=>$item->consignor_id, 'is_once'=>1, 'is_once_recom'=>0]
+                                if($thisI->consignor_id == $i->consignor_id  && $thisI->is_once && $i->is_once) { /* && isset($thisI->once_price) */ //既にカートにある商品にonce_priceが設定されていなくてもdg_idが同じであれば進める
                                     
-                                    if(! isset($i->sale_price) && $i->is_once && isset($i->once_price)) {
-                                        $ss[$ssKey]['is_once_down'] = $ssVal['item_id'];
+                                    if(! isset($ssVal['is_once_down']) || ! $ssVal['is_once_down']) {
+                                        $randomNum = Ctm::getOrderNum(5);
+                                        $ss[$ssKey]['is_once_down'] = $randomNum;
                                     }
+                                    else {
+                                        $randomNum = $ss[$ssKey]['is_once_down'];
+                                    }
+                                    
+                                    $data['is_once_down'] = $randomNum;
+                                    
+//                                    if(! isset($i->sale_price) && $i->is_once && isset($i->once_price)) {
+//                                        $ss[$ssKey]['is_once_down'] = $ssVal['item_id'];
+//                                    }
                                     
                                     break;
                                 }
-                            }
+                            //}
                         }
                         
                         $ss[] = $data;
@@ -2070,13 +2104,46 @@ class CartController extends Controller
         
         //削除の時
         if($request->has('del_item_key')) {
-        	//if(isset($data['last_item_count'][$data['del_item_key']])) {
-        		unset($data['last_item_count'][$data['del_item_key']]);
+            
+            $delKey = $data['del_item_key'];
+        	
+            //if(isset($data['last_item_count'][$data['del_item_key']])) {
+        		unset($data['last_item_count'][$delKey]);
             	$data['last_item_count'] = array_values($data['last_item_count']);
             //}
             
+            
+            $delItem = session('item.data.'. $delKey);
+            $isOnceNum = isset($delItem['is_once_down']) ? $delItem['is_once_down'] : null; //削除するis_once_downのrandom keyを取得
+            
+            //del itemをsesionから消す
+            $request->session()->forget('item.data.'. $delKey);
+            
+            //同梱包割引確認 =========
+            if(isset($isOnceNum)) {
+                $restSess = session('item.data');
+                $restKeyArr = array();
+                
+                //is_once_downのrandom keyが同じであればその対象のitemのkeyを配列に入れる
+                foreach($restSess as $restKey => $restItem) {
+                    if(isset($restItem['is_once_down']) && $restItem['is_once_down'] == $isOnceNum) {
+                        $restKeyArr[] = $restKey;
+                    }
+                }
+                
+                if(count($restKeyArr) == 1) { //残りが1つの時のみが同梱包割引解除になるので、その残りのitemからsession->forget()する
+                    $request->session()->forget('item.data.'. $restKeyArr[0] . '.is_once_down');
+                }
+                
+                //print_r($data);
+                //print_r(session('item.data'));
+                //exit;
+            }
+            //同梱包割引確認 END =========
+            
+            
             //sesionから消す
-            $request->session()->forget('item.data.'.$data['del_item_key']);
+            //$request->session()->forget('item.data.'. $delKey);
             
             //Keyの連番を振り直してsessionに入れ直す session入れ
             $reData = array_merge(session('item.data'));
@@ -2109,7 +2176,7 @@ class CartController extends Controller
                 } 
                 
                 //値段 * 個数
-                $itemPrice = $this->getItemPrice($obj); //セールならセール金額　通常なら通常金額
+                $itemPrice = $this->getItemPrice($obj); //セールならセール金額　is_once_downなら同梱包金額 通常なら通常金額
                 $obj['total_price'] = $itemPrice * $obj['count'];
                 //$request->session()->put('item.data.'.$key.'.item_total_price', $obj['item_total_price']); //session入れ
                 /*
@@ -2171,20 +2238,23 @@ class CartController extends Controller
 //            $allPrice = array_sum($priceArr);
         }
         
+        
         //Recent Cookie 最近チェックしたアイテム　最近見た CacheではなくCookieなので注意===================
         $cookieArr = array();
         $cookieItems = null;
         
-        $getNum = Ctm::isAgent('sp') ? 6 : 4;
-        $chunkNum = Ctm::isAgent('sp') ? $getNum/2 : $getNum;
-        
-        $whereArr = ['open_status'=>1, 'is_potset'=>0];
-       
-        $cookieIds = Cookie::get('item_ids');
-       
-        if(isset($cookieIds) && $cookieIds != '') {
-           $cookieArr = explode(',', $cookieIds); //orderByRowに渡すものはString
-           $cookieItems = $this->item->whereIn('id', $cookieArr)->where($whereArr)->whereNotIn('id', $itemIds)->orderByRaw("FIELD(id, $cookieIds)")->take($getNum)->get()->chunk($chunkNum);
+        if(isset($itemIds)) { //itemIdsがnullの時=>カートに商品がない時
+            $getNum = Ctm::isAgent('sp') ? 6 : 4;
+            $chunkNum = Ctm::isAgent('sp') ? $getNum/2 : $getNum;
+            
+            $whereArr = ['open_status'=>1, 'is_potset'=>0];
+           
+            $cookieIds = Cookie::get('item_ids');
+           
+            if(isset($cookieIds) && $cookieIds != '') {
+               $cookieArr = explode(',', $cookieIds); //orderByRowに渡すものはString
+               $cookieItems = $this->item->whereIn('id', $cookieArr)->where($whereArr)->whereNotIn('id', $itemIds)->orderByRaw("FIELD(id, $cookieIds)")->take($getNum)->get()->chunk($chunkNum);
+            }
         }
         
         $metaTitle = '買い物カゴの確認' . '｜植木買うならグリーンロケット'; 
@@ -2319,15 +2389,7 @@ class CartController extends Controller
 
     }
     
-    
-    public function postToLoginFromCart(Request $request)
-    {
-        $data = $request->all();
-        
-        $request->session()->put('cart_data_at_login', $data);
-        
-        return redirect('login');
-    }
+
 
     public function postScript(Request $request)
     {

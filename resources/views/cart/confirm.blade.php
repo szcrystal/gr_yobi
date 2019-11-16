@@ -155,7 +155,7 @@
                        
                        <?php $red = ''; ?>
                        
-                       @if(! isset($item->sale_price) && isset($item->is_once_down))
+                       @if(! isset($item->sale_price) && isset($item->is_once_down) && isset($item->once_price))
                            <?php $red = 'text-danger'; ?>
                            <p class="m-0 p-0 {{ $red }}"><span class="text-small">同梱包割引</span></p>
                        @endif
@@ -480,12 +480,12 @@
                 ?>
                 
                     @if($errors->has('konbiniLimit'))
-                        <span class="mx-auto d-block px-5 confirm-small text-danger text-small">
+                        <span class="mx-auto d-block px-1 mb-1 confirm-small text-danger text-small">
                             {{ $errors->first('konbiniLimit') }}<br>
                             戻ってお支払い方法か購入商品を変更して下さい。
                         </span>
                     @elseif($errors->has('gmoLimit'))
-                        <span class="mx-auto d-block px-5 confirm-small text-danger text-small">
+                        <span class="mx-auto d-block px-1 mb-1 confirm-small text-danger text-small">
                             {{ $errors->first('gmoLimit') }}<br>
                             戻ってお支払い方法か購入商品/数量を変更して下さい。
                         </span>
