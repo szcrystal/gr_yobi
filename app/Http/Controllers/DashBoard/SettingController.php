@@ -99,7 +99,8 @@ class SettingController extends Controller
             'sale_per' => 'required_with:is_sale|nullable|numeric', //この辺りは小数点もあるのでnumericで
             'point_per' => 'required_with:is_point|nullable|numeric', //この辺りは小数点もあるのでnumericで
             'kare_ensure' => 'required|integer', //小数点無しなのでinteger
-            'btn_color' => 'alpha_num|nullable',
+            'btn_color_1' => 'alpha_num|nullable',
+            'btn_color_2' => 'alpha_num|nullable',
             'rewrite_time' => 'required|integer', //小数点無しなのでinteger
             //'main_img' => 'filenaming',
         ];

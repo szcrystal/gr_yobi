@@ -22,7 +22,8 @@ class Setting extends Model
         'point_per',
         'cot_per',
         'kare_ensure',
-        'btn_color',
+        'btn_color_1',
+        'btn_color_2',
         'bank_info',
         
         'rewrite_time',

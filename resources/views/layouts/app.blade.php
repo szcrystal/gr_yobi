@@ -12,10 +12,18 @@ $getNow = ! Ctm::isEnv('product') ? '?up=' . time() : '';
 
 <body>
 
-@if(isset(Setting::first()->btn_color) && Request::is('item/*'))
+@if(isset(Setting::first()->btn_color_1) && Request::is('item/*'))
 <style>
     .btn-mizuiro {
-        background: #{!! Setting::first()->btn_color !!};
+        background: #{!! Setting::first()->btn_color_1 !!};
+    }
+</style>
+@endif
+
+@if(isset(Setting::first()->btn_color_2) && Request::is('shop/*'))
+<style>
+    .btn-kon {
+        background: #{!! Setting::first()->btn_color_2 !!};
     }
 </style>
 @endif

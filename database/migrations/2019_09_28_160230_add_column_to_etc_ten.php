@@ -23,7 +23,8 @@ class AddColumnToEtcTen extends Migration
             $table->string('fb_app_id')->after('twitter_id')->nullable()->default(NULL);
             $table->string('instagram_id')->after('fb_app_id')->nullable()->default(NULL);
             
-            $table->string('btn_color')->after('kare_ensure')->nullable()->default(NULL);
+            $table->string('btn_color_1')->after('kare_ensure')->nullable()->default(NULL);
+            $table->string('btn_color_2')->after('btn_color_1')->nullable()->default(NULL);
         });
 
 		//Top Setting
@@ -97,6 +98,18 @@ class AddColumnToEtcTen extends Migration
         if (Schema::hasColumn('settings', 'btn_color')) {
             Schema::table('settings', function (Blueprint $table) {
                 $table->dropColumn('btn_color');
+            });
+        }
+        
+        if (Schema::hasColumn('settings', 'btn_color_1')) {
+            Schema::table('settings', function (Blueprint $table) {
+                $table->dropColumn('btn_color_1');
+            });
+        }
+        
+        if (Schema::hasColumn('settings', 'btn_color_2')) {
+            Schema::table('settings', function (Blueprint $table) {
+                $table->dropColumn('btn_color_2');
             });
         }
         

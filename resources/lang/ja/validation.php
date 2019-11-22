@@ -200,6 +200,9 @@ return [
         'kare_ensure' => '「枯れ保証日数」',
         'rewrite_time' => '「上書き制限時間（分）」',
         
+        'btn_color_1' => '「カートに入れるボタン」',
+        'btn_color_2' => '「カート以降（ショップ中）ボタン」',
+        
         'cardno' => '「カード番号」',
         'expire_year' => '「カード有効期限（年）」',
         'expire_month' => '「カード有効期限（月）」',
