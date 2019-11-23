@@ -76,7 +76,7 @@ use App\TopSetting;
                     
                     @foreach($post['contents'] as $contPost)
                         @if($contPost->is_intro)
-                            <div id="{{ $n.'-'.$nn }}" class="pt-1 pb-3 pl-1">
+                            <div id="{{ $n.'-'.$nn }}" class="pt-1 pb-4 pl-1 mb-3">
                                 @if(isset($contPost->title))
                                     <h2>{{ $contPost->title }}</h2>
                                 @endif
@@ -94,7 +94,7 @@ use App\TopSetting;
                                 @endif
                                 
                                 @if(isset($contPost->detail))
-                                    <p class="mt-2">{!! nl2br($contPost->detail) !!}</p>
+                                    <p class="mt-2 mb-0">{!! nl2br($contPost->detail) !!}</p>
                                 @endif
                                 
                             </div>
@@ -110,12 +110,13 @@ use App\TopSetting;
             @endif
         @endforeach
         
+        <?php //目次 ====================================================== ?>
         
         @if(! $postRel->is_index && count($postArr) > 0)
         
             <section>
                 <h1><i class="fas fa-check text-kon"></i> 目次</h1>
-                <div class="post-index">    
+                <div class="post-index">
                     <?php 
                         $iNum = 1;
                         //$nn = 1;
@@ -176,7 +177,7 @@ use App\TopSetting;
                     
                     @foreach($post['contents'] as $contPost)
                         
-                        <div id="{{ $n.'-'.$nn }}" class="pt-1 pb-3 pl-1">
+                        <div id="{{ $n.'-'.$nn }}" class="pt-1 pb-4 pl-1 mb-3">
                             @if(isset($contPost->title))
                                 <h2>{{ $contPost->title }}</h2>
                             @endif
@@ -195,7 +196,7 @@ use App\TopSetting;
                             @endif
                             
                             @if(isset($contPost->detail))
-                                <p class="mt-2">{!! nl2br($contPost->detail) !!}</p>
+                                <p class="mt-2 mb-0">{!! nl2br($contPost->detail) !!}</p>
                             @endif
                             
                         </div>

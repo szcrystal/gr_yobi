@@ -2657,6 +2657,7 @@ h3.upper-title {
     border: 1px solid #cfcfcf;
     background: #efefef;
     padding: 1em;
+    margin-bottom: 4.0em;
 }
 .post-index li {
     font-size: 1.05em;
