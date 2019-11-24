@@ -223,13 +223,15 @@ use App\TopSetting;
 
 <div class="post-side">
 
-    <div class="relate-post mb-5">
-        <h4>関連記事</h4>
-        @foreach($relatePosts as $relatePost)
-            @include('main.shared.atclPost', ['post'=>$relatePost])
-        @endforeach
+    @if($postRel->cate_id != 1)
+        <div class="relate-post mb-5">
+            <h4>関連記事</h4>
+            @foreach($relatePosts as $relatePost)
+                @include('main.shared.atclPost', ['post'=>$relatePost])
+            @endforeach
 
-    </div>
+        </div>
+    @endif
 
     <div class="relate-item mb-5 clearfix">
     	<h4>この記事の関連商品</h4>
