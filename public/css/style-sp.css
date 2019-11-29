@@ -950,7 +950,8 @@ ORG END ======================== */
     }
     
     .confirm-left,
-    .confirm-right {
+    .confirm-right,
+    .cart-recent-check {
         float: none;
         width: 100%;
     }

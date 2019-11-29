@@ -398,7 +398,7 @@ use App\DeliveryGroup;
                 
             <table class="table table-borderd border p-0 m-0">
                 <tr class="form-group">
-                    <th class="">メールマガジンの登録</th>
+                    <th class="">メールマガジン</th>
                     <td class="">
                         
                         <?php
@@ -1219,7 +1219,7 @@ use App\DeliveryGroup;
         </div>
         
         <div class="table-responsive table-foot">
-        <table class="table">
+        <table class="table mb-0 pb-0">
              <tbody class="clearfix">
                  <tr>
                     <th class="text-left text-big">
@@ -1237,13 +1237,17 @@ use App\DeliveryGroup;
                     <td class="text-big">
                         @if(isset($deliFee))
                             <b>¥{{ number_format($deliFee) }}</b>
+                            
+                            @if(Auth::check() && isset($prefName))
+                                <span class="d-block text-small text-enji"><small>＊ご登録住所[{{ $prefName }}]への送料</small></span>
+                            @endif
                         @else
                             <b class="text-enji">含まれておりません</b>
                             <?php $deliFee = 0; ?>
                         @endif
                     </td>
                 </tr>
-                
+                {{--
                 <tr>
                     <th class="text-left text-big">
                         <b>合計 <small>(税込)</small></b>
@@ -1253,10 +1257,28 @@ use App\DeliveryGroup;
                         <b class="text-big">¥{{ number_format($allPrice + $deliFee) }}</b>
                     </td>
                 </tr>
-                
+                --}}
                
              </tbody>
         </table>
+        </div>
+        
+        <hr>
+        
+        <div class="table-responsive table-foot">
+            <table class="table mb-0 pb-0">
+                 <tbody class="clearfix">
+                    <tr>
+                        <th class="text-left text-big">
+                            <b>合計 <small>(税込)</small></b>
+                        </th>
+                        
+                        <td class="text-extra-big text-danger">
+                            <b class="text-big">¥{{ number_format($allPrice + $deliFee) }}</b>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     
     </div>{{-- blue --}}

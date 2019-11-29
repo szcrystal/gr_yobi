@@ -62,7 +62,6 @@ use App\TopSetting;
                 
                 @if($item -> main_img)
                     @include('main.shared.sliderSingle')
-                    
                 @else
                     <span class="no-img">No Image</span>
                 @endif

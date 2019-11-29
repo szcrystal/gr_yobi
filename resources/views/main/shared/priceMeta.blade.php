@@ -50,9 +50,15 @@ $isSale = Setting::get()->first()->is_sale;
     
     	@if(isset($dgr) && $dgr->fee != '')
         	<?php
-            	$deliText = ($dgr->fee == 99999) ? 
-                        '配送不可' :
-                        '最低送料 ' . number_format($dgr->fee) . '円';
+            	$deliText = '';
+                if($dgr->fee == 99999) {
+                    $deliText = '配送不可';
+                }
+                else {
+                    $taxPer = Setting::first()->tax_per;
+                    $dgrFee = floor($dgr->fee * ($taxPer/100 + 1));
+                    $deliText = '最低送料 ' . number_format($dgrFee) . '円';
+                }
             ?>
         
         	{{ $pref->name }}への{{ $deliText }}

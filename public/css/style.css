@@ -670,6 +670,7 @@ body {
 /* 主にcart-formとcart-confirm */
 .table-custom th {
     position: relative;
+    font-size: 0.95em;
 }
 .table-custom th:after {
 	display: block;
@@ -678,14 +679,14 @@ body {
 	height: 0;
 }
 .table-custom th em,
-.huzai-comment-wrap em {
+.huzai-comment-wrap em { /* 必須 */
     position: absolute;
     top: 0.75em;
     right: 1px;
 /*    float: right;*/
 	display: block;
-	font-size: 0.85em;
-	line-height: 0.85em;
+	font-size: 0.8em;
+	line-height: 0.8em;
 	font-style: normal;
 	//background: lightsalmon;
     border: 1px solid #fa828f;
@@ -776,6 +777,10 @@ body {
 .confirm-left {
 	float: left;
 	width: 66%;
+}
+.cart-recent-check { /* 最近チェックした 見た */
+    width: 66%;
+    margin-top: 3.5em;
 }
 /*.confirm .confirm-right {*/
 .confirm-right {
@@ -2649,6 +2654,14 @@ h3.upper-title {
     margin-bottom: 3em;
     margin-left: 0.2em;
     //color: red;
+}
+.post-main section p a {
+    color: #007bff;
+    text-decoration: underline;
+}
+.post-main section p a:hover {
+    color: #a5a5a5;
+    text-decoration: none;
 }
 .post-index { /* 目次 */
 	color: #141d21;

@@ -1077,12 +1077,12 @@ var exe = (function() {
         },
         
         getWH: function() {
-//        	$target = $('.top-first .img-box');
+//        	$target = $('.slider-single > div');
 //        	var w = $target.width();
 //            var h = $target.height();
-            
-            //$('h2').text(w +'/'+ h);
-            //console.log(w +'/'+ h);
+//            
+//            $('h2').text(w +'/'+ h);
+//            console.log(w +'/'+ h);
         
         //$(window).on('load', function() {
         	//アンカーリンクのfix headerのずれを直す

@@ -1767,9 +1767,9 @@ class CartController extends Controller
             elseif(session()->has('from_login')) {
                 $data = session('cart_data_from_login');
                 
+                //ログインによりセットしたSessionは消す
                 $request->session()->forget('from_login');
                 $request->session()->forget('cart_data_from_login');
-                
             }
             else {
                 abort(404);
@@ -1793,7 +1793,6 @@ class CartController extends Controller
               	$itemId = $data['last_item_id'][$key];
             
                 $itemObj = $this->item->find($itemId);
-                
                 
                 if(! $itemObj->stock) {
                     $soldOutAr['last_item_count.'.$key][] = '売切れ商品です。カートから削除して進んで下さい。';
@@ -1842,7 +1841,8 @@ class CartController extends Controller
             else {
                 $allPrice = session('all.all_price');
             }
-        }          
+        }
+        
      
      	//PayMethod
       	$payMethod = $this->payMethod->where('active', 1)->get();
@@ -1857,10 +1857,32 @@ class CartController extends Controller
         $userObj = null;
         $regCardDatas = array();
         $regCardErrors = null;
+        
+        $deliFee = null;
+        $prefName = null;
+        
+        //itemDataをSessionから取得
+        $sesItems = session('item.data');
                 
         if(Auth::check()) {
         	$userObj = $this->user->find(Auth::id());
+         
+            //送料関連 -----------------------------------
+            $itemObjs = array();
+            foreach($sesItems as $sesItem) {
+                $i = $this->item->find($sesItem['item_id']);
+                $i->count = $sesItem['item_count'];
+                $itemObjs[] = $i;
+            }
             
+            $prefId = $this->prefecture->where('name', $userObj->prefecture)->first()->id;
+            $df = new Delifee($itemObjs, $prefId);
+            
+            $deliFee = $df->getDelifee();
+            $prefName = $userObj->prefecture;
+
+
+            //クレカ関連 ----------------------------------
             //クレカ参照
             if(isset($userObj->member_id) && $userObj->card_regist_count) {
             	//論理モード: 削除カード取得されない 同じカード番号でも新規登録になる　
@@ -1904,8 +1926,7 @@ class CartController extends Controller
         } 
         
 
-        //itemDataのSession入れ
-        $sesItems = session('item.data');
+        //上記でセットしたsession->item.dataから各種情報を取得する ---------------------------------------------------
         
         //代引きが可能かどうかを判定してboolを渡す 代引き可／不可混在の場合は「可能」となり、不在置きが一つでもあれば「不可」となる。
         $codCheck = 0;
@@ -1953,7 +1974,7 @@ class CartController extends Controller
 
 		$metaTitle = 'ご注文情報の入力' . '｜植木買うならグリーンロケット';
      
-     	return view('cart.form', ['allPrice'=>$allPrice, 'payMethod'=>$payMethod, 'pmChilds'=>$pmChilds, 'prefs'=>$prefs, 'userObj'=>$userObj, 'codCheck'=>$codCheck, 'dgGroup'=>$dgGroup, 'seinouHuzaiSes'=>$seinouHuzaiSes, 'seinouNoHuzaiSes'=>$seinouNoHuzaiSes, 'regCardDatas'=>$regCardDatas, 'regCardErrors'=>$regCardErrors, 'cardErrors'=>$cardErrors, 'metaTitle'=>$metaTitle]);
+     	return view('cart.form', ['allPrice'=>$allPrice, 'payMethod'=>$payMethod, 'pmChilds'=>$pmChilds, 'prefs'=>$prefs, 'userObj'=>$userObj, 'deliFee'=>$deliFee, 'prefName'=>$prefName, 'codCheck'=>$codCheck, 'dgGroup'=>$dgGroup, 'seinouHuzaiSes'=>$seinouHuzaiSes, 'seinouNoHuzaiSes'=>$seinouNoHuzaiSes, 'regCardDatas'=>$regCardDatas, 'regCardErrors'=>$regCardErrors, 'cardErrors'=>$cardErrors, 'metaTitle'=>$metaTitle]);
     }
     
     
@@ -1970,8 +1991,10 @@ class CartController extends Controller
         ************************************
         */
         
-        // 送料計算ボタンの時のバリデーション ---------------------
-        if($request->has('delifee_calc') /* && ! $request->input('pref_id') */) {
+        // 送料計算ボタンの時のバリデーション $request->has('delifee_calc')は現在使用していない ---------------------
+        //現在、バリデーションは使用しないことにした。未選択であれば「含まれておりません」となる。
+        /*
+        if($request->has('re_calc') ) { // && ! $request->input('pref_id')
         	//return redirect('shop/cart')->withErrors(['pref_id'=>'選択して下さい'])->withInput();
         	$rules = [
                 'pref_id' => [
@@ -1985,6 +2008,7 @@ class CartController extends Controller
         
         	$this->validate($request, $rules);
         }
+        */
         
         //ログインして手続きへ　黒ボタンから来た時 input dataは渡せないのでSessionに入れる -----------------------------
         if($request->has('from_login')) {
@@ -2094,12 +2118,16 @@ class CartController extends Controller
         $prefId = null;
             
         //再計算の時
-        if($request->has('re_calc') || $request->has('delifee_calc') || $request->has('del_item_key')) {
+        if($request->has('re_calc') /*|| $request->has('delifee_calc') */|| $request->has('del_item_key')) {
             $data = $request->all();
             $submit = 1;
             $prefId = isset($data['pref_id']) ? $data['pref_id'] : 0;
             //print_r($secData);
             //exit;
+        }
+        elseif(Auth::check()) { //ログイン済みの時（送料表示のため）
+            $u = $this->user->find(Auth::id());
+            $prefId = $this->prefecture->where('name', $u->prefecture)->first()->id;
         }
         
         //削除の時
@@ -2209,12 +2237,14 @@ class CartController extends Controller
             *************/
             
             //$itemDataはitemのobjに[count]が入ったものの配列
-
+            $reCalc = 0;
+            
 			// 送料計算 ===========================
-            if(isset($data['delifee_calc']) || (isset($data['re_calc']) && $prefId)) {
+            if($prefId && (isset($data['re_calc']) || Auth::check()) ) {
 
-//                print_r($itemData);
-//                exit;
+                if(isset($data['re_calc'])) {
+                    $reCalc = 1;
+                }
                 
                 $df = new Delifee($itemData, $prefId);
                 
@@ -2226,10 +2256,10 @@ class CartController extends Controller
                 }
                 
                 $deliFee = $df->getDelifee();
+  
             }
             
-            
-            
+                        
             //合計金額を算出
 //            $priceArr = collect($itemData)->map(function($item) use($allPrice) {
 //                return $item->total_price; 
@@ -2248,7 +2278,16 @@ class CartController extends Controller
             $chunkNum = Ctm::isAgent('sp') ? $getNum/2 : $getNum;
             
             $whereArr = ['open_status'=>1, 'is_potset'=>0];
-           
+            
+            //カートに入るのは子ポットID、Coookieにあるのは親IDなので、$itemIdsを親ポットIDにしてセットし直す
+            foreach($itemIds as $idKey => $itemId) {
+                $i = $this->item->find($itemId);
+                if($i->is_potset) {
+                    $itemIds[$idKey] = $i->pot_parent_id;
+                }
+            }
+            
+            //Cookie取得
             $cookieIds = Cookie::get('item_ids');
            
             if(isset($cookieIds) && $cookieIds != '') {
@@ -2259,7 +2298,7 @@ class CartController extends Controller
         
         $metaTitle = '買い物カゴの確認' . '｜植木買うならグリーンロケット'; 
         
-        return view('cart.index', ['itemData'=>$itemData, 'allPrice'=>$allPrice, 'uri'=>session('org_url'), 'prefs'=>$prefs, 'prefId'=>$prefId, 'deliFee'=>$deliFee, 'cookieItems'=>$cookieItems, 'metaTitle'=>$metaTitle]);
+        return view('cart.index', ['itemData'=>$itemData, 'allPrice'=>$allPrice, 'uri'=>session('org_url'), 'prefs'=>$prefs, 'prefId'=>$prefId, 'deliFee'=>$deliFee, 'reCalc'=>$reCalc, 'cookieItems'=>$cookieItems, 'metaTitle'=>$metaTitle]);
 
 /*
         //$tax_per = $this->set->tax_per;

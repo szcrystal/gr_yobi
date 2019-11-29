@@ -13,7 +13,7 @@
             <?php 
                 $mainCaption = isset($item->main_caption) ? $item->main_caption : ''; 
             
-                $imgFormat = '<img class="d-block w-100" src="%s" alt="%s">';
+                $imgFormat = '<img class="d-block w-100 aaa" src="%s" alt="%s">';
                 $imgTag = sprintf($imgFormat , Storage::url($item->main_img), $item->title);
             ?>
                 

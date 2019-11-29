@@ -178,35 +178,6 @@
          
          </table>
     </div>
-    
-    
-    
-    @if(isset($cookieItems) && count($cookieItems) > 0)
-
-           <div class="wrap-atcl cart-recent-check mt-5 pt-2">
-               <div class="head-atcl">
-                   <h2>最近チェックしたアイテム</h2>
-               </div>
-           
-               <div class="clearfix">
-                   @foreach($cookieItems as $cookieItem)
-                        <div class="mb-2 clearfix">
-                            @foreach($cookieItem as $item)
-                                <article class="main-atcl">
-                                    @include('main.shared.atcl', ['strNum'=>Ctm::isAgent('sp') ? 15 : 20])
-                
-                                </article>
-                            @endforeach
-                        </div>
-                   @endforeach
-               </div>
-               
-               <a href="{{ url('recent-items') }}" class="btn btn-block btn-custom bg-white border-secondary rounded-0">もっと見る <i class="fal fa-angle-double-right"></i></a>
-               
-           </div>
-           
-       @endif
-    
 
 </div>{{-- confirm-left --}}
          
@@ -306,6 +277,10 @@
                 <td class="">
                     @if(isset($deliFee))
                         ¥{{ number_format($deliFee) }}
+                        
+                        @if(Auth::check() && ! $reCalc)
+                            <span class="d-block text-small text-enji"><small>＊ご登録住所[{{ $prefs->find($prefId)->name }}]への送料</small></span>
+                        @endif
                     @else
                         <b class="text-big text-enji">含まれておりません</b>
                     @endif
@@ -357,39 +332,40 @@
         <div>
             <label class="control-label mb-0 text-small d-inline"><b>配送先都道府県</b></label>
             <label class="select-wrap select-pref p-0 mb-3">
-            <select id="pref" class="form-control ml-1 d-inline{{ $errors->has('pref_id') ? ' is-invalid' : '' }}" name="pref_id">
-                <option selected value="0">選択</option>
-                <?php
-    //                            use App\Prefecture;
-    //                            $prefs = Prefecture::all();
-                ?>
-                @foreach($prefs as $pref)
+                <select id="pref" class="form-control ml-1 d-inline{{ $errors->has('pref_id') ? ' is-invalid' : '' }}" name="pref_id">
+                    <option selected value="0">選択</option>
                     <?php
-                        $selected = '';
-                        if(Ctm::isOld()) {
-                            if(old('pref_id') == $pref->id)
-                                $selected = ' selected';
-                        }
-                        else {
-                            if(isset($prefId) && $prefId == $pref->id) {
-                            //if(Session::has('all.data.user')  && session('all.data.user.prefecture') == $pref->name) {
-                                $selected = ' selected';
-                            }
-                        }
+        //                            use App\Prefecture;
+        //                            $prefs = Prefecture::all();
                     ?>
-                    
-                    <option value="{{ $pref->id }}"{{ $selected }}>{{ $pref->name }}</option>
-                @endforeach
-            </select>
+                    @foreach($prefs as $pref)
+                        <?php
+                            $selected = '';
+                            if(Ctm::isOld()) {
+                                if(old('pref_id') == $pref->id)
+                                    $selected = ' selected';
+                            }
+                            else {
+                                if(isset($prefId) && $prefId == $pref->id) {
+                                //if(Session::has('all.data.user')  && session('all.data.user.prefecture') == $pref->name) {
+                                    $selected = ' selected';
+                                }
+                            }
+                        ?>
+                        
+                        <option value="{{ $pref->id }}"{{ $selected }}>{{ $pref->name }}</option>
+                    @endforeach
+                </select>
             </label>
+            
+            @if ($errors->has('pref_id'))
+                <div class="help-block text-danger text-right mb-3">
+                    <span class="fa fa-exclamation form-control-feedback"></span>
+                    <span class="mr-4">{{ $errors->first('pref_id') }}</span>
+                </div>
+            @endif
         </div>
         
-        @if ($errors->has('pref_id'))
-            <div class="help-block text-danger">
-                <span class="fa fa-exclamation form-control-feedback"></span>
-                <span>{{ $errors->first('pref_id') }}</span>
-            </div>
-        @endif
     
         <button class="btn btn-block px-2 col-md-11 m-auto bg-enji mb-2" type="submit" name="re_calc" value="1"{{ $disabled }}>送料計算</button>
         
@@ -422,15 +398,36 @@
 
 </div>{{-- clear --}}
 
-<div class="clearfix mt-3 cart-btn-wrap">
+@if(isset($cookieItems) && count($cookieItems) > 0)
+    <div class="wrap-atcl cart-recent-check">
+        <div class="head-atcl">
+            <h2>最近チェックしたアイテム</h2>
+        </div>
+    
+        <div class="clearfix">
+            @foreach($cookieItems as $cookieItem)
+                 <div class="mb-2 clearfix">
+                     @foreach($cookieItem as $item)
+                         <article class="main-atcl">
+                             @include('main.shared.atcl', ['strNum'=>Ctm::isAgent('sp') ? 15 : 20])
+         
+                         </article>
+                     @endforeach
+                 </div>
+            @endforeach
+        </div>
+        
+        <a href="{{ url('recent-items') }}" class="btn btn-block btn-custom bg-white border-secondary rounded-0">もっと見る <i class="fal fa-angle-double-right"></i></a>
+    </div>
+@endif
 
+<div class="clearfix mt-3 cart-btn-wrap">
     <div class="clearfix">
 		<input type="hidden" name="uri" value="{{ $uri }}">
 		<a href="{{ url($uri)}}" class="btn border border-secondary bg-white my-2"><i class="fal fa-angle-double-left"></i> 買い物を続ける</a>
 	</div>
-    
 </div>
-</form>  
+</form>
 @endif
 
 
