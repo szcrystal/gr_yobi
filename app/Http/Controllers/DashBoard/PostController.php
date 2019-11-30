@@ -190,6 +190,28 @@ class PostController extends Controller
 //        	'number' => 'required|unique:items,number,'.$editId,
             'block.p.section.title' => 'required|max:255',
           	'cate_id' => 'required',
+            
+            'relate_post_ids' => [
+                'nullable',
+                'max:255',
+                function($attribute, $value, $fail) {
+                    if (strpos($value, '、') !== false) {
+                        return $fail('「関連記事ID」に全角のカンマがあります。');
+                    }
+                    elseif (strpos($value, ' ') !== false || strpos($value, ' ') !== false) {
+                        return $fail('「関連記事ID」にスペースがあります。');
+                    }
+                    else {
+                        $nums = explode(',', $value);
+                        foreach($nums as $num) {
+                            if(! is_numeric($num)) {
+                                return $fail('「関連記事ID」に全角の文字があります。');
+                            }
+                        }
+                    }
+                }
+            ],
+            
             'item_subcate_id' => function($attribute, $value, $fail) use($request) {
                 if($request->input('item_cate_id') && ! $value) {
                     return $fail('「商品 親カテゴリー」指定時は「商品 子カテゴリー」も選択して下さい。');

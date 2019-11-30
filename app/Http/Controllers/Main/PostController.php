@@ -480,16 +480,22 @@ class PostController extends Controller
         	return $obj->postrel_id;
         });
         
-        $relatePosts = $this->postRel->whereIn('id', $sameTagIds)->union($sameCates)->inRandomOrder()->take(3)->get();
+        //cate/tag post get
+        $relatePosts = $this->postRel->whereIn('id', $sameTagIds)->union($sameCates)->inRandomOrder()->get()->all()/*->take(3)->get()*/;
         
-        //bigTitle(H1)をセットする
-        //$relatePosts = $this->setBigTitleToRel($relatePosts);
+        //強制ids get
+        if(isset($postRel->relate_post_ids)) {
+            $relPostIds = explode(',', $postRel->relate_post_ids);
+            $idsPosts = $this->postRel->whereIn('id', $relPostIds)->orderByRaw("FIELD(id, $postRel->relate_post_ids)");
+            
+            $relatePosts = array_merge($idsPosts->get()->all(), $relatePosts);
+            $relatePosts = array_unique($relatePosts); //重複要素削除
+        }
         
-//        print_r($relatePosts);
-//        exit;
+        $relatePosts = collect($relatePosts)->take(3);
+
         
-        
-        //関連商品 ==================================
+        //関連商品 ====================================================
         /*
         	・強さ：ID > (ワード + 商品タグ/商品カテ/商品子カテ) ワードを強くしてもいいが、表示数が多いことが多いのでワードだけになることがほとんど
         	・idsがセット：必ずそれらが入力順に先頭表示。不足分は(ワード + タグ/カテ/子カテ)のランダムから
@@ -525,14 +531,18 @@ class PostController extends Controller
         $cateSecItems = $this->item->where(['subcate_id'=>$postRel->item_subcate_id])->where($this->itemWhere)->where('stock', '>', 0);
 
         //Tag + Cate + cateSec
-        $relateItems = $tagItems->union($cateItems)->union($cateSecItems)->inRandomOrder()->get()->all();
+        if(count($cateSecItems) > 0) {
+            $relateItems = $tagItems->union($cateSecItems)->inRandomOrder()->get()->all();
+        }
+        else {
+            $relateItems = $tagItems->union($cateItems)->union($cateSecItems)->inRandomOrder()->get()->all();
+        }
 
 //        $t->orWhere(['cate_id'=>$postRel->item_cate_id]);
 //        $t->orWhere(['subcate_id'=>$postRel->item_subcate_id]);
 //		  $allItems = $t->where($this->itemWhere)->where('stock', '>', 0)->inRandomOrder()->take(6);
 
         //カラムだけ抽出
-        
         
         if(isset($postRel->s_word)) {
             $word = $postRel->s_word;

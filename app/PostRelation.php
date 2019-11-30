@@ -14,6 +14,7 @@ class PostRelation extends Model
         'is_index',
         'thumb_path',
         'big_title',
+        'relate_post_ids',
         
         'item_cate_id',
         'item_subcate_id',

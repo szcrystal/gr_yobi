@@ -401,6 +401,21 @@ use App\PostCategorySecond;
                 </div>
             </div><?php //tagwrap ?>
             
+            
+            <fieldset class="mt-0 mb-5 pb-3 form-group">
+                <label class="text-uppercase">関連記事ID<small class="text-secondary ml-2">複数の場合は<b class="text-dark">半角カンマ</b>で区切って下さい。（スペース不可）</small></label>
+                
+                <input class="form-control col-md-12{{ $errors->has('relate_post_ids') ? ' is-invalid' : '' }}" name="relate_post_ids" value="{{ Ctm::isOld() ? old('relate_post_ids') : (isset($postRel) ? $postRel->relate_post_ids : '') }}" placeholder="3,5,10・・">
+
+                    @if ($errors->has('relate_post_ids'))
+                        <div class="text-danger">
+                            <span class="fa fa-exclamation form-control-feedback"></span>
+                            <span>{{ $errors->first('relate_post_ids') }}</span>
+                        </div>
+                    @endif
+            
+            </fieldset>
+            
             <hr>
             
             <?php //========================================================= ?>

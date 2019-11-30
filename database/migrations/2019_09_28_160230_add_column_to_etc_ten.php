@@ -48,6 +48,12 @@ class AddColumnToEtcTen extends Migration
         Schema::table('send_mail_flags', function (Blueprint $table) {
             $table->integer('add_point')->after('information_foot')->nullable()->default(NULL);
         });
+        
+        //PostRelation
+        Schema::table('post_relations', function (Blueprint $table) {
+            $table->string('relate_post_ids')->after('big_title')->nullable()->default(NULL);
+        });
+        
     }
 
 
@@ -153,5 +159,11 @@ class AddColumnToEtcTen extends Migration
             });
         }
         
+        //PostRelation
+        if (Schema::hasColumn('post_relations', 'relate_post_ids')) {
+            Schema::table('post_relations', function (Blueprint $table) {
+                $table->dropColumn('relate_post_ids');
+            });
+        }
     }
 }
