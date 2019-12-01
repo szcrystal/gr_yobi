@@ -34,7 +34,8 @@
 {{ $receiver->name }} 様
 <p style="margin-top:0.2em">
 〒{{ Ctm::getPostNum($receiver->post_num) }}<br>
-{{ $receiver->prefecture }}{{ $receiver->address_1 }}{{ $receiver->address_2 }}
+{{ $receiver->prefecture }}{{ $receiver->address_1 }}{{ $receiver->address_2 }}<br>
+TEL：{{ $receiver->tel_num }}
 </p>
 </div>
 
@@ -192,12 +193,15 @@
         {{ $pmModel->find($saleRel->pay_method)->name }}
         @if($saleRel->pay_method == 3)
             （{{ $pmChildModel->find($saleRel->pay_method_child)->name }}）
-        @elseif($templ->type_code == 'thanks' && $saleRel->pay_method == 6)
-            <div style="margin: 0.5em 0 0.2em 0;">
-                {!! nl2br($setting['bank_info']) !!}
-            </div>
         @endif
     </div>
+    
+    @if($templ->type_code == 'thanks' && $saleRel->pay_method == 6)
+        【振込先】
+        <div style="margin: 0 0 1.0em 1.0em;">
+            {!! nl2br($setting['bank_info']) !!}
+        </div>
+    @endif
     
     @if($templ->type_code == 'payDone')
     【ご入金確認日】

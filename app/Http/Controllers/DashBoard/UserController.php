@@ -157,21 +157,22 @@ class UserController extends Controller
         $data = $request->all();
         
         //status
-        if(isset($data['open_status'])) { //非公開On
-            $data['open_status'] = 0;
-        }
-        else {
-            $data['open_status'] = 1;
-        }
+        //$data['open_status'] = isset($data['open_status']) ? 0 : 1;
+        
+        $query = '';
         
         if($editId) { //update（編集）の時
-            $status = 'ユーザーが更新されました！';
-            $user = $this->user->find($editId);
+            $status = 'ユーザーが更新されました！' . "<span class=\"text-orange\">ご注文者であれば、ご注文情報内で配送先も変更して下さい。</span>";
             
-            $user->update([
-                'point' => $data['point'],
-            ]);
-            
+            if($data['is_user']) {
+                $user = $this->user->find($editId);
+            }
+            else {
+                $user = $this->un->find($editId);
+                $query = '?no_r=1';
+            }
+
+            $user->update($data);
         }
         else { //新規追加の時
             $status = 'ユーザーが追加されました！';
@@ -188,7 +189,7 @@ class UserController extends Controller
 //        exit;
         
 
-        return redirect('dashboard/users/'. $userId)->with('status', $status);
+        return redirect('dashboard/users/'. $userId . $query)->with('status', $status);
     }
 
     

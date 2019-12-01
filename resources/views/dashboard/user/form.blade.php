@@ -39,7 +39,7 @@
         
 	@if (session('status'))
         <div class="alert alert-success">
-            {{ session('status') }}
+            {!! session('status') !!}
         </div>
     @endif
         
@@ -48,19 +48,23 @@
 
             {{ csrf_field() }}
             
+            <div class="form-group mb-2">
+                <button type="submit" class="btn btn-primary btn-block mx-auto w-btn w-25">更　新</button>
+            </div>
+            
             @if($isUser)
-                <div class="form-group mb-2">
-                    <button type="submit" class="btn btn-primary btn-block mx-auto w-btn w-25">更　新</button>
-                </div>
-                
-                <input type="hidden" name="edit_id" value="{{ $user->id }}">
+                <input type="hidden" name="is_user" value="1">
+            @else
+                <input type="hidden" name="is_user" value="0">
             @endif
 
+            <input type="hidden" name="edit_id" value="{{ $user->id }}">
+            
 			<h4 class="mb-1">会員情報</h4>
             	<div class="table-responsive">
                     <table class="table table-bordered">
                         <colgroup>
-                            <col style="background: #dfdcdb; width: 25%;" class="cth">
+                            <col style="background: #dfdcdb; width: 22%;" class="cth">
                             <col style="background: #fefefe;" class="ctd">
                         </colgroup>
                         
@@ -87,50 +91,121 @@
 
                             <tr>
                                 <th>名前</th>
-                                <td>{{ $user->name }}</td>
-                            </tr>
-                            <tr>
-                                <th>フリガナ</th>
-                                <td>{{ $user->hurigana }}</td>
-                            </tr>
-                            <tr>
-                                <th>性別</th>
-                                <td>{{ $user->gender }}</td>
-                            </tr>
-                            <tr>
-                                <th>メールアドレス</th>
-                                <td><a href="mailto:{{ $user->email }}">{{ $user->email }}</a></td>
-                            </tr>
-                            <tr>
-                                <th>電話番号</th>
-                                <td>{{ $user->tel_num }}</a></td>
-                            </tr>
-                            
-                            <tr>
-                                <th>生年月日</th>
                                 <td>
-                                	@if($user->birth_year && $user->birth_month && $user->birth_day)
-                                        {{ $user->birth_year }}/{{ $user->birth_month }}/{{ $user->birth_day }}
-                                    @else
-                                        --
+                                    <input  class="form-control col-md-12{{ $errors->has('name') ? ' is-invalid' : '' }}" name="name" value="{{ Ctm::isOld() ? old('name') : (isset($user) ? $user->name : '') }}">
+                                    
+                                    @if ($errors->has('name'))
+                                        <div class="help-block text-danger">
+                                            <span class="fa fa-exclamation form-control-feedback"></span>
+                                            <span>{{ $errors->first('name') }}</span>
+                                        </div>
                                     @endif
                                 </td>
                             </tr>
                             <tr>
+                                <th>フリガナ</th>
+                                <td>
+                                    <input  class="form-control col-md-12{{ $errors->has('hurigana') ? ' is-invalid' : '' }}" name="hurigana" value="{{ Ctm::isOld() ? old('hurigana') : (isset($user) ? $user->hurigana : '') }}">
+                                    
+                                    @if ($errors->has('hurigana'))
+                                        <div class="help-block text-danger">
+                                            <span class="fa fa-exclamation form-control-feedback"></span>
+                                            <span>{{ $errors->first('hurigana') }}</span>
+                                        </div>
+                                    @endif
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <th>電話番号</th>
+                                <td>
+                                    <input  class="form-control col-md-12{{ $errors->has('tel_num') ? ' is-invalid' : '' }}" name="tel_num" value="{{ Ctm::isOld() ? old('tel_num') : (isset($user) ? $user->tel_num : '') }}">
+                                    
+                                    @if ($errors->has('tel_num'))
+                                        <div class="help-block text-danger">
+                                            <span class="fa fa-exclamation form-control-feedback"></span>
+                                            <span>{{ $errors->first('tel_num') }}</span>
+                                        </div>
+                                    @endif
+                                </td>
+                            </tr>
+                            
+                            
+                            <tr>
                                 <th>郵便番号</th>
-                                <td>〒{{ Ctm::getPostNum($user->post_num) }}</td>
+                                <td>{{-- 〒{{ Ctm::getPostNum($user->post_num) }} --}}
+                                    <input id="zipcode" class="form-control col-md-12{{ $errors->has('post_num') ? ' is-invalid' : '' }}" name="post_num" value="{{ Ctm::isOld() ? old('post_num') : (isset($user) ? $user->post_num : '') }}">
+                                    
+                                    @if ($errors->has('post_num'))
+                                        <div class="help-block text-danger">
+                                            <span class="fa fa-exclamation form-control-feedback"></span>
+                                            <span>{{ $errors->first('post_num') }}</span>
+                                        </div>
+                                    @endif
+                                </td>
                             </tr>
                             <tr>
                                 <th>都道府県</th>
-                                <td>{{ $user-> prefecture }}</td>
+                                <td>
+                                    <div class="select-wrap col-md-6 p-0 m-0">
+                                        <select id="pref" class="form-control{{ $errors->has('prefecture') ? ' is-invalid' : '' }}" name="prefecture">
+                                            <option selected value="0">選択して下さい</option>
+                                            <?php
+                                                use App\Prefecture;
+                                                $prefs = Prefecture::all();
+                                            ?>
+                                            @foreach($prefs as $pref)
+                                                <?php
+                                                    $selected = '';
+                                                    if(Ctm::isOld()) {
+                                                        if(old('prefecture') == $pref->name)
+                                                            $selected = ' selected';
+                                                    }
+                                                    else {
+                                                        if(isset($user) && $user->prefecture == $pref->name) {
+                                                            $selected = ' selected';
+                                                        }
+                                                    }
+                                                ?>
+                                                
+                                                <option value="{{ $pref->name }}"{{ $selected }}>{{ $pref->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                            
+                                    @if ($errors->has('prefecture'))
+                                        <div class="help-block text-danger">
+                                            <span class="fa fa-exclamation form-control-feedback"></span>
+                                            <span>{{ $errors->first('prefecture') }}</span>
+                                        </div>
+                                    @endif
+                                </td>
                             </tr>
                             <tr>
                                 <th>住所1</th>
-                                <td>{{ $user->address_1 }}</td>
+                                <td>
+                                    <input id="address" class="form-control col-md-12{{ $errors->has('address_1') ? ' is-invalid' : '' }}" name="address_1" value="{{ Ctm::isOld() ? old('address_1') : (isset($user) ? $user->address_1 : '') }}">
+                                    
+                                    @if ($errors->has('address_1'))
+                                        <div class="help-block text-danger">
+                                            <span class="fa fa-exclamation form-control-feedback"></span>
+                                            <span>{{ $errors->first('address_1') }}</span>
+                                        </div>
+                                    @endif
+                                </td>
                             </tr>
                             <tr>
                                 <th>住所2</th>
-                                <td>{{ $user->address_2 }}</td>
+                                <td>
+                                    <input  class="form-control col-md-12{{ $errors->has('address_2') ? ' is-invalid' : '' }}" name="address_2" value="{{ Ctm::isOld() ? old('address_2') : (isset($user) ? $user->address_2 : '') }}">
+                                    
+                                    @if ($errors->has('address_2'))
+                                        <div class="help-block text-danger">
+                                            <span class="fa fa-exclamation form-control-feedback"></span>
+                                            <span>{{ $errors->first('address_2') }}</span>
+                                        </div>
+                                    @endif
+                                </td>
                             </tr>
                             
                             {{--
@@ -141,6 +216,11 @@
                             --}}
                             
                             <tr>
+                                <th>メールアドレス</th>
+                                <td><a href="mailto:{{ $user->email }}">{{ $user->email }}</a></td>
+                            </tr>
+                            
+                            <tr>
                             	@if($isUser)
                                     <th>メールマガジン</th>
                                     <td>
@@ -148,6 +228,33 @@
                                         	<span class="text-info">登録済</span>
                                         @else
                                         	<span class="text-warning">未登録</span>
+                                        @endif
+                                        <br>
+                                        <?php
+                                            $checked = '';
+                                            if(Ctm::isOld()) {
+                                                if(old('magazine'))
+                                                    $checked = ' checked';
+                                            }
+                                            else {
+                                                if(isset($user) && $user->magazine) {
+                                                    $checked = ' checked';
+                                                }
+                                            }
+                                        ?>
+                                        
+                                        <input id="check-magazine" type="checkbox" name="magazine" value="1"{{ $checked }}>
+                                        <label for="check-magazine" class="checks">登録する</label>
+                                        
+                                        {{--
+                                        <input type="checkbox" name="user[magazine]" value="1"{{ $checked }}> 登録する
+                                        --}}
+                                        
+                                        @if ($errors->has('magazine'))
+                                            <div class="help-block text-danger">
+                                                <span class="fa fa-exclamation form-control-feedback"></span>
+                                                <span>{{ $errors->first('magazine') }}</span>
+                                            </div>
                                         @endif
                                     </td>
                                 @endif
@@ -159,7 +266,7 @@
                                     <td>
                                     	{{-- $user->point --}}
                                         
-                                    	<input  class="form-control col-md-6{{ $errors->has('cost_price') ? ' is-invalid' : '' }}" name="point" value="{{ Ctm::isOld() ? old('point') : (isset($user) ? $user->point : '') }}">
+                                    	<input  class="form-control col-md-6{{ $errors->has('point') ? ' is-invalid' : '' }}" name="point" value="{{ Ctm::isOld() ? old('point') : (isset($user) ? $user->point : '') }}">
                                         
                                     </td>   
                                 </tr>
@@ -181,7 +288,22 @@
                             <tr>
                                 <th>登録日</th>
                             	<td>{{ Ctm::changeDate($user->created_at) }}</td>
-                             </tr>   
+                            </tr>
+                            
+                            <tr>
+                                <th>性別</th>
+                                <td>{{ $user->gender }}</td>
+                            </tr>
+                            <tr>
+                                <th>生年月日</th>
+                                <td>
+                                    @if($user->birth_year && $user->birth_month && $user->birth_day)
+                                        {{ $user->birth_year }}/{{ $user->birth_month }}/{{ $user->birth_day }}
+                                    @else
+                                        --
+                                    @endif
+                                </td>
+                            </tr>
                             
                             {{--
                             <tr>

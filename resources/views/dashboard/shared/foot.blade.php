@@ -53,6 +53,10 @@
     <!-- テーブルの並べ替えなどがjsで動くようになる -->
     <script src="{{ asset('/js/dbd/sb-admin-datatables.js') }}"></script>
     
+    @if(Request::is('dashboard/users/*') || Request::is('dashboard/sales/order/*'))
+    <script type="text/javascript" src="//jpostal-1006.appspot.com/jquery.jpostal.js"></script>
+    @endif
+    
 	<script src="{{ asset('/js/dbd/custom.js?up=' . time()) }}"></script>
 
 

@@ -111,8 +111,8 @@ use App\PayMethodChild;
                 </p>
             </div>
             
-            <div class="form-group w-25 mt-3">
-                <button type="submit" class="btn btn-primary btn-block w-btn w-100 text-white" name="only_up" value="1"> 更新のみする</button>
+            <div class="form-group mt-3">
+                <button type="submit" class="btn btn-primary btn-block w-btn col-md-6 m-auto text-white" name="only_up" value="1"> 更新のみする</button>
             </div>
 
 
@@ -141,6 +141,7 @@ use App\PayMethodChild;
                                     @if($saleRel->is_user)
                                     	<?php
                                         	$users = $users->find($saleRel->user_id);
+                                            $userLink = url('dashboard/users/'. $saleRel->user_id);
                                         ?>
                                         
                                         <span class="text-dark">
@@ -149,22 +150,29 @@ use App\PayMethodChild;
                                                 <span class="text-warning"><b>[退会]</b></span>
                                             @endif
                                         </span>
-                                        
-                                        <a href="{{ url('dashboard/users/'. $saleRel->user_id) }}">
                                     @else
                                          <span class="text-danger">非会員</span>: 
-                                         <a href="{{ url('dashboard/users/'. $saleRel->user_id.'?no_r=1') }}">
+
                                          <?php
                                             $users = $userNs->find($saleRel->user_id);
+                                            $userLink = url('dashboard/users/'. $saleRel->user_id.'?no_r=1');
                                         ?>   
                                      @endif
-                                     （{{ $users->id }}）{{ $users->name }} <span class="text-small ml-1">（{{ $users->hurigana }}）</span><br>
+                                     
+                                     <a href="{{ $userLink }}">
+                                     （{{ $users->id }}）{{ $users->name }} <span class="text-small ml-1">（{{ $users->hurigana }}）</span>
+                                     </a><br>
+                                     
                                      <a href="mailto:{{ $users->email }}">{{ $users->email }}</a><br>
                                      
+                                     <div class="mt-1">
                                      〒{{ Ctm::getPostNum($users->post_num) }}<br>
                                      {{ $users->prefecture }}{{ $users->address_1 }}&nbsp;{{ $users->address_2 }}
                                      {{ $users->address_3 }}<br>
                                      TEL：{{ $users->tel_num }}
+                                     </div>
+                                     
+                                     <p style="cursor:pointer;" class="text-right text-success m-0"><a href="{{ $userLink }}" target="_brank">変更する <i class="fa fa-angle-double-right"></i></a></p>
                                      
                                      
                                      <input type="hidden" name="user_email" value="{{ $users->email }}">
@@ -175,11 +183,126 @@ use App\PayMethodChild;
                             <tr>
                                 <th>配送先</th>
                                 <td>
-                                〒{{ Ctm::getPostNum($receiver->post_num) }}<br>
-                                {{ $receiver->prefecture }}{{ $receiver->address_1 }}&nbsp;{{ $receiver->address_2 }}
-                                {{ $receiver->address_3 }}<br>
-                                {{ $receiver->name }}<span class="text-small ml-1">（{{ $receiver->hurigana }}）</span> 様<br>
-                                TEL: {{ $receiver->tel_num }}
+                                <div>
+                                    〒{{ Ctm::getPostNum($receiver->post_num) }}<br>
+                                    {{ $receiver->prefecture }}{{ $receiver->address_1 }}&nbsp;{{ $receiver->address_2 }}
+                                    {{ $receiver->address_3 }}<br>
+                                    {{ $receiver->name }}<span class="text-small ml-1">（{{ $receiver->hurigana }}）</span> 様<br>
+                                    TEL: {{ $receiver->tel_num }}
+                                </div>
+                                <p style="cursor:pointer;" class="text-right text-success m-0 change-info">変更する <i class="fa fa-angle-down"></i></p>
+                                <div class="bg-gray py-1 px-2 text-small">
+                                    <input type="hidden" name="is_change_receiver" value="1">
+                                    
+                                    <fieldset class="form-group">
+                                        <label>名前</label>
+                                        <input type="text" class="form-control col-md-12{{ $errors->has('receiver.name') ? ' is-invalid' : '' }}" name="receiver[name]" value="{{ Ctm::isOld() ? old('receiver.name') : ( isset($receiver->name) ? $receiver->name : '') }}" placeholder="例）山田太郎">
+                                                
+                                        @if ($errors->has('receiver.name'))
+                                            <div class="help-block text-danger">
+                                                <span class="fa fa-exclamation form-control-feedback"></span>
+                                                <span>{{ $errors->first('receiver.name') }}</span>
+                                            </div>
+                                        @endif
+                                    </fieldset>
+                                    
+                                    <fieldset class="form-group">
+                                        <label>フリガナ</label>
+                                        <input type="text" class="form-control col-md-12{{ $errors->has('receiver.hurigana') ? ' is-invalid' : '' }}" name="receiver[hurigana]" value="{{ Ctm::isOld() ? old('receiver.hurigana') : ( isset($receiver->hurigana) ? $receiver->hurigana : '') }}" placeholder="例）ヤマダタロウ">
+                                                
+                                        @if ($errors->has('receiver.hurigana'))
+                                            <div class="help-block text-danger">
+                                                <span class="fa fa-exclamation form-control-feedback"></span>
+                                                <span>{{ $errors->first('receiver.hurigana') }}</span>
+                                            </div>
+                                        @endif
+                                    </fieldset>
+                                    
+                                    <fieldset class="form-group">
+                                        <label>電話番号</label>
+                                        <input type="text" class="form-control col-md-12{{ $errors->has('receiver.tel_num') ? ' is-invalid' : '' }}" name="receiver[tel_num]" value="{{ Ctm::isOld() ? old('receiver.tel_num') : ( isset($receiver->tel_num) ? $receiver->tel_num : '') }}" placeholder="例）09012345678">
+                                                
+                                        @if ($errors->has('receiver.tel_num'))
+                                            <div class="help-block text-danger">
+                                                <span class="fa fa-exclamation form-control-feedback"></span>
+                                                <span>{{ $errors->first('receiver.tel_num') }}</span>
+                                            </div>
+                                        @endif
+                                    </fieldset>
+                                    
+                                    <fieldset class="form-group">
+                                        <label>郵便番号</label>
+                                        <input id="zipcode" type="text" class="form-control col-md-8{{ $errors->has('receiver.post_num') ? ' is-invalid' : '' }}" name="receiver[post_num]" value="{{ Ctm::isOld() ? old('receiver.post_num') : ( isset($receiver->post_num) ? $receiver->post_num : '') }}" placeholder="例）1234567（ハイフンなし半角数字）">
+                                                
+                                        @if ($errors->has('receiver.post_num'))
+                                            <div class="help-block text-danger">
+                                                <span class="fa fa-exclamation form-control-feedback"></span>
+                                                <span>{{ $errors->first('receiver.post_num') }}</span>
+                                            </div>
+                                        @endif
+                                    </fieldset>
+                                         
+                                    <fieldset class="form-group">
+                                        <label>都道府県</label>
+                                               
+                                        <div class="select-wrap col-md-8 p-0 m-0">
+                                            <select id="pref" class="form-control{{ $errors->has('receiver.prefecture') ? ' is-invalid' : '' }}" name="receiver[prefecture]">
+                                                <option selected value="0">選択して下さい</option>
+                                                <?php
+                                                    use App\Prefecture;
+                                                    $prefs = Prefecture::all();
+                                                ?>
+                                                @foreach($prefs as $pref)
+                                                    <?php
+                                                        $selected = '';
+                                                        if(Ctm::isOld()) {
+                                                            if(old('receiver.prefecture') == $pref->name)
+                                                                $selected = ' selected';
+                                                        }
+                                                        else {
+                                                            if(isset($receiver->prefecture)  && $receiver->prefecture == $pref->name) {
+                                                                $selected = ' selected';
+                                                            }
+                                                        }
+                                                    ?>
+                                                    
+                                                    <option value="{{ $pref->name }}"{{ $selected }}>{{ $pref->name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                                
+                                        @if ($errors->has('receiver.prefecture'))
+                                            <div class="help-block text-danger">
+                                                <span class="fa fa-exclamation form-control-feedback"></span>
+                                                <span>{{ $errors->first('receiver.prefecture') }}</span>
+                                            </div>
+                                        @endif
+                                    </fieldset>
+                                         
+                                    <fieldset class="form-group">
+                                        <label>住所1<small>（都市区それ以降）</small></label>
+                                        <input id="address" type="text" class="form-control col-md-12{{ $errors->has('receiver.address_1') ? ' is-invalid' : '' }}" name="receiver[address_1]" value="{{ Ctm::isOld() ? old('receiver.address_1') : ( isset($receiver->address_1) ? $receiver->address_1 : '') }}" placeholder="例）小美玉市下吉影1-1">
+                                                
+                                        @if ($errors->has('receiver.address_1'))
+                                            <div class="help-block text-danger">
+                                                <span class="fa fa-exclamation form-control-feedback"></span>
+                                                <span>{{ $errors->first('receiver.address_1') }}</span>
+                                            </div>
+                                        @endif
+                                    </fieldset>
+                                         
+                                    <fieldset class="form-group">
+                                        <label>住所2<small>（建物/マンション名等）</small></label>
+                                        <input type="text" class="form-control col-md-12{{ $errors->has('receiver.address_2') ? ' is-invalid' : '' }}" name="receiver[address_2]" value="{{ Ctm::isOld() ? old('receiver.address_2') : ( isset($receiver->address_2) ? $receiver->address_2 : '') }}" placeholder="例）GRビル 101号">
+                                                
+                                        @if ($errors->has('receiver.address_2'))
+                                            <div class="help-block text-danger">
+                                                <span class="fa fa-exclamation form-control-feedback"></span>
+                                                <span>{{ $errors->first('receiver.address_2') }}</span>
+                                            </div>
+                                        @endif
+                                    </fieldset>
+                                </div>
                                 
                                 </td>
                             </tr>
@@ -188,7 +311,22 @@ use App\PayMethodChild;
                             	<tr>
                                 <th>不在置きの場所</th>
                                 <td>
-                            		{!! nl2br($saleRel->huzai_comment) !!}
+                            		<p>{!! nl2br($saleRel->huzai_comment) !!}</p>
+                                    
+                                    <p style="cursor:pointer;" class="text-right text-success m-0 change-info">変更する <i class="fa fa-angle-down"></i></p>
+                                    <div class="bg-gray py-1 px-2 text-small">
+                                        
+                                        <fieldset class="form-group">
+                                            <label>不在置きの場所</label>
+                                            <textarea class="form-control" name="huzai_comment" rows="7">{{ Ctm::isOld() ? old('huzai_comment') : (isset($saleRel) ? $saleRel->huzai_comment : '') }}</textarea>
+
+                                            @if ($errors->has('huzai_comment'))
+                                                <span class="help-block">
+                                                    <strong class="text-danger">{{ $errors->first('huzai_comment') }}</strong>
+                                                </span>
+                                            @endif
+                                        </fieldset>
+                                    </div>
                                 </td>
                             @endif
                             

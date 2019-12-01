@@ -682,7 +682,44 @@ var exe = (function() {
                 
                 //console.log($(this).val());
            });
+           
+            //配送先/不在置き場所の変更
+            $('.change-info').on('click', function(){
+                $div = $(this).next('div');
+                $div.slideToggle(100, function(){
+                    //$(this).find('input[type="hidden"]').val(1);
+                });
+            });
         	
+        },
+        
+        //郵便番号のセット
+        postNumSet: function() {
+            
+            if($('#zipcode').length){ //jpostal.jsを必要時にのみロードしているので、zipcode要素がある時のみにしないと裏でエラーが出る
+                $('#zipcode').jpostal({
+                    postcode : [
+                        '#zipcode'
+                    ],
+                    address : {
+                        '#pref':'%3',
+                        '#address':'%4%5'
+                    }
+                });
+            }
+            
+            if($('#zipcode_2').length){
+                $('#zipcode_2').jpostal({
+                    postcode : [
+                        '#zipcode_2'
+                    ],
+                    address : {
+                        '#pref_2':'%3',
+                        '#address_2':'%4%5'
+                    }
+                });
+            }
+            
         },
         
         openNav: function() {
@@ -826,6 +863,7 @@ $(function(e){ //ready
     //exe.mypagePost();
     
     exe.changeSelectRelation();
+    exe.postNumSet();
     
     exe.openNav();
     

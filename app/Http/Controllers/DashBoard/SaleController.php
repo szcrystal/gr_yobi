@@ -683,9 +683,14 @@ class SaleController extends Controller
  
     	$data = $request->all();
         
-        
         $saleRel = $this->saleRel->find($data['order_id']);
         //$saleRel->pay_done = isset($data['pay_done']) ? $data['pay_done'] : 0;
+        
+        //配送先変更
+        if(isset($data['is_change_receiver'])) {
+            $rcv = $this->receiver->find($saleRel->receiver_id);
+            $rcv->update($data['receiver']);
+        }
         
         //if(isset($data['only_up'])) { //更新ボタンを押した時のみ
             if(isset($data['pay_done'])) {
@@ -702,8 +707,10 @@ class SaleController extends Controller
             //$data['all_price'] = $saleRel->all_price + $saleRel->seinou_huzai - $data['seinou_huzai'];
             
             //$saleRel->total_price = $saleRel->total_price - $saleRel->deli_fee + $data['deli_fee'];
-            $saleRel['total_price'] = $saleRel->all_price + $data['deli_fee'] + $data['cod_fee'] - $data['use_point'] + $data['adjust_price']/* - $data['seinou_huzai']*/ + $data['seinou_sunday'];
-                    
+            $data['total_price'] = $saleRel->all_price + $data['deli_fee'] + $data['cod_fee'] - $data['use_point'] + $data['adjust_price']/* - $data['seinou_huzai']*/ + $data['seinou_sunday'];
+            
+            //$saleRel->huzai_comment = $data['huzai_comment'];
+            
             /*
             $saleRel->deli_fee = $data['deli_fee'];
             $saleRel->information = $data['information'];

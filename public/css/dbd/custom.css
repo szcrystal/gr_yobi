@@ -207,6 +207,11 @@ label em {
     padding: 1em;
 }
 
+/* change-info */
+.change-info + div {
+    display: none;
+}
+
 /* Mail Preview */
 .content-wrapper {
 	//border: 2px solid red;
