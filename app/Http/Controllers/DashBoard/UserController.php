@@ -15,6 +15,7 @@ use App\Http\Controllers\Controller;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 use Auth;
+use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
@@ -137,16 +138,39 @@ class UserController extends Controller
     {
         $editId = $request->has('edit_id') ? $request->input('edit_id') : 0;
         
+        $isUser = $request->input('is_user');
+        //email用validationの配列
+        $mailValid = ['filled', 'email', 'max:255'];
+        
+        if($isUser) {
+            $uId = $editId; //マイページの時は自分のidを除外するので
+            $mailValid[] = Rule::unique('users', 'email')->ignore($uId, 'id')->where(function ($query) {
+                return $query->where('active', 1); //uniqueする対象をactive:1のみにする
+            });
+        }
+//        else {
+//            $mailValid[] = Rule::unique('user_noregists', 'email')->where(function ($query) {
+//                return $query->where('active', 1); //uniqueする対象をactive:1のみにする
+//            });
+//        }
+        
         $rules = [
-//            'title' => 'required|max:255',
-//            'cate_id' => 'required',
-            //'main_img' => 'filenaming',
+            'name' => 'required|max:255',
+            'hurigana' => 'required|max:255',
+            'tel_num' => 'required|numeric',
+            'post_num' => 'required|nullable|numeric|digits:7', //numeric|max:7
+            'prefecture' => 'required',
+            'address_1' => 'required|max:255',
+            'address_2' => 'required|max:255',
+            'email' => $mailValid,
+            //'user.password' => 'sometimes|required|min:8|confirmed',
+            //'user.password_confirmation' => 'sometimes|required',
+  
         ];
         
          $messages = [
-             'title.required' => '「商品名」を入力して下さい。',
+            'title.required' => '「商品名」を入力して下さい。',
             'cate_id.required' => '「カテゴリー」を選択して下さい。',
-            
             //'post_thumb.filenaming' => '「サムネイル-ファイル名」は半角英数字、及びハイフンとアンダースコアのみにして下さい。',
             //'post_movie.filenaming' => '「動画-ファイル名」は半角英数字、及びハイフンとアンダースコアのみにして下さい。',
             //'slug.unique' => '「スラッグ」が既に存在します。',
@@ -156,13 +180,13 @@ class UserController extends Controller
         
         $data = $request->all();
         
-        //status
-        //$data['open_status'] = isset($data['open_status']) ? 0 : 1;
+        //magazine
+        $data['magazine'] = isset($data['magazine']) ? 1 : 0;
         
         $query = '';
         
         if($editId) { //update（編集）の時
-            $status = 'ユーザーが更新されました！' . "<span class=\"text-orange\">ご注文者であれば、ご注文情報内で配送先も変更して下さい。</span>";
+            $status = 'ユーザーが更新されました！' . "<br><span class=\"text-orange\">＊ご注文者で必要であれば、ご注文情報内で配送先も変更して下さい。</span>";
             
             if($data['is_user']) {
                 $user = $this->user->find($editId);

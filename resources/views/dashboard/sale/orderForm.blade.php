@@ -328,6 +328,7 @@ use App\PayMethodChild;
                                         </fieldset>
                                     </div>
                                 </td>
+                                </tr>
                             @endif
                             
                             <tr>

@@ -628,14 +628,15 @@ body {
 	font-size: 1.1em;
 }
 .table-foot tr th {
-	width: 35%;
+	width: 37%;
     font-weight: normal;
     padding-right: 0;
+    //border-right: 1px solid red;
 }
 .table-foot tr td {
 	text-align: right;
-    font-weight: normal;
-    font-size: 1.05em;
+    font-weight: bold;
+    font-size: 1.1em;
     padding-left: 0.2em;
 }
 .cart-note {

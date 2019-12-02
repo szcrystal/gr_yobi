@@ -1144,7 +1144,7 @@ class CartController extends Controller
      		$pt = $this->user->find(Auth::id())->point;
      	}
 
-		//regist or Not 既存ユーザーはregist:0
+		//Regist or Not 既存ユーザーはregist:0
 		$regist = $request->has('regist') && $request->input('regist') ? 1 : 0;
 
         $rules = [

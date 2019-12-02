@@ -28,8 +28,8 @@
 
     @if (count($errors) > 0)
         <div class="alert alert-danger">
-            <strong>Error!!</strong> 追加できません<br><br>
-            <ul>
+            <strong>Error!!</strong> 更新できません。
+            <ul class="mt-3">
                 @foreach ($errors->all() as $error)
                     <li>{{ $error }}</li>
                 @endforeach
@@ -48,7 +48,7 @@
 
             {{ csrf_field() }}
             
-            <div class="form-group mb-2">
+            <div class="form-group mb-3">
                 <button type="submit" class="btn btn-primary btn-block mx-auto w-btn w-25">更　新</button>
             </div>
             
@@ -60,7 +60,13 @@
 
             <input type="hidden" name="edit_id" value="{{ $user->id }}">
             
-			<h4 class="mb-1">会員情報</h4>
+			{{-- <h4 class="mb-1">会員情報</h4> --}}
+            
+            <p class="my-2">ユーザー情報 = 個人情報ともなりますので、情報変更の際はご注意下さい。
+            <br><small>＊なるべくはマイページよりユーザーが任意で変更するよう促すのがよろしいかもしれません。</small>
+            <br><small>＊「メールアドレス」については、ログイン情報及び連絡先ともなりますので、十分ご注意下さい（マイページからユーザーによる変更も可能です）</small>
+            </p>
+            
             	<div class="table-responsive">
                     <table class="table table-bordered">
                         <colgroup>
@@ -149,7 +155,7 @@
                                 <td>
                                     <div class="select-wrap col-md-6 p-0 m-0">
                                         <select id="pref" class="form-control{{ $errors->has('prefecture') ? ' is-invalid' : '' }}" name="prefecture">
-                                            <option selected value="0">選択して下さい</option>
+                                            <option selected disabled>選択して下さい</option>
                                             <?php
                                                 use App\Prefecture;
                                                 $prefs = Prefecture::all();
@@ -217,7 +223,17 @@
                             
                             <tr>
                                 <th>メールアドレス</th>
-                                <td><a href="mailto:{{ $user->email }}">{{ $user->email }}</a></td>
+                                <td>
+                                    <a href="mailto:{{ $user->email }}">{{ $user->email }}</a>
+                                    <input  class="form-control mt-1 col-md-12{{ $errors->has('email') ? ' is-invalid' : '' }}" name="email" value="{{ Ctm::isOld() ? old('email') : (isset($user) ? $user->email : '') }}">
+                                    
+                                    @if ($errors->has('email'))
+                                        <div class="help-block text-danger">
+                                            <span class="fa fa-exclamation form-control-feedback"></span>
+                                            <span>{{ $errors->first('email') }}</span>
+                                        </div>
+                                    @endif
+                                </td>
                             </tr>
                             
                             <tr>

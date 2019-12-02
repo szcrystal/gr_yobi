@@ -1222,24 +1222,20 @@ use App\DeliveryGroup;
         <table class="table mb-0 pb-0">
              <tbody class="clearfix">
                  <tr>
-                    <th class="text-left text-big">
-                        商品合計
-                    </th>
-                    
-                    <td class="text-big">
-                        <b>¥{{ number_format($allPrice) }}</b>
+                    <th>商品合計</th>
+                    <td>
+                        ¥{{ number_format($allPrice) }}
                     </td>
                   </tr>
 
                 <tr>
-                    <th class="text-left text-big">送料</th>
-                    
-                    <td class="text-big">
+                    <th>送料</th>
+                    <td>
                         @if(isset($deliFee))
-                            <b>¥{{ number_format($deliFee) }}</b>
+                            ¥{{ number_format($deliFee) }}
                             
                             @if(Auth::check() && isset($prefName))
-                                <span class="d-block text-small text-enji"><small>＊ご登録住所[{{ $prefName }}]への送料</small></span>
+                                <span class="d-block text-extra-small text-enji font-weight-normal">＊ご登録先[{{ $prefName }}]への送料</span>
                             @endif
                         @else
                             <b class="text-enji">含まれておりません</b>
@@ -1247,6 +1243,7 @@ use App\DeliveryGroup;
                         @endif
                     </td>
                 </tr>
+                
                 {{--
                 <tr>
                     <th class="text-left text-big">

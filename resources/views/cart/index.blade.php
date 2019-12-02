@@ -254,11 +254,9 @@
 	<table class="table">
          <tbody class="clearfix">
          	<tr>
-          		<th class="text-left">
-                	商品合計
-                </th>
+          		<th>商品合計</th>
                 
-            	<td class="">
+            	<td>
                 	¥{{ number_format($allPrice) }}
                 </td>
              	
@@ -272,14 +270,13 @@
             
             
             <tr>
-                <th class="text-left">送料</th>
-                
-                <td class="">
+                <th>送料</th>
+                <td>
                     @if(isset($deliFee))
                         ¥{{ number_format($deliFee) }}
                         
                         @if(Auth::check() && ! $reCalc)
-                            <span class="d-block text-small text-enji"><small>＊ご登録住所[{{ $prefs->find($prefId)->name }}]への送料</small></span>
+                            <span class="d-block text-extra-small text-enji font-weight-normal">＊ご登録先[{{ $prefs->find($prefId)->name }}]への送料</span>
                         @endif
                     @else
                         <b class="text-big text-enji">含まれておりません</b>

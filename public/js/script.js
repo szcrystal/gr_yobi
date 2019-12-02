@@ -664,8 +664,10 @@ var exe = (function() {
                     	$em.fadeOut(30);
                     });
                     
-                    $('.receiver-error:visible').fadeOut(30).siblings().removeClass('is-invalid');
-                    //$('.receiver-error:visible');
+                    $('.receiver-error:visible').fadeOut(30, function(){
+                        $rWrap.find('.is-invalid').removeClass('is-invalid');
+                        //$(this).prev().removeClass('is-invalid');
+                    });
                     
                 }
             });

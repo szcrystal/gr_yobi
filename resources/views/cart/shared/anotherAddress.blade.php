@@ -67,7 +67,7 @@
            <th>配送先都道府県<em>必須</em></th>
            <td>
                <div class="select-wrap col-md-12 p-0">
-                   <select id="pref_2" class="form-control select-first {{ $errors->has('receiver.prefecture') ? ' is-invalid' : '' }}" name="receiver[prefecture]" form="user-input">
+                   <select id="pref_2" class="form-control select-first{{ $errors->has('receiver.prefecture') ? ' is-invalid' : '' }}" name="receiver[prefecture]" form="user-input">
                        <option disabled selected>選択して下さい</option>
 
                        @foreach($prefs as $pref)

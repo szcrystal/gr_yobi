@@ -514,7 +514,7 @@
             <tbody>
             <tr>
                 <th>商品合計</th>
-                 <td>¥{{ number_format($allPrice) }}</td>
+                <td>¥{{ number_format($allPrice) }}</td>
             </tr>
             <tr>
                 <th>送料</th>
