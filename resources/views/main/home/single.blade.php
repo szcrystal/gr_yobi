@@ -375,6 +375,8 @@ use App\TopSetting;
                                 <button id="spCartBtn" type="submit" class="btn btn-custom btn-mizuiro text-center col-md-6"{{ $disabled }}><i class="fal fa-cart-arrow-down"></i> この商品をカートに入れる</button>
                             @endif
                         @endif
+                        
+                        
                    </form>
                    
                    </div><!-- form-wrap -->
