@@ -2114,6 +2114,7 @@ class CartController extends Controller
 
         
         $submit = 0;
+        $reCalc = 0;
         $deliFee = null;
         $prefId = null;
             
@@ -2237,7 +2238,7 @@ class CartController extends Controller
             *************/
             
             //$itemDataはitemのobjに[count]が入ったものの配列
-            $reCalc = 0;
+            
             
 			// 送料計算 ===========================
             if($prefId && (isset($data['re_calc']) || Auth::check()) ) {
