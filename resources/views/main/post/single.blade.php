@@ -46,7 +46,7 @@ use App\TopSetting;
 <article>
 	
     <header>
-        <h1>{{ $postRel->big_title }}</h1>
+        <h1>{!! nl2br($postRel->big_title) !!}</h1>
         
         <div class="mt-2 mb-3 pl-1 social-wrap clearfix">
             <div class="">

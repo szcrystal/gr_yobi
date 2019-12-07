@@ -1494,7 +1494,7 @@ ORG END ======================== */
         margin: 0;
     }
     .post-main section p {
-        font-size: 1em;
+        font-size: 1.05em;
     }
     .post-main-archive {
         float: none;
@@ -1554,6 +1554,9 @@ ORG END ======================== */
     .social-wrap > div {
     	width: 100%;
      	float: none;  
+    }
+    .social-btn {
+        margin-bottom: 3.5em;
     }
     
     /* Login */    

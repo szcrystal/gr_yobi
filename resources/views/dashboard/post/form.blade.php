@@ -207,14 +207,18 @@ use App\PostCategorySecond;
                 <fieldset class="mb-5 form-group">
                     <label class="text-uppercase">大タイトル（h1）<span class="text-danger text-big">*</span></label>
                     
+                    <textarea class="form-control{{ $errors->has('block.' .$blockKey. '.section.title') ? ' is-invalid' : '' }}" name="block[{{ $blockKey }}][section][title]" rows="3">{{ Ctm::isOld() ? old('block.' .$blockKey. '.section.title') : (isset($postRel) ? $postRel->big_title : '') }}</textarea>
+                    
+                    {{--
                     <input class="form-control col-md-12{{ $errors->has('block.' .$blockKey. '.section.title') ? ' is-invalid' : '' }}" name="block[{{ $blockKey }}][section][title]" value="{{ Ctm::isOld() ? old('block.' .$blockKey. '.section.title') : (isset($postRel) ? $postRel->big_title : '') }}" placeholder="">
-
-                        @if ($errors->has('block.' .$blockKey. '.section.title'))
-                            <div class="text-danger">
-                                <span class="fa fa-exclamation form-control-feedback"></span>
-                                <span>{{ $errors->first('block.' .$blockKey. '.section.title') }}</span>
-                            </div>
-                        @endif
+                    --}}
+                    
+                    @if ($errors->has('block.' .$blockKey. '.section.title'))
+                        <div class="text-danger">
+                            <span class="fa fa-exclamation form-control-feedback"></span>
+                            <span>{{ $errors->first('block.' .$blockKey. '.section.title') }}</span>
+                        </div>
+                    @endif
                     
                     <input type="hidden" name="block[{{ $blockKey }}][section][rel_id]" value="{{ isset($upperRel['section']) ? $upperRel['section']->id : 0 }}">
                 </fieldset>

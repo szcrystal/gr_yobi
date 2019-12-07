@@ -503,7 +503,7 @@ use App\DeliveryGroup;
     
     <div class="ml-20per">
             
-        <fieldset class="mb-5 pb-1 mt-3 pl-1 form-group{{ $errors->has('plan_date') ? ' has-error' : '' }}">
+        <fieldset class="mb-3 pb-4 mt-3 pl-1 form-group{{ $errors->has('plan_date') ? ' has-error' : '' }}">
             <label for="plan_date" class="control-label">■ご希望日程<span class="text-small"></span></label>
             
             <div class="select-wrap col-md-9 p-0">
@@ -546,6 +546,7 @@ use App\DeliveryGroup;
             @endif
 
         </fieldset>
+        
     
         <?php
             // 西濃関連 ======================================================================
@@ -553,7 +554,8 @@ use App\DeliveryGroup;
         ?>
         
         @if(count($seinouHuzaiSes) > 0 || count($seinouNoHuzaiSes) > 0)
-        <div class="clearfix mb-4">
+        <hr>
+        <div class="clearfix">
         
             <div class="pb-3">
                 ■下記の商品につきまして
@@ -616,7 +618,8 @@ use App\DeliveryGroup;
                         */
                         ?>
                         
-                        {{--
+                        <?php
+                        /*
                         <div class="mt-3 pt-1">
                             <input type="hidden" name="is_huzaioki" value="0">
                             
@@ -632,9 +635,10 @@ use App\DeliveryGroup;
                         
                             <input type="hidden" name="is_seinou" value="1" form="user-input">
                         </div>
-                        --}}
+                        */
+                        ?>
                         
-                        <div class="pt-1 huzai-comment-wrap pl-0 mb-2 pb-3">
+                        <div class="pt-1 huzai-comment-wrap pl-0 mb-1 pb-2">
                             <p class="ml-1 mb-2">不在時の置き場所を記載して下さい<em>必須</em></p>
                             <fieldset class="form-group">
                                 <textarea id="huzai_comment" class="form-control {{ $errors->has('huzai_comment') ? ' is-invalid' : '' }}" name="huzai_comment" rows="6" placeholder="例：玄関前、門扉の裏、玄関右側入り庭ウッドデッキ付近・・など" form="user-input">{{ Ctm::isOld() ? old('huzai_comment') : (Session::has('all.data.huzai_comment') ? session('all.data.huzai_comment') : '') }}</textarea>
@@ -689,59 +693,17 @@ use App\DeliveryGroup;
         
             
         @if(count($dgGroup) > 0)
+            <hr>
             <fieldset class="form-group mt-3 mb-1 pl-1 py-2{{ $errors->has('plan_time.*') ? ' border border-danger' : '' }}">
                 
                 <p class="mb-1 pb-1">■下記の商品につきまして、ご希望配送時間の指定ができます。</p>
                 
                 @foreach($dgGroup as $key => $val)
-                    
-                    <div class="pb-1 mt-2 mb-1 ml-1">
-                        <?php
-                            $timeTable = DeliveryGroup::find($key)->time_table;
-                            $timeTable = explode(",", $timeTable);
-                        ?>
-                        
-                        <span class="deliRadioWrap">
-                            <input id="radio-deli-{{ $key }}-no" type="radio" name="plan_time[{{$key}}]" value="希望なし" class="deliRadio" checked form="user-input">
-                            <label for="radio-deli-{{ $key }}-no" class="radios">希望なし</label>
-                            
-                            {{--
-                            <input type="radio" name="plan_time[{{$key}}]" class="deliRadio" value="希望なし" checked><span class="mr-3"> 希望なし</span>
-                            --}}
-                        </span>
-                        
-                        @foreach($timeTable as $k => $table)
-                            <?php
-                                $checked = '';
-                                
-                                if( Ctm::isOld()) {
-                                    if( old('plan_time.'.$key) == $table) {
-                                        $checked = ' checked';
-                                    }
-                                }
-                                elseif(Session::has('all.data.plan_time.'.$key)) {
-                                    if(session('all.data.plan_time.'.$key) == $table) {
-                                        $checked = ' checked';
-                                    }
-                                }
-                             ?>
-                            
-                            <span class="deliRadioWrap">
-                                <input id="radio-deli-{{ $key }}-{{ $k }}" type="radio" name="plan_time[{{$key}}]" value="{{ $table }}" class="deliRadio" {{ $checked }} form="user-input">
-                                <label for="radio-deli-{{ $key }}-{{ $k }}" class="radios">{{ $table }}</label>
-                                
-                                {{--
-                                <input type="radio" name="plan_time[{{$key}}]" class="deliRadio" value="{{ $table }}" {{ $checked }}> <span class="mr-3">{{ $table }}</span>
-                                --}}
-                            </span>
-                        @endforeach
-                            
-                    </div>
-                    
-                    <div class="mb-4 pb-1">
+                
+                    <div class="mb-0 pb-1">
                         @if(session()->has('item.data') && count(session('item.data')) > 0)
                             <div class="table-responsive table-cart clearfix">
-                            <table class="table">
+                            <table class="table mb-0 pb-0">
                             
                              @foreach($val as $itemId)
                                 <?php
@@ -791,6 +753,49 @@ use App\DeliveryGroup;
                         @endif
                         --}}
                          
+                    </div>
+                    
+                    <div class="pb-2 mb-4 ml-1">
+                        <?php
+                            $timeTable = DeliveryGroup::find($key)->time_table;
+                            $timeTable = explode(",", $timeTable);
+                        ?>
+                        
+                        <span class="deliRadioWrap">
+                            <input id="radio-deli-{{ $key }}-no" type="radio" name="plan_time[{{$key}}]" value="希望なし" class="deliRadio" checked form="user-input">
+                            <label for="radio-deli-{{ $key }}-no" class="radios">希望なし</label>
+                            
+                            {{--
+                            <input type="radio" name="plan_time[{{$key}}]" class="deliRadio" value="希望なし" checked><span class="mr-3"> 希望なし</span>
+                            --}}
+                        </span>
+                        
+                        @foreach($timeTable as $k => $table)
+                            <?php
+                                $checked = '';
+                                
+                                if( Ctm::isOld()) {
+                                    if( old('plan_time.'.$key) == $table) {
+                                        $checked = ' checked';
+                                    }
+                                }
+                                elseif(Session::has('all.data.plan_time.'.$key)) {
+                                    if(session('all.data.plan_time.'.$key) == $table) {
+                                        $checked = ' checked';
+                                    }
+                                }
+                             ?>
+                            
+                            <span class="deliRadioWrap">
+                                <input id="radio-deli-{{ $key }}-{{ $k }}" type="radio" name="plan_time[{{$key}}]" value="{{ $table }}" class="deliRadio" {{ $checked }} form="user-input">
+                                <label for="radio-deli-{{ $key }}-{{ $k }}" class="radios">{{ $table }}</label>
+                                
+                                {{--
+                                <input type="radio" name="plan_time[{{$key}}]" class="deliRadio" value="{{ $table }}" {{ $checked }}> <span class="mr-3">{{ $table }}</span>
+                                --}}
+                            </span>
+                        @endforeach
+                            
                     </div>
                     
                  @endforeach
