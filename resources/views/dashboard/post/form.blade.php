@@ -44,7 +44,7 @@ use App\PostCategorySecond;
     
     		@if($edit)
                 <div class="mt-4 text-right w-100">
-                    <a href="{{ url('post/'. $id) }}" class="btn btn-warning border-round text-white" target="_brank">このページを見る <i class="fa fa-angle-double-right" aria-hidden="true"></i></a>
+                    <a href="{{ url('post/'. $id) }}" class="btn btn-warning border-round text-white" target="_blank">このページを見る <i class="fa fa-angle-double-right" aria-hidden="true"></i></a>
                 </div>
             @endif
         

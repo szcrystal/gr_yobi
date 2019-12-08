@@ -149,11 +149,11 @@ $oldName = 'block.' . $blockKey . '.' . $n . '.';
 <fieldset class="my-2 form-group">
     <label>タイトル</label>
     
-    <textarea class="form-control{{ $errors->has($oldName.'title') ? ' is-invalid' : '' }}" name="{{ sprintf($nameFormat, 'title') }}" rows="2">{{ Ctm::isOld() ? old($oldName.'title') : (isset($upperRel[$n]) ? $upperRel[$n]->title : '') }}</textarea>
-    
-    {{--
-    <input class="form-control col-md-12{{ $errors->has($oldName.'title') ? ' is-invalid' : '' }}" name="{{ sprintf($nameFormat, 'title') }}" value="{{ Ctm::isOld() ? old($oldName.'title') : (isset($upperRel[$n]) ? $upperRel[$n]->title : '') }}" placeholder="">
-    --}}
+    @if($isPost)
+        <textarea class="form-control{{ $errors->has($oldName.'title') ? ' is-invalid' : '' }}" name="{{ sprintf($nameFormat, 'title') }}" rows="2">{{ Ctm::isOld() ? old($oldName.'title') : (isset($upperRel[$n]) ? $upperRel[$n]->title : '') }}</textarea>
+    @else
+        <input class="form-control col-md-12{{ $errors->has($oldName.'title') ? ' is-invalid' : '' }}" name="{{ sprintf($nameFormat, 'title') }}" value="{{ Ctm::isOld() ? old($oldName.'title') : (isset($upperRel[$n]) ? $upperRel[$n]->title : '') }}" placeholder="">
+    @endif
 
     @if ($errors->has($oldName.'title'))
         <div class="text-danger">
@@ -167,6 +167,7 @@ $oldName = 'block.' . $blockKey . '.' . $n . '.';
 
 <fieldset class="my-3 form-group">
     <label class="control-label">詳細</label>（空白枠にする場合、{{ '&nbsp;' }}を入力）
+    
     <textarea class="form-control{{ $errors->has($oldName.'detail') ? ' is-invalid' : '' }}" name="{{ sprintf($nameFormat, 'detail') }}" rows="10">{{ Ctm::isOld() ? old($oldName.'detail') : (isset($upperRel[$n]) ? $upperRel[$n]->detail : '') }}</textarea>
 
     @if ($errors->has($oldName.'detail'))
