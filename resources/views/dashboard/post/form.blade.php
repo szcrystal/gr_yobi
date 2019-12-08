@@ -207,7 +207,7 @@ use App\PostCategorySecond;
                 <fieldset class="mb-5 form-group">
                     <label class="text-uppercase">大タイトル（h1）<span class="text-danger text-big">*</span></label>
                     
-                    <textarea class="form-control{{ $errors->has('block.' .$blockKey. '.section.title') ? ' is-invalid' : '' }}" name="block[{{ $blockKey }}][section][title]" rows="3">{{ Ctm::isOld() ? old('block.' .$blockKey. '.section.title') : (isset($postRel) ? $postRel->big_title : '') }}</textarea>
+                    <textarea class="form-control{{ $errors->has('block.' .$blockKey. '.section.title') ? ' is-invalid' : '' }}" name="block[{{ $blockKey }}][section][title]" rows="2">{{ Ctm::isOld() ? old('block.' .$blockKey. '.section.title') : (isset($postRel) ? $postRel->big_title : '') }}</textarea>
                     
                     {{--
                     <input class="form-control col-md-12{{ $errors->has('block.' .$blockKey. '.section.title') ? ' is-invalid' : '' }}" name="block[{{ $blockKey }}][section][title]" value="{{ Ctm::isOld() ? old('block.' .$blockKey. '.section.title') : (isset($postRel) ? $postRel->big_title : '') }}" placeholder="">
@@ -239,21 +239,26 @@ use App\PostCategorySecond;
                     
                     	@if(! ($n % $retu))
                         	
-                            <?php //中タイトル部分
+                            <?php //中タイトル部分 ---------------------
                             	$midOldName = 'block.' .$blockKey. '.mid_section.'. $midCount .'.title';
                             	$midSecRel = isset($upperRel['mid_section'][$midCount]) ? $upperRel['mid_section'][$midCount] : null;
                             ?>
                             
                             <fieldset class="form-group mt-4 pt-2 mb-4">
                                 <label>中タイトル-{{ $midCount+1 }}（H2）</label>
+                                
+                                <textarea class="form-control{{ $errors->has($midOldName) ? ' is-invalid' : '' }}" name="block[{{ $blockKey }}][mid_section][{{ $midCount }}][title]" rows="2">{{ Ctm::isOld() ? old($midOldName) : (isset($midSecRel) ? $midSecRel->title : '') }}</textarea>
+                                
+                                {{--
                                 <input class="form-control col-md-12{{ $errors->has($midOldName) ? ' is-invalid' : '' }}" name="block[{{ $blockKey }}][mid_section][{{ $midCount }}][title]" value="{{ Ctm::isOld() ? old($midOldName) : (isset($midSecRel) ? $midSecRel->title : '') }}" placeholder="">
+                                --}}
 
-                                    @if ($errors->has($midOldName))
-                                        <div class="text-danger">
-                                            <span class="fa fa-exclamation form-control-feedback"></span>
-                                            <span>{{ $errors->first($midOldName) }}</span>
-                                        </div>
-                                    @endif
+                                @if ($errors->has($midOldName))
+                                    <div class="text-danger">
+                                        <span class="fa fa-exclamation form-control-feedback"></span>
+                                        <span>{{ $errors->first($midOldName) }}</span>
+                                    </div>
+                                @endif
                                 
                                 <input type="hidden" name="block[{{ $blockKey }}][mid_section][{{ $midCount }}][rel_id]" value="{{ isset($midSecRel) ? $midSecRel->id : 0 }}">
                                 

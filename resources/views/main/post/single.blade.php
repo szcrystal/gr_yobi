@@ -69,7 +69,7 @@ use App\TopSetting;
                 <section class="intro-wrap">
                     
                     @if(isset($post['h2']->title))
-                        <h1 id="{{ $n }}" class="mb-3"><i class="fas fa-check"></i> {{ $post['h2']->title }}</h1>
+                        <h1 id="{{ $n }}" class="mb-3"><i class="fas fa-check"></i> {!! nl2br($post['h2']->title) !!}</h1>
                     @endif
                     
                     <?php $nn = 1; ?>
@@ -78,7 +78,7 @@ use App\TopSetting;
                         @if($contPost->is_intro)
                             <div id="{{ $n.'-'.$nn }}" class="pt-1 pb-4 pl-1 mb-3">
                                 @if(isset($contPost->title))
-                                    <h2>{{ $contPost->title }}</h2>
+                                    <h2>{!! nl2br($contPost->title) !!}</h2>
                                 @endif
                                 
                                 @if(isset($contPost->img_path))
@@ -111,7 +111,6 @@ use App\TopSetting;
         @endforeach
         
         <?php //目次 ====================================================== ?>
-        
         @if(! $postRel->is_index && count($postArr) > 0)
         
             <section>
@@ -126,23 +125,26 @@ use App\TopSetting;
                         @foreach($postArr as $keyMidId => $post)
                     
                             @if(isset($post['h2']->title))
-                                <li class="mb-2">
-                                    <a href="#{{ $iNum }}">{{ $post['h2']->title }}</a>
+                                <li class="mb-2 pb-1">
+                                    <a href="#{{ $iNum }}">{!! nl2br($post['h2']->title) !!}</a>
                             
                                 @if(count($post['contents']) > 0)
-                                    <ul class="list-unstyled">
+                                    <ol class="mt-2 text-small">
                                         
                                         <?php $nn = 1; ?>
                                         
                                         @foreach($post['contents'] as $contPost)
                                             @if(isset($contPost->title))
-                                                <li class="mb-1"><a href="#{{ $iNum.'-'.$nn }}">{{ $iNum.'-'.$nn }}. {{ $contPost->title }}</a></li>
+                                                <li class="mb-1">
+                                                    <a href="#{{ $iNum.'-'.$nn }}">{!! nl2br($contPost->title) !!}</a>
+                                                    {{-- $iNum.'-'.$nn --}}
+                                                </li>
                                                 
                                                 <?php $nn++; ?>
                                             @endif   
                                         @endforeach
                                         
-                                    </ul>
+                                    </ol>
                                 @endif
                             
                                 </li>
@@ -158,7 +160,7 @@ use App\TopSetting;
             </section>
         
         @endif
-    
+        <?php //目次 END ====================================================== ?>
     
         @foreach($postArr as $keyMidId => $post)
             <?php
@@ -170,7 +172,7 @@ use App\TopSetting;
                 <section class="mt-4">
                     
                     @if(isset($post['h2']->title))
-                        <h1 id="{{ $n }}" class="mb-3"><i class="fas fa-check"></i> {{ $post['h2']->title }}</h1>
+                        <h1 id="{{ $n }}" class="mb-3"><i class="fas fa-check"></i> {!! nl2br($post['h2']->title) !!}</h1>
                     @endif
                     
                     <?php $nn = 1; ?>
@@ -179,7 +181,7 @@ use App\TopSetting;
                         
                         <div id="{{ $n.'-'.$nn }}" class="pt-1 pb-4 pl-1 mb-3">
                             @if(isset($contPost->title))
-                                <h2>{{ $contPost->title }}</h2>
+                                <h2>{!! nl2br($contPost->title) !!}</h2>
                             @endif
                             
                             @if(isset($contPost->img_path))

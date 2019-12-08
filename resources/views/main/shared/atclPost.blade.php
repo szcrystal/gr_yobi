@@ -30,7 +30,7 @@ use App\PostCategorySecond;
     </div>
     
     <div class="mt-2">
-    	閲覧数 <i class="fal fa-eye"></i> {{ $post->view_count }}
+    	閲覧数 {{ $post->view_count }}
     </div>
     
 </div>

@@ -132,14 +132,15 @@ $oldName = 'block.' . $blockKey . '.' . $n . '.';
     
     <fieldset class="mt-3 my-2 form-group">
         <label>URL</label>
+
         <input class="form-control col-md-12{{ $errors->has($oldName.'url') ? ' is-invalid' : '' }}" name="{{ sprintf($nameFormat, 'url') }}" value="{{ Ctm::isOld() ? old($oldName.'url') : (isset($upperRel[$n]) ? $upperRel[$n]->url : '') }}" placeholder="">
 
-            @if ($errors->has($oldName.'url'))
-                <div class="text-danger">
-                    <span class="fa fa-exclamation form-control-feedback"></span>
-                    <span>{{ $errors->first($oldName.'url') }}</span>
-                </div>
-            @endif
+        @if ($errors->has($oldName.'url'))
+            <div class="text-danger">
+                <span class="fa fa-exclamation form-control-feedback"></span>
+                <span>{{ $errors->first($oldName.'url') }}</span>
+            </div>
+        @endif
     </fieldset>
 </div>    
 
@@ -147,14 +148,19 @@ $oldName = 'block.' . $blockKey . '.' . $n . '.';
 
 <fieldset class="my-2 form-group">
     <label>タイトル</label>
+    
+    <textarea class="form-control{{ $errors->has($oldName.'title') ? ' is-invalid' : '' }}" name="{{ sprintf($nameFormat, 'title') }}" rows="2">{{ Ctm::isOld() ? old($oldName.'title') : (isset($upperRel[$n]) ? $upperRel[$n]->title : '') }}</textarea>
+    
+    {{--
     <input class="form-control col-md-12{{ $errors->has($oldName.'title') ? ' is-invalid' : '' }}" name="{{ sprintf($nameFormat, 'title') }}" value="{{ Ctm::isOld() ? old($oldName.'title') : (isset($upperRel[$n]) ? $upperRel[$n]->title : '') }}" placeholder="">
+    --}}
 
-        @if ($errors->has($oldName.'title'))
-            <div class="text-danger">
-                <span class="fa fa-exclamation form-control-feedback"></span>
-                <span>{{ $errors->first($oldName.'title') }}</span>
-            </div>
-        @endif
+    @if ($errors->has($oldName.'title'))
+        <div class="text-danger">
+            <span class="fa fa-exclamation form-control-feedback"></span>
+            <span>{{ $errors->first($oldName.'title') }}</span>
+        </div>
+    @endif
 </fieldset>
     
 
