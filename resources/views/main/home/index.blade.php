@@ -11,6 +11,18 @@ use App\TopSetting;
 <div id="main" class="top home">
 
     <div class="panel panel-default">
+        
+        @if(Ctm::isEnv('local'))
+            <div class="clearfix s-form ml-2 float-none w-100">
+                <form class="my-1 my-lg-0" role="form" method="GET" action="{{ url('search') }}">
+                    {{-- csrf_field() --}}
+
+                    <input type="search" class="form-control rounded-0" name="s" placeholder="キーワードを入力して下さい" value="{{ Request::has('s') ? Request::input('s') : '' }}">
+                    <button class="btn-s"><i class="fa fa-search"></i></button>
+
+                </form>
+            </div>
+        @endif
 
         <div class="panel-body top-cont">
 

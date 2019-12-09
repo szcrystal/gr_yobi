@@ -33,7 +33,11 @@ $getNow = ! Ctm::isEnv('product') ? '?up=' . time() : '';
     @if(Ctm::isAgent('sp'))
         @include('shared.headNavSp')
     @else
-        @include('shared.headNav')
+        @if(Ctm::isEnv('local'))
+            @include('shared.headNavLocal')
+        @else
+            @include('shared.headNav')
+        @endif
     @endif
 
 <div class="fix-wrap">
