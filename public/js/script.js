@@ -940,6 +940,74 @@ var exe = (function() {
         },
         
         
+        //スマホ時 Single カートに入れるボタンのShow/Hide
+        cartBtnFix: function() {
+            var $right = $('.confirm-right .right-wrap');
+            var $spBtn = $('#spCartBtn');
+            
+            if($right.length) {
+                var rightTop = $right.offset().top; //or position().top
+                var rightH = $right.height();
+                
+                var colopTop = $('#colop').offset().top;
+                var mainH = $('#main').height();
+                var winH = $(window).height();
+                
+                var adH = rightTop - winH;
+                
+                var provH = colopTop - winH -200;
+                var provH_2 = mainH - rightH - 550; //<- headerのfix分が500になるかどうか
+                var provH_3 = mainH - winH - 300;
+                
+                function setFixed(speed) {
+                    if($(document).scrollTop() > rightTop) {
+                        $right.addClass('position-fixed');
+                        
+                        //if($(document).scrollTop() > provH_2) {
+                        if($(document).scrollTop() > provH_2) {
+                            console.log('aaaaa' + speed);
+                            
+                            if($right.hasClass('position-fixed'))
+                                $right.removeClass('position-fixed').addClass('position-absolute').css({top:provH_2});
+                        }
+                        else {
+                            if($right.hasClass('position-absolute'))
+                                $right.removeClass('position-absolute').addClass('position-fixed').css({top:rightTop});
+                        }
+                    }
+                    else {
+                        $right.removeClass('position-fixed');
+                    }
+                    
+                    
+                    
+//                    if($(document).scrollTop() < adH) {
+//                        $right.removeClass('position-fixed');
+//                    }
+                }
+                
+                
+                //load時 ==========
+                setFixed(10);
+                
+                //scroll時 ============
+                $(document).scroll(function(){
+                    setFixed($right.offset().top);
+                    
+                    console.log($right.offset().top);
+                    console.log(mainH);
+                    console.log(rightH);
+                    console.log($(document).scrollTop());
+                    
+                    //console.log($(this).scrollTop());
+    //                console.log(btnTop);
+    //                console.log(adH);
+                });
+            }
+
+        },
+        
+        
         //TopSliderの枠調整
         setSliderFrame: function() {
         	function set() {
@@ -1186,18 +1254,18 @@ $(function(e){ //ready
     
     if(! exe.isSpTab('sp')) { //Not SP
     	exe.scrollFunc();
+        //exe.cartBtnFix();
     }
     else { // for SP
     	exe.toggleSp();
         exe.accordionMoveUp();
-        exe.cartBtnShowHide();
+        //exe.cartBtnShowHide();
         exe.searchSlide();
     }
     
     
     //exe.dropDown();
     exe.eventItem();
-    
     
     exe.outReceive();
     exe.addFavorite();

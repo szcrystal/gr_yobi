@@ -1210,7 +1210,10 @@ use App\DeliveryGroup;
 
 </div>{{-- left --}}
 
+
 <div class="confirm-right">
+    
+    <div class="right-wrap">
     
     @if(! Auth::check())
         <div class="right-gray cart-login">
@@ -1284,12 +1287,11 @@ use App\DeliveryGroup;
         </div>
     
     </div>{{-- blue --}}
-</form>
-
 
 </div>
+</div>{{-- confirm-right --}}
 
-
+</form>
 </div>{{-- clear --}}
 
 
