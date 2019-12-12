@@ -6,7 +6,7 @@ use App\Category;
 $cartAllClass = Request::is('shop/*') ? 'cart-all' : '';
 
 $getNow = '?up=';
-$getNow .= ! Ctm::isEnv('product') ? str_replace ('.', '', config('app.app_version')) : time();
+$getNow .= Ctm::isEnv('product') ? str_replace ('.', '', config('app.app_version')) : time();
 
 ?>
 
