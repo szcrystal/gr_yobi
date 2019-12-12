@@ -330,7 +330,6 @@ body {
 }
 .fixed-top {
 	background: #fbfbfb/*#fdfcfc*/;
-    //opacity: 0.2;
 }
 .main-navigation {
 	background: #fbfbfb/*#fdfcfc*/;
@@ -367,17 +366,6 @@ body {
 	//border: 1px solid red;
 }
 /* max width END ========================= */
-
-/* fix margin ==================== */
-.fix-wrap {
-    
-    //border: 1px solid red;
-}
-.container-wrap {
-    margin-top: 146px;
-    //border: 1px solid red;
-}
-/* fix margin END ================ */
 
 .home,
 .archive/*,
@@ -797,7 +785,7 @@ body {
 	width: 66%;
 }
 .cart-recent-check { /* 最近チェックした 見た */
-    //width: 66%;
+    width: 66%;
     margin-top: 3.5em;
 }
 /*.confirm .confirm-right {*/
@@ -805,9 +793,6 @@ body {
 	float: right;
 	width: 32%;
     min-height: 2em;
-}
-.confirm-right .right-wrap {
-    width: 100%;
 }
 .confirm-right .right-blue,
 .confirm-right .right-gray {
@@ -919,7 +904,7 @@ img.img-fluid + div {
 }
 
 .fixed-top {
-    //border-bottom: 1px solid #d8d8d8;
+    border-bottom: 1px solid #d8d8d8;
 }
 .site-description {
 	font-size: 0.95em;
@@ -935,7 +920,7 @@ img.img-fluid + div {
 }
 
 .head-first {
-	padding: 0.4em 1.2em 0.4em 0.9em;
+	padding: 0.2em 1.2em 0.2em 0.9em;
     //border: 1px solid red;
 }
 .site-header {
@@ -1074,9 +1059,7 @@ img.img-fluid + div {
 }
 .s-form {
 	float: left;
-	margin-top: 0.65em;
-    padding-left: 0.5em;
-    //border: 1px solid red;
+	margin-top: 1em;
 }
 .s-form input.form-control {
     background: #fff;

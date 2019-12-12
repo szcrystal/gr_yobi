@@ -25,8 +25,7 @@
     @endif
     
     <!-- Styles -->
-    <link rel="stylesheet" href="{{ asset('fontawesome-5.12.0/css/all.min.css') }}">
-    {{-- <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.11.2/css/all.css" integrity="sha384-zrnmn8R8KkWl12rAZFt4yKjxplaDaT7/EUkKm7AovijfrQItFWR7O/JJn4DAa/gx" crossorigin="anonymous"> --}}
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.11.2/css/all.css" integrity="sha384-zrnmn8R8KkWl12rAZFt4yKjxplaDaT7/EUkKm7AovijfrQItFWR7O/JJn4DAa/gx" crossorigin="anonymous">
 
     {{-- <link href="{{ asset('css/app.css') }}" rel="stylesheet"> --}}
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
@@ -34,17 +33,18 @@
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css">
     
 	@if(isset($isTop) || Request::is('item/*'))
+    {{--
     <link href="{{ asset('cdn/slick-theme.min.css') }}" rel="stylesheet">{{-- 1.8.1 --}}
     <link href="{{ asset('cdn/slick.min.css') }}" rel="stylesheet">
-    {{--
+    --}}
+    
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick-theme.min.css"/>
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.css"/>
-    --}}
 	@endif
     
     @if(! Ctm::isAgent('sp') && Request::is('item/*'))
-    <link href="{{ asset('cdn/lightbox.min.css') }}" rel="stylesheet">{{--  2.10.0 --}}
-    {{-- <link href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.10.0/css/lightbox.min.css" rel="stylesheet"> --}}
+    {{-- <link href="{{ asset('cdn/lightbox.min.css') }}" rel="stylesheet"> --}}{{--  2.10.0 --}}
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.10.0/css/lightbox.min.css" rel="stylesheet">
     @endif
     
     {{-- $getNowはlayout.app.blade内で --}}

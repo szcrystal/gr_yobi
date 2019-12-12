@@ -940,64 +940,90 @@ var exe = (function() {
         },
         
         
-        //スマホ時 Single カートに入れるボタンのShow/Hide
+        //スマホ時 Single カートに入れるボタンのScroll Fix
         cartBtnFix: function() {
-            var $right = $('.confirm-right .right-wrap');
-            var $spBtn = $('#spCartBtn');
+            var $right = $('.right-wrap');
+            var $left = $('.confirm-left');
+            var fixedTopH = $('.fixed-top').height() + 5; //誤差5プラス
+            
+            //console.log(fixedTopH);
             
             if($right.length) {
                 var rightTop = $right.offset().top; //or position().top
+                var rightW = $right.width();
                 var rightH = $right.height();
                 
-                var colopTop = $('#colop').offset().top;
-                var mainH = $('#main').height();
-                var winH = $(window).height();
+                var leftTop = $left.offset().top;
+                var leftH = $left.height();
                 
-                var adH = rightTop - winH;
+                //leftのbottomの位置(leftのオフセットにleftの高さを足す)からrightの高さを引けば切り替えるポイント（scroll量）となる
+                var changePointH = leftTop + leftH - rightH - fixedTopH;
                 
-                var provH = colopTop - winH -200;
-                var provH_2 = mainH - rightH - 550; //<- headerのfix分が500になるかどうか
-                var provH_3 = mainH - winH - 300;
-                
-                function setFixed(speed) {
-                    if($(document).scrollTop() > rightTop) {
-                        $right.addClass('position-fixed');
+                function setFixed() {
+                    if($(document).scrollTop() > rightTop - fixedTopH) {
                         
-                        //if($(document).scrollTop() > provH_2) {
-                        if($(document).scrollTop() > provH_2) {
-                            console.log('aaaaa' + speed);
+//                        if(! $right.hasClass('position-fixed')) {
+//                            normalFix($right);
+//                        }
+                        console.log($left.height());
+                        
+                        if(changePointH < $(document).scrollTop()) {
                             
-                            if($right.hasClass('position-fixed'))
-                                $right.removeClass('position-fixed').addClass('position-absolute').css({top:provH_2});
+                            if($right.hasClass('position-fixed')) {
+                                $right.removeClass('position-fixed');
+                            }
+                            
+                            if(! $right.hasClass('position-absolute')) {
+                                //absoluteにするので、relativeに対する高さからrightの高さを引けばいい
+                                //var dh = $left.height() - rightH;
+                                $right.addClass('position-absolute').css({ top:leftH - rightH });
+                            }
+                            
+                            console.log('abc');
                         }
                         else {
-                            if($right.hasClass('position-absolute'))
-                                $right.removeClass('position-absolute').addClass('position-fixed').css({top:rightTop});
+                            if($right.hasClass('position-absolute')) {
+                                $right.removeClass('position-absolute');
+                                //normalFix($right);
+                            }
+                            
+                            //fixをつけるMain部分
+                            if(! $right.hasClass('position-fixed')) {
+                                //normalFix($right);
+                                
+                                $right.addClass('position-fixed').css({
+                                    width: rightW,
+                                    top: fixedTopH,
+                                });
+                            }
+                            
+                            console.log('123');
                         }
                     }
                     else {
-                        $right.removeClass('position-fixed');
+                        if($right.hasClass('position-fixed')) {
+                            $right.removeClass('position-fixed');
+                        }
+                        
+                        console.log('out');
                     }
                     
-                    
-                    
-//                    if($(document).scrollTop() < adH) {
-//                        $right.removeClass('position-fixed');
-//                    }
                 }
                 
                 
                 //load時 ==========
-                setFixed(10);
+                //$(window).load(function(){
+                setFixed();
+                //});
                 
                 //scroll時 ============
                 $(document).scroll(function(){
-                    setFixed($right.offset().top);
+                    setFixed();
                     
-                    console.log($right.offset().top);
-                    console.log(mainH);
-                    console.log(rightH);
-                    console.log($(document).scrollTop());
+//                    console.log($('.confirm-left').offset().top + $('.confirm-left').height() - rightH);
+//                    console.log(leftH);
+//                    console.log(winH);
+//                    console.log($(document).scrollTop());
                     
                     //console.log($(this).scrollTop());
     //                console.log(btnTop);
@@ -1284,6 +1310,9 @@ $(function(e){ //ready
     
     exe.setCollapseShowFaq();
     
+    if(! exe.isSpTab('sp')) { //Not SP
+        exe.cartBtnFix(); //outReceiveとslidePayMethodChildの後である必要がある
+    }
     
     // SlickSlider & LightBox =========
     exe.setSliderFrame();
@@ -1291,8 +1320,7 @@ $(function(e){ //ready
     
     exe.getCardToken();
     
-    
-    exe.getWH();
+    exe.getWH(); //outReceiveとslidePayMethodChildの後である必要がある
 });
 
 

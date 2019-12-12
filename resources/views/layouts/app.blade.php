@@ -46,23 +46,26 @@ $getNow .= Ctm::isEnv('product') ? str_replace ('.', '', config('app.app_version
     
     {{-- @yield('belt') --}}
     
-    @if( (isset($type) && $type == 'single' ) || Request::is('shop/*'))
-        @if(! Ctm::isAgent('sp'))
+    <div class="container-wrap">
+    
+        @if( (isset($type) && $type == 'single' ) || Request::is('shop/*'))
+            @if(! Ctm::isAgent('sp'))
+                @include('main.shared.news')
+            @endif
+        @else
             @include('main.shared.news')
         @endif
-    @else
-        @include('main.shared.news')
-    @endif
-    
-    <div class="container">
-    
-        <?php $className = isset($className) ? $className : ''; ?>
         
-        <div class="pb-4 wrap-all clearfix {{ $className }}"><!-- offset-md-1-->
-            @yield('bread')
-            @yield('content')
-            @yield('leftbar')
+        <div class="container">
+            <?php $className = isset($className) ? $className : ''; ?>
+            
+            <div class="pb-4 wrap-all clearfix {{ $className }}"><!-- offset-md-1-->
+                @yield('bread')
+                @yield('content')
+                @yield('leftbar')
+            </div>
         </div>
+    
     </div>
 
 @include('shared.footer')
@@ -93,8 +96,8 @@ $getNow .= Ctm::isEnv('product') ? str_replace ('.', '', config('app.app_version
 @endif
 
 @if(isset($isTop) || Request::is('item/*'))
-<script type="text/javascript" src="{{ asset('cdn/slick.min.js') }}"></script>
-{{-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.js"></script> --}}
+{{-- <script type="text/javascript" src="{{ asset('cdn/slick.min.js') }}"></script> --}}
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.js"></script>
 <script>
     @if(Request::is('item/*'))
         
@@ -133,8 +136,8 @@ $getNow .= Ctm::isEnv('product') ? str_replace ('.', '', config('app.app_version
 @endif
 
 @if(! Ctm::isAgent('sp') && Request::is('item/*'))
-<script src="{{ asset('cdn/lightbox.min.js') }}" type="text/javascript"></script>{{-- 2.10.0 --}}
-{{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.10.0/js/lightbox.min.js" type="text/javascript"></script> --}}
+{{-- <script src="{{ asset('cdn/lightbox.min.js') }}" type="text/javascript"></script> --}}{{-- 2.10.0 --}}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.10.0/js/lightbox.min.js" type="text/javascript"></script>
 <script>
     lightbox.option({
     	'fadeDuration': 400,

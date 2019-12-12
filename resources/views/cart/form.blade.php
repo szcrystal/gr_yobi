@@ -1211,17 +1211,10 @@ use App\DeliveryGroup;
 </div>{{-- left --}}
 
 
-<div class="confirm-right">
+<div class="confirm-right position-relative">
+<div class="right-wrap">
     
-    <div class="right-wrap">
-    
-    @if(! Auth::check())
-        <div class="right-gray cart-login">
-            @include('main.shared.userLogin', ['pageType'=>'cart'])
-        </div>
-    @endif
-
-    <div class="right-blue">
+    <div class="right-blue mb-2">
         <div>
             <button class="btn btn-block btn-kon mb-4 mx-auto py-3" type="submit" name="recognize" value="1">次へ進む</button>
         </div>
@@ -1287,6 +1280,13 @@ use App\DeliveryGroup;
         </div>
     
     </div>{{-- blue --}}
+    
+    @if(! Auth::check())
+        <div class="right-gray cart-login">
+            <small class="text-center d-block mt-0 mb-1 pt-0">会員登録済みの方はログインして下さい</small>
+            @include('main.shared.userLogin', ['pageType'=>'cart'])
+        </div>
+    @endif
 
 </div>
 </div>{{-- confirm-right --}}

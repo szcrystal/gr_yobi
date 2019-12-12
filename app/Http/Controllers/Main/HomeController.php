@@ -126,9 +126,11 @@ class HomeController extends Controller
         $newItems['slug'] = 'new-items';
         
         
-        // Ranking ueki/niwaki ===========
+        // Ranking ueki/niwaki =====================
+        $uekiItems = null;
+        $rankItems = null;
+/*
 //        $cateUekis = $this->cateSec->where('parent_id', 1)->get();
-//        
 //        $cateSecSum = array();
 //        
 //        foreach($cateUekis as $cateUeki) {
@@ -139,22 +141,24 @@ class HomeController extends Controller
 //		$cateSecSum = array_keys($cateSecSum);
 //        
 //        $cateSecIds = implode(',', $cateSecSum);
+*/
         
-        $uekiSecObj = Ctm::getUekiSecObj(); //get()で返る
+        if(! Ctm::isEnv('local')) {
+            $uekiSecObj = Ctm::getUekiSecObj(); //get()で返る
+            
+            $uekiItems['items'] = $uekiSecObj->take($getNum)->all();      
+            $uekiItems['type'] = 5;
+            $uekiItems['slug'] = 'ranking-ueki';
+            
+            
+            //Ranking Other =====================
+            $rankItems['items'] = Ctm::getRankObj()->take($getNum)->all();
+            //$rankItems['items'] = $this->item->where($whereArr)->orderBy('sale_count', 'desc')->take($getNum)->get()->all();        
+            $rankItems['type'] = 2; 
+            $rankItems['slug'] = 'ranking';
+        }
         
-        $uekiItems['items'] = $uekiSecObj->take($getNum)->all();      
-        $uekiItems['type'] = 5;
-        $uekiItems['slug'] = 'ranking-ueki';
-
-        
-        
-        //Ranking Other
-        $rankItems['items'] = Ctm::getRankObj()->take($getNum)->all();
-        //$rankItems['items'] = $this->item->where($whereArr)->orderBy('sale_count', 'desc')->take($getNum)->get()->all();        
-        $rankItems['type'] = 2; 
-        $rankItems['slug'] = 'ranking';
-        
-        //Recent 最近見た 最近チェックした
+        //Recent 最近見た 最近チェックした =====================
         $cookieArr = array();
         $cookieItems = null;
         //$getNum = Ctm::isAgent('sp') ? 6 : 7;
