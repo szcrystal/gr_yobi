@@ -4,7 +4,9 @@ use App\Item;
 use App\Category;
 
 $cartAllClass = Request::is('shop/*') ? 'cart-all' : '';
-$getNow = ! Ctm::isEnv('product') ? '?up=' . time() : '';
+
+$getNow = '?up=';
+$getNow .= Ctm::isEnv('product') ? config('app.app_version') : time();
 
 ?>
 
