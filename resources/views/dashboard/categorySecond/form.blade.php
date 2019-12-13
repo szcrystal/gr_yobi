@@ -162,17 +162,17 @@
 
                     <div class="float-left col-md-8 pl-3 pr-0">
                         <fieldset class="form-group{{ $errors->has('main_img') ? ' is-invalid' : '' }}">
-                        <label for="main_img">サムネイル画像（ランキング用）</label>
-                        <input class="form-control-file thumb-file" id="main_img" type="file" name="main_img">
-                    </fieldset>
+                            <label for="main_img">サムネイル画像（ランキング用）</label>
+                            <input class="form-control-file thumb-file" id="main_img" type="file" name="main_img">
+                        </fieldset>
 
-                    @if ($errors->has('main_img'))
-                    <span class="help-block text-danger">
-                    <strong>{{ $errors->first('main_img') }}</strong>
-                    </span>
-                    @endif
+                        @if ($errors->has('main_img'))
+                            <span class="help-block text-danger">
+                                <strong>{{ $errors->first('main_img') }}</strong>
+                            </span>
+                        @endif
 
-                    <span class="text-small text-secondary">＊サムネイル画像は原則必要なものとなります。<br>削除後の未入力など注意して下さい。</span>
+                        <span class="text-small text-secondary">＊サムネイル画像は原則必要なものとなります。<br>削除後の未入力など注意して下さい。</span>
 
                     </div>
                 </fieldset>

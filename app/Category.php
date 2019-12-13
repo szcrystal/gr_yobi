@@ -10,6 +10,7 @@ class Category extends Model
         'name',
         'link_name',
         'slug',
+        'main_img',
         
         'is_top',
     	'top_img_path',

@@ -536,7 +536,7 @@ use App\CategorySecond;
             
             <fieldset class="mb-4 form-group">
                 <label>子カテゴリー</label>
-                <select class="form-control select-second col-md-6{{ $errors->has('subcate_id') ? ' is-invalid' : '' }}" name="subcate_id">
+                <select class="form-control select-second col-md-6{{ $errors->has('subcate_id') ? ' is-invalid' : '' }}" name="subcate_id" data-text="item">
                     
                     <?php
                         if(Ctm::isOld()) {

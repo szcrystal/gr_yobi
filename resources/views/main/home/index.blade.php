@@ -4,6 +4,7 @@
 use App\Setting;
 use App\Favorite;
 use App\TopSetting;
+use App\Category;
 ?>
 
 
@@ -12,17 +13,23 @@ use App\TopSetting;
 
     <div class="panel panel-default">
         
-        @if(Ctm::isEnv('local'))
-            <div class="clearfix s-form ml-2 float-none w-100">
-                <form class="my-1 my-lg-0" role="form" method="GET" action="{{ url('search') }}">
-                    {{-- csrf_field() --}}
+        <div class="clearfix s-form-top">
+            <form class="d-block mb-3 clearfix" role="form" method="GET" action="{{ url('search') }}">
+                {{-- csrf_field() --}}
 
-                    <input type="search" class="form-control rounded-0" name="s" placeholder="キーワードを入力して下さい" value="{{ Request::has('s') ? Request::input('s') : '' }}">
-                    <button class="btn-s"><i class="fa fa-search"></i></button>
+                <input type="search" class="form-control rounded-0" name="s" placeholder="キーワードを入力して下さい" value="{{ Request::has('s') ? Request::input('s') : '' }}">
+                <button class="btn-s">検 索</button>
 
-                </form>
+            </form>
+            
+            <div class="mt-3">
+                人気検索ワード
+                <ul class="list-unstyled clearfix">
+                    <li class="float-left mr-2"><a href="">シマトネリコ</a></li>
+                    <li class="float-left mr-2"><a href="">落葉樹</a></li>
+                </ul>
             </div>
-        @endif
+        </div>
 
         <div class="panel-body top-cont">
 
@@ -38,7 +45,13 @@ use App\TopSetting;
 
         <div class="wrap-atcl top-first">
             <div class="head-atcl">
-                <h2>{{ $keyTitle }}</h2>
+                <h2 class="pl-0">
+                @if($type == 4)
+                    <span class="bg-enji py-1 px-3 text-big">{{ $keyTitle }}</span>
+                @else
+                    {{ $keyTitle }}
+                @endif
+                </h2>
             </div>
         
             <div class="clearfix">
@@ -71,6 +84,52 @@ use App\TopSetting;
         </div>
         
     @endif
+    
+    @if($type == 1)
+        <div class="top-first mb-3 pb-3">
+            <div class="head-atcl">
+            <h2 class="pl-0">カテゴリー</h2>
+            </div>
+            
+            <div>
+            <ul class="list-unstyled clearfix">
+                <?php
+                    $cateAlls = Category::all();
+                ?>
+                    @foreach($cateAlls as $cate)
+                        <li class="float-left mr-5 mb-2 clearfix">
+                            <div style="background-image: url({{ Storage::url($cate->main_img) }})" class="img-circle float-left">
+                                <a href="{{ url('category/' . $cate->slug) }}"></a>
+                            </div>
+                            
+                            <div class="float-left">
+                            <a href="{{ url('category/' . $cate->slug) }}">
+                            {{ $cate->name }}
+                            </a>
+                            </div>
+                        </li>
+                    @endforeach
+            
+            </ul>
+            </div>
+        </div>
+        
+        <div class="top-first mb-3 pb-3">
+            <div class="head-atcl">
+                <h2 class="pl-0">人気タグ</h2>
+            </div>
+            
+            <div class="tags mt-4 mb-1 text-small">
+                @include('main.shared.tag', ['tags'=>$popTagsFirst, 'num'=>0])
+                <p class="text-right mr-5 pr-5">もっと見る</p>
+            </div>
+            
+            <div class="tags mt-2 mb-1 text-small d-none">
+                @include('main.shared.tag', ['tags'=>$popTagsSecond, 'num'=>0])
+            </div>
+        </div>
+    @endif
+    
 @endforeach
 
 @if(isset($allRecoms) && count($allRecoms) > 0)

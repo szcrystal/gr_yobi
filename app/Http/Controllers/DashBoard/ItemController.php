@@ -727,6 +727,9 @@ class ItemController extends Controller
             })->all();
         }
         
+//        print_r($subCates);
+//        exit;
+        
         //$array = [1, 11, 12, 13, 14, 15];
          
         return response()->json(array('subCates'=> $subCates)/*, 200*/); //200を指定も出来るが自動で200が返される  

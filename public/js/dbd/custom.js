@@ -579,7 +579,7 @@ var exe = (function() {
                 var _tokenVal = $('input[name=_token]').val();
                 
                 var switchName = $(this).data('text');
-                //console.log(switchName);
+                console.log(switchName);
                 
                 if(switchName == 'post') {
                     $select2 = $('.select-second[data-text=post]');
@@ -592,7 +592,7 @@ var exe = (function() {
                 
                 //if(! isPost)
                 $(this).next('span').text('! 子カテゴリーも変更して下さい');
-                
+                console.log($select2);
                 //$('label').text(_tokenVal);
 
 				//controllerでajax処理する場合、_tokenも送る必要がある

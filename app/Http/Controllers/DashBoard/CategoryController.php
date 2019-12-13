@@ -96,6 +96,36 @@ class CategoryController extends Controller
         
         $cateId = $cateModel->id;
         
+        
+        // Archive img =====================================================================
+        if(isset($data['del_mainimg']) && $data['del_mainimg']) { //削除チェックの時
+            if($cateModel->main_img !== null && $cateModel->main_img != '') {
+                Storage::delete($cateModel->main_img); //Storageはpublicフォルダのあるところをルートとしてみる
+                $cateModel->main_img = null;
+                $cateModel->save();
+            }
+        }
+        else {
+            if(isset($data['main_img'])) {
+                
+                //$filename = $request->file('main_img')->getClientOriginalName();
+                $filename = $data['main_img']->getClientOriginalName();
+                $filename = str_replace(' ', '_', $filename);
+                
+                //$aId = $editId ? $editId : $rand;
+                //$pre = time() . '-';
+                $filename = 'cate/' . $cateId . '/main/'/* . $pre*/ . $filename;
+                //if (App::environment('local'))
+                $path = $data['main_img']->storeAs('public', $filename);
+                //else
+                //$path = Storage::disk('s3')->putFileAs($filename, $request->file('thumbnail'), 'public');
+                //$path = $request->file('thumbnail')->storeAs('', $filename, 's3');
+                
+                $cateModel->main_img = $path;
+                $cateModel->save();
+            }
+        }
+        
         //for top-img =========================================
         if(isset($data['top_img_path'])) {
                 

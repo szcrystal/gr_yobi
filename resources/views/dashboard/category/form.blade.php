@@ -61,6 +61,66 @@
             @if(isset($edit))
                 <input type="hidden" name="edit_id" value="{{$id}}">
             @endif
+            
+            <div class="form-group clearfix mt-5 pt-2 mb-5 thumb-wrap">
+                <fieldset class="w-25 float-right">
+                    <div class="col-md-12 checkbox text-right px-0">
+                        <label>
+                        <?php
+                            $checked = '';
+                            if(Ctm::isOld()) {
+                                if(old('del_mainimg'))
+                                    $checked = ' checked';
+                            }
+                            else {
+                                if(isset($cate) && $cate->del_mainimg) {
+                                    $checked = ' checked';
+                                }
+                            }
+                            ?>
+
+                        <input type="hidden" name="del_mainimg" value="0">
+                        <input type="checkbox" name="del_mainimg" value="1"{{ $checked }}> この画像を削除
+                        </label>
+                    </div>
+                </fieldset>
+
+                <fieldset>
+                    <div class="float-left col-md-4 px-0 thumb-prev">
+                        @if(count(old()) > 0)
+                            @if(old('main_img') != '' && old('main_img'))
+                                <img src="{{ Storage::url(old('main_img')) }}" class="img-fluid">
+                            @elseif(isset($cate) && $cate->main_img)
+                                <img src="{{ Storage::url($cate->main_img) }}" class="img-fluid">
+                            @else
+                                <span class="no-img">No Image</span>
+                            @endif
+                        @elseif(isset($cate) && $cate->main_img)
+                            <img src="{{ Storage::url($cate->main_img) }}" class="img-fluid">
+                        @else
+                            <span class="no-img">No Image</span>
+                        @endif
+                    </div>
+
+
+                    <div class="float-left col-md-8 pl-3 pr-0">
+                        <fieldset class="form-group{{ $errors->has('main_img') ? ' is-invalid' : '' }}">
+                            <label for="main_img">サムネイル画像</label>
+                            <input class="form-control-file thumb-file" id="main_img" type="file" name="main_img">
+                        </fieldset>
+
+                        @if ($errors->has('main_img'))
+                            <span class="help-block text-danger">
+                                <strong>{{ $errors->first('main_img') }}</strong>
+                            </span>
+                        @endif
+
+                        <span class="text-small text-secondary">＊サムネイル画像は原則必要なものとなります。<br>削除後の未入力など注意して下さい。</span>
+
+                    </div>
+                </fieldset>
+            </div>
+            
 
             <fieldset class="form-group">
                 <label for="name" class="control-label">カテゴリー名</label>

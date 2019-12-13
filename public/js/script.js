@@ -684,6 +684,7 @@ var exe = (function() {
             var $wrapNewCard = $('.wrap-new-card');
             var $wrapExpire = $editCardRadio.parent('label').next('.wrap-expire');
             
+            var th = this;
             
             //クレカを選択した時
             if($('.payMethodRadio:checked').val() == 1) {
@@ -693,7 +694,7 @@ var exe = (function() {
             
             $pmRadio.on('change', function(e){
             	if($(this).val() == 1) {
-                	$wrapAllCard.slideDown(100); 
+                	$wrapAllCard.slideDown(100);
                 }
                 else {
                 	$wrapAllCard.slideUp(100);
@@ -954,18 +955,16 @@ var exe = (function() {
                 var rightH = $right.height();
                 
                 var leftTop = $left.offset().top;
-                var leftH = $left.height();
                 
-                //leftのbottomの位置(leftのオフセットにleftの高さを足す)からrightの高さを引けば切り替えるポイント（scroll量）となる
-                var changePointH = leftTop + leftH - rightH - fixedTopH;
                 
                 function setFixed() {
                     if($(document).scrollTop() > rightTop - fixedTopH) {
                         
-//                        if(! $right.hasClass('position-fixed')) {
-//                            normalFix($right);
-//                        }
-                        console.log($left.height());
+                        var leftH = $left.height(); //leftHはScroll中に取得する必要がある（別住所やクレカなどで高さが変わるので）
+                        //leftのbottomの位置(leftのオフセットにleftの高さを足す)からrightの高さを引けば切り替えるポイント（scroll量）となる
+                        var changePointH = leftTop + leftH - rightH - fixedTopH;
+                        
+                        //console.log($left.height());
                         
                         if(changePointH < $(document).scrollTop()) {
                             
@@ -974,12 +973,13 @@ var exe = (function() {
                             }
                             
                             if(! $right.hasClass('position-absolute')) {
-                                //absoluteにするので、relativeに対する高さからrightの高さを引けばいい
-                                //var dh = $left.height() - rightH;
-                                $right.addClass('position-absolute').css({ top:leftH - rightH });
+                                $right.addClass('position-absolute');
                             }
                             
-                            console.log('abc');
+                            //absoluteにするので、relativeに対する高さ（confirm-leftの高さ）からrightの高さを引けばいい
+                            $right.css({ top:leftH - rightH });
+                            
+                            console.log('abc-' + changePointH);
                         }
                         else {
                             if($right.hasClass('position-absolute')) {
@@ -996,8 +996,12 @@ var exe = (function() {
                                     top: fixedTopH,
                                 });
                             }
+//                            else {
+//                                if(isPayMethodChange)
+//                                $right.removeClass('position-fixed').addClass('position-absolute').css({ top:leftH - rightH });
+//                            }
                             
-                            console.log('123');
+                            console.log('123-' + changePointH);
                         }
                     }
                     else {
@@ -1021,13 +1025,21 @@ var exe = (function() {
                     setFixed();
                     
 //                    console.log($('.confirm-left').offset().top + $('.confirm-left').height() - rightH);
-//                    console.log(leftH);
+                    console.log($(document).scrollTop());
 //                    console.log(winH);
 //                    console.log($(document).scrollTop());
                     
                     //console.log($(this).scrollTop());
     //                console.log(btnTop);
     //                console.log(adH);
+                });
+                
+                var $pmRadio = $('.payMethodRadio, .useCardRadio');
+                $pmRadio.on('change', function(e) {
+                    //if($(this).val() == 1) {
+                        setTimeout(setFixed, 150);
+                        console.log('pay-change');
+//                    }
                 });
             }
 

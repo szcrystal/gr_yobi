@@ -836,7 +836,7 @@ use App\DeliveryGroup;
 </div>
                 
                 
-<div id="pay-method" class="pt-2 mb-5">
+<div id="pay-method" class="pt-2 mb-4">
     <div class="clearfix mt-3">
         <h3>お支払方法</h3>
         <div></div>
@@ -852,7 +852,7 @@ use App\DeliveryGroup;
             </div>
         @endif
         
-        <fieldset class="form-group mt-1 mb-2 pt-3 pb-4 pl-1{{ $errors->has('pay_method') ? ' border border-danger' : '' }}">
+        <fieldset class="form-group mt-1 pt-3 pl-1{{ $errors->has('pay_method') ? ' border border-danger' : '' }}">
 
             @foreach($payMethod as $method)
                 <?php

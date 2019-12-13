@@ -370,7 +370,6 @@ body {
 
 /* fix margin ==================== */
 .fix-wrap {
-    
     //border: 1px solid red;
 }
 .container-wrap {
@@ -1078,11 +1077,12 @@ img.img-fluid + div {
     padding-left: 0.5em;
     //border: 1px solid red;
 }
+
 .s-form input.form-control {
     background: #fff;
     font-size: 1.0em;
     border: 1px solid #d8d8d8;
-    width: 21em;
+    width:  18em;
     display: inline-block;
     padding: 0.2em 0.8em;
 }
@@ -1101,16 +1101,48 @@ img.img-fluid + div {
     cursor: pointer;
     margin-left: -2.2em;
 }
+.s-form-top {
+    //border: 1px solid red;
+    margin-bottom: 2em;
+}
+.s-form-top input.form-control {
+    width: 85%;
+    float: left;
+    display: block;
+    height: 2.6em;
+    border: 1px solid #d8d8d8;
+    border-right: 0;
+    background: #fff;
+}
+.s-form-top .btn-s {
+    display: block;
+    border: 1px solid #3a3b3c;
+    width: 15%;
+    height: 2.45em !important;
+    line-height: auto !important;
+    margin-left: 0;
+    float: left;
+    background: #3a3b3c;
+    color: #fff;
+    padding: 0;
+}
+.s-form-top .btn-s:hover {
+    opacity: 0.7;
+/*    background: #fff;*/
+/*    border: 1px solid #d8d8d8;*/
+/*    color: #3a3b3c;*/
+}
+
 .s-form .form-control::placeholder {
-	color: #4a4a4a;
+	color: #8a8a8a; /* ORG #4a4a4a */
 }
 .s-form .form-control:placeholder-shown {
-    color: #4a4a4a;
+    color: #8a8a8a; /* ORG #4a4a4a */
 }
 
 /* Google Chrome, Safari, Opera 15+, Android, iOS */
 .s-form .form-control::-webkit-input-placeholder {
-    color: #4a4a4a;
+    color: #8a8a8a;
 }
 
 /* Firefox 18- */
@@ -1129,7 +1161,6 @@ img.img-fluid + div {
 .s-form .form-control:-ms-input-placeholder {
     color: #4a4a4a;
 }
-
 
 
 .head-wrap > img {
@@ -1479,6 +1510,28 @@ img.img-fluid + div {
     //border: 1px solid red;
 }
 /* img-box END ******************************* */
+
+.img-circle {
+    width: 6.5em;
+    height: 6.5em;
+    border-radius: 50%;
+    margin-right: 0.5em;
+    background-size: 100% auto;
+    background-position: center center;
+}
+.img-circle + div {
+    line-height: 6.5em;
+}
+.img-circle a {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+.img-circle img {
+    position: absolute;
+    top: center;
+    left: center;
+}
 
 #lightbox .lb-data .lb-caption {
 	font-weight: normal !important;

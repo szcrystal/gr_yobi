@@ -2,7 +2,7 @@
     
     <?php
         $autoFocus = 'autofocus';
-        $mainClass = 'col-md-11 m-auto';
+        $mainClass = 'col-md-11 mx-auto';
         $isCart = 0;
         
         if($pageType == 'cart') {
@@ -30,7 +30,7 @@
     --}}
 
         <fieldset class="form-group {{ $mainClass }}">
-            <label for="email" class="col-form-label">メールアドレス</label>
+            <label for="email" class="col-form-label text-small pb-0">メールアドレス</label>
 
             <div class="">
                 <input id="email" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" name="email" value="{{ old('email') }}" {{ $autoFocus }}>
@@ -45,7 +45,7 @@
         </fieldset>
 
         <fieldset class="form-group {{ $mainClass }}">
-            <label for="password" class="col-form-label">パスワード</label><!-- text-md-right -->
+            <label for="password" class="col-form-label text-small pb-0">パスワード</label><!-- text-md-right -->
 
             <div class="">
                 <input id="password" type="password" class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}" name="password" >

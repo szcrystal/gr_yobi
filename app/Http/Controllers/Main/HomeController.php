@@ -146,15 +146,15 @@ class HomeController extends Controller
         if(! Ctm::isEnv('local')) {
             $uekiSecObj = Ctm::getUekiSecObj(); //get()で返る
             
-            $uekiItems['items'] = $uekiSecObj->take($getNum)->all();      
+            $uekiItems['items'] = $uekiSecObj->take($getNum)->all();
             $uekiItems['type'] = 5;
             $uekiItems['slug'] = 'ranking-ueki';
             
             
             //Ranking Other =====================
             $rankItems['items'] = Ctm::getRankObj()->take($getNum)->all();
-            //$rankItems['items'] = $this->item->where($whereArr)->orderBy('sale_count', 'desc')->take($getNum)->get()->all();        
-            $rankItems['type'] = 2; 
+            //$rankItems['items'] = $this->item->where($whereArr)->orderBy('sale_count', 'desc')->take($getNum)->get()->all();
+            $rankItems['type'] = 2;
             $rankItems['slug'] = 'ranking';
         }
         
@@ -188,10 +188,10 @@ class HomeController extends Controller
         
         //array
         $firstItems = [
-        	'Sale商品'=> $saleItems, //type:4
+        	'SALE !!'=> $saleItems, //type:4
             '人気ランキング(植木・庭木)'=> $uekiItems, //type:5
-            '人気ランキング(その他)'=> $rankItems, //type:1
-            '新着情報'=> $newItems, //type:2
+            '人気ランキング(その他)'=> $rankItems, //type:2
+            '新着情報'=> $newItems, //type:1
             '最近チェックしたアイテム'=> $cookieItems, //type:3
         ];
         //FirstItem END ================================
@@ -236,6 +236,11 @@ class HomeController extends Controller
 //        $items = $this->item->where(['open_status'=>1])->orderBy('created_at','DESC')->get();
 //        $items = $items->groupBy('cate_id')->toArray();
 
+        //人気タグ
+        $tagGetCount = 30;
+        $popTagsFirst = $this->tag->orderBy('view_count', 'desc')->take($tagGetCount)->get();
+        $popTagsSecond = $this->tag->orderBy('view_count', 'desc')->get()->slice($tagGetCount);
+
 		//head news
         $setting = $this->topSet->get()->first();
         
@@ -249,7 +254,7 @@ class HomeController extends Controller
         $isTop = 1;
         
 
-        return view('main.home.index', ['firstItems'=>$firstItems, 'allRecoms'=>$allRecoms, 'itemCates'=>$itemCates, 'cates'=>$cates, 'newsCont'=>$newsCont, 'metaTitle'=>$metaTitle, 'caros'=>$caros, 'metaDesc'=>$metaDesc, 'metaKeyword'=>$metaKeyword, 'isTop'=>$isTop,]);
+        return view('main.home.index', ['firstItems'=>$firstItems, 'allRecoms'=>$allRecoms, 'itemCates'=>$itemCates, 'cates'=>$cates, 'newsCont'=>$newsCont, 'popTagsFirst'=>$popTagsFirst, 'popTagsSecond'=>$popTagsSecond, 'metaTitle'=>$metaTitle, 'caros'=>$caros, 'metaDesc'=>$metaDesc, 'metaKeyword'=>$metaKeyword, 'isTop'=>$isTop,]);
     }
     
     
