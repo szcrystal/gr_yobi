@@ -39,6 +39,14 @@ TEL：{{ $receiver->tel_num }}
 </p>
 </div>
 
+{{--
+@if(isset($sales->first()->plan_date))
+【ご希望配送日】
+<div style="margin: 0 0 1.0em 1.0em;">
+{{ $sales->first()->plan_date }}
+</div>
+@endif
+--}}
 
 【ご注文商品】
 <?php 
@@ -71,25 +79,36 @@ TEL：{{ $receiver->tel_num }}
         @else
             了承しない
         @endif
-        <br>
+    @else
+        ご希望配送時間：
+        @if(isset($sale->plan_time))
+            {{ $sale->plan_time }}
+        @else
+            時間指定不可商品
+        @endif
+    @endif
+    <br>
+    
+    @if(isset($sale->seinou_sunday) && $sale->seinou_sunday)
+    日曜日指定：+¥{{ number_format($sale->seinou_sunday) }}
     @endif
 
     @if($templ->type_code == 'thanks' || $templ->type_code == 'deliDoneNo' || $templ->type_code == 'deliDone')
     <div>
         <div style="margin:0.2em 0;">
-        @if($templ->type_code == 'thanks')
-            @if(isset($sale->deli_start_date) && $sale->deli_start_date)
-                <b>出荷予定日：{{ Ctm::getDateWithYoubi($sale->deli_start_date) }}</b>
-                <br>
+            @if($templ->type_code == 'thanks')
+                @if(isset($sale->deli_start_date) && $sale->deli_start_date)
+                    <b>出荷予定日：{{ Ctm::getDateWithYoubi($sale->deli_start_date) }}</b>
+                    <br>
+                @endif
+            @elseif($templ->type_code == 'deliDoneNo' || $templ->type_code == 'deliDone')
+                <?php $d = date('Y-m-d', time()); ?>
+                <b>出荷日：{{ Ctm::getDateWithYoubi($d) }}</b><br>
             @endif
-        @elseif($templ->type_code == 'deliDoneNo' || $templ->type_code == 'deliDone')
-            <?php $d = date('Y-m-d', time()); ?>
-            <b>出荷日：{{ Ctm::getDateWithYoubi($d) }}</b><br>
-        @endif
 
-        @if(isset($sale->deli_schedule_date) && $sale->deli_schedule_date)
-            <b>お届け予定日：{{ Ctm::getDateWithYoubi($sale->deli_schedule_date) }}</b><br>
-        @endif
+            @if(isset($sale->deli_schedule_date) && $sale->deli_schedule_date)
+                <b>お届け予定日：{{ Ctm::getDateWithYoubi($sale->deli_schedule_date) }}</b><br>
+            @endif
         </div>
         
         @if(isset($sale->deli_company_id) && $sale->deli_company_id)

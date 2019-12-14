@@ -699,7 +699,7 @@ use App\DeliveryGroup;
                 <p class="mb-1 pb-1">■下記の商品につきまして、ご希望配送時間の指定ができます。</p>
                 
                 @foreach($dgGroup as $key => $val)
-                
+                    
                     <div class="mb-0 pb-1">
                         @if(session()->has('item.data') && count(session('item.data')) > 0)
                             <div class="table-responsive table-cart clearfix">
@@ -711,18 +711,20 @@ use App\DeliveryGroup;
                                     $iTitle = Ctm::getItemTitle($i);
                                 ?>
                                 
-                                <tr class="">
-                                    <th class="">
-                                        @include('main.shared.smallThumbnail', ['item'=>$i, 'width'=>140])
-                                    </th>
-                                    
-                                    <td>
-                                    <span class="">{{ $iTitle }}</span><br>
-                                    <span class="">[{{ $i->number }}]</span>
-                                    </td>
-                                    
-                                    <input type="hidden" name="planTimeItemTitle[{{ $key }}][]" value="{{ $iTitle }}" form="user-input">
-                                </tr>
+                                @if($key)
+                                    <tr class="">
+                                        <th class="">
+                                            @include('main.shared.smallThumbnail', ['item'=>$i, 'width'=>140])
+                                        </th>
+                                        
+                                        <td>
+                                            <span class="">{{ $iTitle }}</span><br>
+                                            <span class="">[{{ $i->number }}]</span>
+                                        </td>
+                                    </tr>
+                                @endif
+                                
+                                <input type="hidden" name="planTimeItemTitle[{{ $key }}][]" value="{{ $iTitle }}" form="user-input">
                                 
                              @endforeach
                              </table>
@@ -755,48 +757,50 @@ use App\DeliveryGroup;
                          
                     </div>
                     
-                    <div class="pb-2 mb-4 ml-1">
-                        <?php
-                            $timeTable = DeliveryGroup::find($key)->time_table;
-                            $timeTable = explode(",", $timeTable);
-                        ?>
-                        
-                        <span class="deliRadioWrap">
-                            <input id="radio-deli-{{ $key }}-no" type="radio" name="plan_time[{{$key}}]" value="希望なし" class="deliRadio" checked form="user-input">
-                            <label for="radio-deli-{{ $key }}-no" class="radios">希望なし</label>
-                            
-                            {{--
-                            <input type="radio" name="plan_time[{{$key}}]" class="deliRadio" value="希望なし" checked><span class="mr-3"> 希望なし</span>
-                            --}}
-                        </span>
-                        
-                        @foreach($timeTable as $k => $table)
+                    @if($key)
+                        <div class="pb-2 mb-4 ml-1">
                             <?php
-                                $checked = '';
-                                
-                                if( Ctm::isOld()) {
-                                    if( old('plan_time.'.$key) == $table) {
-                                        $checked = ' checked';
-                                    }
-                                }
-                                elseif(Session::has('all.data.plan_time.'.$key)) {
-                                    if(session('all.data.plan_time.'.$key) == $table) {
-                                        $checked = ' checked';
-                                    }
-                                }
-                             ?>
+                                $timeTable = DeliveryGroup::find($key)->time_table;
+                                $timeTable = explode(",", $timeTable);
+                            ?>
                             
                             <span class="deliRadioWrap">
-                                <input id="radio-deli-{{ $key }}-{{ $k }}" type="radio" name="plan_time[{{$key}}]" value="{{ $table }}" class="deliRadio" {{ $checked }} form="user-input">
-                                <label for="radio-deli-{{ $key }}-{{ $k }}" class="radios">{{ $table }}</label>
+                                <input id="radio-deli-{{ $key }}-no" type="radio" name="plan_time[{{$key}}]" value="希望なし" class="deliRadio" checked form="user-input">
+                                <label for="radio-deli-{{ $key }}-no" class="radios">希望なし</label>
                                 
                                 {{--
-                                <input type="radio" name="plan_time[{{$key}}]" class="deliRadio" value="{{ $table }}" {{ $checked }}> <span class="mr-3">{{ $table }}</span>
+                                <input type="radio" name="plan_time[{{$key}}]" class="deliRadio" value="希望なし" checked><span class="mr-3"> 希望なし</span>
                                 --}}
                             </span>
-                        @endforeach
                             
-                    </div>
+                            @foreach($timeTable as $k => $table)
+                                <?php
+                                    $checked = '';
+                                    
+                                    if( Ctm::isOld()) {
+                                        if( old('plan_time.'.$key) == $table) {
+                                            $checked = ' checked';
+                                        }
+                                    }
+                                    elseif(Session::has('all.data.plan_time.'.$key)) {
+                                        if(session('all.data.plan_time.'.$key) == $table) {
+                                            $checked = ' checked';
+                                        }
+                                    }
+                                 ?>
+                                
+                                <span class="deliRadioWrap">
+                                    <input id="radio-deli-{{ $key }}-{{ $k }}" type="radio" name="plan_time[{{$key}}]" value="{{ $table }}" class="deliRadio" {{ $checked }} form="user-input">
+                                    <label for="radio-deli-{{ $key }}-{{ $k }}" class="radios">{{ $table }}</label>
+                                    
+                                    {{--
+                                    <input type="radio" name="plan_time[{{$key}}]" class="deliRadio" value="{{ $table }}" {{ $checked }}> <span class="mr-3">{{ $table }}</span>
+                                    --}}
+                                </span>
+                            @endforeach
+                                
+                        </div>
+                    @endif
                     
                  @endforeach
                  

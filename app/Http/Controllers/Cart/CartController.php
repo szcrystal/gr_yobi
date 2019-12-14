@@ -1264,9 +1264,6 @@ class CartController extends Controller
 //            'securitycode.required_if' => '「セキュリティコード」は必須です。',
 //            'expire_year.required_if' => '「有効期限（年）」は必須です。',
 //            'expire_month.required_if' => '「有効期限（月）」は必須です。',
-            //'post_thumb.filenaming' => '「サムネイル-ファイル名」は半角英数字、及びハイフンとアンダースコアのみにして下さい。',
-            //'post_movie.filenaming' => '「動画-ファイル名」は半角英数字、及びハイフンとアンダースコアのみにして下さい。',
-            //'slug.unique' => '「スラッグ」が既に存在します。',
         ];
         
         //$this->validate($request, $rules, $messages);
@@ -1442,14 +1439,14 @@ class CartController extends Controller
 //		print_r(session('item.data'));
 //        exit;
         
-        //Session入れ 新規データを追加したitemDataとAllPrice allPriceはここで計算された金額がsessionに入る*****************************
+        //Session入れ 新規データを追加したitemDataとAllPrice allPriceはここで計算された金額がsessionに入る =======================
         session([
         	'item.data'=>$itemSes,
             'all.all_price'=>$allPrice,
             'all.s_sunday_price' => $seinouSundayAllPrice,
             'all.s_huzai_price' => $seinouHuzaiAllPrice,
         ]);
-        // **********************************
+        // ==============================================================================================
         
 //        print_r(session('item.data'));
 //        exit;
@@ -1957,20 +1954,27 @@ class CartController extends Controller
             // Seinou Correct **************************
             //西濃なら
             //if($dgId == $this->seinouObj->id) {
-            if(isset($item['is_huzaioki'])) {
+            if(isset($item['is_huzaioki'])) { //不在置き可不可商品なら、1 or 0がセットされている
                 if($item['is_huzaioki'])
                     $seinouHuzaiSes[] = $item;
                 else
                     $seinouNoHuzaiSes[] = $item;
             	//$dgSeinou[] = $item['item_id'];
             }
-            
-            //時間指定可能なら
-            if($this->dg->find($dgId)->is_time) {
-            	$dgGroup[$dgId][] = $item['item_id'];
-            }  
+            else {
+                //時間指定可能なら
+                if($this->dg->find($dgId)->is_time) {
+                    $dgGroup[$dgId][] = $item['item_id'];
+                }
+                else {
+                    $dgGroup[0][] = $item['item_id'];
+                }
+            }
             
         }
+        
+//        print_r($dgGroup);
+//        exit;
 
 		$metaTitle = 'ご注文情報の入力' . '｜植木買うならグリーンロケット';
      

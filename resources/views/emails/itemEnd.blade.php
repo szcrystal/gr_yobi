@@ -58,22 +58,25 @@
 @endif
 <br>
 
-@if(isset($sale->plan_time))
-ご希望配送時間：{{ $sale->plan_time }}<br>
-@endif
-
 @if(isset($sale->is_huzaioki))
-	不在置き：
+    不在置き：
     @if($sale->is_huzaioki)
-    	了承する
+        了承する
         <?php $isHuzai = 1; ?>
     @else
-    	了承しない
+        了承しない
+    @endif
+@else
+    ご希望配送時間：
+    @if(isset($sale->plan_time))
+        {{ $sale->plan_time }}
+    @else
+        時間指定不可商品
     @endif
 @endif
+<br>
 
 @if(isset($sale->seinou_sunday) && $sale->seinou_sunday)
-<br>
 日曜日指定：+¥{{ number_format($sale->seinou_sunday) }}
 @endif
 
@@ -108,7 +111,7 @@
 --}}
 
 @if($saleRel->seinou_sunday)
-日曜配達割増：￥{{ number_format($saleRel->seinou_sunday) }}<br>
+日曜配達：￥{{ number_format($saleRel->seinou_sunday) }}<br>
 @endif
 
 @if($saleRel->pay_method == 2)

@@ -421,7 +421,7 @@
         <table class="table">
             <tbody>
                 <tr>
-                    <th class="font-weight-normal">ご希望日程</th>
+                    <th class="font-weight-normal">ご希望日</th>
                     <td>
                         <span class="text-big">
                         @if(isset($data['plan_date']))
@@ -473,7 +473,7 @@
                 @endif
                 --}}
                 
-                @if(isset($data['plan_time']) && count($data['plan_time']) > 0)
+                {{-- @if(isset($data['plan_time']) && count($data['plan_time']) > 0) --}}
                     <tr>
                         <th class="font-weight-normal">ご希望時間</th>
                         <td>
@@ -483,18 +483,21 @@
                                         @foreach($planTimeTitleArr as $planTimeTitle)
                                             <li class="mb-2 pb-1">
                                                 <i class="fal fa-angle-double-right"></i> {{ $planTimeTitle }}<br>
-                                                <span class="text-big">{{ $data['plan_time'][$k] }}</span>
+                                                @if($k)
+                                                    <span class="text-big">{{ $data['plan_time'][$k] }}</span>
+                                                @else
+                                                    <span class="">時間指定不可商品</span>
+                                                @endif
                                             </li>
                                         @endforeach
+                                        
                                     </ul>
-                                    
-                                    {{-- <span>{{ $data['plan_time'][$k] }}</span> --}}
                                 </div>
                             @endforeach
                     
                         </td>
                     </tr>
-                @endif
+                {{-- @endif --}}
                 
             </tbody>
         </table>
