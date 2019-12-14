@@ -336,7 +336,7 @@ use App\PostCategorySecond;
             </fieldset>
             
             
-            <fieldset class="form-group mt-3 mb-0 pt-3">
+            <fieldset class="form-group mt-3 mb-0 pt-1">
                 <label>記事 子カテゴリー</label>
                 <select class="form-control select-second col-md-6{{ $errors->has('catesec_id') ? ' is-invalid' : '' }}" name="catesec_id" data-text="post">
                     <option selected value="0">選択して下さい</option>

@@ -57,8 +57,8 @@
                     </ul>
                     
                     @if(count($secondCate) > 0)
-                    	<div class="text-right text-small more-tgl">
-                        	もっと見る <i class="fal fa-angle-down"></i>
+                    	<div class="text-right">
+                        	<span class="more-tgl text-small">もっと見る <i class="fal fa-angle-down"></i></span>
                         </div>
                         
                         <ul class="no-list pl-3 subcate-wrap more-list">

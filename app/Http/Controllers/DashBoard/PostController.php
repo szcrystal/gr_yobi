@@ -589,19 +589,22 @@ class PostController extends Controller
         //最後のmidTitlePostを取得
         $lastMidPost = $this->post->where(['rel_id'=>$postRelId, 'is_section'=>1])->where('sort_num', '>', 0)->whereNotNull('title')->orderBy('sort_num', 'desc')->first();
 
-		//取得したmidTitlePostのsort_num以上のcontentsPostを取得
-		$checkPosts = $this->post->where(['rel_id'=>$postRelId, 'is_section'=>0])->where('sort_num', '>=', $lastMidPost->sort_num)->get();
-        
-        $res = 0;
-        foreach($checkPosts as $checkPost) {
-        	if(isset($checkPost->img_path) || isset($checkPost->title) || isset($checkPost->detail)) {
-            	$res = 1;
-                break;
+        //$lastMidPostがemptyならブロックがひとつも入力されていない状態となる -> この時バリデーションか何かを表示させるかどうするか
+        if(collect($lastMidPost)->isNotEmpty()) {
+            //取得したmidTitlePostのsort_num以上のcontentsPostを取得
+            $checkPosts = $this->post->where(['rel_id'=>$postRelId, 'is_section'=>0])->where('sort_num', '>=', $lastMidPost->sort_num)->get();
+            
+            $res = 0;
+            foreach($checkPosts as $checkPost) {
+                if(isset($checkPost->img_path) || isset($checkPost->title) || isset($checkPost->detail)) {
+                    $res = 1;
+                    break;
+                }
             }
-        }
-        
-        if(! $res) {
-        	$status .= '<br><span class="text-danger">確認して下さい！ 最後の中タイトルに対してブロックが未入力のようです。</span>';
+            
+            if(! $res) {
+                $status .= '<br><span class="text-orange">確認して下さい！ 最後の中タイトルに対してブロックが未入力のようです。</span>';
+            }
         }
 	
 		

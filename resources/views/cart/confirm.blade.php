@@ -26,6 +26,227 @@
     </div>
 @endif
 
+
+<?php //RIGHT =================================================== ?>
+
+<div class="confirm-right position-relative">
+<div class="right-wrap">
+    
+    <div class="right-gray">
+        
+        <div class="">
+            <?php
+                $isCard = 0;
+                if($data['pay_method'] == 1) {
+                    if(! isset($data['card_seq']) || (isset($data['card_seq']) && $data['card_seq'] == 99)) {
+                        $isCard = 1;
+                    }
+                }
+            ?>
+
+            @if($isCard)
+                <form id="getTokenForm">
+
+                    @foreach($cardInfo as $key => $ci)
+                        <input id="{{ $key }}" type="hidden" name="{{ $key }}" value="{{ $ci }}">
+                    @endforeach
+
+                    <div class="">
+                        {{--
+                        <small class="col-md-5 mx-auto d-block px-5 mb-1 confirm-small">
+                            上記ご注文内容で注文を確定します。<br>
+                            <b>「注文する」ボタンをクリックすると注文を確定します。</b>
+                        </small>
+                        --}}
+                        
+                        <div class="loader-wrap">
+                            <span class="loader mr-3"><i class="fas fa-square mr-1"></i> 処理中..</span>
+                        </div>
+                    
+                        <?php
+                            $isProduct = Setting::get()->first()->is_product ? 1 : 0;
+                        ?>
+                        
+                        <input type="button" id="card-submit" class="btn btn-block btn-orange mt-0 mb-4 py-3" data-product="{{ $isProduct }}" value="注文を確定する">
+                        
+                        {{--
+                        <button class="btn btn-block btn-enji col-md-4 mb-4 mx-auto py-2" type="submit" name="regist_off" value="1"{{ $disabled }} onclick="doPurchase()">注文する</button>
+                        --}}
+                    </div>
+
+                </form>
+            @endif
+
+            <form id="purchaseForm" class="form-horizontal" role="form" method="POST" action="{{ $actionUrl }}">
+                {{ csrf_field() }}
+                
+                @foreach($settles as $key => $settle)
+                    <input type="hidden" name="{{ $key }}" value="{{ $settle }}">
+                @endforeach
+                
+                <input type="hidden" value="" id="token" name="token">
+                
+                @if(! $isCard)
+                    <?php
+                        $disabled = '';
+                        if(count($errors) > 0) {
+                            $disabled = ' disabled';
+                        }
+                    ?>
+                    
+                    @if($errors->has('konbiniLimit'))
+                        <span class="mx-auto d-block px-1 mb-1 confirm-small text-danger text-small">
+                            {{ $errors->first('konbiniLimit') }}<br>
+                            戻ってお支払い方法か購入商品を変更して下さい。
+                        </span>
+                    @elseif($errors->has('gmoLimit'))
+                        <span class="mx-auto d-block px-1 mb-1 confirm-small text-danger text-small">
+                            {{ $errors->first('gmoLimit') }}<br>
+                            戻ってお支払い方法か購入商品/数量を変更して下さい。
+                        </span>
+                    @else
+                        {{--
+                        <span class="mx-auto d-block px-5 confirm-small text-small">
+                        上記ご注文内容で注文を確定します。<br>
+                        <b>「注文する」ボタンをクリックすると注文を確定します。</b>
+                        </span>
+                        --}}
+                    @endif
+
+                        
+                    <div class="loader-wrap">
+                        <span class="loader mr-3"><i class="fas fa-square mr-1"></i> 処理中..</span>
+                    </div>
+                    
+                    <button id="exist-submit" class="btn btn-block btn-orange mb-4 py-3" type="submit"{{ $disabled }}>注文を確定する</button>
+                @endif
+              
+            </form>
+        </div>
+    
+        <div class="table-responsive table-foot">
+            <table class="table">
+                <tbody>
+                <tr>
+                    <th>商品合計</th>
+                    <td>¥{{ number_format($allPrice) }}</td>
+                </tr>
+                <tr>
+                    <th>送料</th>
+                    <td>¥{{ number_format($deliFee) }}</td>
+                </tr>
+                
+                {{--
+                @if($seinouHuzaiAllPrice)
+                    <tr>
+                        <th>不在置き割引</th>
+                        <td>¥{{ number_format($seinouHuzaiAllPrice) }}</td>
+                    </tr>
+                @endif
+                --}}
+                
+                @if($seinouSundayAllPrice)
+                    <tr>
+                        <th>日曜配達</th>
+                        <td>¥{{ number_format($seinouSundayAllPrice) }}</td>
+                    </tr>
+                @endif
+                
+                @if($data['pay_method'] == 2)
+                    <tr>
+                        <th>コンビニ決済手数料</th>
+                        <td>¥{{ number_format($codFee) }}</td>
+                    </tr>
+                
+                @elseif($data['pay_method'] == 4)
+                    <tr>
+                        <th>支払手数料</th>
+                        <td>¥{{ number_format($codFee) }}</td>
+                    </tr>
+                
+                @elseif($data['pay_method'] == 5)
+                    <tr>
+                        <th>支払手数料</th>
+                        <td>¥{{ number_format($codFee) }}</td>
+                    </tr>
+                @endif
+                
+                @if(Auth::check())
+                    <tr>
+                        <th>利用ポイント</th>
+                        <td>{{ $usePoint }}</td>
+                    </tr>
+                @endif
+                
+                </tbody>
+            </table>
+        </div>
+
+        <hr>
+
+        <div class="table-responsive table-foot mt-3">
+            <table class="table">
+                <tr>
+                    <th class="text-big"><b>合計<small>（税込）</small></b></th>
+                    <td class="text-danger text-extra-big{{ count($errors) > 0 ? ' alert-danger' : '' }}">
+                         <b class="text-big"> ¥{{ number_format($totalFee) }}</b>
+                    </td>
+                </tr>
+
+                @if(Auth::check())
+                <tr>
+                    <th>ポイント残高</th>
+                     <td>{{ $userArr['point'] - $usePoint }}</td>
+                </tr>
+                @endif
+                
+                @if($regist || Auth::check())
+                <tr>
+                    <th>ポイント発生</th>
+                    <td>{{ $addPoint }}</td>
+                </tr>
+                @endif
+            </table>
+        </div>
+
+        {{--
+        <div class="table-responsive table-normal show-price mt-3">
+            <table class="table border table-borderd bg-white">
+                <tr>
+                    <th>お支払い方法</th>
+                    <td class="{{ count($errors) > 0 ? 'alert-danger' : '' }}">
+                        {{ $payMethod->find($data['pay_method'])->name }}
+                        
+                        @if($data['pay_method'] == 3)
+                            <br><span class="text-small">{{ $pmChild->find($data['net_bank'])->name }}</span>
+                        @endif
+                    </td>
+                </tr>
+                
+                @if($regist && $data['pay_method'] == 1 && $data['card_seq'] == 99)
+                    <tr>
+                        <th>カード番号の登録</th>
+                        <td>
+                            @if(isset($data['is_regist_card']))
+                                する
+                            @else
+                                しない
+                            @endif
+                        </td>
+                    </tr>
+                @endif
+            </table>
+        </div>
+        --}}
+
+    </div>
+
+</div>
+</div><!-- right -->
+
+
+<?php //LEFT =================================================== ?>
+
 <div class="confirm-left">
     <div class="clearfix">
         <h3>お届け先</h3>
@@ -410,228 +631,8 @@
         
     @endif
     
-    
 
 </div><!-- left -->
-
-
-
-<div class="confirm-right position-relative">
-<div class="right-wrap">
-    
-    <div class="right-gray">
-        
-        <div class="">
-            <?php
-                $isCard = 0;
-                if($data['pay_method'] == 1) {
-                    if(! isset($data['card_seq']) || (isset($data['card_seq']) && $data['card_seq'] == 99)) {
-                        $isCard = 1;
-                    }
-                }
-            ?>
-
-            @if($isCard)
-                <form id="getTokenForm">
-
-                    @foreach($cardInfo as $key => $ci)
-                        <input id="{{ $key }}" type="hidden" name="{{ $key }}" value="{{ $ci }}">
-                    @endforeach
-
-                    <div class="">
-                        {{--
-                        <small class="col-md-5 mx-auto d-block px-5 mb-1 confirm-small">
-                            上記ご注文内容で注文を確定します。<br>
-                            <b>「注文する」ボタンをクリックすると注文を確定します。</b>
-                        </small>
-                        --}}
-                        
-                        <div class="loader-wrap">
-                            <span class="loader mr-3"><i class="fas fa-square mr-1"></i> 処理中..</span>
-                        </div>
-                    
-                        <?php
-                            $isProduct = Setting::get()->first()->is_product ? 1 : 0;
-                        ?>
-                        
-                        <input type="button" id="card-submit" class="btn btn-block btn-orange mt-0 mb-4 py-3" data-product="{{ $isProduct }}" value="注文を確定する">
-                        
-                        {{--
-                        <button class="btn btn-block btn-enji col-md-4 mb-4 mx-auto py-2" type="submit" name="regist_off" value="1"{{ $disabled }} onclick="doPurchase()">注文する</button>
-                        --}}
-                    </div>
-
-                </form>
-            @endif
-
-            <form id="purchaseForm" class="form-horizontal" role="form" method="POST" action="{{ $actionUrl }}">
-                {{ csrf_field() }}
-                
-                @foreach($settles as $key => $settle)
-                    <input type="hidden" name="{{ $key }}" value="{{ $settle }}">
-                @endforeach
-                
-                <input type="hidden" value="" id="token" name="token">
-                
-                @if(! $isCard)
-                    <?php
-                        $disabled = '';
-                        if(count($errors) > 0) {
-                            $disabled = ' disabled';
-                        }
-                    ?>
-                    
-                    @if($errors->has('konbiniLimit'))
-                        <span class="mx-auto d-block px-1 mb-1 confirm-small text-danger text-small">
-                            {{ $errors->first('konbiniLimit') }}<br>
-                            戻ってお支払い方法か購入商品を変更して下さい。
-                        </span>
-                    @elseif($errors->has('gmoLimit'))
-                        <span class="mx-auto d-block px-1 mb-1 confirm-small text-danger text-small">
-                            {{ $errors->first('gmoLimit') }}<br>
-                            戻ってお支払い方法か購入商品/数量を変更して下さい。
-                        </span>
-                    @else
-                        {{--
-                        <span class="mx-auto d-block px-5 confirm-small text-small">
-                        上記ご注文内容で注文を確定します。<br>
-                        <b>「注文する」ボタンをクリックすると注文を確定します。</b>
-                        </span>
-                        --}}
-                    @endif
-
-                        
-                    <div class="loader-wrap">
-                        <span class="loader mr-3"><i class="fas fa-square mr-1"></i> 処理中..</span>
-                    </div>
-                    
-                    <button id="exist-submit" class="btn btn-block btn-orange mb-4 py-3" type="submit"{{ $disabled }}>注文を確定する</button>
-                @endif
-              
-            </form>
-        </div>
-    
-        <div class="table-responsive table-foot">
-            <table class="table">
-                <tbody>
-                <tr>
-                    <th>商品合計</th>
-                    <td>¥{{ number_format($allPrice) }}</td>
-                </tr>
-                <tr>
-                    <th>送料</th>
-                    <td>¥{{ number_format($deliFee) }}</td>
-                </tr>
-                
-                {{--
-                @if($seinouHuzaiAllPrice)
-                    <tr>
-                        <th>不在置き割引</th>
-                        <td>¥{{ number_format($seinouHuzaiAllPrice) }}</td>
-                    </tr>
-                @endif
-                --}}
-                
-                @if($seinouSundayAllPrice)
-                    <tr>
-                        <th>日曜配達</th>
-                        <td>¥{{ number_format($seinouSundayAllPrice) }}</td>
-                    </tr>
-                @endif
-                
-                @if($data['pay_method'] == 2)
-                    <tr>
-                        <th>コンビニ決済手数料</th>
-                        <td>¥{{ number_format($codFee) }}</td>
-                    </tr>
-                
-                @elseif($data['pay_method'] == 4)
-                    <tr>
-                        <th>支払手数料</th>
-                        <td>¥{{ number_format($codFee) }}</td>
-                    </tr>
-                
-                @elseif($data['pay_method'] == 5)
-                    <tr>
-                        <th>支払手数料</th>
-                        <td>¥{{ number_format($codFee) }}</td>
-                    </tr>
-                @endif
-                
-                @if(Auth::check())
-                    <tr>
-                        <th>利用ポイント</th>
-                        <td>{{ $usePoint }}</td>
-                    </tr>
-                @endif
-                
-                </tbody>
-            </table>
-        </div>
-
-        <hr>
-
-        <div class="table-responsive table-foot mt-3">
-            <table class="table">
-                <tr>
-                    <th class="text-big"><b>合計<small>（税込）</small></b></th>
-                    <td class="text-danger text-extra-big{{ count($errors) > 0 ? ' alert-danger' : '' }}">
-                         <b class="text-big"> ¥{{ number_format($totalFee) }}</b>
-                    </td>
-                </tr>
-
-                @if(Auth::check())
-                <tr>
-                    <th>ポイント残高</th>
-                     <td>{{ $userArr['point'] - $usePoint }}</td>
-                </tr>
-                @endif
-                
-                @if($regist || Auth::check())
-                <tr>
-                    <th>ポイント発生</th>
-                    <td>{{ $addPoint }}</td>
-                </tr>
-                @endif
-            </table>
-        </div>
-
-        {{--
-        <div class="table-responsive table-normal show-price mt-3">
-            <table class="table border table-borderd bg-white">
-                <tr>
-                    <th>お支払い方法</th>
-                    <td class="{{ count($errors) > 0 ? 'alert-danger' : '' }}">
-                        {{ $payMethod->find($data['pay_method'])->name }}
-                        
-                        @if($data['pay_method'] == 3)
-                            <br><span class="text-small">{{ $pmChild->find($data['net_bank'])->name }}</span>
-                        @endif
-                    </td>
-                </tr>
-                
-                @if($regist && $data['pay_method'] == 1 && $data['card_seq'] == 99)
-                    <tr>
-                        <th>カード番号の登録</th>
-                        <td>
-                            @if(isset($data['is_regist_card']))
-                                する
-                            @else
-                                しない
-                            @endif
-                        </td>
-                    </tr>
-                @endif
-            </table>
-        </div>
-        --}}
-
-    </div>
-
-</div>
-</div><!-- right -->
-
-
 
 
 

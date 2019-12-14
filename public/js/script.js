@@ -866,7 +866,7 @@ var exe = (function() {
             speed = 150;
             
             $tgl.on('click', function(e){
-            	$list = $(this).next('.more-list');
+            	$list = $(this).parent('div').next('.more-list');
                 
                 $list.slideToggle(speed);
             	

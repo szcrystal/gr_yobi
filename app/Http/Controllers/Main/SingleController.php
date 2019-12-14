@@ -143,6 +143,8 @@ class SingleController extends Controller
         $recomCateItems = null;
         $recomCateRankItems = null;
         $recommends = null;
+        $posts = null;
+        $ar = array();
         
         $getNum = Ctm::isAgent('sp') ? 6 : 6;
         $chunkNum = $getNum/2;
@@ -231,25 +233,29 @@ class SingleController extends Controller
             //->inRandomOrder()->take()->get() もあり クエリビルダに記載あり
             //他にもこんな商品：部分 END =====================
             
-            
-            // Get SimilerPost : Tagルール同様 =====================================
-            $postRelIds = $this->postTagRel->whereIn('tag_id', $ar)->get()->map(function($obj){
-                return $obj->postrel_id;
-            })->all(); 
-            
-            $postNum = Ctm::isAgent('sp') ? 3 : 3; //ORG ? 4 : 3;
-            $postChunkNum = Ctm::isAgent('sp') ? 3 : 3; //ORG ? 2 : 3; 
-            $posts = $this->postRel->whereIn('id', $postRelIds)->where(['open_status'=>1, ])->inRandomOrder()->take($postNum)->get()->chunk($postChunkNum);
-            
-            // Get SimilerPost END =====================================
         }
         else { //タグがない時
         	$recommends = $this->item->whereNotIn('id', $noStockIds)->where($whereArr)->where(['subcate_id'=>$item->subcate_id])->inRandomOrder()->take($getNum)->get()->chunk($chunkNum);
             //->inRandomOrder()->take()->get() もあり クエリビルダに記載あり
         }
         
-//        print_r($recommends);
-//        exit;
+        
+        // Get SimilerPost : Tagルール tagが2個以上なら2~4を対象に、2個以下なら1個目を対象、0ならなし =====================================
+        if(isset($tagRels[0])) { //関連Post用のarをセットする
+            $ar[] = $tagRels[0];
+        }
+        
+        if(count($ar) > 0) {
+            $postRelIds = $this->postTagRel->whereIn('tag_id', $ar)->get()->map(function($obj){
+                return $obj->postrel_id;
+            })->all();
+            
+            $postNum = Ctm::isAgent('sp') ? 3 : 3; //ORG ? 4 : 3;
+            $postChunkNum = Ctm::isAgent('sp') ? 3 : 3; //ORG ? 2 : 3;
+            $posts = $this->postRel->whereIn('id', $postRelIds)->where(['open_status'=>1, ])->inRandomOrder()->take($postNum)->get()->chunk($postChunkNum);
+        }
+        // Get SimilerPost END =====================================
+        
 
 		$recomArr = [
         	'同梱包可能なおすすめ商品' => $isOnceItems,

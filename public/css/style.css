@@ -988,7 +988,7 @@ img.img-fluid + div {
 	list-style: none;
 	float: left;
 	margin-right: 1.2em;
-	font-size: 1.0em;
+	font-size: 0.95em;
 }
 .head-navi li:first-of-type a {
 	display: block;
@@ -1007,7 +1007,7 @@ img.img-fluid + div {
 	text-decoration: none;   
 }
 .head-navi li .fal {
-	font-size: 1.5em;
+	font-size: 1.6em;
     margin-right: 0.2em;
     //color: red;
 }
@@ -1080,14 +1080,19 @@ img.img-fluid + div {
 
 .s-form input.form-control {
     background: #fff;
-    font-size: 1.0em;
+    //font-size: 1.0em;
     border: 1px solid #d8d8d8;
     width:  18em;
     display: inline-block;
     padding: 0.2em 0.8em;
 }
-.s-form input.form-control:focus {
-    border: 1px solid #80bdff;
+.s-form input.form-control:focus,
+.s-form-top input.form-control:focus {
+    //border: 1px solid #80bdff; /* ORG  */
+    border-color: #bfbfbf;
+    background: rgba(24, 32, 111, 0.1);
+    outline: none;
+    box-shadow: none !important;
 }
 .btn-s {
     background: none;
@@ -1103,6 +1108,7 @@ img.img-fluid + div {
 }
 .s-form-top {
     //border: 1px solid red;
+    width: 100%;
     margin-bottom: 2em;
 }
 .s-form-top input.form-control {
@@ -1512,25 +1518,23 @@ img.img-fluid + div {
 /* img-box END ******************************* */
 
 .img-circle {
-    width: 6.5em;
-    height: 6.5em;
+    width: 5.3em;
+    height: 5.3em;
     border-radius: 50%;
-    margin-right: 0.5em;
+    margin-right: 0.6em;
     background-size: 100% auto;
     background-position: center center;
 }
 .img-circle + div {
-    line-height: 6.5em;
+    line-height: 5.3em;
 }
 .img-circle a {
     display: block;
     width: 100%;
     height: 100%;
 }
-.img-circle img {
-    position: absolute;
-    top: center;
-    left: center;
+.img-circle:hover {
+    opacity: 0.65;
 }
 
 #lightbox .lb-data .lb-caption {
@@ -1915,11 +1919,11 @@ img.img-fluid + div {
 	margin-bottom: 0.1em;
 }
 .more-tgl {
-	display: block;
+	display: inline-block;
 	margin: -1em 0 0.8em;
 	cursor: pointer;
-    font-size: 0.85em;
-    padding: 0.2em 0.7em 0.2em 0;
+    font-size: 0.9em;
+    padding: 0.1em 0.7em 0.1em 0;
     //border: 1px solid #dfdfdf;
 }
 .more-tgl:hover {

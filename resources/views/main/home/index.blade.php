@@ -4,7 +4,7 @@
 use App\Setting;
 use App\Favorite;
 use App\TopSetting;
-use App\Category;
+//use App\Category;
 ?>
 
 
@@ -91,26 +91,8 @@ use App\Category;
             <h2 class="pl-0">カテゴリー</h2>
             </div>
             
-            <div>
-            <ul class="list-unstyled clearfix">
-                <?php
-                    $cateAlls = Category::all();
-                ?>
-                    @foreach($cateAlls as $cate)
-                        <li class="float-left mr-5 mb-2 clearfix">
-                            <div style="background-image: url({{ Storage::url($cate->main_img) }})" class="img-circle float-left">
-                                <a href="{{ url('category/' . $cate->slug) }}"></a>
-                            </div>
-                            
-                            <div class="float-left">
-                            <a href="{{ url('category/' . $cate->slug) }}">
-                            {{ $cate->name }}
-                            </a>
-                            </div>
-                        </li>
-                    @endforeach
-            
-            </ul>
+            <div class="mt-2 pb-2">
+                @include('main.shared.cateList')
             </div>
         </div>
         
@@ -119,12 +101,15 @@ use App\Category;
                 <h2 class="pl-0">人気タグ</h2>
             </div>
             
-            <div class="tags mt-4 mb-1 text-small">
+            <div class="tags mt-3 mb-1 text-small">
                 @include('main.shared.tag', ['tags'=>$popTagsFirst, 'num'=>0])
-                <p class="text-right mr-5 pr-5">もっと見る</p>
             </div>
             
-            <div class="tags mt-2 mb-1 text-small d-none">
+            <div class="mr-3 text-right">
+                <span class="more-tgl">もっと見る <i class="fal fa-angle-down"></i></span>
+            </div>
+            
+            <div class="tags mt-2 mb-1 text-small more-list">
                 @include('main.shared.tag', ['tags'=>$popTagsSecond, 'num'=>0])
             </div>
         </div>
