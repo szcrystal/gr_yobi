@@ -144,6 +144,16 @@ var exe = (function() {
             var speed = 250;
             var ease = 'linear';
             
+            function menuClose() {
+                $navWrap.slideUp(speed, ease, function(){
+                    $(this).queue([]).stop();
+                    $(this).css({ height:0 });
+                });
+                
+                //$('body').css({overflowY:'visible'});
+                $('html,body').css({position:'static'}).scrollTop(th.opts.t);
+            }
+            
             
             $('.nav-tgl').on('click', function() {
             
@@ -161,15 +171,18 @@ var exe = (function() {
 //                        height: '100%', 
 //                    });
                     
+                    /* ORG =====
                 	if($sForm.is(':visible')) {
                     	$sForm.slideUp(100);
                     }
+                    */
                     
                 	//$navWrap.slideDown(speed);
                     
                     $navWrap.css({ height:$(window).height() }).slideDown(speed, ease, function(){
                     	$(this).queue([]).stop();
                     });
+                    
                     $('html,body').css({position:'fixed', top:-th.opts.t});
                 }
                 else {
@@ -182,18 +195,21 @@ var exe = (function() {
 //                        height: 'auto', 
 //                    });
 
-                    
-                    $navWrap.slideUp(speed, ease, function(){
-                    	$(this).queue([]).stop();
-                    	$(this).css({ height:0 });
-                    });
-                    
-                    //$('body').css({overflowY:'visible'});
-                    $('html,body').css({position:'static'}).scrollTop(th.opts.t); 
+                    menuClose();
+                                        
                 }
  
             });
             
+            //背景をクリックした時メニューを閉じる
+            $navWrap.not('.nav-sp').on('click', function(e){
+                if(! $(e.target).parents().hasClass('nav-sp')) {
+                    menuClose();
+                }
+            });
+            
+            
+            //子メニューのUpDown
             $hasChild.on('click', function(){
             	$ul = $(this).find('ul');
             	

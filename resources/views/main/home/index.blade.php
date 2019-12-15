@@ -13,6 +13,7 @@ use App\TopSetting;
 
     <div class="panel panel-default">
         
+        @if(! Ctm::isAgent('sp'))
         <div class="clearfix s-form-top">
             <form class="d-block mb-3 clearfix" role="form" method="GET" action="{{ url('search') }}">
                 {{-- csrf_field() --}}
@@ -30,6 +31,7 @@ use App\TopSetting;
                 </ul>
             </div>
         </div>
+        @endif
 
         <div class="panel-body top-cont">
 
@@ -86,15 +88,17 @@ use App\TopSetting;
     @endif
     
     @if($type == 1)
-        <div class="top-first mb-3 pb-3">
-            <div class="head-atcl">
-            <h2 class="pl-0">カテゴリー</h2>
+        @if(! Ctm::isAgent('sp'))
+            <div class="top-first mb-3 pb-3">
+                <div class="head-atcl">
+                    <h2 class="pl-0">カテゴリー</h2>
+                </div>
+                
+                <div class="mt-2 pb-2">
+                    @include('main.shared.cateList')
+                </div>
             </div>
-            
-            <div class="mt-2 pb-2">
-                @include('main.shared.cateList')
-            </div>
-        </div>
+        @endif
         
         <div class="top-first mb-3 pb-3">
             <div class="head-atcl">

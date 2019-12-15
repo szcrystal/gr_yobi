@@ -47,14 +47,32 @@ $getNow .= Ctm::isEnv('product') ? str_replace ('.', '', config('app.app_version
     {{-- @yield('belt') --}}
     
     <div class="container-wrap">
-    
-        @if( (isset($type) && $type == 'single' ) || Request::is('shop/*'))
-            @if(! Ctm::isAgent('sp'))
+        
+        <div class="tophead-wrap">
+            @if( (isset($type) && $type == 'single' ) || Request::is('shop/*'))
+                @if(! Ctm::isAgent('sp'))
+                    @include('main.shared.news')
+                @endif
+            @else
                 @include('main.shared.news')
             @endif
-        @else
-            @include('main.shared.news')
-        @endif
+            
+            @if(Ctm::isAgent('sp'))
+                <div class="logos clearfix">
+                    <h1>
+                        <a href="{{ url('/') }}">
+                            <img src="{{ url('images/logo-name.png') }}" alt="{{ config('app.name', 'グリーンロケット') }}">
+                            <img src="{{ url('images/logo-symbol.png') }}" alt="{{ config('app.name', 'グリーンロケット') }}-ロゴマーク">
+                        </a>
+                    </h1>
+                </div>
+            @endif
+            
+            @if(isset($isTop) && $isTop)
+                @include('main.shared.slider')
+                {{-- @include('main.shared.carousel') --}}
+            @endif
+        </div>
         
         <div class="container">
             <?php $className = isset($className) ? $className : ''; ?>

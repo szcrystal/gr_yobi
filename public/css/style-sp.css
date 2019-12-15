@@ -179,7 +179,8 @@ for SP
     }
     
     .breadcrumb {
-    	margin-top: 1em;
+    	margin-top: 0;
+        padding-top: 0;
     	font-size: 85%;
     }
     
@@ -266,16 +267,20 @@ for SP
         //border: 1px solid orange;
     }
     
-    /* 先頭 margin */
+    /* 先頭 margin Fix Top ======= */
     .container {
-    	margin-top: 1em;
+    	margin-top: 0em;
+    }
+    .tophead-wrap + .container {
+        //margin-top: 1.0em;
     }
     .wrap-all {
         margin-top: 0;
-        //border: 1px solid orange;
+        padding-top: 0;
+        border: 1px solid orange;
     }
     .wrap-all .home {
-        margin-top: 3.5em;
+        margin-top: 0.8em;
         //border: 1px solid orange;
     }
     .head-navi { /* kare text */
@@ -283,42 +288,31 @@ for SP
     }
     .fix-wrap {
     	margin-top: 39px;
+        //border: 1px solid red;
+    }
+    .cart-all .fix-wrap {
+        margin-top: 0;
+    }
+    .container-wrap {
+        margin-top: 0;
     }
     .tophead-wrap {
     	//display: none;
     }
-    .tophead-wrap + .container {
-    	margin-top: 1.0em;
+    .cart-all #colop,
+    .cart-all .icon-belt,
+    .cart-all .nav-tgl,
+    .cart-all .s-tgl,
+    .cart-all .heart-tgl,
+    .cart-all .site-header {
+        display: none;
     }
-
-    /* 先頭 Margin END */
+    /* 先頭 Margin END ======= */
     
-    .telephone {
-    	background: #3a3b3c;
-        font-size: 1.1em;
-        color: #fff;
-        text-align: center;
-        padding: 0.3em 0 0.35em;
-        height: 36px;
-    }
-    .telephone a {
-    	display: block;
-        width: 100%;
-        height: 100%;
-    }
-    .telephone a,
-    .telephone .fal {
-    	color: #fff;
-    }
-    .telephone .fal {
-    	font-size: 1.1em;
-        margin-right: 0.2em;
-        //vertical-align: -1px;
-    }
 	.site-header {
 		position: relative;
         box-sizing: content-box;
-        padding: 0.3em 0;
+        padding: 0.2em 0;
         border-bottom: 1px solid #d5d5d5;
         border-top: 0;
         //margin: 36px 0 0;
@@ -341,13 +335,10 @@ for SP
     }
 	
 
-/*	.site-header .logos {*/
-/*  		width: 100%;*/
-/*        margin: 0 auto 0.3em;*/
-/*        padding: 0 0 0 0.2em;*/
-/*        //border: 1px solid red;*/
-/*	}*/
-    .site-header h1 {
+    .logos {
+        padding: 0.5em 0;
+    }
+    .logos h1 {
     	width: 6.2em;
         float: none;
     	margin: 0 auto;
@@ -356,7 +347,7 @@ for SP
         text-align: center;
         //border: 1px solid red;
     }
-    .site-header h1 a {
+    .logos h1 a {
     	display: block;
         height: 100%;
     	width: 100%;
@@ -369,7 +360,7 @@ for SP
 /*        content: "";*/
 /*        height: 0;*/
 /*    }*/
-    .site-header h1 img:first-of-type {
+    .logos h1 img:first-of-type {
     	//display: block;
 		float: none;
 /*        height: 70%;*/
@@ -379,7 +370,7 @@ for SP
         margin-left: 0;
     	//border: 1px solid red;          
 	}
-    .site-header h1 img:last-of-type {
+    .logos h1 img:last-of-type {
     	//display: block;
 		float: none;
         //height: 98%;
@@ -400,8 +391,42 @@ for SP
         padding: 0.3em 0 0;
     }
     
+    .s-form-wrap {
+        display: block;
+        background: #fefffe;
+        //border-bottom: 1px solid #d5d5d5;
+        padding: 0;
+        margin-left: 1.3%;
+        position: relative;
+        width: 73%;
+        //border: 1px solid red;
+    }
+    .s-form {
+        width: 100%;
+        float: none;
+        margin: 0.2em 0;
+        //position: relative;
+        //border: 1px solid red;
+    }
+    .s-form input.form-control {
+        position: static;
+        border-radius: 0;
+        width: 100%;
+        //display: block;
+        opacity: 1;
+        padding: 0.3em 0.8em;
+    }
+    .btn-s {
+        position: absolute;
+        top: 0;
+        right: 0.5%;
+        //display: inline;
+        //margin-left: -2em;
+    }
+    
     .nav-tgl,
-    .s-tgl {
+    .s-tgl,
+    .heart-tgl {
     	line-height: 0;
         position: absolute;
         color: #333;
@@ -410,15 +435,17 @@ for SP
     .nav-tgl {
         padding: 0.3em 0.2em 0.3em 0.3em;
         top: 0;
-        left: 1.0%;
+        right: 1.5%;
         font-size: 1.7em;
     }
-    .s-tgl {
-        padding: 0.55em 0.35em 0.3em 0.3em;
+    .s-tgl,
+    .heart-tgl {
+        padding: 0.45em 0.35em 0.3em 0.3em;
         top: 0;
-        right: 1.0%;
-        font-size: 1.3em;
+        right: 2em;
+        font-size: 1.5em;
     }
+    
     
     .head-navi {
     	width: 100%;
@@ -446,17 +473,11 @@ for SP
     #spCartBtn:active {
     	opacity: 1;
     }
-
-    .cart-all #colop,
-    .cart-all .icon-belt,
-    .cart-all .nav-tgl,
-    .cart-all .s-tgl {
-    	display: none;
-    }
+    
     
     #colop {
-    	margin-top: 4em;
-    	margin-bottom: 53px;
+    	margin-top: 2.5em;
+    	margin-bottom: 52px;
     }
     #colop.single-colop {
     	margin-bottom: 110px;
@@ -498,37 +519,6 @@ for SP
         vertical-align: -2px;
     }
     
-    .s-form-wrap {
-    	display: none;
-    	background: #fefffe;
-        border-bottom: 1px solid #d5d5d5;
-        padding: 0.5em 0;
-        position: relative;
-        //border: 1px solid red;
-    }
-    .s-form {
-        width: 93%;
-        float: none;
-        margin: auto;
-        
-        //position: relative;
-        //border: 1px solid red;
-    }
-    .s-form input.form-control {
-    	position: static;
-        border-radius: 0;
-        width: 100%;
-        //display: block;
-        opacity: 1;
-        padding: 0.3em 0.8em;
-    }
-    .btn-s {
-    	position: absolute;
-        top: 0.7em;
-        right: 4.5%;
-		//display: inline;
-    	//margin-left: -2em;
-    }
     
 	.nav-sp-wrap {
     	display: none;
@@ -554,17 +544,22 @@ for SP
         padding: 0;
     }
     .nav-sp ul {
-    	padding: 0;
+        list-style: none;
+    	padding: 0 0 0 1.7em;
         margin: 0;
     }
     .nav-sp ul > li {
-    	padding: 0.6em 0 0.6em 1.4em;
+    	padding: 0.8em 0 0.8em 0.2em;
     	border-bottom: 1px solid #d5d5d5;
         font-size: 1.05em;
         color: #333;
     }
-    .nav-sp ul > li:last-of-type {
+    .nav-sp ul > li:nth-of-type(8) {
     	border-bottom: 0;
+    }
+    .nav-sp li a {
+        display: inline-block;
+        width: 98%;
     }
     .nav-sp .has-child {
     	
@@ -574,7 +569,7 @@ for SP
         margin-top: 0.3em;
     }
     .nav-sp .has-child li {
-    	padding: 0.3em 0 0.3em 2em;
+    	padding: 0.4em 0 0.4em 0.2em;
         border: 0;
         font-size: 0.95em;
     }
@@ -697,8 +692,8 @@ ORG END ======================== */
     
     /* Shop */
     #guide {
-    	margin: 1.4em 0 1.6em;
-        padding-top: 1em;
+    	margin: 0 0 1.6em;
+        padding-top: 0.3em;
     }
     #guide br {
     	display: block;
@@ -1277,7 +1272,7 @@ ORG END ======================== */
     .single-left {
         float: none;
         width: 100%;
-        margin-top: 46px;
+        margin-top: 0;
         //border: 1px solid orange;
     }
     .single-right {
@@ -1290,8 +1285,6 @@ ORG END ======================== */
         margin-top: 2.5em;
     }
 
-    
-    
     .single .price-meta {
 		font-size: 1.2em;
     }
@@ -1379,7 +1372,7 @@ ORG END ======================== */
     
     /* upper item upper */
     .single .upper-wrap {
-        padding-top: 1px;
+        padding-top: 0;
         //border: 1px solid red;
     }
     .upper-wrap + .head-frame .single-left,
@@ -1391,6 +1384,10 @@ ORG END ======================== */
     h3.upper-title {
     	font-size: 1.4em;
         //margin: 1em 0 0.7em;
+    }
+    .block-wrap:first-of-type h3 {
+        margin-top: 0;
+        //background: red;
     }
     .upper-wrap h4 {
     	font-size: 1.2em;
@@ -1588,6 +1585,7 @@ ORG END ======================== */
     #colop .foot-wrap {
     	width: 100%;
         margin: auto;
+        padding-top: 1em;
         //border: 1px solid red;
     }
     .foot-menu {
