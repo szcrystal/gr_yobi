@@ -175,7 +175,6 @@ class SingleController extends Controller
         //同梱包可能商品レコメンド END ================
         
         // この商品を見た人におすすめの商品：同カテゴリーのランダム =====================
-        
         $recomCateItems = $this->item->whereNotIn('id', $noStockIds)->where($whereArr)->where('cate_id', $item->cate_id)->inRandomOrder()->take($getNum)->get()->chunk($chunkNum);
         // この商品を見た人におすすめの商品：同カテゴリーのランダム END ====================
         

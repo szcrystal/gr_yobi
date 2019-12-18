@@ -280,7 +280,7 @@ for SP
         border: 1px solid orange;
     }
     .wrap-all .home {
-        margin-top: 0.8em;
+        margin-top: 0.5em;
         //border: 1px solid orange;
     }
     .head-navi { /* kare text */
@@ -353,6 +353,7 @@ for SP
     	width: 100%;
         padding: 1px 0;
         //border: 1px solid orange;
+        text-decoration: none;
     }
 /*    .site-header h1 a:after {*/
 /*    	display: block;*/
@@ -422,6 +423,18 @@ for SP
         right: 0.5%;
         //display: inline;
         //margin-left: -2em;
+    }
+    
+    .s-form-top {
+        //border: 1px solid red;
+        width: 100%;
+        margin-bottom: 2em;
+    }
+    .s-form-top input.form-control {
+        
+    }
+    .s-form-top .btn-s {
+        position: static;
     }
     
     .nav-tgl,
@@ -1231,6 +1244,23 @@ ORG END ======================== */
     }
     .tophead-wrap .carousel-indicators li {
     	padding: 2px;
+    }
+    
+    .img-circle-wrap li {
+        width: 49.5%;
+        margin-right: 0.5% !important;
+        //border: 1px solid red;
+    }
+    .img-circle-wrap li:nth-of-type(even) {
+        margin-right: 0 !important;
+    }
+    .img-circle {
+        width: 4.1em;
+        height: 4.1em;
+    }
+    .img-circle + div {
+        font-size: 0.9em;
+        line-height: 4.6em;
     }
     
     /* Slide */

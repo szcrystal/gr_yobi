@@ -59,11 +59,13 @@ class HomeController extends Controller
 //        $request->session()->forget('item.data');
 //        $request->session()->forget('all');
 
+        $isLookfor = $request->is('lookfor') ? 1 : 0;
+
         $cates = $this->category->all();
         
         $whereArr = $this->whereArr;
         
-        
+/*
 //        $tagIds = TagRelation::where('item_id', 1)->get()->map(function($obj){
 //            return $obj->tag_id;
 //        })->all();
@@ -94,40 +96,45 @@ class HomeController extends Controller
 //            $whereArrSec['state_id'] = $stateObj->id;
 //            //$stateName = $stateObj->name;
 //        }
-
+*/
 		//Carousel
         $caros = $this->itemImg->where(['item_id'=>9999, 'type'=>6])->inRandomOrder()->get();
 
 		//FirstItem =================================================
+        $saleItems = null;
+        $newItems = null;
+        $uekiItems = null;
+        $rankItems = null;
+        $cookieItems = null;
+        
+        $allRecoms = null;
         
         $getNum = Ctm::isAgent('sp') ? 3 : 4;
         
-        
-        
-        //SaleItem 全セール中の時でも各商品のセール指定が優先表示
-        $saleItems['items'] = $this->item->where('sale_price', '>', 0)->where($whereArr)->orderBy('updated_at', 'desc')->get()->all();
-        $saleItems['type'] = 4;
-        $saleItems['slug'] = 'sale-items';
-		
-        //New 新着情報
-        $newItems = null;
-        
-        $scIds = $this->itemSc->orderBy('updated_at','desc')->get()->map(function($isc){
-        	return $isc->item_id;
-        })->all();
-        
-        if(count($scIds) > 0) {
-            $scIdStr = implode(',', $scIds);
-            $newItems['items'] = $this->item->whereIn('id', $scIds)->where($whereArr)->where('stock', '>', 0)->orderByRaw("FIELD(id, $scIdStr)")->take($getNum)->get()->all();
+        if(! $isLookfor) {
+            //SaleItem 全セール中の時でも各商品のセール指定が優先表示
+            $saleItems['items'] = $this->item->where('sale_price', '>', 0)->where($whereArr)->orderBy('updated_at', 'desc')->get();
+            $saleItems['type'] = 4;
+            $saleItems['slug'] = 'sale-items';
+            
+            //New 新着情報
+            $newItems = null;
+            
+            $scIds = $this->itemSc->orderBy('updated_at','desc')->get()->map(function($isc){
+                return $isc->item_id;
+            })->all();
+            
+            if(count($scIds) > 0) {
+                $scIdStr = implode(',', $scIds);
+                $newItems['items'] = $this->item->whereIn('id', $scIds)->where($whereArr)->where('stock', '>', 0)->orderByRaw("FIELD(id, $scIdStr)")->take($getNum)->get();
+            }
+            
+            $newItems['type'] = 1;
+            $newItems['slug'] = 'new-items';
         }
-        
-        $newItems['type'] = 1; 
-        $newItems['slug'] = 'new-items';
         
         
         // Ranking ueki/niwaki =====================
-        $uekiItems = null;
-        $rankItems = null;
 /*
 //        $cateUekis = $this->cateSec->where('parent_id', 1)->get();
 //        $cateSecSum = array();
@@ -145,14 +152,14 @@ class HomeController extends Controller
         if(Ctm::isEnv('local')) {
             //$uekiSecObj = Ctm::getUekiSecObj(); //get()で返る
             
-            $uekiItems['items'] = Ctm::getUekiSecObj()->take($getNum)->all();
+            $uekiItems['items'] = Ctm::getUekiSecObj()->take($getNum); //get()で返る 元々->all()を付けていたが不要
             //$uekiItems['items'] = array();
             $uekiItems['type'] = 5;
             $uekiItems['slug'] = 'ranking-ueki';
             
             
             //Ranking Other =====================
-            $rankItems['items'] = Ctm::getRankObj()->take($getNum)->all();
+            $rankItems['items'] = Ctm::getRankObj()->take($getNum);
             //$rankItems['items'] = array();
             //$rankItems['items'] = $this->item->where($whereArr)->orderBy('sale_count', 'desc')->take($getNum)->get()->all();
             $rankItems['type'] = 2;
@@ -161,14 +168,13 @@ class HomeController extends Controller
         
         //Recent 最近見た 最近チェックした =====================
         $cookieArr = array();
-        $cookieItems = null;
         //$getNum = Ctm::isAgent('sp') ? 6 : 7;
         
         $cookieIds = Cookie::get('item_ids');
         
         if(isset($cookieIds) && $cookieIds != '') {
             $cookieArr = explode(',', $cookieIds); //orderByRowに渡すものはString
-          	$cookieItems['items'] = $this->item->whereIn('id', $cookieArr)->where($whereArr)->orderByRaw("FIELD(id, $cookieIds)")->take($getNum)->get()->all();
+          	$cookieItems['items'] = $this->item->whereIn('id', $cookieArr)->where($whereArr)->orderByRaw("FIELD(id, $cookieIds)")->take($getNum)->get();
         }
         
         $cookieItems['type'] = 3; 
@@ -188,32 +194,36 @@ class HomeController extends Controller
         */
         
         //array
-        $firstItems = [
-        	'SALE !!'=> $saleItems, //type:4
-            '人気ランキング(植木・庭木)'=> $uekiItems, //type:5
-            '人気ランキング(その他)'=> $rankItems, //type:2
-            '新着情報'=> $newItems, //type:1
-            '最近チェックしたアイテム'=> $cookieItems, //type:3
-        ];
+        if($isLookfor) {
+            $firstItems = [
+                '最近チェックしたアイテム'=> $cookieItems, //type:3
+                '人気ランキング(植木・庭木)'=> $uekiItems, //type:5
+                '人気ランキング(その他)'=> $rankItems, //type:2
+            ];
+        }
+        else {
+            $firstItems = [
+                'SALE !!'=> $saleItems, //type:4
+                '人気ランキング(植木・庭木)'=> $uekiItems, //type:5
+                '人気ランキング(その他)'=> $rankItems, //type:2
+                '新着情報'=> $newItems, //type:1
+                '最近チェックしたアイテム'=> $cookieItems, //type:3
+            ];
+        }
         //FirstItem END ================================
         
         
         //おすすめ情報 RecommendInfo (cate & cateSecond & tag)
-        $tagRecoms = $this->tag->where(['is_top'=>1])->orderBy('updated_at', 'desc')->get()->all();
-        $cateRecoms = $this->category->where(['is_top'=>1])->orderBy('updated_at', 'desc')->get()->all();
-        $subCateRecoms = $this->cateSec->where(['is_top'=>1])->orderBy('updated_at', 'desc')->get()->all();
-        
-        $res = array_merge($tagRecoms, $cateRecoms, $subCateRecoms);
-        
-//        $books = array(
-//        	$tagRecoms,
-//            $cateRecoms,
-//            $subCateRecoms
-//        );
-        
-        $collection = collect($res);
-        $allRecoms = $collection->sortByDesc('updated_at')->take(20);
-        
+        if(! $isLookfor) {
+            $tagRecoms = $this->tag->where(['is_top'=>1])->orderBy('updated_at', 'desc')->get()->all();
+            $cateRecoms = $this->category->where(['is_top'=>1])->orderBy('updated_at', 'desc')->get()->all();
+            $subCateRecoms = $this->cateSec->where(['is_top'=>1])->orderBy('updated_at', 'desc')->get()->all();
+            
+            $res = array_merge($tagRecoms, $cateRecoms, $subCateRecoms);
+            
+            $collection = collect($res);
+            $allRecoms = $collection->sortByDesc('updated_at')->take(20);
+        }
 //        print_r($allRecoms);
 //        exit;
 
@@ -252,10 +262,17 @@ class HomeController extends Controller
         $metaKeyword = $setting->meta_keyword;
         
         //For this is top
-        $isTop = 1;
+        if($isLookfor) {
+            $isTop = 0;
+            //$view = 'main.home.index';
+        }
+        else {
+            $isTop = 1;
+            //$view = 'main.home.index';
+        }
         
 
-        return view('main.home.index', ['firstItems'=>$firstItems, 'allRecoms'=>$allRecoms, 'itemCates'=>$itemCates, 'cates'=>$cates, 'newsCont'=>$newsCont, 'popTagsFirst'=>$popTagsFirst, 'popTagsSecond'=>$popTagsSecond, 'metaTitle'=>$metaTitle, 'caros'=>$caros, 'metaDesc'=>$metaDesc, 'metaKeyword'=>$metaKeyword, 'isTop'=>$isTop,]);
+        return view('main.home.index', ['firstItems'=>$firstItems, 'allRecoms'=>$allRecoms, 'itemCates'=>$itemCates, 'cates'=>$cates, 'newsCont'=>$newsCont, 'popTagsFirst'=>$popTagsFirst, 'popTagsSecond'=>$popTagsSecond, 'metaTitle'=>$metaTitle, 'caros'=>$caros, 'metaDesc'=>$metaDesc, 'metaKeyword'=>$metaKeyword, 'isTop'=>$isTop, 'isLookfor'=>$isLookfor]);
     }
         
     

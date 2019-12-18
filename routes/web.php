@@ -104,6 +104,9 @@ if(Schema::hasTable('fixes')) {
     }
 }
 
+//LookFor Search Page (Only SP)
+Route::get('lookfor', 'Main\HomeController@index');
+
 //DeliFeeTable
 Route::get('deli-fee/{dgId}', 'Main\HomeController@showDeliFeeTable');
 

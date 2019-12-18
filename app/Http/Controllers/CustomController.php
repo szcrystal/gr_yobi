@@ -589,7 +589,8 @@ class CustomController extends Controller
         $sepDay = $now->modify('-' . $rankTerm . ' days')->format('Y-m-d');
 
         $cateUekis = CategorySecond::where('parent_id', 1)->get();
-
+        $c = array();
+        
         foreach($cateUekis as $k => $cateUeki) {
             
         	$items = Item::where([/*'open_status'=>1, 'is_potset'=>0, */'subcate_id'=>$cateUeki->id])->get()->all();

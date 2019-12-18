@@ -13,13 +13,12 @@ use App\TopSetting;
 
     <div class="panel panel-default">
         
-        @if(! Ctm::isAgent('sp') || (Ctm::isAgent('sp') &&  $isLookfor))
         <div class="clearfix s-form-top">
             <form class="d-block mb-3 clearfix" role="form" method="GET" action="{{ url('search') }}">
                 {{-- csrf_field() --}}
 
                 <input type="search" class="form-control rounded-0" name="s" placeholder="キーワードを入力して下さい" value="{{ Request::has('s') ? Request::input('s') : '' }}">
-                <button class="btn-s"><i class="far fa-search"></i></button>
+                <button class="btn-s">検 索</button>
 
             </form>
             
@@ -31,7 +30,6 @@ use App\TopSetting;
                 </ul>
             </div>
         </div>
-        @endif
 
         <div class="panel-body top-cont">
 
@@ -87,30 +85,38 @@ use App\TopSetting;
         
     @endif
     
+    <?php $typeNum = Ctm::isAgent('sp') ? 5 : 1; ?>
     
-    @if(Ctm::isAgent('sp'))
-        @if($type == 3)
+    @if($type == $typeNum)
+        @if(! Ctm::isAgent('sp'))
             <div class="top-first mb-3 pb-3">
-                @include('main.shared.cateList')
+                <div class="head-atcl">
+                    <h2 class="pl-0">カテゴリー</h2>
+                </div>
+                
+                <div class="mt-2 pb-2">
+                    @include('main.shared.cateList')
+                </div>
             </div>
         @endif
         
-        @if($type == 2)
-            <div class="top-first mb-3 pb-3">
-                @include('main.shared.tagList')
+        <div class="top-first mb-3 pb-3">
+            <div class="head-atcl">
+                <h2 class="pl-0">人気タグ</h2>
             </div>
-        @endif
-    
-    @else
-        @if($type == 1)
-            <div class="top-first mb-3 pb-3">
-                @include('main.shared.cateList')
+            
+            <div class="tags mt-3 mb-1 text-small">
+                @include('main.shared.tag', ['tags'=>$popTagsFirst, 'num'=>0])
             </div>
-        
-            <div class="top-first mb-3 pb-3">
-                @include('main.shared.tagList')
+            
+            <div class="mr-3 text-right">
+                <span class="more-tgl">もっと見る <i class="fal fa-angle-down"></i></span>
             </div>
-        @endif
+            
+            <div class="tags mt-2 mb-1 text-small more-list">
+                @include('main.shared.tag', ['tags'=>$popTagsSecond, 'num'=>0])
+            </div>
+        </div>
     @endif
     
 @endforeach
