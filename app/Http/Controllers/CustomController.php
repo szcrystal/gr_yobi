@@ -545,19 +545,22 @@ class CustomController extends Controller
         	//まずは親ポットかどうかを判定する
         	extract(Ctm::isPotParentAndStock($item->id));
             
+            
             if($isPotParent) {
             	$potIds = $pots->map(function($obj){
                 	return $obj->id;
                 })->all();
                 
-            	$sale = Sale::whereIn('item_id', $potIds);
+            	//$sale = Sale::whereIn('item_id', $potIds);
+                $sales = Sale::whereIn('item_id', $potIds)->whereDate('created_at', '>' , $sepDay)->get();
             }
             else {
-	        	$sale = Sale::where('item_id', $item->id);
+	        	//$sale = Sale::where('item_id', $item->id);
+                $sales = Sale::where('item_id', $item->id)->whereDate('created_at', '>' , $sepDay)->get();
             }
             
-            $sales = $sale->whereDate('created_at', '>' , $sepDay)->get();
-                
+            //$sales = $sale->whereDate('created_at', '>' , $sepDay)->get();
+            
             if($sales->isNotEmpty()) {
                 $sum = $sales->sum('total_price');
                 $saleCount = $sales->sum('sale_count');
@@ -585,7 +588,6 @@ class CustomController extends Controller
         $now = new DateTime();
         $sepDay = $now->modify('-' . $rankTerm . ' days')->format('Y-m-d');
 
-        
         $cateUekis = CategorySecond::where('parent_id', 1)->get();
 
         foreach($cateUekis as $k => $cateUeki) {
@@ -623,11 +625,11 @@ class CustomController extends Controller
                 if($item->is_potset) {
                     extract(Ctm::isPotParentAndStock($item->pot_parent_id)); //[$isPotParent, $isStock, $pots] open_statusはこの関数の中で設定されている
                     
-                    if($isPotParent && $isStock) 
+                    if($isPotParent && $isStock)
                         $stock += $item->stock;
                 }
                 else {
-                	if($item->open_status == 1)
+                	if($item->open_status == 1 && $item->pot_parent_id !== 0)
 	                    $stock += $item->stock;
                 }
                 

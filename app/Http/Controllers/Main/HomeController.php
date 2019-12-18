@@ -16,7 +16,6 @@ use App\TopSetting;
 use App\DeliveryGroup;
 use App\DeliveryGroupRelation;
 
-
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
@@ -143,20 +142,22 @@ class HomeController extends Controller
 //        $cateSecIds = implode(',', $cateSecSum);
 */
         
-        if(! Ctm::isEnv('local')) {
-            $uekiSecObj = Ctm::getUekiSecObj(); //get()で返る
+        //if(! Ctm::isEnv('local')) {
+            //$uekiSecObj = Ctm::getUekiSecObj(); //get()で返る
             
-            $uekiItems['items'] = $uekiSecObj->take($getNum)->all();
+            $uekiItems['items'] = $this->getUekiSecObj()->take($getNum)->all();
+            //$uekiItems['items'] = array();
             $uekiItems['type'] = 5;
             $uekiItems['slug'] = 'ranking-ueki';
             
             
             //Ranking Other =====================
-            $rankItems['items'] = Ctm::getRankObj()->take($getNum)->all();
+            $rankItems['items'] = $this->getRankObj()->take($getNum)->all();
+            //$rankItems['items'] = array();
             //$rankItems['items'] = $this->item->where($whereArr)->orderBy('sale_count', 'desc')->take($getNum)->get()->all();
             $rankItems['type'] = 2;
             $rankItems['slug'] = 'ranking';
-        }
+        //}
         
         //Recent 最近見た 最近チェックした =====================
         $cookieArr = array();
@@ -256,6 +257,7 @@ class HomeController extends Controller
 
         return view('main.home.index', ['firstItems'=>$firstItems, 'allRecoms'=>$allRecoms, 'itemCates'=>$itemCates, 'cates'=>$cates, 'newsCont'=>$newsCont, 'popTagsFirst'=>$popTagsFirst, 'popTagsSecond'=>$popTagsSecond, 'metaTitle'=>$metaTitle, 'caros'=>$caros, 'metaDesc'=>$metaDesc, 'metaKeyword'=>$metaKeyword, 'isTop'=>$isTop,]);
     }
+        
     
     
     //NewItem Ranking RecentCheck
