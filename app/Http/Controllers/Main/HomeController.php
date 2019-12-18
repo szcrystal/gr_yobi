@@ -149,7 +149,7 @@ class HomeController extends Controller
 //        $cateSecIds = implode(',', $cateSecSum);
 */
         
-        if(Ctm::isEnv('local')) {
+        if(! Ctm::isEnv('local')) {
             //$uekiSecObj = Ctm::getUekiSecObj(); //get()で返る
             
             $uekiItems['items'] = Ctm::getUekiSecObj()->take($getNum); //get()で返る 元々->all()を付けていたが不要
