@@ -149,6 +149,7 @@ class SingleController extends Controller
         $getNum = Ctm::isAgent('sp') ? 6 : 6;
         $chunkNum = $getNum/2;
         
+        if(! Ctm::isEnv('local')) { //Provision
         //在庫がないIDを取得する 以下のwhereNotInで使用する ===========
         $noStockIds = $this->item->whereNotIn('id', [$item->id])->where($whereArr)->get()->map(function($obj) {
             $switchArr = Ctm::isPotParentAndStock($obj->id); //親ポットか、Stockあるか、その子ポットのObjsを取る。$switchArr['isPotParent'] ! $switchArr['isStock']
@@ -174,7 +175,7 @@ class SingleController extends Controller
         //同梱包可能商品レコメンド END ================
         
         // この商品を見た人におすすめの商品：同カテゴリーのランダム =====================
-        if(Ctm::isEnv('local')) {
+        
         $recomCateItems = $this->item->whereNotIn('id', $noStockIds)->where($whereArr)->where('cate_id', $item->cate_id)->inRandomOrder()->take($getNum)->get()->chunk($chunkNum);
         // この商品を見た人におすすめの商品：同カテゴリーのランダム END ====================
         
@@ -197,7 +198,7 @@ class SingleController extends Controller
         	//ORG	
             //$recomCateRankItems = $this->item->whereNotIn('id', $noStockIds)->where($whereArr)->where('cate_id', $item->cate_id)->orderBy('sale_count', 'desc')->take($getNum)->get()->chunk($chunkNum);
     	}
-        }
+        
         // カテゴリーランキング：同カテゴリーのランキング END ====================
         
         //他にもこんな商品が買われています：Recommend レコメンド 先頭タグと同じものをレコメンド & 合わせて関連する記事（Post）もここで取得 ==============
@@ -256,7 +257,7 @@ class SingleController extends Controller
             $posts = $this->postRel->whereIn('id', $postRelIds)->where(['open_status'=>1, ])->inRandomOrder()->take($postNum)->get()->chunk($postChunkNum);
         }
         // Get SimilerPost END =====================================
-        
+        } //Provision
 
 		$recomArr = [
         	'同梱包可能なおすすめ商品' => $isOnceItems,
