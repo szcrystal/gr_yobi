@@ -145,14 +145,14 @@ class HomeController extends Controller
         //if(! Ctm::isEnv('local')) {
             //$uekiSecObj = Ctm::getUekiSecObj(); //get()で返る
             
-            $uekiItems['items'] = $this->getUekiSecObj()->take($getNum)->all();
+            $uekiItems['items'] = Ctm::getUekiSecObj()->take($getNum)->all();
             //$uekiItems['items'] = array();
             $uekiItems['type'] = 5;
             $uekiItems['slug'] = 'ranking-ueki';
             
             
             //Ranking Other =====================
-            $rankItems['items'] = $this->getRankObj()->take($getNum)->all();
+            $rankItems['items'] = Ctm::getRankObj()->take($getNum)->all();
             //$rankItems['items'] = array();
             //$rankItems['items'] = $this->item->where($whereArr)->orderBy('sale_count', 'desc')->take($getNum)->get()->all();
             $rankItems['type'] = 2;
