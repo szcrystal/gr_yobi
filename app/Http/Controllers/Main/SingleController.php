@@ -149,7 +149,7 @@ class SingleController extends Controller
         $getNum = Ctm::isAgent('sp') ? 6 : 6;
         $chunkNum = $getNum/2;
         
-        if(Ctm::isEnv('local')) { //Provision
+        //if(Ctm::isEnv('local')) { //Provision
         //在庫がないIDを取得する 以下のwhereNotInで使用する ===========
         $noStockIds = $this->item->whereNotIn('id', [$item->id])->where($whereArr)->get()->map(function($obj) {
             $switchArr = Ctm::isPotParentAndStock($obj->id); //親ポットか、Stockあるか、その子ポットのObjsを取る。$switchArr['isPotParent'] ! $switchArr['isStock']
@@ -256,7 +256,7 @@ class SingleController extends Controller
             $posts = $this->postRel->whereIn('id', $postRelIds)->where(['open_status'=>1, ])->inRandomOrder()->take($postNum)->get()->chunk($postChunkNum);
         }
         // Get SimilerPost END =====================================
-        } //Provision
+        //} //Provision
 
 		$recomArr = [
         	'同梱包可能なおすすめ商品' => $isOnceItems,
