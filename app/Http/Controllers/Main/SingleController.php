@@ -173,7 +173,8 @@ class SingleController extends Controller
         }
         //同梱包可能商品レコメンド END ================
         
-        // この商品を見た人におすすめの商品：同カテゴリーのランダム =====================              
+        // この商品を見た人におすすめの商品：同カテゴリーのランダム =====================
+        if(Ctm::isEnv('local')) {
         $recomCateItems = $this->item->whereNotIn('id', $noStockIds)->where($whereArr)->where('cate_id', $item->cate_id)->inRandomOrder()->take($getNum)->get()->chunk($chunkNum);
         // この商品を見た人におすすめの商品：同カテゴリーのランダム END ====================
         
@@ -181,7 +182,6 @@ class SingleController extends Controller
         if($item->cate_id == 1) {
         	$recomCateRankItems = Ctm::getUekiSecObj()->take($getNum)->chunk($chunkNum); //get()で返る
             //$items = Ctm::customPaginate($items, $this->perPage, $request);
-            
         }
         else {
         	$arIds = Ctm::getRankObj($item->cate_id)->map(function($obj){
@@ -197,6 +197,7 @@ class SingleController extends Controller
         	//ORG	
             //$recomCateRankItems = $this->item->whereNotIn('id', $noStockIds)->where($whereArr)->where('cate_id', $item->cate_id)->orderBy('sale_count', 'desc')->take($getNum)->get()->chunk($chunkNum);
     	}
+        }
         // カテゴリーランキング：同カテゴリーのランキング END ====================
         
         //他にもこんな商品が買われています：Recommend レコメンド 先頭タグと同じものをレコメンド & 合わせて関連する記事（Post）もここで取得 ==============
