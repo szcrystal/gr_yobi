@@ -110,8 +110,8 @@ $getNow .= Ctm::isEnv('product') ? str_replace ('.', '', config('app.app_version
 @endif
 
 @if(isset($isTop) || Request::is('item/*'))
-{{-- <script type="text/javascript" src="{{ asset('cdn/slick.min.js') }}"></script> --}}
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.js"></script>
+<script type="text/javascript" src="{{ asset('cdn/slick.min.js') }}"></script>
+{{-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.js"></script> --}}
 <script>
     @if(Request::is('item/*'))
         
@@ -150,8 +150,8 @@ $getNow .= Ctm::isEnv('product') ? str_replace ('.', '', config('app.app_version
 @endif
 
 @if(! Ctm::isAgent('sp') && Request::is('item/*'))
-{{-- <script src="{{ asset('cdn/lightbox.min.js') }}" type="text/javascript"></script> --}}{{-- 2.10.0 --}}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.10.0/js/lightbox.min.js" type="text/javascript"></script>
+<script src="{{ asset('cdn/lightbox.min.js') }}" type="text/javascript"></script>{{-- 2.10.0 --}}
+{{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.10.0/js/lightbox.min.js" type="text/javascript"></script> --}}
 <script>
     lightbox.option({
     	'fadeDuration': 400,
