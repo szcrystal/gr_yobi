@@ -142,7 +142,7 @@ class HomeController extends Controller
 //        $cateSecIds = implode(',', $cateSecSum);
 */
         
-        //if(! Ctm::isEnv('local')) {
+        if(Ctm::isEnv('local')) {
             //$uekiSecObj = Ctm::getUekiSecObj(); //get()で返る
             
             $uekiItems['items'] = Ctm::getUekiSecObj()->take($getNum)->all();
@@ -157,7 +157,7 @@ class HomeController extends Controller
             //$rankItems['items'] = $this->item->where($whereArr)->orderBy('sale_count', 'desc')->take($getNum)->get()->all();
             $rankItems['type'] = 2;
             $rankItems['slug'] = 'ranking';
-        //}
+        }
         
         //Recent 最近見た 最近チェックした =====================
         $cookieArr = array();

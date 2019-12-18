@@ -35,11 +35,7 @@ $getNow .= Ctm::isEnv('product') ? str_replace ('.', '', config('app.app_version
     @if(Ctm::isAgent('sp'))
         @include('shared.headNavSp')
     @else
-        @if(Ctm::isEnv('local'))
-            @include('shared.headNavLocal')
-        @else
-            @include('shared.headNav')
-        @endif
+        @include('shared.headNav')
     @endif
 
 <div class="fix-wrap">
