@@ -18,14 +18,18 @@ class AddColumnToEtc11 extends Migration
             $table->string('main_img')->after('slug')->nullable()->default(null);
         });
         
+        //Sales Index
         Schema::table('sales', function (Blueprint $table) {
+            //$table->primary(['id', 'item_id', 'created_at']);
             $table->index(['item_id', 'created_at']);
-            //$table->primary(['item_id', 'created_at']);
+            
         });
         
+        //Items Index
         Schema::table('items', function (Blueprint $table) {
             $table->index('cate_id');
             $table->index('subcate_id');
+            $table->index(['open_status', 'is_potset']);
         });
     }
 
@@ -43,6 +47,7 @@ class AddColumnToEtc11 extends Migration
             });
         }
         
+        //Sales Index
         if (Schema::hasTable('sales')) {
             Schema::table('sales', function (Blueprint $table) {
                 $sm = Schema::getConnection()->getDoctrineSchemaManager();
@@ -57,6 +62,7 @@ class AddColumnToEtc11 extends Migration
             });
         }
         
+        //Items Index
         if (Schema::hasTable('items')) {
             Schema::table('items', function (Blueprint $table) {
                 $sm = Schema::getConnection()->getDoctrineSchemaManager();
@@ -67,6 +73,10 @@ class AddColumnToEtc11 extends Migration
                 
                 if(array_key_exists("items_subcate_id_index", $indexesFound))
                     $table->dropIndex(['subcate_id']);
+                    
+                if(array_key_exists("items_open_status_is_potset_index", $indexesFound)) {
+                    $table->dropIndex(['open_status_is_potset']); // 'geo_state_index'インデックスを削除
+                }
             });
         }
     }

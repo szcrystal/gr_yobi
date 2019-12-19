@@ -159,6 +159,9 @@ class ItemController extends Controller
     {
     	$editId = $request->has('edit_id') ? $request->input('edit_id') : 0;
         
+//        echo ! $request->has('is_once');
+//        exit;
+        
     	$rules = [
         	'number' => 'required|unique:items,number,'.$editId,
             'title' => 'required|max:255',
@@ -214,7 +217,15 @@ class ItemController extends Controller
             'sale_price' => 'nullable|numeric',
             
             'factor' => 'required|numeric',
-            'once_price' => 'nullable|numeric',
+            'once_price' => [
+                'nullable',
+                'numeric',
+                function($attribute, $value, $fail) use($request) {
+                    if(! $request->has('is_once') && $value != '') {
+                        return $fail('同梱包不可の時「同梱包値引き金額」は入力不可です。');
+                    }
+                },
+            ],
             
             'stock' => 'nullable|integer',
             'stock_reset_month' => [

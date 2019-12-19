@@ -97,7 +97,9 @@
 
                             <tr>
                                 <th>名前</th>
-                                <td>
+                                <td>{{ $user->name }}
+                                    
+                                    {{--
                                     <input  class="form-control col-md-12{{ $errors->has('name') ? ' is-invalid' : '' }}" name="name" value="{{ Ctm::isOld() ? old('name') : (isset($user) ? $user->name : '') }}">
                                     
                                     @if ($errors->has('name'))
@@ -106,11 +108,14 @@
                                             <span>{{ $errors->first('name') }}</span>
                                         </div>
                                     @endif
+                                    --}}
                                 </td>
                             </tr>
                             <tr>
                                 <th>フリガナ</th>
-                                <td>
+                                <td>{{ $user->hurigana }}
+                                
+                                    {{--
                                     <input  class="form-control col-md-12{{ $errors->has('hurigana') ? ' is-invalid' : '' }}" name="hurigana" value="{{ Ctm::isOld() ? old('hurigana') : (isset($user) ? $user->hurigana : '') }}">
                                     
                                     @if ($errors->has('hurigana'))
@@ -119,12 +124,15 @@
                                             <span>{{ $errors->first('hurigana') }}</span>
                                         </div>
                                     @endif
+                                    --}}
                                 </td>
                             </tr>
                             
                             <tr>
                                 <th>電話番号</th>
-                                <td>
+                                <td>{{ $user->tel_num }}
+                                
+                                    {{--
                                     <input  class="form-control col-md-12{{ $errors->has('tel_num') ? ' is-invalid' : '' }}" name="tel_num" value="{{ Ctm::isOld() ? old('tel_num') : (isset($user) ? $user->tel_num : '') }}">
                                     
                                     @if ($errors->has('tel_num'))
@@ -133,14 +141,16 @@
                                             <span>{{ $errors->first('tel_num') }}</span>
                                         </div>
                                     @endif
+                                    --}}
                                 </td>
                             </tr>
                             
                             
                             <tr>
                                 <th>郵便番号</th>
-                                <td>{{-- 〒{{ Ctm::getPostNum($user->post_num) }} --}}
-                                    <input id="zipcode" class="form-control col-md-12{{ $errors->has('post_num') ? ' is-invalid' : '' }}" name="post_num" value="{{ Ctm::isOld() ? old('post_num') : (isset($user) ? $user->post_num : '') }}">
+                                <td>{{-- 〒{{ Ctm::getPostNum($user->post_num)}}  --}}
+                                
+                                    <input id="zipcode" class="form-control col-md-6{{ $errors->has('post_num') ? ' is-invalid' : '' }}" name="post_num" value="{{ Ctm::isOld() ? old('post_num') : (isset($user) ? $user->post_num : '') }}">
                                     
                                     @if ($errors->has('post_num'))
                                         <div class="help-block text-danger">
@@ -148,6 +158,7 @@
                                             <span>{{ $errors->first('post_num') }}</span>
                                         </div>
                                     @endif
+                                    
                                 </td>
                             </tr>
                             <tr>
@@ -214,16 +225,12 @@
                                 </td>
                             </tr>
                             
-                            {{--
-                            <tr>
-                                <th>住所3</th>
-                                <td>{{ $user->address_3 }}</td>
-                            </tr>
-                            --}}
                             
                             <tr>
                                 <th>メールアドレス</th>
-                                <td>
+                                <td>{{ $user->email }}
+                                
+                                    {{--
                                     <a href="mailto:{{ $user->email }}">{{ $user->email }}</a>
                                     <input  class="form-control mt-1 col-md-12{{ $errors->has('email') ? ' is-invalid' : '' }}" name="email" value="{{ Ctm::isOld() ? old('email') : (isset($user) ? $user->email : '') }}">
                                     
@@ -233,6 +240,7 @@
                                             <span>{{ $errors->first('email') }}</span>
                                         </div>
                                     @endif
+                                    --}}
                                 </td>
                             </tr>
                             
@@ -246,7 +254,9 @@
                                         	<span class="text-warning">未登録</span>
                                         @endif
                                         <br>
+                                        
                                         <?php
+                                        /*
                                             $checked = '';
                                             if(Ctm::isOld()) {
                                                 if(old('magazine'))
@@ -257,14 +267,12 @@
                                                     $checked = ' checked';
                                                 }
                                             }
+                                        */
                                         ?>
                                         
+                                        {{--
                                         <input id="check-magazine" type="checkbox" name="magazine" value="1"{{ $checked }}>
                                         <label for="check-magazine" class="checks">登録する</label>
-                                        
-                                        {{--
-                                        <input type="checkbox" name="user[magazine]" value="1"{{ $checked }}> 登録する
-                                        --}}
                                         
                                         @if ($errors->has('magazine'))
                                             <div class="help-block text-danger">
@@ -272,6 +280,8 @@
                                                 <span>{{ $errors->first('magazine') }}</span>
                                             </div>
                                         @endif
+                                        --}}
+                                        
                                     </td>
                                 @endif
                             </tr>
