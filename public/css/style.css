@@ -493,6 +493,9 @@ body {
 .text-blue {
     color: #506EA8;
 }
+.text-linkblue {
+    color: #007bff;
+}
 .text-brown {
     color: sienna;
 }

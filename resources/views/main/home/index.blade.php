@@ -26,8 +26,8 @@ use App\TopSetting;
             <div class="mt-3">
                 人気検索ワード
                 <ul class="list-unstyled clearfix">
-                    <li class="float-left mr-2"><a href="">シマトネリコ</a></li>
-                    <li class="float-left mr-2"><a href="">落葉樹</a></li>
+                    <li class="float-left mr-2"><a href="{{ url('search?s='. 'シマトネリコ') }}" class="text-linkblue">シマトネリコ</a></li>
+                    <li class="float-left mr-2"><a href="{{ url('search?s='. '落葉樹') }}" class="text-linkblue">落葉樹</a></li>
                 </ul>
             </div>
         </div>
