@@ -65,7 +65,7 @@ use App\User;
         <div class="nav-sp">
         	<p>グリーンロケットは初めての植木、お庭づくりを全力で応援します</p>
             
-            <ul class="mt-3">
+            <ul class="mt-3 pb-3">
                 
                 @if(Auth::check())
                     <li class="">
@@ -102,7 +102,7 @@ use App\User;
             
             </ul>
             
-            <ul class="mt-4 pt-1">
+            <ul class="mt-4 pt-1 bg-lightgray">
                 <li class="has-child">
                     初めての方へ {{-- <i class="fal fa-caret-down" aria-hidden="true"></i> --}}
                     
@@ -150,7 +150,7 @@ use App\User;
                 </li>
             </ul>
             
-            <p class="mt-5 ml-4 mb-0 text-left text-big">カテゴリー</p>
+            <p class="menu-exp">カテゴリー</p>
             <ul class="">
                 @foreach($cates as $cate)
                     <li class="">
