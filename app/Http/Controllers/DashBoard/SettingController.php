@@ -45,7 +45,6 @@ class SettingController extends Controller
     
     public function index()
     {
-            
         $setting = $this->setting->first(); //->paginate($this->perPage);
         
 //        print_r($setting);

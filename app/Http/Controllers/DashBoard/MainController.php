@@ -24,7 +24,7 @@ class MainController extends Controller
     public function __construct(Admin $admin, Contact $contact/*, Tag $tag, Article $article, Totalize $totalize*/)
     {
         $this->middleware('adminauth');
-        $this->middleware('role:isSuper', ['only' => ['getRegister','postRegister'] ] );
+        $this->middleware('role:isSuper', ['only' => ['getRegister', 'postRegister'] ] );
         //$this -> middleware('adminauth'/*, ['except' => ['getRegister','postRegister']]*/);
         //$this -> middleware(['auth:admin', 'can:is-admin']); //canについてはApp\Providers\AuthServiceProviderのGateにて
 //        //$this->middleware('auth:admin', ['except' => 'getLogout']);
@@ -151,7 +151,7 @@ class MainController extends Controller
         
         $url = 'dashboard/';
         $perm = Auth::guard('admin')->user()->permission;
-        $url .= $perm < 5 ? 'register' : 'top-settings';
+        $url .= $perm < 5 ? 'register' : 'settings/top-settings';
         
         //return view('dashboard.index', ['name'=>$adminUser->name]);
         return redirect($url);

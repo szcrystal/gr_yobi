@@ -25,7 +25,7 @@ class CheckRole
         	$roleName == 'isAdmin' && $per > 5 ||
         	$roleName == 'isDesigner' && $per != 10
         ) {
-        	return redirect('dashboard/top-settings');
+        	return redirect('dashboard/settings/top-settings');
         }
     	
         return $next($request);

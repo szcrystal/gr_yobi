@@ -149,7 +149,7 @@ class SingleController extends Controller
         $getNum = Ctm::isAgent('sp') ? 6 : 6;
         $chunkNum = $getNum/2;
         
-        //if(! Ctm::isEnv('local')) { //Provision
+        
         //在庫がないIDを取得する 以下のwhereNotInで使用する ===========
         $noStockIds = $this->item->whereNotIn('id', [$item->id])->where($whereArr)->get()->map(function($obj) {
             $switchArr = Ctm::isPotParentAndStock($obj->id); //親ポットか、Stockあるか、その子ポットのObjsを取る。$switchArr['isPotParent'] ! $switchArr['isStock']
@@ -179,26 +179,27 @@ class SingleController extends Controller
         // この商品を見た人におすすめの商品：同カテゴリーのランダム END ====================
         
         // カテゴリーランキング：同カテゴリーのランキング ====================
-        if($item->cate_id == 1) {
-        	$recomCateRankItems = Ctm::getUekiSecObj()->take($getNum)->chunk($chunkNum); //get()で返る
-            //$items = Ctm::customPaginate($items, $this->perPage, $request);
-        }
-        else {
-        	$arIds = Ctm::getRankObj($item->cate_id)->map(function($obj){
-            	return $obj->id;
-            })->all();
-         	
-            $arIds = array_diff($arIds, $noStockIdsNoThis);
-            $arIds = array_values($arIds);
-            
-            $scIdStr = implode(',', $arIds);
-            $recomCateRankItems = $this->item->whereIn('id', $arIds)->orderByRaw("FIELD(id, $scIdStr)")->take($getNum)->get()->chunk($chunkNum);
-            
-        	//ORG	
-            //$recomCateRankItems = $this->item->whereNotIn('id', $noStockIds)->where($whereArr)->where('cate_id', $item->cate_id)->orderBy('sale_count', 'desc')->take($getNum)->get()->chunk($chunkNum);
-    	}
-        
+        if(Ctm::isEnv('local')) { //Provision
+            if($item->cate_id == 1) {
+                $recomCateRankItems = Ctm::getUekiSecObj()->take($getNum)->chunk($chunkNum); //get()で返る
+                //$items = Ctm::customPaginate($items, $this->perPage, $request);
+            }
+            else {
+                $arIds = Ctm::getRankObj($item->cate_id)->map(function($obj){
+                    return $obj->id;
+                })->all();
+                
+                $arIds = array_diff($arIds, $noStockIdsNoThis);
+                $arIds = array_values($arIds);
+                
+                $scIdStr = implode(',', $arIds);
+                $recomCateRankItems = $this->item->whereIn('id', $arIds)->orderByRaw("FIELD(id, $scIdStr)")->take($getNum)->get()->chunk($chunkNum);
+                
+                //ORG
+                //$recomCateRankItems = $this->item->whereNotIn('id', $noStockIds)->where($whereArr)->where('cate_id', $item->cate_id)->orderBy('sale_count', 'desc')->take($getNum)->get()->chunk($chunkNum);
+            }
         // カテゴリーランキング：同カテゴリーのランキング END ====================
+        } //Provision
         
         //他にもこんな商品が買われています：Recommend レコメンド 先頭タグと同じものをレコメンド & 合わせて関連する記事（Post）もここで取得 ==============
         //$getNum = Ctm::isAgent('sp') ? 3 : 3;
@@ -234,6 +235,15 @@ class SingleController extends Controller
             //->inRandomOrder()->take()->get() もあり クエリビルダに記載あり
             //他にもこんな商品：部分 END =====================
             
+            // Get SimilerPost : Tagルール tagが2個以上なら2~4を対象に、2個以下なら表示なし =====================================
+            $postRelIds = $this->postTagRel->whereIn('tag_id', $ar)->get()->map(function($obj){
+                return $obj->postrel_id;
+            })->all();
+            
+            $postNum = Ctm::isAgent('sp') ? 3 : 3; //ORG ? 4 : 3;
+            $postChunkNum = Ctm::isAgent('sp') ? 3 : 3; //ORG ? 2 : 3;
+            $posts = $this->postRel->whereIn('id', $postRelIds)->where(['open_status'=>1, ])->inRandomOrder()->take($postNum)->get()->chunk($postChunkNum);
+            // Get SimilerPost END ===================================================
         }
         else { //タグがない時
         	$recommends = $this->item->whereNotIn('id', $noStockIds)->where($whereArr)->where(['subcate_id'=>$item->subcate_id])->inRandomOrder()->take($getNum)->get()->chunk($chunkNum);
@@ -242,6 +252,7 @@ class SingleController extends Controller
         
         
         // Get SimilerPost : Tagルール tagが2個以上なら2~4を対象に、2個以下なら1個目を対象、0ならなし =====================================
+        /*
         if(isset($tagRels[0])) { //関連Post用のarをセットする
             $ar[] = $tagRels[0];
         }
@@ -255,8 +266,9 @@ class SingleController extends Controller
             $postChunkNum = Ctm::isAgent('sp') ? 3 : 3; //ORG ? 2 : 3;
             $posts = $this->postRel->whereIn('id', $postRelIds)->where(['open_status'=>1, ])->inRandomOrder()->take($postNum)->get()->chunk($postChunkNum);
         }
+        */
         // Get SimilerPost END =====================================
-        //} //Provision
+        
 
 		$recomArr = [
         	'同梱包可能なおすすめ商品' => $isOnceItems,
