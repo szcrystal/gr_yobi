@@ -152,23 +152,13 @@ class SingleController extends Controller
         
         //在庫がないIDを取得する 以下のwhereNotInで使用する ===========
         $noStockIds = $this->item->whereNotIn('id', [$item->id])->where($whereArr)->get()->map(function($obj) {
-//            $switchArr = Ctm::isPotParentAndStock($obj->id); //親ポットか、Stockあるか、その子ポットのObjsを取る。$switchArr['isPotParent'] ! $switchArr['isStock']
-//            if($switchArr['isPotParent']) {
-//                if(! $switchArr['isStock'])
-//                    return $obj->id;
-//            }
-//            else {
-//                if(! $obj->stock)
-//                    return $obj->id;
-//            }
-            
-            if($obj->pot_parent_id !== 0) {
-                if(! $obj->stock)
+            $switchArr = Ctm::isPotParentAndStock($obj->id); //親ポットか、Stockあるか、その子ポットのObjsを取る。$switchArr['isPotParent'] ! $switchArr['isStock']
+            if($switchArr['isPotParent']) {
+                if(! $switchArr['isStock'])
                     return $obj->id;
             }
             else {
-                $switchArr = Ctm::isPotParentAndStock($obj->id);
-                if(! $switchArr['isStock'])
+                if(! $obj->stock)
                     return $obj->id;
             }
                 
@@ -177,7 +167,7 @@ class SingleController extends Controller
         $noStockIds = array_filter($noStockIds);
         $noStockIdsNoThis = $noStockIds;
         $noStockIds[] = $item->id;
-        //在庫がないID END ===========
+        //在庫がないID END =========================
         
         if($item->is_once) {
         	$isOnceItems = $this->item->whereNotIn('id', $noStockIds)->where($whereArr)->where(['consignor_id'=>$item->consignor_id, 'is_once'=>1, 'is_once_recom'=>0])->inRandomOrder()->take($getNum)->get()->chunk($chunkNum);
