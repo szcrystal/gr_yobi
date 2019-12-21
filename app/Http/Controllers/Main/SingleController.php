@@ -183,7 +183,7 @@ class SingleController extends Controller
         // この商品を見た人におすすめの商品：同カテゴリーのランダム END ====================
         
         // カテゴリーランキング：同カテゴリーのランキング ====================
-        if(Ctm::isEnv('local')) { //Provision
+        if(! Ctm::isEnv('local')) { //Provision
             if($item->cate_id == 1) {
                 $recomCateRankItems = Ctm::getUekiSecObj()->take($getNum)->chunk($chunkNum); //get()で返る
                 //$items = Ctm::customPaginate($items, $this->perPage, $request);
