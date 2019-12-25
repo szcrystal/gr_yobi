@@ -100,7 +100,7 @@
         <div class="form-group mt-3 clearfix">
             <button type="submit" class="btn btn-primary d-block w-25 mt-5 float-right"><span class="octicon octicon-sync"></span>更　新</button>
         </div>
-    
+        
     @endif
     
     
@@ -109,8 +109,9 @@
     
     @if(isset($type) && $type == 'top')
     	<h5>TOPヘッダースライド画像</h5>
-        <label class="mt-3 mb-4"><span class="text-small p-0 m-0">*（縦横サイズは任意、全ての画像を同じサイズで揃えて下さい。）</span></label>
-        <?php $spareClass = ''; ?> 
+        <label class="mt-0 mb-2"><span class="text-small p-0 m-0">*（縦横サイズは任意、全ての画像を同じサイズで揃えて下さい。）</span></label>
+        <span class="spare-tgl d-block text-center bg-gray text-primary border border-gray py-1 w-100 rounded mb-2">スライド画像を開く <i class="fa fa-caret-down"></i></span>
+        <?php $spareClass = 'spare-box'; ?>
     @else
     	<h5>コンテンツ画像</h5>
         <span class="spare-tgl d-block bg-gray text-center text-primary border border-gray py-1 mb-5 w-100 rounded">コンテンツ画像を開く <i class="fa fa-caret-down"></i></span>

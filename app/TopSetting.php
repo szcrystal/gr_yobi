@@ -8,6 +8,7 @@ class TopSetting extends Model
 {
     protected $fillable = [ //varchar:文字数
         'contents',
+        'search_words',
         
         'meta_title',
         'meta_description',

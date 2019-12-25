@@ -25,9 +25,18 @@ use App\TopSetting;
             
             <div class="mt-3">
                 人気検索ワード
+                <?php
+                    $words = TopSetting::first()->search_words;
+                    $words = explode(',', $words);
+                ?>
+                
                 <ul class="list-unstyled clearfix">
-                    <li class="float-left mr-2"><a href="{{ url('search?s='. 'シマトネリコ') }}" class="text-linkblue">シマトネリコ</a></li>
-                    <li class="float-left mr-2"><a href="{{ url('search?s='. '落葉樹') }}" class="text-linkblue">落葉樹</a></li>
+                    @foreach($words as $word)
+                        <li class="float-left mr-2 pr-1">
+                            <a href="{{ url('search?s='. $word) }}" class="text-linkblue">{{ $word }}</a>
+                        </li>
+                    @endforeach
+                    
                 </ul>
             </div>
         </div>

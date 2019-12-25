@@ -18,6 +18,11 @@ class AddColumnToEtc11 extends Migration
             $table->string('main_img')->after('slug')->nullable()->default(null);
         });
         
+        //TopSetting
+        Schema::table('top_settings', function (Blueprint $table) {
+            $table->string('search_words')->after('contents')->nullable()->default(null);
+        });
+        
         //Sales Index
         Schema::table('sales', function (Blueprint $table) {
             //$table->primary(['id', 'item_id', 'created_at']);
@@ -44,6 +49,13 @@ class AddColumnToEtc11 extends Migration
         if (Schema::hasColumn('categories', 'main_img')) {
             Schema::table('categories', function (Blueprint $table) {
                 $table->dropColumn('main_img');
+            });
+        }
+        
+        // TopSetting
+        if (Schema::hasColumn('top_settings', 'search_words')) {
+            Schema::table('top_settings', function (Blueprint $table) {
+                $table->dropColumn('search_words');
             });
         }
         

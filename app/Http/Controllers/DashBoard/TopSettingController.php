@@ -90,7 +90,22 @@ class TopSettingController extends Controller
         //$editId = $request->has('edit_id') ? $request->input('edit_id') : 0;
         
         $rules = [
-//            'admin_name' => 'required|max:255',
+            'search_words' => [
+                'max:255',
+                function($attribute, $value, $fail) {
+                    if (strpos($value, '、') !== false) {
+                        return $fail('「TOP検索ワード」に全角のカンマがあります。');
+                    }
+//                    else {
+//                        $nums = explode(',', $value);
+//                        foreach($nums as $num) {
+//                            if(! is_numeric($num)) {
+//                                return $fail('「TOP検索ワード」に全角の数字があります。');
+//                            }
+//                        }
+//                    }
+                }
+            ],
 //            'admin_email' => 'required|max:255',
 //            'tax_per' => 'required|numeric',
 //            'sale_per' => 'required_with:is_sale|nullable|numeric',
@@ -99,7 +114,7 @@ class TopSettingController extends Controller
         ];
         
          $messages = [
-            // 'name.required' => '「出荷元名」を入力して下さい。',
+            'search_words.max' => '「TOP検索ワード」の文字数が多すぎます。',
             //'sale_per.required_with' => '「割引率」を指定して下さい。',
             
             //'post_thumb.filenaming' => '「サムネイル-ファイル名」は半角英数字、及びハイフンとアンダースコアのみにして下さい。',

@@ -152,15 +152,19 @@ class SingleController extends Controller
         
         //在庫がないIDを取得する 以下のwhereNotInで使用する ===========
         $noStockIds = $this->item->whereNotIn('id', [$item->id])->where($whereArr)->get()->map(function($obj) {
-            $switchArr = Ctm::isPotParentAndStock($obj->id); //親ポットか、Stockあるか、その子ポットのObjsを取る。$switchArr['isPotParent'] ! $switchArr['isStock']
-            if($switchArr['isPotParent']) {
-                if(! $switchArr['isStock'])
-                    return $obj->id;
+            
+            $stock = 0;
+            
+            if($obj->pot_parent_id === 0) {
+                $switchArr = Ctm::isPotParentAndStock($obj->id); //親ポットか、Stockあるか、その子ポットのObjsを取る。$switchArr['isPotParent'] $switchArr['isStock']
+                $stock = $switchArr['isStock'];
             }
             else {
-                if(! $obj->stock)
-                    return $obj->id;
+                $stock = $obj->stock;
             }
+            
+            if(! $stock)
+                return $obj->id;
                 
         })->all();
     

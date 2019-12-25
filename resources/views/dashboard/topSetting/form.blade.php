@@ -68,6 +68,22 @@
             
             @include('dashboard.shared.contents')
             
+            <hr class="mt-5 pt-2 mb-3">
+            
+            <fieldset class="pt-4 mb-5 form-group">
+                <label>TOP人気検索ワード（,半角カンマで区切って下さい）</label>
+                <input class="form-control{{ $errors->has('search_words') ? ' is-invalid' : '' }}" name="search_words" value="{{ Ctm::isOld() ? old('search_words') : (isset($setting) ? $setting->search_words : '') }}">
+
+                @if ($errors->has('search_words'))
+                    <div class="text-danger">
+                        <span class="fa fa-exclamation form-control-feedback"></span>
+                        <span>{{ $errors->first('search_words') }}</span>
+                    </div>
+                @endif
+            </fieldset>
+            
+            <hr>
+            
             <label class="mt-4"><i class="fa fa-square text-secondary"></i> TOP-Shopメタ設定</label>
             @include('dashboard.shared.meta')
             
