@@ -89,12 +89,12 @@ use App\Category;
         <form class="form-horizontal" role="form" method="POST" action="/dashboard/upper" enctype="multipart/form-data">
         
         	<div class="form-group mb-0">
-                <div class="clearfix mb-5">
+                <div class="clearfix mb-4">
                     <button type="submit" class="btn btn-primary btn-block mx-auto w-btn w-25">更　新</button>
                 </div>
                 
                 @if(isset($orgObj))
-                    <b class="text-big">[{{ $orgObj->id }}] {{ $name }}の上部コンテンツ</b>
+                    <b class="text-big">[{{ $orgObj->id }}] {{ $name }} </b>の上部コンテンツ
                 @endif
             </div>
 
@@ -104,25 +104,48 @@ use App\Category;
             <input type="hidden" name="edit_id" value="{{ $id }}">
             <input type="hidden" name="type" value="{{ $type }}">
 
-			<div class="form-group">
-                <div class="col-md-12 text-right mt-0">
-                    <div class="checkbox">
-                        <label>
-                            <?php
-                                $checked = '';
-                                if(Ctm::isOld()) {
-                                    if(old('open_status'))
-                                        $checked = ' checked';
-                                }
-                                else {
-                                    if(isset($upper) && ! $upper->open_status) {
-                                        $checked = ' checked';
+            <div class="clearfix mt-4">
+                <div class="form-group float-right col-md-5 pr-0 mr-0">
+                    <div class="pl-5 ml-3 mt-0">
+                        <div class="checkbox">
+                            <label>
+                                <?php
+                                    $checked = '';
+                                    if(Ctm::isOld()) {
+                                        if(old('open_status'))
+                                            $checked = ' checked';
                                     }
-                                }
-                            ?>
-                            
-                            <input type="checkbox" name="open_status" value="1"{{ $checked }}> この上部コンテンツを表示しない
-                        </label>
+                                    else {
+                                        if(isset($upper) && ! $upper->open_status) {
+                                            $checked = ' checked';
+                                        }
+                                    }
+                                ?>
+                                
+                                <input type="checkbox" name="open_status" value="1"{{ $checked }}> この上部コンテンツを表示しない
+                            </label>
+                        </div>
+                    </div>
+                
+                    <div class="pl-5 ml-3 mt-0">
+                        <div class="checkbox">
+                            <label>
+                                <?php
+                                    $moreChecked = '';
+                                    if(Ctm::isOld()) {
+                                        if(old('is_more'))
+                                            $moreChecked = ' checked';
+                                    }
+                                    else {
+                                        if(isset($upper) && ! $upper->is_more) {
+                                            $moreChecked = ' checked';
+                                        }
+                                    }
+                                ?>
+                                
+                                <input type="checkbox" name="is_more" value="1"{{ $moreChecked }}> 「もっと見る」を設定しない<br><small>（チェックONで全表示）</small>
+                            </label>
+                        </div>
                     </div>
                 </div>
             </div>

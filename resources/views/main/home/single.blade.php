@@ -31,22 +31,9 @@ use App\TopSetting;
         @endif
         
         
-        @include('main.shared.upper')
+        @include('main.shared.upper', ['orgObj'=>$item])
         
-        @if(isset($item->upper_title) || isset($item->upper_text))
-            <div class="upper-introduce-wrap mb-4">
-                @if(isset($item->upper_title) && $item->upper_title != '')
-                    <h3 class="upper-title">{{ $item->upper_title }}</h3>
-                @endif
-                
-                @if(isset($item->upper_text) && $item->upper_text != '')
-                    <p class="upper-text px-1 m-0">{!! nl2br($item->upper_text) !!}</p>
-                @endif
-            
-            </div>
-        @endif
-        
-		
+
         <div class="head-frame clearfix">
             
             <div class="single-left">

@@ -74,18 +74,6 @@ use App\TopSetting;
             @if(Request::query('page') < 2)
                 @include('main.shared.upper')
             
-                @if(isset($orgObj->upper_title) || isset($orgObj->upper_text))
-                    <div class="upper-introduce-wrap mb-4">
-                        @if(isset($orgObj->upper_title) && $orgObj->upper_title != '')
-                            <h3 class="upper-title">{{ $orgObj->upper_title }}</h3>
-                        @endif
-                        
-                        @if(isset($orgObj->upper_text) && $orgObj->upper_text != '')
-                            <p class="upper-text px-1 m-0">{!! nl2br($orgObj->upper_text) !!}</p>
-                        @endif
-                    
-                    </div>
-                @endif
             @endif
         @endif
         
@@ -94,8 +82,7 @@ use App\TopSetting;
             {{ $items->links() }}
         </div>
         
-        <?php 
-            
+        <?php
             $n = Ctm::isAgent('sp') ? 3 : 4;
             $itemArr = array_chunk($items->all(), $n); 
         ?>

@@ -23,21 +23,24 @@ use App\TopSetting;
 
             </form>
             
-            <div class="mt-3">
-                人気検索ワード
+            <div class="mt-2">
                 <?php
                     $words = TopSetting::first()->search_words;
-                    $words = explode(',', $words);
                 ?>
                 
-                <ul class="list-unstyled clearfix">
-                    @foreach($words as $word)
-                        <li class="float-left mr-2 pr-1">
-                            <a href="{{ url('search?s='. $word) }}" class="text-linkblue">{{ $word }}</a>
-                        </li>
-                    @endforeach
+                @if(isset($words))
+                    <?php $words = explode(',', $words); ?>
                     
-                </ul>
+                    <span class="text-small">人気検索ワード</span>
+                    <ul class="list-unstyled clearfix">
+                        @foreach($words as $word)
+                            <li class="float-left mr-2 pr-1">
+                                <a href="{{ url('search?s='. $word) }}" class="text-linkblue">{{ $word }}</a>
+                            </li>
+                        @endforeach
+                        
+                    </ul>
+                @endif
             </div>
         </div>
         @endif

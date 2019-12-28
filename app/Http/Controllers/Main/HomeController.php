@@ -528,7 +528,9 @@ class HomeController extends Controller
         //$items = $this->cateSec->where(['parent_id'=>$cate->id, ])->orderBy('updated_at', 'desc')->paginate($this->perPage);
         
         //Upper取得
-        $upperRelArr = Ctm::getUpperArr($cate->id, 'cate');
+        $uppers = Ctm::getUpperArr($cate->id, 'cate');
+        $upperMore = $uppers['isMore'];
+        $upperRelArr = $uppers['contents'];
         
         //Meta
         $metaTitle = isset($cate->meta_title) ? $cate->meta_title : $cate->name . '｜植木買うならグリーンロケット';
@@ -538,7 +540,7 @@ class HomeController extends Controller
         $cate->timestamps = false;
         $cate->increment('view_count');
         
-        return view('main.archive.index', ['items'=>$items, 'cate'=>$cate, 'type'=>'category', 'upperRelArr'=>$upperRelArr, 'metaTitle'=>$metaTitle, 'metaDesc'=>$metaDesc, 'metaKeyword'=>$metaKeyword,]);
+        return view('main.archive.index', ['items'=>$items, 'cate'=>$cate, 'type'=>'category', 'upperMore'=>$upperMore, 'upperRelArr'=>$upperRelArr, 'metaTitle'=>$metaTitle, 'metaDesc'=>$metaDesc, 'metaKeyword'=>$metaKeyword,]);
     }
     
     
@@ -567,7 +569,9 @@ class HomeController extends Controller
         //$items = $this->item->where(['subcate_id'=>$subcate->id, 'open_status'=>1, 'is_potset'=>0])->orderBy('id', 'desc')->paginate($this->perPage);
         
         //Upper取得
-        $upperRelArr = Ctm::getUpperArr($subcate->id, 'subcate');
+        $uppers = Ctm::getUpperArr($subcate->id, 'subcate');
+        $upperMore = $uppers['isMore'];
+        $upperRelArr = $uppers['contents'];
         
         //Meta
         $metaTitle = isset($subcate->meta_title) ? $subcate->meta_title : $subcate->name . '｜植木買うならグリーンロケット';
@@ -577,7 +581,7 @@ class HomeController extends Controller
         $subcate->timestamps = false;
         $subcate->increment('view_count');
         
-        return view('main.archive.index', ['items'=>$items, 'cate'=>$cate, 'subcate'=>$subcate, 'type'=>'subcategory', 'upperRelArr'=>$upperRelArr, 'metaTitle'=>$metaTitle, 'metaDesc'=>$metaDesc, 'metaKeyword'=>$metaKeyword,]);
+        return view('main.archive.index', ['items'=>$items, 'cate'=>$cate, 'subcate'=>$subcate, 'type'=>'subcategory', 'upperMore'=>$upperMore, 'upperRelArr'=>$upperRelArr, 'metaTitle'=>$metaTitle, 'metaDesc'=>$metaDesc, 'metaKeyword'=>$metaKeyword,]);
     }
     
     
@@ -608,7 +612,9 @@ class HomeController extends Controller
         //$items = $this->item->whereIn('id',$itemIds)->where(['open_status'=>1, 'is_potset'=>0])->orderBy('id', 'desc')->paginate($this->perPage);
         
         //Upper取得
-        $upperRelArr = Ctm::getUpperArr($tag->id, 'tag');
+        $uppers = Ctm::getUpperArr($tag->id, 'tag');
+        $upperMore = $uppers['isMore'];
+        $upperRelArr = $uppers['contents'];
         
         $metaTitle = isset($tag->meta_title) ? $tag->meta_title : $tag->name . '｜植木買うならグリーンロケット';
         $metaDesc = $tag->meta_description;
@@ -617,7 +623,7 @@ class HomeController extends Controller
         $tag->timestamps = false;
         $tag->increment('view_count');
         
-        return view('main.archive.index', ['items'=>$items, 'tag'=>$tag, 'type'=>'tag', 'upperRelArr'=>$upperRelArr, 'metaTitle'=>$metaTitle, 'metaDesc'=>$metaDesc, 'metaKeyword'=>$metaKeyword,]);
+        return view('main.archive.index', ['items'=>$items, 'tag'=>$tag, 'type'=>'tag', 'upperMore'=>$upperMore, 'upperRelArr'=>$upperRelArr, 'metaTitle'=>$metaTitle, 'metaDesc'=>$metaDesc, 'metaKeyword'=>$metaKeyword,]);
     }
     
     

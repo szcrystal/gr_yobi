@@ -10,6 +10,7 @@ class ItemUpper extends Model
         'parent_id',
     	'type_code',
         'open_status',
+        'is_more',
 
     ];
 }

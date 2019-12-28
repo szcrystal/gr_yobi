@@ -403,11 +403,14 @@ class CustomController extends Controller
     	//ItemUpper
         $upperRels = null;
         $upperRelArr = array();
+        $isMore = 0;
         
         $upper = ItemUpper::where(['parent_id'=>$parentId, 'type_code'=>$type, 'open_status'=>1])->first();
 		
         if(isset($upper)) {
         	
+            $isMore = $upper->is_more;
+            
             //登録されるブロックはa,b,cの3つのみ
             
         	$upperRels = ItemUpperRelation::where(['upper_id'=>$upper->id, ])->orderBy('id', 'asc')->get(); //->orderBy('sort_num', 'asc')
@@ -432,7 +435,7 @@ class CustomController extends Controller
 
         }
         
-        return $upperRelArr;
+        return ['isMore'=>$isMore, 'contents'=>$upperRelArr];
     }
     
     

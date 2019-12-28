@@ -176,7 +176,7 @@ class UserController extends Controller
             //'slug.unique' => '「スラッグ」が既に存在します。',
         ];
         
-        $this->validate($request, $rules, $messages);
+        //$this->validate($request, $rules, $messages);
         
         $data = $request->all();
         
@@ -186,7 +186,8 @@ class UserController extends Controller
         $query = '';
         
         if($editId) { //update（編集）の時
-            $status = 'ユーザーが更新されました！' . "<br><span class=\"text-orange\">＊ご注文者で必要であれば、ご注文情報内で配送先も変更して下さい。</span>";
+            $status = 'ユーザーが更新されました！';
+            //$status .=  "<br><span class=\"text-orange\">＊ご注文者で必要であれば、ご注文情報内で配送先も変更して下さい。</span>";
             
             if($data['is_user']) {
                 $user = $this->user->find($editId);

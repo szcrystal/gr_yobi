@@ -62,10 +62,12 @@
             
 			{{-- <h4 class="mb-1">会員情報</h4> --}}
             
+            {{--
             <p class="my-2">ユーザー情報 = 個人情報ともなりますので、情報変更の際はご注意下さい。
             <br><small>＊なるべくはマイページよりユーザーが任意で変更するよう促すのがよろしいかもしれません。</small>
             <br><small>＊「メールアドレス」については、ログイン情報及び連絡先ともなりますので、十分ご注意下さい（マイページからユーザーによる変更も可能です）</small>
             </p>
+            --}}
             
             	<div class="table-responsive">
                     <table class="table table-bordered">
@@ -148,8 +150,9 @@
                             
                             <tr>
                                 <th>郵便番号</th>
-                                <td>{{-- 〒{{ Ctm::getPostNum($user->post_num)}}  --}}
+                                <td>〒{{ Ctm::getPostNum($user->post_num)}}
                                 
+                                    {{--
                                     <input id="zipcode" class="form-control col-md-6{{ $errors->has('post_num') ? ' is-invalid' : '' }}" name="post_num" value="{{ Ctm::isOld() ? old('post_num') : (isset($user) ? $user->post_num : '') }}">
                                     
                                     @if ($errors->has('post_num'))
@@ -158,49 +161,23 @@
                                             <span>{{ $errors->first('post_num') }}</span>
                                         </div>
                                     @endif
+                                    --}}
                                     
                                 </td>
                             </tr>
                             <tr>
                                 <th>都道府県</th>
-                                <td>
-                                    <div class="select-wrap col-md-6 p-0 m-0">
-                                        <select id="pref" class="form-control{{ $errors->has('prefecture') ? ' is-invalid' : '' }}" name="prefecture">
-                                            <option selected disabled>選択して下さい</option>
-                                            <?php
-                                                use App\Prefecture;
-                                                $prefs = Prefecture::all();
-                                            ?>
-                                            @foreach($prefs as $pref)
-                                                <?php
-                                                    $selected = '';
-                                                    if(Ctm::isOld()) {
-                                                        if(old('prefecture') == $pref->name)
-                                                            $selected = ' selected';
-                                                    }
-                                                    else {
-                                                        if(isset($user) && $user->prefecture == $pref->name) {
-                                                            $selected = ' selected';
-                                                        }
-                                                    }
-                                                ?>
-                                                
-                                                <option value="{{ $pref->name }}"{{ $selected }}>{{ $pref->name }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                            
-                                    @if ($errors->has('prefecture'))
-                                        <div class="help-block text-danger">
-                                            <span class="fa fa-exclamation form-control-feedback"></span>
-                                            <span>{{ $errors->first('prefecture') }}</span>
-                                        </div>
-                                    @endif
+                                <td>{{ $user->prefecture }}
+                                
+                                    
+                                    
                                 </td>
                             </tr>
                             <tr>
                                 <th>住所1</th>
-                                <td>
+                                <td>{{ $user->address_1 }}
+                                
+                                    {{--
                                     <input id="address" class="form-control col-md-12{{ $errors->has('address_1') ? ' is-invalid' : '' }}" name="address_1" value="{{ Ctm::isOld() ? old('address_1') : (isset($user) ? $user->address_1 : '') }}">
                                     
                                     @if ($errors->has('address_1'))
@@ -209,11 +186,14 @@
                                             <span>{{ $errors->first('address_1') }}</span>
                                         </div>
                                     @endif
+                                    --}}
                                 </td>
                             </tr>
                             <tr>
                                 <th>住所2</th>
-                                <td>
+                                <td>{{ $user->address_2 }}
+                                
+                                    {{--
                                     <input  class="form-control col-md-12{{ $errors->has('address_2') ? ' is-invalid' : '' }}" name="address_2" value="{{ Ctm::isOld() ? old('address_2') : (isset($user) ? $user->address_2 : '') }}">
                                     
                                     @if ($errors->has('address_2'))
@@ -222,6 +202,7 @@
                                             <span>{{ $errors->first('address_2') }}</span>
                                         </div>
                                     @endif
+                                    --}}
                                 </td>
                             </tr>
                             

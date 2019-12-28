@@ -894,6 +894,32 @@ var exe = (function() {
 //                }
             });
             
+            
+            //upper more -----
+            var $upperTgl = $('.upper-tgl');
+            var $upperOpen = $('.upper-open');
+            var uh = $upperOpen.height();
+            
+            $upperTgl.on('click', function(e){
+                //var className = 'mb-4';
+                
+                //$('.upper-open').slideToggle(speed);
+                if($upperOpen.hasClass('filter-blur')) {
+                    $upperOpen.css({height:'100%'}).removeClass('filter-blur');
+                    
+                }
+                else {
+                    $upperOpen.addClass('filter-blur').css({height:uh});
+                }
+                
+//                if($(this).hasClass(className)) {
+//                    $(this).removeClass(className);
+//                }
+//                else {
+//                    $(this).addClass(className);
+//                }
+            });
+            
         },
         
         //スマホ時 Single 詳細などのaccordion

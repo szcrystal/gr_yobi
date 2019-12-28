@@ -23,6 +23,12 @@ class AddColumnToEtc11 extends Migration
             $table->string('search_words')->after('contents')->nullable()->default(null);
         });
         
+        //ItemUpper
+        Schema::table('item_uppers', function (Blueprint $table) {
+            $table->boolean('is_more')->after('open_status')->nullable()->default(1);
+        });
+        
+        
         //Sales Index
         Schema::table('sales', function (Blueprint $table) {
             //$table->primary(['id', 'item_id', 'created_at']);
@@ -58,6 +64,14 @@ class AddColumnToEtc11 extends Migration
                 $table->dropColumn('search_words');
             });
         }
+        
+        // ItemUpper
+        if (Schema::hasColumn('item_uppers', 'is_more')) {
+            Schema::table('item_uppers', function (Blueprint $table) {
+                $table->dropColumn('is_more');
+            });
+        }
+        
         
         //Sales Index
         if (Schema::hasTable('sales')) {

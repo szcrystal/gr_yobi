@@ -8,7 +8,19 @@
     
 //    print_r($upperRelArr);
 //    exit;
+    
+    $moreClass = '';
 ?>
+
+@if($upperMore)
+    <?php $moreClass = 'upper-open filter-blur'; ?>
+    
+    <div class="btn btn-block btn-custom upper-tgl">
+        詳しく見る <i class="fal fa-angle-down"></i>
+    </div>
+@endif
+
+<div class="{{ $moreClass }}">
 
 <div class="upper-wrap">
     
@@ -16,10 +28,16 @@
         <?php
             //ここでのblockKeyは [a],[b],[c]
             $chunkNum++;
-            
+                        
             //echo count($upperRels);
+            
+            if($upperMore) {
+                $moreClass = ' upper-open';
+                //tglボタンはこのループの最後（aの時）にセット 133行目あたり
+            }
         ?>
         
+
         <div class="block-wrap">
 
             @foreach($upperRels as $key => $upperRel)
@@ -74,6 +92,7 @@
                                         ?>
                                     @endif
                                     
+                                    
                                     <div class="{{ $blockKey }}-block clearfix ">
 
                                         @if(isset($uRel->img_path))
@@ -122,7 +141,15 @@
             
         </div>
         
+        
+        
     @endforeach
 </div>
 
+
+@include('main.shared.upperExp', ['orgObj'=>$orgObj])
+
+</div>
+
 @endif
+

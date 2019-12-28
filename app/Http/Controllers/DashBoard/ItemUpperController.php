@@ -218,13 +218,17 @@ class ItemUpperController extends Controller
         
         //status
         $data['open_status'] = isset($data['open_status']) ? 0 : 1;
+        $data['is_more'] = isset($data['is_more']) ? 0 : 1;
         
 //        echo $data['open_status'];
 //        exit;
         
         $itemUpper = $this->itemUpper->updateOrCreate(
         	['parent_id'=>$editId, 'type_code'=>$type],
-        	['open_status'=>$data['open_status']]
+        	[
+                'open_status'=>$data['open_status'],
+                'is_more'=>$data['is_more'],
+            ]
         );
         
 //        print_r($data['block']);
