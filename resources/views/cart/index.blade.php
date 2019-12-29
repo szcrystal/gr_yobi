@@ -90,7 +90,7 @@
                                 	<span class="text-small"><b>数量</b>：</span>
                                     
                                     
-                                    @if(! $item->stock)
+                                    @if(! $item->stock || $item->stock < 0)
                                         <span class="text-small text-white bg-danger p-1"><i class="fas fa-exclamation-triangle text-big"></i> <b>売切れ商品です。カートから削除して進んで下さい。</b></span>
                                         <input type="hidden" name="last_item_count[]" value="0">
                                     

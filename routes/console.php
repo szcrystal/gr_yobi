@@ -114,5 +114,39 @@ Artisan::command('setPotParent', function () {
 })->describe('Display potParentItem No Input pot_parent_id ');
 
 
+//子ポットの在庫を合計して、親ポットにセットする
+Artisan::command('setStockPotParent', function () {
+    $items = Item::all();
+    $ar = array();
+    
+    foreach($items as $item) {
+        $isPotParent = 0; //このitemがpotParentなら、1
+        $isStock = 0; //このpotParentの子供ポットの在庫が全て0なら、0
+        $stockCount = 0;
+        
+        if($item->pot_parent_id === 0) {
+            $pots = Item::where(['open_status'=>1, 'is_potset'=>1, 'pot_parent_id'=>$item->id])->orderBy('price', 'asc')->get();
+            
+            if($pots->isNotEmpty()) {
+                foreach($pots as $pot) {
+                    $stockCount += $pot->stock;
+                }
+                
+                $item->update([
+                    'price' => $pots->first()->price,
+                    'stock' => $stockCount,
+                ]);
+                
+                $this->comment('ID' . $item->id . ': PotParent:Stock Set Done !');
+            }
+        }
+ 
+    }
+    
+    
+    //$this->comment('NoUser change address3 done');
+})->describe('Display potParentItem Set Stock');
+
+
 
 

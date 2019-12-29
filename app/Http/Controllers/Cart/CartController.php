@@ -631,13 +631,29 @@ class CartController extends Controller
             $i->timestamps = false; //在庫引く時とsale Countでタイムスタンプを上書きしない
             $i->decrement('stock', $singleSellCount);
             
-            if(! $i->stock) { //在庫が0になればitem_idを配列へ メールで知らせるため
+            $parentItem = null;
+            
+            if(! $i->stock || $i->stock < 0) { //在庫が0になればitem_idを配列へ メールで知らせるため
             	$stockNone[] = $i->id;
             }
             
             //Sale Count処理（itemの売れた個数）
             if($i->is_potset) {
-            	$this->item->find($i->pot_parent_id)->increment('sale_count', $singleSellCount);
+            	$parentItem = $this->item->find($i->pot_parent_id);
+                $parentItem->increment('sale_count', $singleSellCount);
+                
+                if(Ctm::isEnv('local')) {
+                    $pots = $this->item->where(['open_status'=>1, 'is_potset'=>1, 'pot_parent_id'=>$i->pot_parent_id])->get();
+                    $stockCount = 0;
+                    
+                    if($pots->isNotEmpty()) {
+                        foreach($pots as $pot) {
+                            $stockCount += $pot->stock;
+                        }
+                        
+                        $parentItem->update(['stock' => $stockCount]);
+                    }
+                }
             }
             else {
             	$i->increment('sale_count', $singleSellCount);
@@ -681,12 +697,18 @@ class CartController extends Controller
         	$str = '下記商品の在庫がなくなりました。'. "\n\n";
             
             foreach($stockNone as $itemIdVal) {
-            	$str .= '●' . $this->item->find($itemIdVal)->number. "\n";
-            	$str .= $this->item->find($itemIdVal)->title. "\n";
-        		$str .= url('dashboard/items/'. $itemIdVal). "\n\n\n";
+                $itemVal = $this->item->find($itemIdVal);
+                
+            	$str .= '●' . $itemVal->number. "\n";
+            	$str .= $itemVal->title. "\n";
+        		$str .= url('dashboard/items/'. $itemIdVal). "\n\n";
+                
+                if($itemVal->stock < 0) {
+                    $str .= "<b>この商品の在庫に不整合が起きています。直ぐに確認して下さい。<br>原因として、在庫数以上の購入がされたこと等が考えられます。</b><br><br><br>";
+                }
             }
             
-            Mail::later(now()->addMinutes(5), new NoStocked($str)); //queue
+            Mail::later(now()->addMinutes(3), new NoStocked($str)); //queue
         
 //            Mail::raw($str, function ($message) {
 //            	$setting = $this->setting->get()->first();
@@ -695,6 +717,7 @@ class CartController extends Controller
 //                         -> to($setting->admin_email, $setting->admin_name)
 //                         -> subject('商品の在庫がなくなりました。');          
 //            });
+            
         }
         
         

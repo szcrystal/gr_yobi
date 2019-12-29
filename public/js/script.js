@@ -878,8 +878,8 @@ var exe = (function() {
         
         
         toggleSideMenu: function(){
-        	$tgl = $('.more-tgl');
-            speed = 150;
+        	var $tgl = $('.more-tgl');
+            var speed = 150;
             
             $tgl.on('click', function(e){
             	$list = $(this).parent('div').next('.more-list');

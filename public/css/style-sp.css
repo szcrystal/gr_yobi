@@ -1416,7 +1416,7 @@ ORG END ======================== */
     
     /* upper item upper */
     .single .upper-wrap {
-        padding-top: 0;
+        padding-top: 1em;
         //border: 1px solid red;
     }
     .upper-wrap + .head-frame .single-left,

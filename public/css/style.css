@@ -2628,28 +2628,34 @@ h3.upper-title {
 
 }
 
+.upper-open {
+    height: 9.0em;
+    position: relative;
+    //filter: blur(1px);
+    //linear-gradient(180deg, white, navy);
+    overflow: hidden;
+}
 .upper-tgl {
-    background: #fff;
-    color: #333;
+    background: rgba(0,0,0,0.6);
+    color: #fff;
     border: 1px solid #3a3b3c;
     -webkit-transition: none !important;
     transition: none !important;
     margin-bottom: 0;
+    width: 100%;
+/*    position: absolute;*/
+/*    top: 40%;*/
+/*    left: 0;*/
+/*    z-index: 999;*/
 }
 .upper-tgl:hover {
     background: #3a3b3c !important;
     color: #fff;
     
 }
-.upper-open {
-    height: 8em;
-    position: relative;
-    //filter: blur(1px);
-    //linear-gradient(180deg, white, navy);
-    overflow: hidden;
-}
+
 .filter-blur {
-    //filter: blur(1px);
+    filter: blur(1px);
     margin-bottom: 2.5em;
 }
 .filter-blur:after {
@@ -2660,12 +2666,14 @@ h3.upper-title {
     right: 0;
     bottom: 0;
     left: 0;
-    //background: #fff;
-    background: -webkit-linear-gradient(180deg, rgba(255,255,255,0.5), #fff);
-    background: linear-gradient(180deg, rgba(255,255,255,0.5), #fff);
+    //border: 1px solid #efefef;
+    background: -webkit-linear-gradient(180deg, rgba(255,255,255,0.1), #fff);
+    background: linear-gradient(180deg, rgba(255,255,255,0.1), #fff);;
+/*    linear-gradient(180deg, rgba(255,255,255,0.1), #fff);*/
 /*    filter: blur(10px);*/
 /*    margin: -120px;*/
 }
+
 
 /* upper itemupper END */
 

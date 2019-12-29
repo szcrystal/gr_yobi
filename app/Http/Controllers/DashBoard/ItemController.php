@@ -385,8 +385,23 @@ class ItemController extends Controller
             		$parentItem->pot_parent_id = 0;
                 }
                 
-                if(! $parentItem->stock) { //stockを1にセット
-                	$parentItem->stock = 1;
+                if(Ctm::isEnv('local')) {
+                    $pots = $this->item->where(['open_status'=>1, 'is_potset'=>1, 'pot_parent_id'=>$item->pot_parent_id])->orderBy('price', 'asc')->get();
+                    $stockCount = 0;
+                    
+                    if($pots->isNotEmpty()) {
+                        foreach($pots as $pot) {
+                            $stockCount += $pot->stock;
+                        }
+                        
+                        $parentItem->stock = $stockCount;
+                        $parentItem->price = $pots->first()->price;
+                    }
+                }
+                else {
+                    if(! $parentItem->stock) { //stockを1にセット
+                        $parentItem->stock = 1;
+                    }
                 }
                 
                 $parentItem->updated_at = date('Y-m-d H:i:s', time()); //アーカイブの更新順並べ用。子ポット更新時に親ポットのupdated_atを更新する

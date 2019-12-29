@@ -33,9 +33,15 @@ use App\Icon;
     $imgClass = '';
     
     //pot売り切れ判定
-    $potsArr = Ctm::isPotParentAndStock($item->id); //親ポットか、Stockあるか、その子ポットのObjsを取る
-    
-    $isStock = $potsArr['isPotParent'] ? $potsArr['isStock'] : ($item->stock ? 1 : 0); //pot親でない時は通常Itemの在庫を見る
+    if(Ctm::isEnv('local')) {
+        $isStock = $item->stock ? 1 : 0;
+        $potsArr['isPotParent'] = 0;
+        //$potsArr['pots'] = $item->pot_parent_id === 0
+    }
+    else {
+        $potsArr = Ctm::isPotParentAndStock($item->id); //親ポットか、Stockあるか、その子ポットのObjsを取る
+        $isStock = $potsArr['isPotParent'] ? $potsArr['isStock'] : ($item->stock ? 1 : 0); //pot親でない時は通常Itemの在庫を見る
+    }
    
 ?>
 
