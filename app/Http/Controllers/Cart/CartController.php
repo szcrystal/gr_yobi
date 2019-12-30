@@ -642,18 +642,18 @@ class CartController extends Controller
             	$parentItem = $this->item->find($i->pot_parent_id);
                 $parentItem->increment('sale_count', $singleSellCount);
                 
-                if(Ctm::isEnv('local')) {
-                    $pots = $this->item->where(['open_status'=>1, 'is_potset'=>1, 'pot_parent_id'=>$i->pot_parent_id])->get();
-                    $stockCount = 0;
-                    
-                    if($pots->isNotEmpty()) {
-                        foreach($pots as $pot) {
-                            $stockCount += $pot->stock;
-                        }
-                        
-                        $parentItem->update(['stock' => $stockCount]);
+                //子ポットの在庫を親ポットにセットする -------
+                $pots = $this->item->where(['open_status'=>1, 'is_potset'=>1, 'pot_parent_id'=>$i->pot_parent_id])->get();
+                $stockCount = 0;
+                
+                if($pots->isNotEmpty()) {
+                    foreach($pots as $pot) {
+                        $stockCount += $pot->stock;
                     }
+                    
+                    $parentItem->update(['stock' => $stockCount]);
                 }
+                //子ポットの在庫を親ポットにセットする END -------
             }
             else {
             	$i->increment('sale_count', $singleSellCount);
@@ -2518,4 +2518,4 @@ class CartController extends Controller
         
         $status = $cateDel ? '商品「'.$name.'」が削除されました' : '商品「'.$name.'」が削除出来ませんでした';
         
-        return redirect('dashb                                                                              
+        return redirect('dashb
