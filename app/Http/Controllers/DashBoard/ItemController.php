@@ -385,7 +385,7 @@ class ItemController extends Controller
             		$parentItem->pot_parent_id = 0;
                 }
                 
-                //if(Ctm::isEnv('local')) {
+                //親Potに在庫をセット -------------
                     $pots = $this->item->where(['open_status'=>1, 'is_potset'=>1, 'pot_parent_id'=>$item->pot_parent_id])->orderBy('price', 'asc')->get();
                     $stockCount = 0;
                     
@@ -397,12 +397,7 @@ class ItemController extends Controller
                         $parentItem->stock = $stockCount;
                         $parentItem->price = $pots->first()->price;
                     }
-//                }
-//                else {
-//                    if(! $parentItem->stock) { //stockを1にセット
-//                        $parentItem->stock = 1;
-//                    }
-//                }
+                //親Potに在庫をセット END -------------
                 
                 $parentItem->updated_at = date('Y-m-d H:i:s', time()); //アーカイブの更新順並べ用。子ポット更新時に親ポットのupdated_atを更新する
             	$parentItem->save();
