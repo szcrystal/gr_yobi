@@ -2518,6 +2518,4 @@ class CartController extends Controller
         
         $status = $cateDel ? '商品「'.$name.'」が削除されました' : '商品「'.$name.'」が削除出来ませんでした';
         
-        return redirect('dashboard/items')->with('status', $status);
-    }
-}
+        return redirect('dashboard/items')->with
