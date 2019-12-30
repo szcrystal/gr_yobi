@@ -543,26 +543,28 @@ class CustomController extends Controller
         foreach($items as $k => $item) {
         	$sum = 0;
         	$saleCount = 0;
+            $sale = null;
         	//$stock = 0;
         
         	//まずは親ポットかどうかを判定する
-        	extract(Ctm::isPotParentAndStock($item->id));
+        	//extract(Ctm::isPotParentAndStock($item->id));
+            $isPotParent = $item->pot_parent_id === 0 ? 1 : 0;
             
             
             if($isPotParent) {
-            	$potIds = $pots->map(function($obj){
-                	return $obj->id;
+                $potIds = Item::where(['is_potset'=>1, 'pot_parent_id'=>$item->id])->get()->map(function($obj){
+                    return $obj->id;
                 })->all();
                 
-            	//$sale = Sale::whereIn('item_id', $potIds);
-                $sales = Sale::whereIn('item_id', $potIds)->whereDate('created_at', '>' , $sepDay)->get();
+            	$sale = Sale::whereIn('item_id', $potIds);
+                //$sales = Sale::whereIn('item_id', $potIds)->whereDate('created_at', '>' , $sepDay)->get();
             }
             else {
-	        	//$sale = Sale::where('item_id', $item->id);
-                $sales = Sale::where('item_id', $item->id)->whereDate('created_at', '>' , $sepDay)->get();
+	        	$sale = Sale::where('item_id', $item->id);
+                //$sales = Sale::where('item_id', $item->id)->whereDate('created_at', '>' , $sepDay)->get();
             }
             
-            //$sales = $sale->whereDate('created_at', '>' , $sepDay)->get();
+            $sales = $sale->whereDate('created_at', '>' , $sepDay)->get();
             
             if($sales->isNotEmpty()) {
                 $sum = $sales->sum('total_price');
@@ -596,19 +598,35 @@ class CustomController extends Controller
         
         foreach($cateUekis as $k => $cateUeki) {
             
-        	$items = Item::where([/*'open_status'=>1, 'is_potset'=>0, */'subcate_id'=>$cateUeki->id])->get()->all();
+            $targetItems = Item::where([/*'open_status'=>1, 'is_potset'=>0, */'subcate_id'=>$cateUeki->id])->get();
+            
+        	$itemIds = $targetItems->map(function($obj){
+                if($obj->pot_parent_id === 0) {
+                    $pots = Item::where(['is_potset'=>1, 'pot_parent_id'=>$obj->id])->get();
+                    foreach($pots as $pot) {
+                        return $pot->id;
+                    }
+                }
+                else {
+                    return $obj->id;
+                }
+            })->all();
+            
+            $items = Item::find($itemIds);
 			
             //pot親であれば子ポットObjもitemsにMergeする。SalesDBは子ポットのIDでDBセットされているので
-            foreach($items as $item) {
-            	extract(Ctm::isPotParentAndStock($item->id)); //[$isPotParent, $isStock, $pots]
-                
-                if($isPotParent) {
-                	$items = array_merge($items, $pots->all());
-                }
-            }
+//            foreach($items as $item) {
+//            	//extract(Ctm::isPotParentAndStock($item->id)); //[$isPotParent, $isStock, $pots]
+//                $isPotParent = $item->pot_parent_id === 0 ? 1 : 0;
+//
+//                if($isPotParent) {
+//                    $pots = Item::where(['is_potset'=>1, 'pot_parent_id'=>$item->id])->get()->all();
+//                	$items = array_merge($items, $pots);
+//                }
+//            }
 
             //pot親を除いた最小Priceを取得する
-            $noPotItems = collect($items)->whereNotInStrict('pot_parent_id', [0])->sortBy('price')->first();
+            $noPotItems = $items->sortBy('price')->first();
             //echo $noPotItems->price;
             //print_r($noPotItems->values()->all());
             //exit;
@@ -625,17 +643,18 @@ class CustomController extends Controller
                     $saleCount += $sales->sum('sale_count');
                 }
                 
+                $stock += $item->stock;
                 //Stockを設定する（open_status 1のみ）
-                if($item->is_potset) {
-                    extract(Ctm::isPotParentAndStock($item->pot_parent_id)); //[$isPotParent, $isStock, $pots] open_statusはこの関数の中で設定されている
-                    
-                    if($isPotParent && $isStock)
-                        $stock += $item->stock;
-                }
-                else {
-                	if($item->open_status == 1 && $item->pot_parent_id !== 0)
-	                    $stock += $item->stock;
-                }
+//                if($item->is_potset) {
+//                    //extract(Ctm::isPotParentAndStock($item->pot_parent_id)); //[$isPotParent, $isStock, $pots] open_statusはこの関数の中で設定されている
+//
+//                    if($item->pot_parent_id === 0 && $item->stock)
+//                        $stock += $item->stock;
+//                }
+//                else {
+//                	if($item->open_status == 1 && $item->pot_parent_id !== 0)
+//	                    $stock += $item->stock;
+//                }
                 
             }
             
