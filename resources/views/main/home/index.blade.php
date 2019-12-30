@@ -6,6 +6,8 @@ use App\Favorite;
 use App\TopSetting;
 //use App\Category;
 // master 修正
+// master 修正2
+
 ?>
 
 
