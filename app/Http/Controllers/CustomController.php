@@ -539,6 +539,7 @@ class CustomController extends Controller
         }
         
         $items = Item::where(['open_status'=>1, 'is_potset'=>0, $cateAr ])->get();
+        //$itemAr = array();
         
         foreach($items as $k => $item) {
             $sum = 0;
@@ -576,10 +577,12 @@ class CustomController extends Controller
             //$item->is_stock = $stock ? 1 : 0; //Stockはindex表示の時に判定するのでここではセットしていない
             
             $items[$k] = $item;
+            //$itemAr[] = $item;
             
         }
             
         $sorted = $items->sortByDesc('total_price');
+        //$sorted = collect($itemAr)->sortByDesc('total_price');
         
         return $sorted;
 
@@ -594,29 +597,35 @@ class CustomController extends Controller
         $sepDay = $now->modify('-' . $rankTerm . ' days')->format('Y-m-d');
 
         $cateUekis = CategorySecond::where('parent_id', 1)->get();
-        $c = array();
+        //$provAr = array();
         
         foreach($cateUekis as $k => $cateUeki) {
             
+            //Rankingに関しては、open_status=>1以外も含めて集計するようにしている
             $targetItems = Item::where([/*'open_status'=>1, 'is_potset'=>0, */'subcate_id'=>$cateUeki->id])->get();
             
             //SalesDBは子ポットのIDでDBセットされているので、子ポットと通常商品のIDを取得する
             $itemIds = $targetItems->map(function($obj){
                 if($obj->pot_parent_id === 0) {
-                    $pots = Item::where(['is_potset'=>1, 'pot_parent_id'=>$obj->id])->get();
-                    foreach($pots as $pot) {
+                    $pots = Item::where(['is_potset'=>1, 'pot_parent_id'=>$obj->id])->get(); //->each()を使うとなぜかうまくいかない
+                    
+                    foreach($pots as $pot)
                         return $pot->id;
-                    }
                 }
                 else {
                     return $obj->id;
                 }
             })->all();
             
+//            print_r($itemIds);
+//            echo(count($itemIds));
+            //exit;
+            
+            //親ポットを除いたこの子カテゴリーの属する商品
             $items = Item::find($itemIds);
 
             //pot親を除いた最小Priceを取得する
-            $noPotItems = $items->sortBy('price')->first();
+            //$noPotItems = $items->sortBy('price')->first();
             //echo $noPotItems->price;
             //print_r($noPotItems->values()->all());
             //exit;
@@ -624,6 +633,23 @@ class CustomController extends Controller
             $sum = 0;
             $saleCount = 0;
             $stock = 0;
+            
+            $sales = Sale::whereIn('item_id', $itemIds)->whereDate('created_at', '>' , $sepDay)->get();
+            
+            $cateUeki->total_price = $sales->sum('total_price');
+            $cateUeki->sale_count = $sales->sum('sale_count');
+            
+            $cateUeki->min_price = $items->min('price');
+            $cateUeki->min_sale_price = $items->whereNotIn('sale_price', [null, 0])->min('sale_price');
+            
+            $cateUeki->is_stock = $items->sum('stock') ? 1 : 0;
+            
+            $cateUekis[$k] = $cateUeki;
+            //$provAr[] = $cateUeki;
+            
+            
+            /*
+            //$cateUeki->min_price_item = $noPotItems;
             
             foreach($items as $item) {
                 $sales = Sale::where('item_id', $item->id)->whereDate('created_at', '>' , $sepDay)->get();
@@ -659,9 +685,11 @@ class CustomController extends Controller
             
             $cateUekis[$k] = $cateUeki;
             //$cateSecSum[$cateUeki->id] = Item::where('subcate_id', $cateUeki->id)->sum('sale_count');
+        */
         }
         
         $sorted = $cateUekis->sortByDesc('total_price');
+        //$sorted = collect($provAr)->sortByDesc('total_price');
         
 //        arsort($cateSecSum); //降順Sort
 //        $cateSecSum = array_keys($cateSecSum);

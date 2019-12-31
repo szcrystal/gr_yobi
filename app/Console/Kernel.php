@@ -40,6 +40,7 @@ class Kernel extends ConsoleKernel
     	//************************
         
         if(Ctm::isEnv('product')) { //本番のみ
+        //if(Ctm::isEnv('local')) { //local
             //枯れ保証：フォローメールの送信(毎日6時に該当する日数の商品（ユーザー）にメール) ==============
             $schedule->job(new ProcessFollowMail)
                     ->dailyAt('7:00'); //This is for product
