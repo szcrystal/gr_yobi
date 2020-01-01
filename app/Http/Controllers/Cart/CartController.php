@@ -638,22 +638,18 @@ class CartController extends Controller
             }
             
             //Sale Count処理（itemの売れた個数）
-            if($i->is_potset) {
+            if($i->pot_type == 3) {
             	$parentItem = $this->item->find($i->pot_parent_id);
                 $parentItem->increment('sale_count', $singleSellCount);
                 
-                if(Ctm::isEnv('local')) {
-                    $pots = $this->item->where(['open_status'=>1, 'is_potset'=>1, 'pot_parent_id'=>$i->pot_parent_id])->get();
-                    $stockCount = 0;
-                    
-                    if($pots->isNotEmpty()) {
-                        foreach($pots as $pot) {
-                            $stockCount += $pot->stock;
-                        }
-                        
-                        $parentItem->update(['stock' => $stockCount]);
-                    }
+                $pots = $this->item->where(['open_status'=>1, 'pot_type'=>3, 'pot_parent_id'=>$i->pot_parent_id])->get();
+                $stockCount = 0;
+                
+                if($pots->isNotEmpty()) {
+                    $stockCount = $pots->sum('stock');
+                    $parentItem->update(['stock' => $stockCount]);
                 }
+                
             }
             else {
             	$i->increment('sale_count', $singleSellCount);
@@ -2305,12 +2301,12 @@ class CartController extends Controller
             $getNum = Ctm::isAgent('sp') ? 6 : 4;
             $chunkNum = Ctm::isAgent('sp') ? $getNum/2 : $getNum;
             
-            $whereArr = ['open_status'=>1, 'is_potset'=>0];
+            $whereArr = ['open_status'=>1, ['pot_type', '<', 3]];
             
             //カートに入るのは子ポットID、Coookieにあるのは親IDなので、$itemIdsを親ポットIDにしてセットし直す
             foreach($itemIds as $idKey => $itemId) {
                 $i = $this->item->find($itemId);
-                if($i->is_potset) {
+                if($i->pot_type == 3) {
                     $itemIds[$idKey] = $i->pot_parent_id;
                 }
             }

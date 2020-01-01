@@ -47,7 +47,7 @@ class HomeController extends Controller
         $this->dgRel = $dgRel;
                 
         //ここでAuth::check()は効かない
-        $this->whereArr = ['open_status'=>1, 'is_potset'=>0]; //こことSingleとSearchとCtm::isPotParentAndStockにある
+        $this->whereArr = ['open_status'=>1, ['pot_type', '<', 3]]; //こことSingleとSearchとCtm::isPotParentAndStockにある
                 
         $this->perPage = Ctm::isAgent('sp') ? 21 : 20;
         

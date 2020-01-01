@@ -46,8 +46,8 @@ class ProcessStockReset implements ShouldQueue
                 $item->update(['stock'=>$item->stock_reset_count]);
                 
                 //子ポットの時、親ポットにstock合計をセットする
-                if($item->is_potset) {
-                    $potsSum = Item::where(['open_status'=>1, 'is_potset'=>1, 'pot_parent_id'=>$item->pot_parent_id])->sum('stock');
+                if($item->pot_type == 3) {
+                    $potsSum = Item::where(['open_status'=>1, 'pot_type'=>3, 'pot_parent_id'=>$item->pot_parent_id])->sum('stock');
                     Item::find($item->pot_parent_id)->update(['stock'=>$potsSum]);
                     
                     //子ポットの時は親のIDをセットする StockChange DB用

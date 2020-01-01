@@ -35,7 +35,7 @@ use App\Icon;
     //pot売り切れ判定
     //if(Ctm::isEnv('local')) {
     $isStock = $item->stock ? 1 : 0;
-    $isPotParent = $item->pot_parent_id === 0 ? 1 : 0;
+    $isPotParent = $item->pot_type == 2 ? 1 : 0;
 
 //    }
 //    else {

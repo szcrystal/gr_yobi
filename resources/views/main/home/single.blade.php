@@ -64,7 +64,12 @@ use App\TopSetting;
                 	<h2 class="single-title">{{ $itemTitle }}<br><span>商品番号 {{ $item->number }}</span></h2>
                  	<p class="text-big">{{ $item->catchcopy }}</p>
                     
-                    <?php $isPotSet = count($potSets) > 0; ?>
+                    <?php
+                        //$isPotSet = count($potSets) > 0 ? 1 : 0;
+                        $isPotSet = $item->pot_type == 2 ? 1 : 0;
+//                        echo $isPotSet;
+//                        exit;
+                    ?>
                     
                     @if(! $isPotSet)
                         @if(isset($item->icon_id) && $item->icon_id != '')
@@ -341,7 +346,7 @@ use App\TopSetting;
                         @endif  
                   	 
                     
-                    	@if($item->stock > 0 || $isPotSet)
+                    	@if(($item->pot_type == 1 && $item->stock > 0) || $isPotSet)
                             <input type="hidden" name="from_item" value="1">
                             <input type="hidden" name="uri" value="category/{{ Category::find($item->cate_id)->slug }}">     
                             

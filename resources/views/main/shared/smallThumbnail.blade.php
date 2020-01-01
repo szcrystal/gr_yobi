@@ -10,7 +10,7 @@ $width = isset($width) ? $width : 90;
 @if(isset($item->main_img) && $item->main_img != '')
     <img src="{{ Storage::url($item->main_img) }}" alt="{{ $item->title }}" class="img-fluid" width="{{ $width }}">
 
-@elseif($item->is_potset)
+@elseif($item->pot_type == 3)
     <?php 
     	$parent = Item::find($item->pot_parent_id);
     ?>

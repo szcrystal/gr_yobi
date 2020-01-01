@@ -165,6 +165,7 @@ class ItemController extends Controller
     	$rules = [
         	'number' => 'required|unique:items,number,'.$editId,
             'title' => 'required|max:255',
+            'pot_type' => 'required',
             'cate_id' => 'required',
             
             'pot_sort' => [
@@ -246,13 +247,13 @@ class ItemController extends Controller
             'stock_reset_count' => 'nullable|integer|required_with:stock_reset_month', /* |min:1 =>0にリセットするという場合もあるか */
             'point_back' => 'nullable|numeric',
             
-            'pot_parent_id' => 'required_with:is_potset|nullable|numeric|integer',
-            'pot_count' =>'required_with:is_potset|nullable|numeric|integer',
+            'pot_parent_id' => 'required_if:pot_type,3|nullable|numeric|integer',
+            'pot_count' =>'required_if:pot_type,3|nullable|numeric|integer',
             
             //'main_img' => 'filenaming',
         ];
         
-        if($request->has('is_potset')) {
+        if($request->input('pot_type') == 3) {
         	unset($rules['cate_id']);
             
             $rules['pot_parent_id'] = $rules['pot_parent_id'] . '|min:1';
@@ -261,7 +262,9 @@ class ItemController extends Controller
         
         $messages = [
          	'title.required' => '「商品名」を入力して下さい。',
-            'cate_id.required' => '「カテゴリー」を選択して下さい。',
+            'cate_id.required' => '「親カテゴリー」は必須です。',
+            'pot_parent_id.required_if' => '子ポットの時「親ポットID」は必須です。',
+            'pot_count.required_if' => '子ポットの時「ポット数」は必須です。',
             'stock_reset_count.required_with' => '「在庫入荷月」入力時は「在庫リセット数」は必須です。',
             //'post_thumb.filenaming' => '「サムネイル-ファイル名」は半角英数字、及びハイフンとアンダースコアのみにして下さい。',
             //'post_movie.filenaming' => '「動画-ファイル名」は半角英数字、及びハイフンとアンダースコアのみにして下さい。',
@@ -376,21 +379,22 @@ class ItemController extends Controller
             $this->itemSc->create(['item_id'=>$item->id, 'is_auto'=>0]);
         }
         
-        //potsetの時 parentのpot_parent_idに0をセットする 親ポットのpot_parent_id:0、stock:1が固定値
-        if($item->is_potset) {
-        	$parentItem = $this->item->find($item->pot_parent_id);
+        //親ポット／子ポットの時 在庫をセットする 親ポットのpot_parent_id:0、stock:1が固定値
+        if($item->pot_type > 1) {
+            $parentId = $item->pot_type == 2 ? $item->id : $item->pot_parent_id;
+            
+        	$parentItem = $this->item->find($parentId);
             
             if(isset($parentItem)) {
-            	if(! isset($parentItem->pot_parent_id)) { //pot_parent_idに0をセット
-            		$parentItem->pot_parent_id = 0;
-                }
+//            	if(! isset($parentItem->pot_parent_id)) { //pot_parent_idに0をセット
+//            		$parentItem->pot_parent_id = 0;
+//                }
                 
                 //if(Ctm::isEnv('local')) {
-                $pots = $this->item->where(['open_status'=>1, 'is_potset'=>1, 'pot_parent_id'=>$item->pot_parent_id])->get();
+                $pots = $this->item->where(['open_status'=>1, 'pot_type'=>3, 'pot_parent_id'=>$parentId])->get();
                 $stockCount = 0;
                 
                 if($pots->isNotEmpty()) {
-                    
                     $parentItem->stock = $pots->sum('stock');
                     $parentItem->price = $pots->min('price');
                     $parentItem->sale_price = $pots->whereNotIn('sale_price', [null, 0])->min('sale_price'); //子ポット-sale_priceが全てnullならnullが返るのでこれでOK(親ポットにnullがセットされる)

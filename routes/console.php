@@ -123,12 +123,13 @@ Artisan::command('setStockPotParent', function () {
         //$isPotParent = 0; //このitemがpotParentなら、1
         //$isStock = 0; //このpotParentの子供ポットの在庫が全て0なら、0
         
-        if($item->pot_parent_id === 0) {
+        if($item->pot_parent_id === 0) { //親ポット時
             $pots = Item::where(['open_status'=>1, 'is_potset'=>1, 'pot_parent_id'=>$item->id])->get();
             
             if($pots->isNotEmpty()) {
                 
                 $item->update([
+                    'pot_type' => 2,
                     'price' => $pots->min('price'),
                     'sale_price' => $pots->whereNotIn('sale_price', [null, 0])->min('sale_price'), //子ポット-sale_priceが全てnullならnullが返るのでこれでOK
                     'stock' => $pots->sum('stock'),
@@ -136,6 +137,14 @@ Artisan::command('setStockPotParent', function () {
                 
                 $this->comment('ID' . $item->id . ': PotParent:Stock/Price Set Done !');
             }
+        }
+        elseif($item->pot_parent_id === null) { //通常時
+            $item->update(['pot_type'=>1]);
+            $this->comment('ID' . $item->id . ': Normal:Type Set Done !');
+        }
+        elseif($item->pot_parent_id) { //子ポット時
+            $item->update(['pot_type'=>3]);
+            $this->comment('ID' . $item->id . ': ChildPot:Type Set Done !');
         }
  
     }

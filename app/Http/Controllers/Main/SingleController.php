@@ -59,7 +59,7 @@ class SingleController extends Controller
 //        $this->totalize = $totalize;
 //        $this->totalizeAll = $totalizeAll;
         
-        $this->whereArr = ['open_status'=>1, 'is_potset'=>0]; //こことSingleとSearchとCtm::isPotParentAndStockにある
+        $this->whereArr = ['open_status'=>1, ['pot_type', '<', 3]]; //こことSingleとSearchとCtm::isPotParentAndStockにある
         
         $this->itemPerPage = 15;
         
@@ -84,7 +84,7 @@ class SingleController extends Controller
         
 
         //ポットセットがある場合
-        $potWhere = ['open_status'=>1, 'is_potset'=>1, 'pot_parent_id'=>$item->id];
+        $potWhere = ['open_status'=>1, 'pot_type'=>3, 'pot_parent_id'=>$item->id];
         
         if(isset($item->pot_sort) && $item->pot_sort != '') {
         	$potSorts = $item->pot_sort;
@@ -153,8 +153,9 @@ class SingleController extends Controller
         //在庫がないIDを取得する 以下のwhereNotInで使用する ===========
         $noStockIds = $this->item->whereNotIn('id', [$item->id])->where($whereArr)->get()->map(function($obj) {
             
-            $stock = 0;
+            //$stock = 0;
             
+            /*
             if($obj->pot_parent_id === 0) {
                 $switchArr = Ctm::isPotParentAndStock($obj->id); //親ポットか、Stockあるか、その子ポットのObjsを取る。$switchArr['isPotParent'] $switchArr['isStock']
                 $stock = $switchArr['isStock'];
@@ -162,8 +163,9 @@ class SingleController extends Controller
             else {
                 $stock = $obj->stock;
             }
+            */
             
-            if(! $stock)
+            if(! $obj->stock)
                 return $obj->id;
                 
         })->all();
