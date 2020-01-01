@@ -37,11 +37,13 @@ class AddColumnToEtc11 extends Migration
         });
         
         //Items Index
+        /*
         Schema::table('items', function (Blueprint $table) {
             $table->index('cate_id');
             $table->index('subcate_id');
             $table->index(['open_status', 'is_potset']);
         });
+        */
     }
 
     /**
@@ -89,6 +91,7 @@ class AddColumnToEtc11 extends Migration
         }
         
         //Items Index
+        /*
         if (Schema::hasTable('items')) {
             Schema::table('items', function (Blueprint $table) {
                 $sm = Schema::getConnection()->getDoctrineSchemaManager();
@@ -105,5 +108,6 @@ class AddColumnToEtc11 extends Migration
                 }
             });
         }
+        */
     }
 }
