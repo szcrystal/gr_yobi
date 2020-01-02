@@ -571,10 +571,10 @@ class CustomController extends Controller
             
             if($sales->isNotEmpty()) {
                 $sum = $sales->sum('total_price');
-                $saleCount = $sales->sum('sale_count');
+                //$saleCount = $sales->sum('sale_count');
                 
                 $item->total_price = $sum;
-                $item->sale_count = $saleCount;
+                //$item->sale_count = $saleCount;
                 //$item->is_stock = $stock ? 1 : 0; //Stockはindex表示の時に判定するのでここではセットしていない
                 
                 //$items[$k] = $item;
@@ -643,7 +643,7 @@ class CustomController extends Controller
             
             if($sales->isNotEmpty()) {
                 $cateUeki->total_price = $sales->sum('total_price');
-                $cateUeki->sale_count = $sales->sum('sale_count');
+                //$cateUeki->sale_count = $sales->sum('sale_count');
                 
                 $cateUeki->min_price = $items->min('price');
                 $cateUeki->min_sale_price = $items->whereNotIn('sale_price', [null, 0])->min('sale_price');

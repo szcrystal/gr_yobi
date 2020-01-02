@@ -1,6 +1,7 @@
 @extends('layouts.appDashBoard')
 
 <?php
+use App\Item;
 use App\CategorySecond;
 
 ?>
@@ -27,11 +28,11 @@ use App\CategorySecond;
         
         @if(isset($edit))
         	<?php 
-            	$linkId = $item->is_potset ? $item->pot_parent_id : $id;
+            	$linkId = $item->pot_type == 3 ? $item->pot_parent_id : $id;
             ?>
             
             <div class="mt-5 pt-3 clearfix">
-            	@if(!$item->is_potset)
+            	@if($item->pot_type < 3)
                     <a href="{{ url('/dashboard/upper/'. $id. '?type=item') }}" class="btn btn-success border-round text-white d-block float-left"><i class="fa fa-angle-double-left" aria-hidden="true"></i> 上部コンテンツを編集 </a>
                 @else
                 	<small>ポットセット商品：上部コンテンツ不可</small><br>
@@ -461,7 +462,7 @@ use App\CategorySecond;
             </fieldset>
             
             <fieldset class="mb-3 form-group">
-                <label for="pot_parent_id" class="control-label">親ポットID <span class="text-danger text-big pot-require">*</span><small>（子ポットの時のみ入力。子ポット以外（通常/親ポット）の時は空欄のまま。）</small></label>
+                <label for="pot_parent_id" class="control-label">親ポットID <span class="text-danger pot-require">*</span><small>（子ポットの時のみ入力。子ポット以外（通常/親ポット）の時は空欄のまま。）</small></label>
                 <input class="form-control col-md-6{{ $errors->has('pot_parent_id') ? ' is-invalid' : '' }}" name="pot_parent_id" value="{{ Ctm::isOld() ? old('pot_parent_id') : (isset($item) ? $item->pot_parent_id : '') }}">
                 
 
@@ -474,7 +475,7 @@ use App\CategorySecond;
             </fieldset>
             
             <fieldset class="mb-4 form-group">
-                <label for="pot_count" class="control-label">ポット数 <span class="text-danger text-big pot-require">*</span><small>（↑「親ポットID」 と同様）</small></label>
+                <label for="pot_count" class="control-label">ポット数 <span class="text-danger pot-require">*</span><small>（↑「親ポットID」 と同様）</small></label>
                 <input class="form-control col-md-6{{ $errors->has('pot_count') ? ' is-invalid' : '' }}" name="pot_count" value="{{ Ctm::isOld() ? old('pot_count') : (isset($item) ? $item->pot_count : '') }}">
                 
 
@@ -498,14 +499,17 @@ use App\CategorySecond;
                     </div>
                 @endif
                 
-                @if(isset($edit))
+                @if(isset($edit) && $item->pot_type == 2)
                     <div class="mt-1">
-                        <?php $ps = Ctm::isPotParentAndStock($item->id); ?>
+                        <?php
+                            //$ps = Ctm::isPotParentAndStock($item->id);
+                            $potChilds = Item::where(['pot_type'=>3, 'pot_parent_id'=>$item->id])->get();
+                        ?>
                         
-                        @if($ps['isPotParent'])
+                        @if($potChilds->isNotEmpty())
                         	この親ポットに指定されている子ポット<br>
                             
-                            @foreach($ps['pots'] as $ptChild)
+                            @foreach($potChilds as $ptChild)
                                 <a href="{{ url('/dashboard/items/'. $ptChild->id) }}" target="_brank" class="d-inline-block mr-3">[{{ $ptChild->id }}] {{ $ptChild->title }}</a>
                             @endforeach
                         @endif
@@ -543,7 +547,7 @@ use App\CategorySecond;
             
             
             <fieldset class="pt-2 mb-4 form-group">
-                <label>親カテゴリー <span class="text-danger text-big cate-require">*</span></label>
+                <label>親カテゴリー <span class="text-danger cate-require">*</span></label>
                 
                 <select class="form-control select-first col-md-6{{ $errors->has('cate_id') ? ' is-invalid' : '' }}" name="cate_id">
                     <option disabled selected>選択して下さい</option>
@@ -617,7 +621,7 @@ use App\CategorySecond;
             
             
             <fieldset class="mb-4 form-group">
-                <label for="price" class="control-label">価格（本体価格）<span class="text-danger text-big">*</span><small>（ポット親の時は1を入力）</small></label>
+                <label for="price" class="control-label">価格（本体価格）<span class="text-danger">*</span><small>（ポット親の時は1を入力=>新規作成時のみで、更新時は入力不要です）</small></label>
                 <input class="form-control col-md-6{{ $errors->has('price') ? ' is-invalid' : '' }}" name="price" value="{{ Ctm::isOld() ? old('price') : (isset($item) ? $item->price : '') }}" placeholder="税抜き金額を入力">
                 
                 @if ($errors->has('price'))
@@ -642,7 +646,7 @@ use App\CategorySecond;
             </fieldset>
             
             <fieldset class="mb-4 form-group">
-                <label for="sale_price" class="control-label">セール価格<span><small>（ポット親でSaleにしたい時は1を入力。）</small></label>
+                <label for="sale_price" class="control-label">セール価格<span><small>（ポット親でSaleにしたい時は1を入力。=>新規作成時のみで、更新時は入力不要です）</small></label>
                 <input class="form-control col-md-6{{ $errors->has('sale_price') ? ' is-invalid' : '' }}" name="sale_price" value="{{ Ctm::isOld() ? old('sale_price') : (isset($item) ? $item->sale_price : '') }}">
                 
 
@@ -869,7 +873,7 @@ use App\CategorySecond;
             
             <hr>
             <fieldset class="mb-2 form-group">
-                <label for="stock" class="control-label">在庫数<small>（ポット親の時は1を入力。ポット親の在庫関連は全て無関係となり、子ポットは要入力）</small></label>
+                <label for="stock" class="control-label">在庫数 <span class="text-danger">*</span><small>（ポット親の時は1を入力。=>新規作成時のみで、更新時は入力不要です）</small></label>
                 <input class="form-control col-md-6{{ $errors->has('stock') ? ' is-invalid' : '' }}" name="stock" value="{{ Ctm::isOld() ? old('stock') : (isset($item) ? $item->stock : '') }}">
                 
 
@@ -903,7 +907,7 @@ use App\CategorySecond;
             
             
             <fieldset class="mb-3 form-group">
-                <label>売り切れ表示設定</label>
+                <label>売り切れ表示設定<small>（ポット親の時は不要）</small></label>
                 <select class="form-control col-md-6{{ $errors->has('stock_type') ? ' is-invalid' : '' }}" name="stock_type">
                     <option value="0" selected>選択して下さい</option>
                         <?php
@@ -936,7 +940,7 @@ use App\CategorySecond;
             </fieldset>
             
             <fieldset class="mb-2 form-group">
-                <label for="stock" class="control-label">在庫入荷月 {{--<span class="text-danger text-big">*</span><small>（売り切れ表示で「[-]月頃入荷予定」の選択時のみ）</small>--}}</label>
+                <label for="stock" class="control-label">在庫入荷月<small>（ポット親の時は不要）</small> {{--<span class="text-danger text-big">*</span><small>（売り切れ表示で「[-]月頃入荷予定」の選択時のみ）</small>--}}</label>
                 <input class="form-control col-md-6{{ $errors->has('stock_reset_month') ? ' is-invalid' : '' }}" name="stock_reset_month" value="{{ Ctm::isOld() ? old('stock_reset_month') : (isset($item) ? $item->stock_reset_month : '') }}">
                 
 
@@ -949,7 +953,7 @@ use App\CategorySecond;
             </fieldset>
             
             <fieldset class="mb-4 pb-1 form-group">
-                <label for="stock" class="control-label">在庫リセット数</label>
+                <label for="stock" class="control-label">在庫リセット数<small>（ポット親の時は不要）</small></label>
                 <input class="form-control col-md-6{{ $errors->has('stock_reset_count') ? ' is-invalid' : '' }}" name="stock_reset_count" value="{{ Ctm::isOld() ? old('stock_reset_count') : (isset($item) ? $item->stock_reset_count : '') }}">
                 
 

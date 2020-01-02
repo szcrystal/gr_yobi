@@ -228,7 +228,7 @@ class ItemController extends Controller
                 },
             ],
             
-            'stock' => 'nullable|integer',
+            'stock' => 'required|integer|min:0',
             'stock_reset_month' => [
                 function($attribute, $value, $fail) use($request) {
                     if($value == '') {
