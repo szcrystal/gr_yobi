@@ -2636,8 +2636,10 @@ h3.upper-title {
     overflow: hidden;
 }
 .upper-tgl {
-    background: rgba(0,0,0,0.6);
-    color: #fff;
+    //background: rgba(0,0,0,0.6);
+    background: #fff;
+    //color: #fff;
+    color: #3a3b3c;
     border: 1px solid #3a3b3c;
     -webkit-transition: none !important;
     transition: none !important;
