@@ -80,9 +80,21 @@ use App\TopSetting;
         
         <div class="pagination-wrap">
             <?php
-                //echo count($items);
-                $paginateTarget = ( Ctm::isAgent('sp') && $items->total() > 126 ) ? 'vendor.pagination.simple-bootstrap-4' : '';
+                $paginateTarget = '';
+                $pageSepNum = '';
+                
+                if( Ctm::isAgent('sp') && $items->total() > 126 ) {
+                    $paginateTarget = 'vendor.pagination.simple-bootstrap-4';
+                    $format = '<span class="d-inline-block text-small mr-3 pt-1">%s</span>';
+                
+                    $pageSepNum = Request::has('page') ? Request::input('page') : 1;
+                    $pageSepNum .= '/' . ceil($items->total()/21);
+                    
+                    $pageSepNum = sprintf($format, $pageSepNum);
+                }
             ?>
+            
+            {!! $pageSepNum !!}
             
             {{ $items->links($paginateTarget) }}
         </div>
@@ -111,6 +123,8 @@ use App\TopSetting;
     </div>
         
     <div class="pagination-wrap">
+        {!! $pageSepNum !!}
+        
         {{ $items->links($paginateTarget) }}
     </div>
             
