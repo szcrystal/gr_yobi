@@ -614,8 +614,8 @@ for SP
     }
     
     .pagination-wrap {
-        padding-right: 0.1em;
-        font-size: 0.95em;
+        padding-right: 0.2em;
+        //font-size: 0.95em;
         width: 100%;
         //border: 1px solid red;
     }
