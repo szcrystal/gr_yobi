@@ -697,7 +697,7 @@ body {
 .huzai-comment-wrap em { /* 必須 */
     position: absolute;
     top: 0.75em;
-    right: 1px;
+    right: 2px;
 /*    float: right;*/
 	display: block;
 	font-size: 0.8em;

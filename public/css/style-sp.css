@@ -405,7 +405,7 @@ for SP
         padding: 0;
         margin-left: 1.3%;
         position: relative;
-        width: 73%;
+        width: 70%;
         //border: 1px solid red;
     }
     .s-form {
@@ -759,7 +759,11 @@ ORG END ======================== */
     	display: block;
     	float: none;
         width: 100%;
+        //padding-left: 0 !important;
         //border: 1px solid red;
+    }
+    .contact .table-custom th em { /* 必須 */
+        right: 0.9em;
     }
     
     .single .table-custom .table tbody th,
@@ -770,6 +774,7 @@ ORG END ======================== */
     .single .table-custom .table tbody td {
     	width: 60%;
     }
+    
     
     
     /* Shop */
@@ -795,7 +800,7 @@ ORG END ======================== */
         float: none;
     }
     .table-custom .table tbody th {
-    	padding: 0.4em 0.6em  0.3em !important;
+    	padding: 0.4em 0.4em  0.3em !important;
         vertical-align: middle;
     }
     .table-custom .table select {
@@ -1299,7 +1304,7 @@ ORG END ======================== */
     }
     .img-circle + div {
         float: none !important;
-        font-size: 0.95em;
+        font-size: 0.9em;
         height: auto;
         line-height: 1.8em;
         //border: 1px solid red;
