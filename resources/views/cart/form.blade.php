@@ -1287,7 +1287,7 @@ use App\DeliveryGroup;
     
     @if(! Auth::check())
         <div class="right-gray cart-login">
-            <small class="text-center d-block mt-0 mb-1 pt-0">会員登録済みの方はログインして下さい</small>
+            {{-- <small class="text-center d-block mt-0 mb-1 pt-0">会員登録済みの方はログインして下さい</small> --}}
             @include('main.shared.userLogin', ['pageType'=>'cart'])
         </div>
     @endif

@@ -2972,12 +2972,13 @@ h3.upper-title {
     font-size: 0.95em;
 }
 .login > div {
-	width: 50%;
+	width: 47%;
     float: left;
     min-height: 600px;
 }
 .login > div:last-of-type {
-	padding-left: 1.4em;
+    float:right;
+	margin-left: 5%;
 }
 .login [class*="col-md-"] {
 	padding-left: 0;

@@ -522,8 +522,14 @@ class HomeController extends Controller
         
         //Controller内でないと下記のダブルクオーテーションで囲まないと効かない(tag.blade.phpに記載あり)
         $strs = implode(',', $stockIds); //$strs = '"'. implode('","', $stockIds) .'"';
-
+        
         $items = $this->item->whereIn('id', $stockIds)->orderByRaw("FIELD(id, $strs)")->paginate($this->perPage);
+        
+//        if(Ctm::isAgent('sp'))
+//            $items = $items->simplePaginate($this->perPage);
+//        else
+//            $items = $items->paginate($this->perPage);
+        
         //$items = $this->item->where(['cate_id'=>$cate->id, 'open_status'=>1, 'is_potset'=>0])->orderBy('id', 'desc')->paginate($this->perPage);
         //$items = $this->cateSec->where(['parent_id'=>$cate->id, ])->orderBy('updated_at', 'desc')->paginate($this->perPage);
         
@@ -610,6 +616,7 @@ class HomeController extends Controller
 
         $items = $this->item->whereIn('id', $stockIds)->orderByRaw("FIELD(id, $strs)")->paginate($this->perPage);
         //$items = $this->item->whereIn('id',$itemIds)->where(['open_status'=>1, 'is_potset'=>0])->orderBy('id', 'desc')->paginate($this->perPage);
+        
         
         //Upper取得
         $uppers = Ctm::getUpperArr($tag->id, 'tag');

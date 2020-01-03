@@ -23,8 +23,8 @@
 			
             <p class="my-3 pb-2 mx-1">初めての方はこちらより会員登録をして下さい。<br>あらかじめ会員登録を済ませておくと、お買い物が便利になります。</p>
             
-            <div class="col-md-7 mx-auto mt-4">
-                <a href="{{ url('register') }}" class="btn btn-custom rounded-0 btn-block m-auto">新規会員登録</a>
+            <div class="mt-4">
+                <a href="{{ url('register') }}" class="btn btn-custom rounded-0 btn-block m-auto py-2">新規会員登録</a>
             </div>
         </div>
             

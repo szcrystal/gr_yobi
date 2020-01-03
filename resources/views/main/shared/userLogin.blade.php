@@ -2,7 +2,7 @@
     
     <?php
         $autoFocus = 'autofocus';
-        $mainClass = 'col-md-11 mx-auto';
+        $mainClass = 'col-md-12 mx-auto';
         $isCart = 0;
         
         if($pageType == 'cart') {
@@ -70,8 +70,8 @@
         </fieldset>
         @endif
         
-        <fieldset class="form-group row mt-3">
-            <div class="col-md-7 m-auto">
+        <fieldset class="form-group mt-3">
+            <div class="mt-2">
                 
                 @if(Request::has('to_cart')) {{-- url ?to_cart=1 にセットされているto_cart --}}
                 <input type="hidden" name="to_cart" value="1">
@@ -80,14 +80,14 @@
                 <input type="hidden" name="previous" value="{{ session('_previous.url') }}">
                 
                 {{-- <input type="submit" name="login1" value="ログイン" form="login" class="btn btn-custom btn-block rounded-0"> --}}
-                <button type="submit" class="btn btn-custom btn-block rounded-0" name="loginBtn" value="1">ログイン</button>
+                <button type="submit" class="btn btn-custom btn-block rounded-0 py-2" name="loginBtn" value="1">ログイン</button>
 
             </div>
         </fieldset>
         
         @if(! $isCart)
-        <div class="row pt-2">
-            <a class="w-100 text-right" href="{{ route('password.request') }}">
+        <div class="pt-2 text-right">
+            <a class="w-100" href="{{ route('password.request') }}">
                 パスワードをお忘れの方 <i class="fal fa-angle-double-right"></i>
             </a>
         </div>
