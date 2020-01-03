@@ -615,7 +615,7 @@ for SP
     
     .pagination-wrap {
         padding-right: 0.1em;
-        font-size: 0.9em;
+        font-size: 0.95em;
         width: 100%;
         //border: 1px solid red;
     }
@@ -625,8 +625,8 @@ for SP
         content: "";
         height: 0;
     }
-    .pagination li:first-of-type {
-        //margin-right: 0.3em;
+    .simple-pagination li:first-of-type {
+        margin-right: 0.2em;
     }
     
 /* ORG ================

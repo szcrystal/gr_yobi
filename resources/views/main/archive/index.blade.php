@@ -79,7 +79,12 @@ use App\TopSetting;
         
         
         <div class="pagination-wrap">
-            {{ $items->links() }}
+            <?php
+                //echo count($items);
+                $paginateTarget = ( Ctm::isAgent('sp') && $items->total() > 126 ) ? 'vendor.pagination.simple-bootstrap-4' : '';
+            ?>
+            
+            {{ $items->links($paginateTarget) }}
         </div>
         
         <?php
@@ -106,7 +111,7 @@ use App\TopSetting;
     </div>
         
     <div class="pagination-wrap">
-        {{ $items->links() }}
+        {{ $items->links($paginateTarget) }}
     </div>
             
 </div>
