@@ -40,7 +40,7 @@
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.css">
 	@endif
     
-    @if(! Ctm::isAgent('sp') && Request::is('item/*') && Ctm::isEnv('local'))
+    @if(! Ctm::isAgent('sp') && Request::is('item/*'))
     {{-- <link href="{{ asset('cdn/lightbox.min.css') }}" rel="stylesheet"> --}}{{--  2.10.0 --}}
     <link href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.10.0/css/lightbox.min.css" rel="stylesheet">
     @endif

@@ -149,7 +149,7 @@ $getNow .= Ctm::isEnv('product') ? str_replace ('.', '', config('app.app_version
 </script>
 @endif
 
-@if(! Ctm::isAgent('sp') && Request::is('item/*') && Ctm::isEnv('local'))
+@if(! Ctm::isAgent('sp') && Request::is('item/*'))
 <script src="{{ asset('cdn/lightbox.min.js') }}" type="text/javascript"></script>{{-- 2.10.0 --}}
 {{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.10.0/js/lightbox.min.js" type="text/javascript"></script> --}}
 <script>
