@@ -82,13 +82,14 @@ use App\TopSetting;
             <?php
                 $paginateTarget = '';
                 $pageSepNum = '';
+                $totalPage = ceil($items->total()/21);
                 
-                if( Ctm::isAgent('sp') && $items->total() > 126 ) {
+                if( Ctm::isAgent('sp') && $totalPage > 5 ) {
                     $paginateTarget = 'vendor.pagination.simple-bootstrap-4';
-                    $format = '<span class="d-inline-block text-small mr-3 pt-1">%s</span>';
+                    $format = '<span class="d-inline-block text-small mr-2 pt-1">%s</span>';
                 
                     $pageSepNum = Request::has('page') ? Request::input('page') : 1;
-                    $pageSepNum .= '/' . ceil($items->total()/21);
+                    $pageSepNum .= '/' . $totalPage;
                     
                     $pageSepNum = sprintf($format, $pageSepNum);
                 }
