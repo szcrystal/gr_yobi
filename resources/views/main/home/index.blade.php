@@ -9,40 +9,41 @@ use App\TopSetting;
 
 
 @section('content')
+
 <div id="main" class="top home">
 
     <div class="panel panel-default">
         
         @if(! Ctm::isAgent('sp') || (Ctm::isAgent('sp') &&  $isLookfor))
-        <div class="clearfix s-form-top">
-            <form class="d-block mb-3 clearfix" role="form" method="GET" action="{{ url('search') }}">
-                {{-- csrf_field() --}}
+            <div class="clearfix s-form-top">
+                <form class="d-block mb-3 clearfix" role="form" method="GET" action="{{ url('search') }}">
+                    {{-- csrf_field() --}}
 
-                <input type="search" class="form-control rounded-0" name="s" placeholder="キーワードを入力して下さい" value="{{ Request::has('s') ? Request::input('s') : '' }}">
-                <button class="btn-s"><i class="far fa-search"></i></button>
+                    <input type="search" class="form-control rounded-0" name="s" placeholder="キーワードを入力して下さい" value="{{ Request::has('s') ? Request::input('s') : '' }}">
+                    <button class="btn-s"><i class="far fa-search"></i></button>
 
-            </form>
-            
-            <div class="mt-2">
-                <?php
-                    $words = TopSetting::first()->search_words;
-                ?>
+                </form>
                 
-                @if(isset($words))
-                    <?php $words = explode(',', $words); ?>
+                <div class="mt-2">
+                    <?php
+                        $words = TopSetting::first()->search_words;
+                    ?>
                     
-                    <span class="text-small">人気検索ワード</span>
-                    <ul class="list-unstyled clearfix">
-                        @foreach($words as $word)
-                            <li class="float-left mr-2 pr-1">
-                                <a href="{{ url('search?s='. $word) }}" class="text-linkblue">{{ $word }}</a>
-                            </li>
-                        @endforeach
+                    @if(isset($words))
+                        <?php $words = explode(',', $words); ?>
                         
-                    </ul>
-                @endif
+                        <span class="text-small">人気検索ワード</span>
+                        <ul class="list-unstyled clearfix">
+                            @foreach($words as $word)
+                                <li class="float-left mr-2 pr-1">
+                                    <a href="{{ url('search?s='. $word) }}" class="text-linkblue">{{ $word }}</a>
+                                </li>
+                            @endforeach
+                            
+                        </ul>
+                    @endif
+                </div>
             </div>
-        </div>
         @endif
 
         <div class="panel-body top-cont">
