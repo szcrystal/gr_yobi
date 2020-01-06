@@ -52,8 +52,8 @@ class AddColumnToEtc12 extends Migration
                 if(array_key_exists("items_subcate_id_index", $indexesFound))
                     $table->dropIndex(['subcate_id']);
                     
-                if(array_key_exists("items_open_status_is_potset_index", $indexesFound)) {
-                    $table->dropIndex(['open_status_pot_type']); // 'geo_state_index'インデックスを削除
+                if(array_key_exists("items_open_status_pot_type_index", $indexesFound)) {
+                    $table->dropIndex(['open_status', 'pot_type']); // 'geo_state_index'インデックスを削除
                 }
             });
         }
