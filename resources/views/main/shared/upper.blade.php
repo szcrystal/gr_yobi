@@ -13,14 +13,18 @@
 ?>
 
 @if($upperMore)
-    <?php $moreClass = 'upper-open filter-blur'; ?>
+    <?php // $moreClass = 'upper-open filter-blur'; ?>
     
+    {{--
     <div class="btn btn-block btn-custom upper-tgl">
         詳しく見る <i class="fal fa-angle-down"></i>
     </div>
+    --}}
 @endif
 
+{{--
 <div class="{{ $moreClass }}">
+--}}
 
 <div class="upper-wrap">
     
@@ -31,14 +35,14 @@
                         
             //echo count($upperRels);
             
-            if($upperMore) {
+            if($upperMore && ($blockKey == 'b' || $blockKey == 'c' )) {
                 $moreClass = ' upper-open';
                 //tglボタンはこのループの最後（aの時）にセット 133行目あたり
             }
         ?>
         
 
-        <div class="block-wrap">
+        <div class="block-wrap{{ $moreClass }}">
 
             @foreach($upperRels as $key => $upperRel)
             
@@ -141,7 +145,11 @@
             
         </div>
         
-        
+        @if($upperMore && $blockKey == 'a')
+            <div style="margin-top:-1em;" class="text-right mb-0 mr-3 clearfix">
+                <span class="text-linkblue upper-tgl">詳しく見る <i class="fal fa-angle-down"></i></span>
+            </div>
+        @endif
         
     @endforeach
 </div>
@@ -149,7 +157,6 @@
 
 @include('main.shared.upperExp', ['orgObj'=>$orgObj])
 
-</div>
 
 @endif
 

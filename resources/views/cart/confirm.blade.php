@@ -474,6 +474,7 @@
                 --}}
                 
                 {{-- @if(isset($data['plan_time']) && count($data['plan_time']) > 0) --}}
+                    
                     <tr>
                         <th class="font-weight-normal">ご希望時間</th>
                         <td>
@@ -497,6 +498,7 @@
                     
                         </td>
                     </tr>
+                    
                 {{-- @endif --}}
                 
             </tbody>

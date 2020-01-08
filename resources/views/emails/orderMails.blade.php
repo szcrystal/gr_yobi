@@ -79,13 +79,14 @@ TEL：{{ $receiver->tel_num }}
         @else
             了承しない
         @endif
+        <br>
+    @endif
+        
+    ご希望配送時間：
+    @if(isset($sale->plan_time))
+        {{ $sale->plan_time }}
     @else
-        ご希望配送時間：
-        @if(isset($sale->plan_time))
-            {{ $sale->plan_time }}
-        @else
-            時間指定不可商品
-        @endif
+        時間指定不可商品
     @endif
     <br>
     

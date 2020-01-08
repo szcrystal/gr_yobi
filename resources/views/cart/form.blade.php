@@ -587,6 +587,8 @@ use App\DeliveryGroup;
                             <?php
                                 $si = Item::find($sesVal['item_id']);
                                 $siTitle = Ctm::getItemTitle($si);
+                                
+                                $isTime = DeliveryGroup::find($si->dg_id)->s_time;
                             ?>
                             
                             <div class="clearfix mb-2 ml-1">
@@ -599,6 +601,10 @@ use App\DeliveryGroup;
                                 <p class="text-danger text-small mt-2 p-0">不在置きを了承する</p>
                                 
                                 <input type="hidden" name="seinouHuzaiTitle[]" value="{{ $siTitle }}" form="user-input">
+                                
+                                @if(! $isTime)
+                                    <input type="hidden" name="planTimeItemTitle[0][]" value="{{ $siTitle }}" form="user-input">
+                                @endif
                             </div>
 
                         @endforeach
@@ -665,6 +671,8 @@ use App\DeliveryGroup;
                             <?php
                                 $si = Item::find($sesVal['item_id']);
                                 $siTitle = Ctm::getItemTitle($si);
+                                
+                                $isTime = DeliveryGroup::find($si->dg_id)->s_time;
                             ?>
                             
                             <div class="clearfix mb-2 ml-1">
@@ -677,6 +685,10 @@ use App\DeliveryGroup;
                                 <p class="text-small mt-2 p-0">不在置きを了承しない</p>
                                 
                                 <input type="hidden" name="seinouNoHuzaiTitle[]" value="{{ $siTitle }}" form="user-input">
+                                
+                                @if(! $isTime)
+                                    <input type="hidden" name="planTimeItemTitle[0][]" value="{{ $siTitle }}" form="user-input">
+                                @endif
                             </div>
                         @endforeach
                         

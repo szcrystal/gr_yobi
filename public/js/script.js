@@ -903,14 +903,14 @@ var exe = (function() {
             $upperTgl.on('click', function(e){
                 //var className = 'mb-4';
                 
-                //$('.upper-open').slideToggle(speed);
-                if($upperOpen.hasClass('filter-blur')) {
-                    $upperOpen.css({height:'100%'}).removeClass('filter-blur');
-                    
-                }
-                else {
-                    $upperOpen.addClass('filter-blur').css({height:uh});
-                }
+                $('.upper-open').slideToggle(speed);
+//                if($upperOpen.hasClass('filter-blur')) {
+//                    $upperOpen.css({height:'100%'}).removeClass('filter-blur');
+//
+//                }
+//                else {
+//                    $upperOpen.addClass('filter-blur').css({height:uh});
+//                }
                 
 //                if($(this).hasClass(className)) {
 //                    $(this).removeClass(className);

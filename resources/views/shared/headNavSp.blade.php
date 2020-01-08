@@ -51,8 +51,7 @@ use App\User;
 </div>
 --}}
     
-    
-    
+
 <div class="nav-sp-wrap">
     <nav>
 
