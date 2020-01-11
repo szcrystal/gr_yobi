@@ -373,7 +373,7 @@ body {
     //border: 1px solid red;
 }
 .container-wrap {
-    margin-top: 146px;
+    margin-top: 144px;
     //border: 1px solid red;
 }
 /* fix margin END ================ */
@@ -1078,6 +1078,7 @@ img.img-fluid + div {
 	float: left;
 	margin-top: 0.65em;
     padding-left: 0.5em;
+    position: relative;
     //border: 1px solid red;
 }
 
@@ -1098,6 +1099,10 @@ img.img-fluid + div {
     box-shadow: none !important;
 }
 .btn-s {
+    position: absolute;
+    top: 1px;
+    right: 1px;
+    z-index: 999;
     background: none;
     border: none;
     box-shadow: 0;
@@ -1107,7 +1112,7 @@ img.img-fluid + div {
 /*    border-radius: 0;*/
     color: #b5b5b5;
     cursor: pointer;
-    margin-left: -2.2em;
+    //margin-left: -2.2em;
 }
 .s-form-top {
     //border: 1px solid red;
@@ -1124,6 +1129,7 @@ img.img-fluid + div {
     background: #fff;
 }
 .s-form-top .btn-s {
+    position: static;
     display: block;
     border: 1px solid #3a3b3c;
     width: 15%;
@@ -1156,19 +1162,19 @@ img.img-fluid + div {
 
 /* Firefox 18- */
 .s-form .form-control:-moz-placeholder {
-    color: #4a4a4a;
+    color: #8a8a8a;
     opacity: 1;
 }
 
 /* Firefox 19+ */
 .s-form .form-control::-moz-placeholder {
-    color: #4a4a4a;
+    color: #8a8a8a;
     opacity: 1;
 }
 
 /* IE 10+ */
 .s-form .form-control:-ms-input-placeholder {
-    color: #4a4a4a;
+    color: #8a8a8a;
 }
 
 
@@ -1202,7 +1208,7 @@ img.img-fluid + div {
 	clear: both;
 	display: block;
 	float: none;
-	width: 100%;
+	min-width: 1200px;
 /*    border-width: 1px 0 0;*/
 /*	margin-top: 7.8em;*/
     /*background: #FDFBFC;*//*#ececec*/
