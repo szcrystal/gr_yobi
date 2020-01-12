@@ -11,7 +11,7 @@ for SP
     	min-width: 100% !important;
      	//background: red;
       	font-size: 78%;
-        //border: 2px solid orange;     
+        //border: 2px solid orange;
     }
     
     .container,
@@ -30,13 +30,18 @@ for SP
         margin: auto;
         //border: 1px solid red;
     }
-    
+    .main-navigation {
+        min-width: 100%;
+    }
     .container {
     	padding: 0;
     }
+    .container-wrap {
+        margin-top: 114px;
+    }
     
     .site-header h1 {
-        //margin: 0.1em 0 0 0.4em;
+        margin-top: -4px;
     }
     .site-header h1 img:first-of-type {
         width: 180px;
@@ -83,8 +88,13 @@ for SP
 /*    	top: 2.4em;*/
 /*    	right: 8%;*/
 	}
-    .s-form input {
+    .s-form input.form-control {
+        width: 15em;
     	font-size: 0.9em;
+    }
+    .s-form .btn-s {
+        top: 2px;
+        font-size: 1.2em;
     }
     
     

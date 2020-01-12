@@ -4,6 +4,8 @@
 <?php
     use App\User;
     use App\Fix;
+    
+    
 ?>
     
     <div class="site-description {{ Ctm::isEnv('alpha') ? 'text-danger' : '' }}">

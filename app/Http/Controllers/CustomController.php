@@ -864,8 +864,8 @@ class CustomController extends Controller
     
     static function isAgent($agent)
     {
-        $ua_sp = array('iPhone','iPod','Mobile ','Mobile;','Windows Phone','IEMobile');
-        $ua_tab = array('iPad','Kindle','Sony Tablet','Nexus 7','Android Tablet');
+        $ua_sp = array('iPhone','iPod','Mobile ','Mobile;','Windows Phone','IEMobile'); //iPhone;
+        $ua_tab = array('iPad','Kindle','Sony Tablet','Nexus 7','Android Tablet'); //iPad;
         $all_agent = array_merge($ua_sp, $ua_tab);
         
         switch($agent) {
@@ -885,11 +885,17 @@ class CustomController extends Controller
                 //$agent = '';
                 break;
         }
-           
+        
+//        foreach($agent as $ag) {
+//            if(strpos(env('HTTP_USER_AGENT'), $ag) !== FALSE) {
+//                return 1;
+//            }
+//        }
+        
         if(is_array($agent)) {
             $agent = implode('|', $agent);
         }
-        
+
         return preg_match('/'. $agent .'/', $_SERVER['HTTP_USER_AGENT']);
     }
     
