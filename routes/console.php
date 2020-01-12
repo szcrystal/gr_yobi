@@ -7,6 +7,8 @@ use App\User;
 use App\UserNoregist;
 
 use App\Item;
+use App\Sale;
+use App\DataRanking;
 
 /*
 |--------------------------------------------------------------------------
@@ -154,5 +156,40 @@ Artisan::command('setStockPotParent', function () {
 })->describe('Display potParentItem Set Stock And Price');
 
 
+//Saleからこれまでの集計をDataRankingにセットする
+Artisan::command('setDataRanking', function () {
+    $sales = Sale::all();
+    //$ar = array();
+    
+    foreach($sales as $sale) {
+        
+        $item = Item::find($sale->item_id);
+        
+        if($item->pot_type == 3) {
+            $item = Item::find($item->pot_parent_id);
+        }
+                
+        //$dr = DataRanking::where('item_id', $sale->item_id)->get();
+        
+        DataRanking::create(
+            [
+                'sale_id' => $sale->id,
+                'item_id' => $item->id,
+                'cate_id' => $item->cate_id,
+                'subcate_id' => $item->subcate_id,
+                'pot_type' => $item->pot_type,
+                'sale_count' => $sale->item_count,
+                'sale_price' => $sale->total_price,
+                'created_at' => $sale->created_at,
+            ]
+        );
+        
+        
+        $this->comment('SetRanking done');
+    }
+    
+    
+    //$this->comment('NoUser change address3 done');
+})->describe('Set Data Ranking from prev sale');
 
 

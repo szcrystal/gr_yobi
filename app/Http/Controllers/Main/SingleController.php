@@ -188,11 +188,11 @@ class SingleController extends Controller
         // カテゴリーランキング：同カテゴリーのランキング ====================
         if(Ctm::isEnv('local')) { //Provision
             if($item->cate_id == 1) {
-                $recomCateRankItems = Ctm::getUekiSecObj()->take($getNum)->chunk($chunkNum); //get()で返る
+                $recomCateRankItems = Ctm::getUekiSecObj2()->take($getNum)->chunk($chunkNum); //get()で返る
                 //$items = Ctm::customPaginate($items, $this->perPage, $request);
             }
             else {
-                $arIds = Ctm::getRankObj($item->cate_id)->map(function($obj){
+                $arIds = Ctm::getRankObj2($item->cate_id)->map(function($obj){
                     return $obj->id;
                 })->all();
                 

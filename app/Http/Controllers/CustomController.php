@@ -15,6 +15,8 @@ use App\MailTemplate;
 use App\Sale;
 use App\SaleRelation;
 
+use App\DataRanking;
+
 use App\ItemUpper;
 use App\ItemUpperRelation;
 
@@ -522,6 +524,85 @@ class CustomController extends Controller
             //"isSunday" => CustomController::isSeinouSunday,
         ];
     }
+    
+    
+    static function getRankObj2($cateId = null)
+    {
+        $rankTerm = Setting::first()->rank_term;
+        
+        $now = new DateTime();
+        $sepDay = $now->modify('-' . $rankTerm . ' days')->format('Y-m-d');
+        
+        $cateAr = isset($cateId) ? ['cate_id', '=', $cateId] : ['cate_id', '>', 1];
+        
+        $lastItems = array();
+        
+        $drGroup = DataRanking::where([$cateAr])->whereDate('created_at', '>' , $sepDay)->get()->groupBy('item_id')->toArray();
+        
+//        print_r($drGroup);
+//        exit;
+        if(count($drGroup) > 0) {
+            foreach($drGroup as $itemIdKey => $dr) {
+                $item = Item::find($itemIdKey);
+                
+                //$item->total_count = array_sum(array_column($dr, 'sale_count')); //countは今のところ不要なので消している
+                $item->total_price = array_sum(array_column($dr, 'sale_price'));
+                //$sums[$itemIdKey] = array_sum(array_column($dr, 'sale_price'));
+                
+                $lastItems[] = $item;
+            }
+        }
+        
+        $sorted = collect($lastItems)->where('open_status', 1)->sortByDesc('total_price');
+        return $sorted;
+        
+        // arsort($sums);
+        // $sums = array_keys($sums);
+
+        // print_r($sums);
+        // exit;
+
+        //return Item::whereIn('id', $sums)->where('open_status', 1)->orderByRaw("FIELD(id, $cookieIds)")->get();
+    }
+    
+    static function getUekiSecObj2()
+    {
+        // === 集計日数と商品の最小金額取得に時間がかかるかも ===================
+        
+        $rankTerm = Setting::first()->rank_term_ueki;
+        
+        $now = new DateTime();
+        $sepDay = $now->modify('-' . $rankTerm . ' days')->format('Y-m-d');
+
+        $lastCateUekis = array();
+        
+        $drGroup = DataRanking::where('cate_id', 1)->whereDate('created_at', '>' , $sepDay)->get()->groupBy('subcate_id')->toArray();
+
+        if(count($drGroup) > 0) {
+            
+            foreach($drGroup as $subCateKey => $dr) {
+                if($subCateKey != '') {
+                    //cateSecを取得してtotal_priceをセット ---
+                    $cateUeki = CategorySecond::find($subCateKey);
+                    $cateUeki->total_price = array_sum(array_column($dr, 'sale_price'));
+                    
+                    //該当するcateSecのアイテムを取得して最小金額と在庫の有無を取る必要がある ---
+                    $items = Item::where(['open_status'=>1, 'subcate_id'=>$subCateKey, ['pot_type', '<', 3]])->get();
+                    
+                    $cateUeki->min_price = $items->min('price');
+                    $cateUeki->min_sale_price = $items->whereNotIn('sale_price', [null, 0])->min('sale_price');
+                    $cateUeki->is_stock = $items->sum('stock') ? 1 : 0;
+                    
+                    $lastCateUekis[] = $cateUeki;
+                }
+            }
+        }
+        
+        $sorted = collect($lastCateUekis)->sortByDesc('total_price');
+        return $sorted;
+    
+    }
+    
     
     
     static function getRankObj($cateId = null)
