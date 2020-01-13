@@ -143,7 +143,7 @@ use App\Category;
                                     }
                                 ?>
                                 
-                                <input type="checkbox" name="is_more" value="1"{{ $moreChecked }}> 「もっと見る」を設定しない<br><small>（チェックONで全表示）</small>
+                                <input type="checkbox" name="is_more" value="1"{{ $moreChecked }}> 「詳しく見る」を設定しない<br><small>（チェックONで全表示）</small>
                             </label>
                         </div>
                     </div>
