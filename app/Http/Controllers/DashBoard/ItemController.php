@@ -158,7 +158,8 @@ class ItemController extends Controller
     public function store(Request $request)
     {
     	$editId = $request->has('edit_id') ? $request->input('edit_id') : 0;
-        
+//        echo $request->has('subcate_id') ? 1 :0;
+//        exit;
 //        echo ! $request->has('is_once');
 //        exit;
         
@@ -167,6 +168,7 @@ class ItemController extends Controller
             'title' => 'required|max:255',
             'pot_type' => 'required',
             'cate_id' => 'required',
+            'subcate_id' => 'required_if:cate_id,1',
             
             'pot_sort' => [
             	'nullable',
@@ -263,6 +265,7 @@ class ItemController extends Controller
         $messages = [
          	'title.required' => '「商品名」を入力して下さい。',
             'cate_id.required' => '「親カテゴリー」は必須です。',
+            'subcate_id.required_if' => '「親カテゴリー：植木／庭木」の時「子カテゴリー」は必須です。',
             'pot_parent_id.required_if' => '子ポットの時「親ポットID」は必須です。',
             'pot_count.required_if' => '子ポットの時「ポット数」は必須です。',
             'stock_reset_count.required_with' => '「在庫入荷月」入力時は「在庫リセット数」は必須です。',

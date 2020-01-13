@@ -25,21 +25,7 @@ class AddColumnToEtc12 extends Migration
             $table->index(['open_status', 'pot_type']);
         });
         
-        //DataRanking Table Create
-        Schema::create('data_rankings', function (Blueprint $table) {
-            $table->increments('id');
-            
-            $table->integer('sale_id')->nullable()->default(NULL);
-            $table->integer('item_id')->nullable()->default(NULL);
-            $table->integer('cate_id')->nullable()->default(NULL);
-            $table->integer('subcate_id')->nullable()->default(NULL);
-            $table->integer('pot_type')->nullable()->default(NULL);
-            
-            $table->integer('sale_count')->nullable()->default(0);
-            $table->integer('sale_price')->nullable()->default(0);
-            
-            $table->timestamps();
-        });
+        
     }
 
     /**
@@ -73,11 +59,7 @@ class AddColumnToEtc12 extends Migration
                 }
             });
         }
-        
-        
-        //DataRanking Table Drop
-        Schema::dropIfExists('data_rankings');
-        
-        
+
+
     }
 }

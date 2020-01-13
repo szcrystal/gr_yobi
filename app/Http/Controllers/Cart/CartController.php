@@ -15,6 +15,7 @@ use App\DeliveryGroup;
 use App\DeliveryGroupRelation;
 use App\Favorite;
 use App\PayMethodChild;
+use App\DataRanking;
 
 use App\Mail\OrderEnd;
 use App\Mail\Register;
@@ -38,7 +39,7 @@ use Illuminate\Validation\Rule;
 
 class CartController extends Controller
 {
-    public function __construct(Item $item, Setting $setting, User $user, UserNoregist $userNor, Sale $sale, SaleRelation $saleRel, Receiver $receiver, PayMethod $payMethod, Prefecture $prefecture, DeliveryGroup $dg, DeliveryGroupRelation $dgRel, Favorite $favorite, PayMethodChild $payMethodChild)
+    public function __construct(Item $item, Setting $setting, User $user, UserNoregist $userNor, Sale $sale, SaleRelation $saleRel, Receiver $receiver, PayMethod $payMethod, Prefecture $prefecture, DeliveryGroup $dg, DeliveryGroupRelation $dgRel, Favorite $favorite, PayMethodChild $payMethodChild, DataRanking $dataRanking)
     {
         
         //$this -> middleware('adminauth');
@@ -59,6 +60,7 @@ class CartController extends Controller
         $this->dgRel = $dgRel;
         $this->favorite = $favorite;
         $this->payMethodChild = $payMethodChild;
+        $this->dr = $dataRanking;
         
         //西濃運輸用変数
         $this->seinouObj = Ctm::getSeinouObj();
@@ -624,20 +626,19 @@ class CartController extends Controller
             
             $saleIds[] = $sale->id;
             $saleObjs[] = $sale; //for ggl
-            
 
-            //在庫引く処理
+            //在庫引く処理 ===================
             //$item = $this->item->find($val['item_id']);
             $i->timestamps = false; //在庫引く時とsale Countでタイムスタンプを上書きしない
             $i->decrement('stock', $singleSellCount);
-            
-            $parentItem = null;
-            
+
             if(! $i->stock || $i->stock < 0) { //在庫が0になればitem_idを配列へ メールで知らせるため
             	$stockNone[] = $i->id;
             }
             
-            //Sale Count処理（itemの売れた個数）
+            //Sale Count処理（itemの売れた個数）================
+            $parentItem = null;
+            
             if($i->pot_type == 3) {
             	$parentItem = $this->item->find($i->pot_parent_id);
                 $parentItem->increment('sale_count', $singleSellCount);
@@ -655,7 +656,20 @@ class CartController extends Controller
             	$i->increment('sale_count', $singleSellCount);
             }
             
-            //お気に入りにsale_idを入れる。お気に入りに購入履歴を残すため。
+            // DataRankingにSet ===========================
+            $itemForRank = isset($parentItem) ? $parentItem : $i;
+            
+            $this->dr->create([
+                'sale_id' => $sale->id,
+                'item_id' => $itemForRank->id,
+                'cate_id' => $itemForRank->cate_id,
+                'subcate_id' => $itemForRank->subcate_id,
+                'pot_type' => $itemForRank->pot_type,
+                'sale_count' => $singleSellCount,
+                'sale_price' => $itemTotalPrice,
+            ]);
+            
+            //お気に入りにsale_idを入れる。お気に入りに購入履歴を残すため。==========
             if($isUser) {
             	$fav = $this->favorite->where(['user_id'=>$userId, 'item_id'=>$i->id])->first();
                 

@@ -16,6 +16,8 @@ class DataRanking extends Model
         'sale_count',
         'sale_price',
         
+        'is_cancel', // ここのデータ量は極力減らしたいのでキャンセルはデータ削除の方向で
+        
         'created_at',
         'updated_at',
     ];

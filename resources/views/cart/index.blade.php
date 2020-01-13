@@ -73,6 +73,8 @@
                         <?php 
                             $obj = $item;
                             $urlId = $item->pot_type == 3 ? $item->pot_parent_id : $item->id;
+                            
+                            $disabled = '';
                         ?>
                         
                         <div>

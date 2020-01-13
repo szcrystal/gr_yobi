@@ -158,7 +158,7 @@ Artisan::command('setStockPotParent', function () {
 
 //Saleからこれまでの集計をDataRankingにセットする
 Artisan::command('setDataRanking', function () {
-    $sales = Sale::all();
+    $sales = Sale::where('is_cancel', 0)->get();
     //$ar = array();
     
     foreach($sales as $sale) {
@@ -191,5 +191,6 @@ Artisan::command('setDataRanking', function () {
     
     //$this->comment('NoUser change address3 done');
 })->describe('Set Data Ranking from prev sale');
+
 
 
