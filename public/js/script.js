@@ -1155,10 +1155,13 @@ var exe = (function() {
         
         
         getCardToken: function() {
-        	
-            $('#card-submit').on('click', function() {
+            
+            $cardTarget = $('#card-submit, #card-submit-2');
+            $submitTarget = $('#regist-submit, #exist-submit, #exist-submit-2');
+            
+            $cardTarget.on('click', function() {
             	
-                $(this).addClass('invisible');
+                $cardTarget.addClass('invisible');
                 $('.loader').fadeIn(100);
                 //exit();
                 
@@ -1217,8 +1220,8 @@ var exe = (function() {
             
             
             
-            $('#regist-submit, #exist-submit').on('click', function(){
-            	$(this).addClass('invisible');
+            $submitTarget.on('click', function(){
+            	$submitTarget.addClass('invisible');
                 $('.loader').show();
                 
                 //return false;

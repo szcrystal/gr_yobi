@@ -104,13 +104,6 @@
                             {{ $errors->first('gmoLimit') }}<br>
                             戻ってお支払い方法か購入商品/数量を変更して下さい。
                         </span>
-                    @else
-                        {{--
-                        <span class="mx-auto d-block px-5 confirm-small text-small">
-                        上記ご注文内容で注文を確定します。<br>
-                        <b>「注文する」ボタンをクリックすると注文を確定します。</b>
-                        </span>
-                        --}}
                     @endif
 
                         
@@ -632,6 +625,28 @@
         </div>
         --}}
         
+    @endif
+    
+    @if(! Ctm::isAgent('sp'))
+        <div class="ml-20per pl-1 mt-5 pb-0 mb-0">
+            <div class="loader-wrap">
+                <span class="loader mr-3"><i class="fas fa-square mr-1"></i> 処理中..</span>
+            </div>
+            
+            @if($isCard)
+                <input type="button" id="card-submit-2" class="btn btn-block btn-orange mt-0 mb-0 py-3" data-product="{{ $isProduct }}" value="注文を確定する" form="getTokenForm">
+            @else
+                
+                @if($errors->has('gmoLimit'))
+                    <span class="mx-auto d-block px-1 mb-1 confirm-small text-danger text-small">
+                        {{ $errors->first('gmoLimit') }}<br>
+                        戻ってお支払い方法か購入商品/数量を変更して下さい。
+                    </span>
+                @endif
+                
+                <input id="exist-submit-2" class="btn btn-block btn-orange mb-0 py-3" type="submit"{{ $disabled }} value="注文を確定する" form="purchaseForm">
+            @endif
+        </div>
     @endif
     
 

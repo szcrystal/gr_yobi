@@ -132,6 +132,7 @@ Artisan::command('setStockPotParent', function () {
                 
                 $item->update([
                     'pot_type' => 2,
+                    'pot_parent_id' => null,
                     'price' => $pots->min('price'),
                     'sale_price' => $pots->whereNotIn('sale_price', [null, 0])->min('sale_price'), //子ポット-sale_priceが全てnullならnullが返るのでこれでOK
                     'stock' => $pots->sum('stock'),
