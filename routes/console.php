@@ -9,6 +9,7 @@ use App\UserNoregist;
 use App\Item;
 use App\Sale;
 use App\DataRanking;
+use App\ItemContent;
 
 /*
 |--------------------------------------------------------------------------
@@ -194,4 +195,42 @@ Artisan::command('setDataRanking', function () {
 })->describe('Set Data Ranking from prev sale');
 
 
+
+//Saleからこれまでの集計をDataRankingにセットする
+Artisan::command('setItemContents', function () {
+    $items = Item::where('pot_type', '<', 3)->get();
+    
+    $ar = [
+        'exp_first' => null,
+        'explain' => null,
+        'about_ship' => null,
+        'contents' => null,
+        'caution' => null,
+        'free_space' => null,
+        'meta_title' => null,
+        'meta_description' => null,
+        'meta_keyword' => null,
+        'upper_title' => null,
+        'upper_text' => null,
+    ];
+    
+    foreach($items as $item) {
+        
+        $itemAr = $item->toArray();
+        
+        $itemAr['item_id'] = $item->id;
+        $ic = ItemContent::create($itemAr);
+        
+        $item->update($ar);
+        
+        $this->comment('Set ItemContent done');
+    }
+    
+
+    
+    
+    //$this->comment('NoUser change address3 done');
+})->describe('Set Item Content from Item');
+
+    
 

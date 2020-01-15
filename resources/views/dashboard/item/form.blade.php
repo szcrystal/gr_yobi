@@ -1055,39 +1055,39 @@ use App\CategorySecond;
             </div>
 
             
-            <fieldset class="my-5 form-group{{ $errors->has('exp_first') ? ' is-invalid' : '' }}">
+            <fieldset class="my-5 form-group{{ $errors->has('cont.exp_first') ? ' is-invalid' : '' }}">
                     <label for="explain" class="control-label">キャッチ説明（商品ヘッドの中に表示）</label>
 
-                    <textarea class="form-control" name="exp_first" rows="10">{{ Ctm::isOld() ? old('exp_first') : (isset($item) ? $item->exp_first : '') }}</textarea>
+                    <textarea class="form-control" name="cont[exp_first]" rows="10">{{ Ctm::isOld() ? old('cont.exp_first') : (isset($itemCont) ? $itemCont->exp_first : '') }}</textarea>
 
-                    @if ($errors->has('exp_first'))
+                    @if ($errors->has('cont.exp_first'))
                         <span class="help-block">
-                            <strong>{{ $errors->first('exp_first') }}</strong>
+                            <strong>{{ $errors->first('cont.exp_first') }}</strong>
                         </span>
                     @endif
             </fieldset>
             
-            <fieldset class="my-5 form-group{{ $errors->has('explain') ? ' is-invalid' : '' }}">
+            <fieldset class="my-5 form-group{{ $errors->has('cont.explain') ? ' is-invalid' : '' }}">
                     <label for="explain" class="control-label">商品詳細</label>
 
-                    <textarea class="form-control" name="explain" rows="20">{{ Ctm::isOld() ? old('explain') : (isset($item) ? $item->explain : '') }}</textarea>
+                    <textarea class="form-control" name="cont[explain]" rows="20">{{ Ctm::isOld() ? old('cont.explain') : (isset($itemCont) ? $itemCont->explain : '') }}</textarea>
 
-                    @if ($errors->has('explain'))
+                    @if ($errors->has('cont.explain'))
                         <span class="help-block">
-                            <strong>{{ $errors->first('explain') }}</strong>
+                            <strong>{{ $errors->first('cont.explain') }}</strong>
                         </span>
                     @endif
             </fieldset>
             
             
-            <fieldset class="mt-3 mb-2 form-group{{ $errors->has('about_ship') ? ' is-invalid' : '' }}">
+            <fieldset class="mt-3 mb-2 form-group{{ $errors->has('cont.about_ship') ? ' is-invalid' : '' }}">
                     <label for="detail" class="control-label">配送について</label>
 
-                        <textarea class="form-control" name="about_ship" rows="20">{{ Ctm::isOld() ? old('about_ship') : (isset($item) ? $item->about_ship : '') }}</textarea>
+                        <textarea class="form-control" name="cont[about_ship]" rows="20">{{ Ctm::isOld() ? old('cont.about_ship') : (isset($itemCont) ? $itemCont->about_ship : '') }}</textarea>
 
-                        @if ($errors->has('about_ship'))
+                        @if ($errors->has('cont.about_ship'))
                             <span class="help-block">
-                                <strong>{{ $errors->first('about_ship') }}</strong>
+                                <strong>{{ $errors->first('cont.about_ship') }}</strong>
                             </span>
                         @endif
             </fieldset>
@@ -1113,21 +1113,21 @@ use App\CategorySecond;
             </fieldset>
             
             <?php
-                $obj = null;
-                if(isset($item)) $obj = $item;
+//                $obj = null;
+//                if(isset($item)) $obj = $item;
             ?>
 
-            @include('dashboard.shared.contents')
+            @include('dashboard.shared.contents', ['obj'=>isset($itemCont) ? $itemCont : null, 'isItem'=>1])
             
             
-            <fieldset class="mt-3 mb-2 form-group{{ $errors->has('caution') ? ' is-invalid' : '' }}">
+            <fieldset class="mt-3 mb-2 form-group{{ $errors->has('cont.caution') ? ' is-invalid' : '' }}">
                 <label for="caution" class="control-label">ご注意</label>
 
-                <textarea class="form-control" name="caution" rows="20">{{ Ctm::isOld() ? old('caution') : (isset($item) ? $item->caution : '') }}</textarea>
+                <textarea class="form-control" name="cont[caution]" rows="20">{{ Ctm::isOld() ? old('cont.caution') : (isset($itemCont) ? $itemCont->caution : '') }}</textarea>
 
-                @if ($errors->has('caution'))
+                @if ($errors->has('cont.caution'))
                     <span class="help-block">
-                        <strong>{{ $errors->first('caution') }}</strong>
+                        <strong>{{ $errors->first('cont.caution') }}</strong>
                     </span>
                 @endif
             </fieldset>
@@ -1157,7 +1157,7 @@ use App\CategorySecond;
             </div>
 			--}}
 			
-            @include('dashboard.shared.meta')
+            @include('dashboard.shared.meta', ['obj'=>isset($itemCont) ? $itemCont : null, 'isItem'=>1])
             
             <div class="form-group mt-5 pt-3">
                 <button type="submit" class="btn btn-primary btn-block w-btn w-25 mx-auto">更　新</button>

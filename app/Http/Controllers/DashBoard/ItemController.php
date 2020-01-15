@@ -16,6 +16,7 @@ use App\ItemImage;
 use App\Setting;
 use App\ItemStockChange;
 use App\Icon;
+use App\ItemContent;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -31,7 +32,7 @@ use DateTime;
 
 class ItemController extends Controller
 {
-    public function __construct(Admin $admin, Item $item, Tag $tag, Category $category, CategorySecond $categorySecond, PostCategorySecond $postCateSec, TagRelation $tagRelation, Consignor $consignor, DeliveryGroup $dg, DeliveryGroupRelation $dgRel, ItemImage $itemImg, Setting $setting, ItemStockChange $itemSc, Icon $icon)
+    public function __construct(Admin $admin, Item $item, Tag $tag, Category $category, CategorySecond $categorySecond, PostCategorySecond $postCateSec, TagRelation $tagRelation, Consignor $consignor, DeliveryGroup $dg, DeliveryGroupRelation $dgRel, ItemImage $itemImg, Setting $setting, ItemStockChange $itemSc, Icon $icon, ItemContent $itemCont)
     {
         
         $this -> middleware('adminauth');
@@ -51,6 +52,7 @@ class ItemController extends Controller
         $this->setting = $setting;
         $this->itemSc = $itemSc;
         $this->icon = $icon;
+        $this->itemCont = $itemCont;
         
         $this->perPage = 20;
         
@@ -101,6 +103,8 @@ class ItemController extends Controller
     public function show($id)
     {
         $item = $this->item->find($id);
+        $itemCont = $this->itemCont->where('item_id', $id)->first();
+        
         $cates = $this->category->all();
         $subcates = $this->categorySecond->where(['parent_id'=>$item->cate_id])->get();
         $consignors = $this->consignor->all();
@@ -126,7 +130,7 @@ class ItemController extends Controller
         
         $icons = $this->icon->all();
         
-        return view('dashboard.item.form', ['item'=>$item, 'cates'=>$cates, 'subcates'=>$subcates, 'consignors'=>$consignors, 'dgs'=>$dgs, 'tagNames'=>$tagNames, 'allTags'=>$allTags, 'spares'=>$spares, 'snaps'=>$snaps, 'primaryCount'=>$primaryCount, 'imgCount'=>$imgCount, 'icons'=>$icons, 'id'=>$id, 'edit'=>1]);
+        return view('dashboard.item.form', ['item'=>$item, 'itemCont'=>$itemCont, 'cates'=>$cates, 'subcates'=>$subcates, 'consignors'=>$consignors, 'dgs'=>$dgs, 'tagNames'=>$tagNames, 'allTags'=>$allTags, 'spares'=>$spares, 'snaps'=>$snaps, 'primaryCount'=>$primaryCount, 'imgCount'=>$imgCount, 'icons'=>$icons, 'id'=>$id, 'edit'=>1]);
     }
    
     public function create()
@@ -277,9 +281,9 @@ class ItemController extends Controller
         $this->validate($request, $rules, $messages);
         
         $data = $request->all();
+        $dataCont = $data['cont'];
         
-//        print_r($data['icons']);
-//		echo implode(',', $data['icons']);
+//        print_r($data['cont']);
 //        exit;
         
         //status
@@ -315,6 +319,7 @@ class ItemController extends Controller
         if($editId) { //update（編集）の時
             $status = '商品が更新されました！';
             $item = $this->item->find($editId);
+            $itemCont = $this->itemCont->where('item_id', $item->id)->first();
             
             //上書き更新の制御 ------------
             if(! $forceUp) {
@@ -371,6 +376,7 @@ class ItemController extends Controller
             //stockChange save 新着情報用 END -------------
 
             $item->update($data); //Item更新
+            $itemCont->update($dataCont);
             
         }
         else { //新規追加の時

@@ -147,7 +147,7 @@
 </div>
 
 
-@include('main.shared.upperExp', ['orgObj'=>$orgObj])
+@include('main.shared.upperExp', ['orgObj'=>$itemCont])
 
 </div>
 
