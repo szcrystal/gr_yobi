@@ -1,9 +1,16 @@
 <?php
-$isItem = isset($isItem) ? 1 : 0;
+if(isset($isItem)) {
+    $nameFormat = 'cont[%s]';
+    $oldFormat = 'cont.%s';
+}
+else {
+    $nameFormat = '%s';
+    $oldFormat = '%s';
+}
 ?>
 
 
-    <fieldset class="mb-4 form-group{{ $errors->has('contents') ? ' is-invalid' : '' }}">
+    <fieldset class="mb-4 form-group{{ $errors->has(sprintf($oldFormat, 'contents')) ? ' is-invalid' : '' }}">
         <label for="contents" class="control-label">
             @if(isset($type) && $type == 'top')
             TOPお知らせ枠(HTML) <br><small>PC用にする場合は「for-pc」SP用の場合は「for-sp」というクラスをソースコードに当てて下さい。</small>
@@ -16,11 +23,11 @@ $isItem = isset($isItem) ? 1 : 0;
             $rows = (isset($type) && $type == 'top') ? 20 : 33;
         ?>
         
-        <textarea class="form-control" name="{{ $isItem ? 'cont[contents]' : 'contents' }}" rows="{{ $rows }}">{{ Ctm::isOld() ? old('contents') : (isset($obj) ? $obj->contents : '') }}</textarea>
+        <textarea class="form-control" name="{{ sprintf($nameFormat, 'contents') }}" rows="{{ $rows }}">{{ Ctm::isOld() ? old(sprintf($oldFormat, 'contents')) : (isset($obj) ? $obj->contents : '') }}</textarea>
 
-        @if ($errors->has('contents'))
+        @if ($errors->has(sprintf($oldFormat, 'contents')))
             <span class="help-block">
-                <strong>{{ $errors->first('contents') }}</strong>
+                <strong>{{ $errors->first(sprintf($oldFormat, 'contents')) }}</strong>
             </span>
         @endif
     </fieldset>

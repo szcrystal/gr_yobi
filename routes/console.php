@@ -195,8 +195,7 @@ Artisan::command('setDataRanking', function () {
 })->describe('Set Data Ranking from prev sale');
 
 
-
-//Saleからこれまでの集計をDataRankingにセットする
+// Itemのコンテンツを別テーブルに移動
 Artisan::command('setItemContents', function () {
     $items = Item::where('pot_type', '<', 3)->get();
     
@@ -225,12 +224,9 @@ Artisan::command('setItemContents', function () {
         
         $this->comment('Set ItemContent done');
     }
-    
 
-    
-    
     //$this->comment('NoUser change address3 done');
 })->describe('Set Item Content from Item');
 
-    
+
 

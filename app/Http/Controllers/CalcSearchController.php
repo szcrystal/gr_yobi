@@ -90,16 +90,17 @@ class CalcSearchController extends Controller
                         $q->whereIn('subcate_id', $ids);
                     });
                 }
+                
                 elseif(
                     $column == 'name' || 
                     $column == 'title' || 
                     $column == 'title_addition' || 
                     $column == 'catchcopy' || 
                     $column == 'deli_plan_text' ||
-                    $column == 'exp_first' || 
-                    $column == 'explain' || 
-                    $column == 'about_ship' || 
-                    $column == 'contents' || 
+//                    $column == 'exp_first' ||
+//                    $column == 'explain' ||
+//                    $column == 'about_ship' ||
+//                    $column == 'contents' ||
                     $column == 'detail'
                     )
                 {
@@ -115,28 +116,54 @@ class CalcSearchController extends Controller
                     }
                 }
                 
-                //Item内にcolumnがないものをここで検索する
-                else
-                {
-                	//Tag -----
-                	$tagIds = $this->tag->where('name', 'like', $word)->get()->map(function($tag){
-                        return $tag->id;
-                    })->all();
-                    
-                    $itemIds = $this->tagRel->whereIn('tag_id', $tagIds)->get()->map(function($tagRel){
-                    	return $tagRel->item_id;
-                    })->all();
-                    
-                    $query -> orWhere(function($q) use($itemIds) {
-                        $q->whereIn('id', $itemIds);
-                    });
-                    
-                    //Icon_Id どうするか -----
-                    
-                }
 
             }
         }
+        
+        //Item内にcolumnがないものをここで検索する ループの後 ==============================
+        
+        //Tag -------------------------
+        $tagIds = $this->tag->where('name', 'like', $word)->get()->map(function($tag){
+            return $tag->id;
+        })->all();
+        
+        $itemIds = $this->tagRel->whereIn('tag_id', $tagIds)->get()->map(function($tagRel){
+            return $tagRel->item_id;
+        })->all();
+        
+//        $query -> orWhere(function($q) use($itemIds) {
+//            $q->whereIn('id', $itemIds);
+//        });
+        
+        
+        //ItemContent -------------------------
+        $icColumns = [
+            'exp_first',
+            'explain',
+            'about_ship',
+            'contents',
+            'caution',
+        ];
+        
+        $icq = DB::table('item_contents');
+        
+        foreach($icColumns as $icColumn) {
+            $icq->orWhere($icColumn, 'like', $word);
+        }
+        
+        $icIds = $icq->get()->map(function($ic){
+            return $ic->item_id;
+        })->all();
+        
+        //Itemのqueryを取る
+        $itemIds = array_merge($itemIds, $icIds);
+        
+        $query -> orWhere(function($q) use($itemIds) {
+            $q->whereIn('id', $itemIds);
+        });
+        
+        //Icon_Id どうするか -----
+        
     }
     
     public function getSearchObj()
@@ -337,7 +364,7 @@ class CalcSearchController extends Controller
                 })->all();
             }
             
-            //cate result
+            //cateSec result
             $cateSecResults = DB::table('items')->whereIn('subcate_id', $subCateIds);
             //CategorySecond Search END===============================================
             
@@ -355,6 +382,31 @@ class CalcSearchController extends Controller
                     customQueryWhere($columnArr, $qry, $sWord);
                 });
             }
+            
+            //ItemContent search =======================================================
+            $tableName = 'item_contents';
+            $query = DB::table($tableName);
+            $columnArr = Schema::getColumnListing($tableName);
+            $contIds = array();
+            
+            foreach($searchWord as $sWord) {
+                $sWord = "%".$sWord."%";
+                
+                $query->where( function($qry) use($columnArr, $sWord) { //ここをorWhereにすればAND検索になりそう
+                    customQueryWhere($columnArr, $qry, $sWord);
+                });
+            }
+            
+            if($query->count() > 0) {
+                $contIds = $query->get()->map(function($obj){
+                    return $obj->item_id;
+                })->all();
+            }
+            
+            // itemCont result
+            $itemContResults = DB::table('items')->whereIn('id', $contIds);
+            // ItemContent Search END===============================================
+            
             
 //            print_r($itemQuery->get()->all());
 //            exit;
@@ -435,6 +487,24 @@ class CalcSearchController extends Controller
             customQueryWhere($columnArr, $itemQuery, $sWord);
             //Item Search END ============================
             
+            //ItemContent search =======================================================
+            $tableName = 'item_contents';
+            $query = DB::table($tableName);
+            $columnArr = Schema::getColumnListing($tableName);
+            $contIds = array();
+            
+            customQueryWhere($columnArr, $query, $sWord);
+            
+            if($query->count() > 0) {
+                $contIds = $query->get()->map(function($obj){
+                    return $obj->item_id;
+                })->all();
+            }
+            
+            // itemCont result
+            $itemContResults = DB::table('items')->whereIn('id', $contIds);
+            // ItemContent Search END===============================================
+            
             //$atclQuery->where('open_status',1);
             
             //$allResults = $first->union($second)->union($atclQuery)->get()->where('open_status', 1)->all();
@@ -461,7 +531,7 @@ class CalcSearchController extends Controller
         $allResults = array_merge($allResults); //indexを振り直す
         ***** ORG END */
         
-        $allResIds = $tagResults->union($cateResults)->union($cateSecResults)->union($itemQuery)->get()->map(function($item){
+        $allResIds = $tagResults->union($cateResults)->union($cateSecResults)->union($itemQuery)->union($itemContResults)->get()->map(function($item){
             return $item->id;
         })->all();
         

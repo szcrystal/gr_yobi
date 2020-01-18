@@ -319,7 +319,7 @@ class ItemController extends Controller
         if($editId) { //update（編集）の時
             $status = '商品が更新されました！';
             $item = $this->item->find($editId);
-            $itemCont = $this->itemCont->where('item_id', $item->id)->first();
+            //$itemCont = $this->itemCont->where('item_id', $item->id)->first();
             
             //上書き更新の制御 ------------
             if(! $forceUp) {
@@ -376,7 +376,7 @@ class ItemController extends Controller
             //stockChange save 新着情報用 END -------------
 
             $item->update($data); //Item更新
-            $itemCont->update($dataCont);
+            //$itemCont->update($dataCont);
             
         }
         else { //新規追加の時
@@ -387,6 +387,13 @@ class ItemController extends Controller
             //stockChange save 新着情報用
             $this->itemSc->create(['item_id'=>$item->id, 'is_auto'=>0]);
         }
+        
+        
+        //ItemContent
+        $this->itemCont->updateOrCreate(
+            ['item_id' => $item->id],
+            $dataCont
+        );
         
         //親ポット／子ポットの時 在庫をセットする 親ポットのpot_parent_id:0、stock:1が固定値
         if($item->pot_type > 1) {

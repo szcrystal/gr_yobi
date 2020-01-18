@@ -149,24 +149,23 @@ class HomeController extends Controller
 //        $cateSecIds = implode(',', $cateSecSum);
 */
         
-        if(Ctm::isEnv('local')) {
-            //$uekiSecObj = Ctm::getUekiSecObj(); //get()で返る
-            //$uekiItems['items'] = Ctm::getUekiSecObj()->take($getNum); //get()で返る 元々->all()を付けていたが不要
-            $uekiItems['items'] = Ctm::getUekiSecObj2()->take($getNum); //get()で返る 元々->all()を付けていたが不要
-            
-            $uekiItems['type'] = 5;
-            $uekiItems['slug'] = 'ranking-ueki';
-            
-            
-            //Ranking Other =====================
-            //$rankItems['items'] = Ctm::getRankObj()->take($getNum);
-            $rankItems['items'] = Ctm::getRankObj2()->take($getNum);
-            
-            //$rankItems['items'] = array();
-            //$rankItems['items'] = $this->item->where($whereArr)->orderBy('sale_count', 'desc')->take($getNum)->get()->all();
-            $rankItems['type'] = 2;
-            $rankItems['slug'] = 'ranking';
-        }
+        //$uekiSecObj = Ctm::getUekiSecObj(); //get()で返る
+        //$uekiItems['items'] = Ctm::getUekiSecObj()->take($getNum); //get()で返る 元々->all()を付けていたが不要
+        $uekiItems['items'] = Ctm::getUekiSecObj2()->take($getNum); //get()で返る 元々->all()を付けていたが不要
+        
+        $uekiItems['type'] = 5;
+        $uekiItems['slug'] = 'ranking-ueki';
+        
+        
+        //Ranking Other =====================
+        //$rankItems['items'] = Ctm::getRankObj()->take($getNum);
+        $rankItems['items'] = Ctm::getRankObj2()->take($getNum);
+        
+        //$rankItems['items'] = array();
+        //$rankItems['items'] = $this->item->where($whereArr)->orderBy('sale_count', 'desc')->take($getNum)->get()->all();
+        $rankItems['type'] = 2;
+        $rankItems['slug'] = 'ranking';
+        
         
         //Recent 最近見た 最近チェックした =====================
         $cookieArr = array();

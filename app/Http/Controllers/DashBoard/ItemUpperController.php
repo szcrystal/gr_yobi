@@ -10,6 +10,7 @@ use App\Tag;
 use App\TagRelation;
 use App\ItemUpper;
 use App\ItemUpperRelation;
+use App\ItemContent;
 
 
 //use App\Consignor;
@@ -29,7 +30,7 @@ use File;
 class ItemUpperController extends Controller
 {
     
-    public function __construct(Admin $admin, Item $item, Tag $tag, Category $category, CategorySecond $categorySecond, TagRelation $tagRelation, ItemUpper $itemUpper, ItemUpperRelation $itemUpperRel, ItemImage $itemImg, Setting $setting, ItemStockChange $itemSc)
+    public function __construct(Admin $admin, Item $item, Tag $tag, Category $category, CategorySecond $categorySecond, TagRelation $tagRelation, ItemUpper $itemUpper, ItemUpperRelation $itemUpperRel, ItemImage $itemImg, Setting $setting, ItemStockChange $itemSc, ItemContent $itemCont)
     {
         
         $this -> middleware('adminauth');
@@ -44,6 +45,7 @@ class ItemUpperController extends Controller
         
         $this->itemUpper = $itemUpper;
         $this->itemUpperRel = $itemUpperRel;
+        $this->itemCont = $itemCont;
         
         $this->itemImg = $itemImg;
         
@@ -100,7 +102,8 @@ class ItemUpperController extends Controller
         $type = $request->input('type');
         
         if($type == 'item') {
-        	$orgObj = $this->item->find($id);
+        	//$orgObj = $this->item->find($id);
+            $orgObj = $this->itemCont->where('item_id', $id)->first();
         }
         elseif($type == 'cate') {
         	$orgObj = $this->category->find($id);
@@ -242,7 +245,7 @@ class ItemUpperController extends Controller
         ];
         
         if($type == 'item') {
-        	$orgObj = $this->item->find($editId);
+        	$orgObj = $this->itemCont->where('item_id', $editId)->first();
         }
 		elseif($type == 'cate') {
         	$orgObj = $this->category->find($editId);
@@ -408,9 +411,6 @@ class ItemUpperController extends Controller
 //        }
         
 
-        
-        
-        
         
         return redirect('dashboard/upper/'. $editId . '?type=' . $type)->with('status', $status);
     }

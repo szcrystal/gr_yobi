@@ -189,27 +189,27 @@ class SingleController extends Controller
         // この商品を見た人におすすめの商品：同カテゴリーのランダム END ====================
         
         // カテゴリーランキング：同カテゴリーのランキング ====================
-        if(Ctm::isEnv('local')) { //Provision
-            if($item->cate_id == 1) {
-                $recomCateRankItems = Ctm::getUekiSecObj2()->take($getNum)->chunk($chunkNum); //get()で返る
-                //$items = Ctm::customPaginate($items, $this->perPage, $request);
-            }
-            else {
-                $arIds = Ctm::getRankObj2($item->cate_id)->map(function($obj){
-                    return $obj->id;
-                })->all();
-                
-                $arIds = array_diff($arIds, $noStockIdsNoThis);
-                $arIds = array_values($arIds);
-                
+        if($item->cate_id == 1) {
+            $recomCateRankItems = Ctm::getUekiSecObj2()->take($getNum)->chunk($chunkNum); //get()で返る
+            //$items = Ctm::customPaginate($items, $this->perPage, $request);
+        }
+        else {
+            $arIds = Ctm::getRankObj2($item->cate_id)->map(function($obj){
+                return $obj->id;
+            })->all();
+            
+            $arIds = array_diff($arIds, $noStockIdsNoThis);
+            $arIds = array_values($arIds);
+
+            if(count($arIds) > 0) {
                 $scIdStr = implode(',', $arIds);
                 $recomCateRankItems = $this->item->whereIn('id', $arIds)->orderByRaw("FIELD(id, $scIdStr)")->take($getNum)->get()->chunk($chunkNum);
-                
-                //ORG
-                //$recomCateRankItems = $this->item->whereNotIn('id', $noStockIds)->where($whereArr)->where('cate_id', $item->cate_id)->orderBy('sale_count', 'desc')->take($getNum)->get()->chunk($chunkNum);
             }
+            
+            //ORG
+            //$recomCateRankItems = $this->item->whereNotIn('id', $noStockIds)->where($whereArr)->where('cate_id', $item->cate_id)->orderBy('sale_count', 'desc')->take($getNum)->get()->chunk($chunkNum);
+        }
         // カテゴリーランキング：同カテゴリーのランキング END ====================
-        } //Provision
         
         //他にもこんな商品が買われています：Recommend レコメンド 先頭タグと同じものをレコメンド & 合わせて関連する記事（Post）もここで取得 ==============
         //$getNum = Ctm::isAgent('sp') ? 3 : 3;
@@ -408,7 +408,7 @@ class SingleController extends Controller
 //        exit;
 
 		
-        $metaTitle = isset($itemCont->meta_title) ? $itemCont->meta_title : $itemCont->title;
+        $metaTitle = isset($itemCont->meta_title) ? $itemCont->meta_title : $item->title;
         $metaDesc = $itemCont->meta_description;
         $metaKeyword = $itemCont->meta_keyword;
         
