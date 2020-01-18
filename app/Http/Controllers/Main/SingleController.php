@@ -194,6 +194,9 @@ class SingleController extends Controller
             //$items = Ctm::customPaginate($items, $this->perPage, $request);
         }
         else {
+            $recomCateRankItems = Ctm::getRankObj2($item->cate_id)->take($getNum)->chunk($chunkNum);
+            
+            /*
             $arIds = Ctm::getRankObj2($item->cate_id)->map(function($obj){
                 return $obj->id;
             })->all();
@@ -205,6 +208,7 @@ class SingleController extends Controller
                 $scIdStr = implode(',', $arIds);
                 $recomCateRankItems = $this->item->whereIn('id', $arIds)->orderByRaw("FIELD(id, $scIdStr)")->take($getNum)->get()->chunk($chunkNum);
             }
+            */
             
             //ORG
             //$recomCateRankItems = $this->item->whereNotIn('id', $noStockIds)->where($whereArr)->where('cate_id', $item->cate_id)->orderBy('sale_count', 'desc')->take($getNum)->get()->chunk($chunkNum);
