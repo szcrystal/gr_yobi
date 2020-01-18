@@ -126,11 +126,12 @@ Artisan::command('setStockPotParent', function () {
         //$isPotParent = 0; //このitemがpotParentなら、1
         //$isStock = 0; //このpotParentの子供ポットの在庫が全て0なら、0
         
+        $item->timestamps = false;
+        
         if($item->pot_parent_id === 0) { //親ポット時
             $pots = Item::where(['open_status'=>1, 'is_potset'=>1, 'pot_parent_id'=>$item->id])->get();
             
             if($pots->isNotEmpty()) {
-                
                 $item->update([
                     'pot_type' => 2,
                     'pot_parent_id' => null,
@@ -220,6 +221,7 @@ Artisan::command('setItemContents', function () {
         $itemAr['item_id'] = $item->id;
         $ic = ItemContent::create($itemAr);
         
+        $item->timestamps = false;
         $item->update($ar);
         
         $this->comment('Set ItemContent done');

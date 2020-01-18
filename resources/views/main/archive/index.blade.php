@@ -114,7 +114,11 @@ use App\TopSetting;
                         @include('main.shared.atclCateSec', ['cateSec'=>$item])
                     @else
 	                    @include('main.shared.atcl', [])
-    				@endif                    
+    				@endif
+                    
+                    @if(Ctm::isEnv('local'))
+                    <p>{{ $item->updated_at }}</p>
+                    @endif
                 </article>
             @endforeach
             

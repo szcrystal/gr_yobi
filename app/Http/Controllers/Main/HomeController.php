@@ -518,6 +518,9 @@ class HomeController extends Controller
             abort(404);
         }
         
+        $items = $this->item->where($whereArr)->where(['cate_id'=>$cate->id])->orderBy('stock', 'desc')->orderBy('updated_at', 'desc')->paginate($this->perPage);
+        
+        /*
         $itemObjs = $this->item->where($whereArr)->where(['cate_id'=>$cate->id])->get();
         
         //在庫有りなしでソートしたidを取得
@@ -527,7 +530,7 @@ class HomeController extends Controller
         $strs = implode(',', $stockIds); //$strs = '"'. implode('","', $stockIds) .'"';
         
         $items = $this->item->whereIn('id', $stockIds)->orderByRaw("FIELD(id, $strs)")->paginate($this->perPage);
-        
+        */
 //        if(Ctm::isAgent('sp'))
 //            $items = $items->simplePaginate($this->perPage);
 //        else
@@ -565,7 +568,9 @@ class HomeController extends Controller
             abort(404);
         }
         
-        //$whereArr['subcate_id'] = $subcate->id;
+        $items = $this->item->where($whereArr)->where(['subcate_id'=>$subcate->id])->orderBy('stock', 'desc')->orderBy('updated_at', 'desc')->paginate($this->perPage);
+        
+        /*
         $itemObjs = $this->item->where($whereArr)->where(['subcate_id'=>$subcate->id])->get();
         
         //在庫有りなしでソートしたidを取得
@@ -576,6 +581,7 @@ class HomeController extends Controller
 
         $items = $this->item->whereIn('id', $stockIds)->orderByRaw("FIELD(id, $strs)")->paginate($this->perPage);
         //$items = $this->item->where(['subcate_id'=>$subcate->id, 'open_status'=>1, 'is_potset'=>0])->orderBy('id', 'desc')->paginate($this->perPage);
+        */
         
         //Upper取得
         $uppers = Ctm::getUpperArr($subcate->id, 'subcate');
@@ -609,6 +615,9 @@ class HomeController extends Controller
         	return $obj -> item_id;
         })->all();
         
+        $items = $this->item->where($whereArr)->whereIn('id', $tagItemIds)->orderBy('stock', 'desc')->orderBy('updated_at', 'desc')->paginate($this->perPage);
+        
+        /*
         $itemObjs = $this->item->whereIn('id', $tagItemIds)->where($whereArr)->get();
         
         //在庫有りなしでソートしたidを取得
@@ -619,7 +628,7 @@ class HomeController extends Controller
 
         $items = $this->item->whereIn('id', $stockIds)->orderByRaw("FIELD(id, $strs)")->paginate($this->perPage);
         //$items = $this->item->whereIn('id',$itemIds)->where(['open_status'=>1, 'is_potset'=>0])->orderBy('id', 'desc')->paginate($this->perPage);
-        
+        */
         
         //Upper取得
         $uppers = Ctm::getUpperArr($tag->id, 'tag');
@@ -644,7 +653,7 @@ class HomeController extends Controller
         
         //ORG : $whereArr = ['open_status'=>1, 'is_potset'=>0];
         //$stockTrues = $this->item->where($whereArr)->whereNotIn('stock', [0])->orderBy('id', 'desc')->get()->map(function($obj){
-        
+                
         $stockTrues = $itemObjs->whereNotIn('stock', [0])->sortByDesc('updated_at')->map(function($obj){ //Desc 降順 3,2,1
         	return $obj->id;
         })->all();
@@ -656,7 +665,9 @@ class HomeController extends Controller
         $stockIds = array_merge($stockTrues, $stockFalses);
         $potsStockFalses = array();
         
+        return $stockIds;
         
+        //以下、未使用 ========================================
         //pot親の時にpotの子のstockを見る
         foreach($stockIds as $stockId) {
         	$switchArr = Ctm::isPotParentAndStock($stockId); //親ポットか、Stockあるか、その子ポットのObjsを取る
