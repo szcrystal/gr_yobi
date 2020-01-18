@@ -41,12 +41,24 @@ class ProcessStockReset implements ShouldQueue
         
         //Item内の何月入荷の指定月が当月であれば、item内のリセットカウントをセットする
         foreach($items as $item) {
-            if($nowMonth == $item->stock_reset_month) {
-                $item->stock = $item->stock_reset_count;
-                $item->save();
+            if($nowMonth == $item->stock_reset_month && $item->pot_parent_id !== 0) { //親ポットは除外する
                 
-                //子ポットの時は親のIDをセットする
-                $itemScId = $item->is_potset ? $item->pot_parent_id : $item->id;
+                $item->update(['stock'=>$item->stock_reset_count]);
+                
+                //子ポットの時、親ポットにstock合計をセットする
+                if($item->pot_type == 3) {
+                    $potsSum = Item::where(['open_status'=>1, 'pot_type'=>3, 'pot_parent_id'=>$item->pot_parent_id])->sum('stock');
+                    Item::find($item->pot_parent_id)->update(['stock'=>$potsSum]);
+                    
+                    //子ポットの時は親のIDをセットする StockChange DB用
+                    $itemScId = $item->pot_parent_id;
+                }
+                else {
+                    // StockChange DB用
+                    $itemScId = $item->id;
+                }
+                
+                //$itemScId = $item->is_potset ? $item->pot_parent_id : $item->id;
                                 
                 //StockChange save
                 ItemStockChange::updateOrCreate( //データがなければ各種設定して作成

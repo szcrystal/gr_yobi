@@ -33,15 +33,15 @@ use App\Icon;
     $imgClass = '';
     
     //pot売り切れ判定
-    if(Ctm::isEnv('local')) {
-        $isStock = $item->stock ? 1 : 0;
-        $potsArr['isPotParent'] = 0;
-        //$potsArr['pots'] = $item->pot_parent_id === 0
-    }
-    else {
-        $potsArr = Ctm::isPotParentAndStock($item->id); //親ポットか、Stockあるか、その子ポットのObjsを取る
-        $isStock = $potsArr['isPotParent'] ? $potsArr['isStock'] : ($item->stock ? 1 : 0); //pot親でない時は通常Itemの在庫を見る
-    }
+    //if(Ctm::isEnv('local')) {
+    $isStock = $item->stock ? 1 : 0;
+    $isPotParent = $item->pot_type == 2 ? 1 : 0;
+
+//    }
+//    else {
+//        $potsArr = Ctm::isPotParentAndStock($item->id); //親ポットか、Stockあるか、その子ポットのObjsを取る
+//        $isStock = $potsArr['isPotParent'] ? $potsArr['isStock'] : ($item->stock ? 1 : 0); //pot親でない時は通常Itemの在庫を見る
+//    }
    
 ?>
 
@@ -95,35 +95,33 @@ use App\Icon;
         
     <div class="price">
         <?php
-            $isPotParent = $potsArr['isPotParent'];
-            $thisItem = $item;
+            //$isPotParent = $potsArr['isPotParent'];
+            //$thisItem = $item;
             
-            if($isPotParent) {
-                $thisItem = $potsArr['pots']->sortBy('price')->first();
-            }
+//            if($isPotParent) {
+//                $thisItem = $potsArr['pots']->sortBy('price')->first();
+//            }
         ?>
         
-        @if($isSale || isset($thisItem->sale_price))
+        @if($isSale || isset($item->sale_price))
             @if(! $isSp)
-                <strike>{{ number_format(Ctm::getPriceWithTax($thisItem->price)) }}</strike>
+                <strike>{{ number_format(Ctm::getPriceWithTax($item->price)) }}</strike>
                 <i class="fal fa-arrow-right text-small"></i>
             @endif
         @endif
         
-        @if(isset($thisItem->sale_price))
-            <span class="show-price text-enji">{{ number_format(Ctm::getPriceWithTax($thisItem->sale_price)) }}
+        @if(isset($item->sale_price))
+            <span class="show-price text-enji">{{ number_format(Ctm::getPriceWithTax($item->sale_price)) }}
         @else
             @if($isSale)
-                <span class="show-price text-enji">{{ number_format(Ctm::getSalePriceWithTax($thisItem->price)) }}
+                <span class="show-price text-enji">{{ number_format(Ctm::getSalePriceWithTax($item->price)) }}
             @else
-                <span class="show-price">{{ number_format(Ctm::getPriceWithTax($thisItem->price)) }}
+                <span class="show-price">{{ number_format(Ctm::getPriceWithTax($item->price)) }}
             @endif
         @endif
         </span>
-        <span class="show-yen">円(税込)
-        @if($isPotParent)
-        〜
-        @endif
+        <span class="show-yen">
+            円(税込){{ $isPotParent ? ' 〜' : '' }}
         </span>
         
     </div>

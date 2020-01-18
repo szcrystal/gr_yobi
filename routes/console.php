@@ -7,6 +7,9 @@ use App\User;
 use App\UserNoregist;
 
 use App\Item;
+use App\Sale;
+use App\DataRanking;
+use App\ItemContent;
 
 /*
 |--------------------------------------------------------------------------
@@ -120,33 +123,114 @@ Artisan::command('setStockPotParent', function () {
     $ar = array();
     
     foreach($items as $item) {
-        $isPotParent = 0; //このitemがpotParentなら、1
-        $isStock = 0; //このpotParentの子供ポットの在庫が全て0なら、0
-        $stockCount = 0;
+        //$isPotParent = 0; //このitemがpotParentなら、1
+        //$isStock = 0; //このpotParentの子供ポットの在庫が全て0なら、0
         
-        if($item->pot_parent_id === 0) {
-            $pots = Item::where(['open_status'=>1, 'is_potset'=>1, 'pot_parent_id'=>$item->id])->orderBy('price', 'asc')->get();
+        if($item->pot_parent_id === 0) { //親ポット時
+            $pots = Item::where(['open_status'=>1, 'is_potset'=>1, 'pot_parent_id'=>$item->id])->get();
             
             if($pots->isNotEmpty()) {
-                foreach($pots as $pot) {
-                    $stockCount += $pot->stock;
-                }
                 
                 $item->update([
-                    'price' => $pots->first()->price,
-                    'stock' => $stockCount,
+                    'pot_type' => 2,
+                    'pot_parent_id' => null,
+                    'price' => $pots->min('price'),
+                    'sale_price' => $pots->whereNotIn('sale_price', [null, 0])->min('sale_price'), //子ポット-sale_priceが全てnullならnullが返るのでこれでOK
+                    'stock' => $pots->sum('stock'),
                 ]);
                 
-                $this->comment('ID' . $item->id . ': PotParent:Stock Set Done !');
+                $this->comment('ID' . $item->id . ': PotParent:Stock/Price Set Done !');
             }
+        }
+        elseif($item->pot_parent_id === null) { //通常時
+            $item->update(['pot_type'=>1]);
+            $this->comment('ID' . $item->id . ': Normal:Type Set Done !');
+        }
+        elseif($item->pot_parent_id) { //子ポット時
+            $item->update(['pot_type'=>3]);
+            $this->comment('ID' . $item->id . ': ChildPot:Type Set Done !');
         }
  
     }
     
     
     //$this->comment('NoUser change address3 done');
-})->describe('Display potParentItem Set Stock');
+})->describe('Display potParentItem Set Stock And Price');
+
+
+//Saleからこれまでの集計をDataRankingにセットする
+Artisan::command('setDataRanking', function () {
+    $sales = Sale::where('is_cancel', 0)->get();
+    //$ar = array();
+    
+    foreach($sales as $sale) {
+        
+        $item = Item::find($sale->item_id);
+        
+        if($item->pot_type == 3) {
+            $item = Item::find($item->pot_parent_id);
+        }
+                
+        //$dr = DataRanking::where('item_id', $sale->item_id)->get();
+        
+        DataRanking::create(
+            [
+                'sale_id' => $sale->id,
+                'item_id' => $item->id,
+                'cate_id' => $item->cate_id,
+                'subcate_id' => $item->subcate_id,
+                'pot_type' => $item->pot_type,
+                'sale_count' => $sale->item_count,
+                'sale_price' => $sale->total_price,
+                'created_at' => $sale->created_at,
+            ]
+        );
+        
+        
+        $this->comment('SetRanking done');
+    }
+    
+    
+    //$this->comment('NoUser change address3 done');
+})->describe('Set Data Ranking from prev sale');
 
 
 
+//Saleからこれまでの集計をDataRankingにセットする
+Artisan::command('setItemContents', function () {
+    $items = Item::where('pot_type', '<', 3)->get();
+    
+    $ar = [
+        'exp_first' => null,
+        'explain' => null,
+        'about_ship' => null,
+        'contents' => null,
+        'caution' => null,
+        'free_space' => null,
+        'meta_title' => null,
+        'meta_description' => null,
+        'meta_keyword' => null,
+        'upper_title' => null,
+        'upper_text' => null,
+    ];
+    
+    foreach($items as $item) {
+        
+        $itemAr = $item->toArray();
+        
+        $itemAr['item_id'] = $item->id;
+        $ic = ItemContent::create($itemAr);
+        
+        $item->update($ar);
+        
+        $this->comment('Set ItemContent done');
+    }
+    
+
+    
+    
+    //$this->comment('NoUser change address3 done');
+})->describe('Set Item Content from Item');
+
+    
 

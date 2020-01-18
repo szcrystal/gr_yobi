@@ -34,9 +34,9 @@ use App\Icon;
     $imgClass = '';
     
     //pot売り切れ判定
-    $potsArr = Ctm::isPotParentAndStock($item->id); //親ポットか、Stockあるか、その子ポットのObjsを取る
+    //$potsArr = Ctm::isPotParentAndStock($item->id); //親ポットか、Stockあるか、その子ポットのObjsを取る
     
-    $isStock = $cateSec->is_stock; //pot親でない時は通常Itemの在庫を見る
+    $isStock = $cateSec->is_stock;
    
 ?>
 
@@ -97,7 +97,9 @@ use App\Icon;
     <div class="price">
         <?php
             //$isPotParent = $potsArr['isPotParent'];
-            $thisItem = $cateSec->min_price_item;
+            //$thisItem = $cateSec->min_price_item;
+            $minPrice = $cateSec->min_price;
+            $minSalePrice = $cateSec->min_sale_price;
             
 //            if($isPotParent) {
 //                $thisItem = $potsArr['pots']->sortBy('price')->first();
@@ -106,18 +108,18 @@ use App\Icon;
         
         @if($isSale || isset($thisItem->sale_price))
             @if(! $isSp)
-                <strike>{{ number_format(Ctm::getPriceWithTax($thisItem->price)) }}</strike>
+                <strike>{{ number_format(Ctm::getPriceWithTax($minPrice)) }}</strike>
                 <i class="fal fa-arrow-right text-small"></i>
             @endif
         @endif
         
         @if(isset($thisItem->sale_price))
-            <span class="show-price text-enji">{{ number_format(Ctm::getPriceWithTax($thisItem->sale_price)) }}
+            <span class="show-price text-enji">{{ number_format(Ctm::getPriceWithTax($minSalePrice)) }}
         @else
             @if($isSale)
-                <span class="show-price text-enji">{{ number_format(Ctm::getSalePriceWithTax($thisItem->price)) }}
+                <span class="show-price text-enji">{{ number_format(Ctm::getSalePriceWithTax($minPrice)) }}
             @else
-                <span class="show-price">{{ number_format(Ctm::getPriceWithTax($thisItem->price)) }}
+                <span class="show-price">{{ number_format(Ctm::getPriceWithTax($minPrice)) }}
             @endif
         @endif
         </span>

@@ -14,6 +14,7 @@ use App\FavoriteCookie;
 use App\Post;
 use App\PostRelation;
 use App\PostTagRelation;
+use App\ItemContent;
 
 use App\ItemUpper;
 use App\ItemUpperRelation;
@@ -29,7 +30,7 @@ use DateTime;
 
 class SingleController extends Controller
 {
-    public function __construct(Item $item, Category $category, CategorySecond $subCate, Tag $tag, TagRelation $tagRel, ItemImage $itemImg, Favorite $favorite, User $user, ItemUpper $itemUpper, ItemUpperRelation $itemUpperRel, FavoriteCookie $favCookie, Post $post, PostRelation $postRel, PostTagRelation $postTagRel)
+    public function __construct(Item $item, Category $category, CategorySecond $subCate, Tag $tag, TagRelation $tagRel, ItemImage $itemImg, Favorite $favorite, User $user, ItemUpper $itemUpper, ItemUpperRelation $itemUpperRel, FavoriteCookie $favCookie, Post $post, PostRelation $postRel, PostTagRelation $postTagRel, ItemContent $itemCont)
     {
         //$this->middleware('search');
         
@@ -49,6 +50,7 @@ class SingleController extends Controller
         $this->post = $post;
         $this->postRel = $postRel;
         $this->postTagRel = $postTagRel;
+        $this->itemCont = $itemCont;
         
 //        $this->tag = $tag;
 //        $this->tagRelation = $tagRelation;
@@ -59,7 +61,7 @@ class SingleController extends Controller
 //        $this->totalize = $totalize;
 //        $this->totalizeAll = $totalizeAll;
         
-        $this->whereArr = ['open_status'=>1, 'is_potset'=>0]; //こことSingleとSearchとCtm::isPotParentAndStockにある
+        $this->whereArr = ['open_status'=>1, ['pot_type', '<', 3]]; //こことSingleとSearchとCtm::isPotParentAndStockにある
         
         $this->itemPerPage = 15;
         
@@ -68,6 +70,7 @@ class SingleController extends Controller
     public function index($id)
     {
         $item = $this->item->find($id);
+        $itemCont = $this->itemCont->where('item_id', $id)->first();
         
         $whereArr = $this->whereArr;
         
@@ -84,7 +87,7 @@ class SingleController extends Controller
         
 
         //ポットセットがある場合
-        $potWhere = ['open_status'=>1, 'is_potset'=>1, 'pot_parent_id'=>$item->id];
+        $potWhere = ['open_status'=>1, 'pot_type'=>3, 'pot_parent_id'=>$item->id];
         
         if(isset($item->pot_sort) && $item->pot_sort != '') {
         	$potSorts = $item->pot_sort;
@@ -153,8 +156,9 @@ class SingleController extends Controller
         //在庫がないIDを取得する 以下のwhereNotInで使用する ===========
         $noStockIds = $this->item->whereNotIn('id', [$item->id])->where($whereArr)->get()->map(function($obj) {
             
-            $stock = 0;
+            //$stock = 0;
             
+            /*
             if($obj->pot_parent_id === 0) {
                 $switchArr = Ctm::isPotParentAndStock($obj->id); //親ポットか、Stockあるか、その子ポットのObjsを取る。$switchArr['isPotParent'] $switchArr['isStock']
                 $stock = $switchArr['isStock'];
@@ -162,8 +166,9 @@ class SingleController extends Controller
             else {
                 $stock = $obj->stock;
             }
+            */
             
-            if(! $stock)
+            if(! $obj->stock)
                 return $obj->id;
                 
         })->all();
@@ -186,11 +191,11 @@ class SingleController extends Controller
         // カテゴリーランキング：同カテゴリーのランキング ====================
         if(Ctm::isEnv('local')) { //Provision
             if($item->cate_id == 1) {
-                $recomCateRankItems = Ctm::getUekiSecObj()->take($getNum)->chunk($chunkNum); //get()で返る
+                $recomCateRankItems = Ctm::getUekiSecObj2()->take($getNum)->chunk($chunkNum); //get()で返る
                 //$items = Ctm::customPaginate($items, $this->perPage, $request);
             }
             else {
-                $arIds = Ctm::getRankObj($item->cate_id)->map(function($obj){
+                $arIds = Ctm::getRankObj2($item->cate_id)->map(function($obj){
                     return $obj->id;
                 })->all();
                 
@@ -403,12 +408,12 @@ class SingleController extends Controller
 //        exit;
 
 		
-        $metaTitle = isset($item->meta_title) ? $item->meta_title : $item->title;
-        $metaDesc = $item->meta_description;
-        $metaKeyword = $item->meta_keyword;
+        $metaTitle = isset($itemCont->meta_title) ? $itemCont->meta_title : $itemCont->title;
+        $metaDesc = $itemCont->meta_description;
+        $metaKeyword = $itemCont->meta_keyword;
         
         
-        return view('main.home.single', ['item'=>$item, 'potSets'=>$potSets, 'otherItem'=>$otherItem, 'cate'=>$cate, 'subCate'=>$subCate, 'tags'=>$tags, 'imgsPri'=>$imgsPri, 'imgsSec'=>$imgsSec, 'isFav'=>$isFav, 'recomArr'=>$recomArr, 'cacheItems'=>$cacheItems, 'recommends'=>$recommends, 'posts'=>$posts, 'upperMore'=>$upperMore, 'upperRelArr'=>$upperRelArr, 'metaTitle'=>$metaTitle, 'metaDesc'=>$metaDesc, 'metaKeyword'=>$metaKeyword, 'type'=>'single', 'isSingle'=>1, 'id'=>$id]);
+        return view('main.home.single', ['item'=>$item, 'itemCont'=>$itemCont, 'potSets'=>$potSets, 'otherItem'=>$otherItem, 'cate'=>$cate, 'subCate'=>$subCate, 'tags'=>$tags, 'imgsPri'=>$imgsPri, 'imgsSec'=>$imgsSec, 'isFav'=>$isFav, 'recomArr'=>$recomArr, 'cacheItems'=>$cacheItems, 'recommends'=>$recommends, 'posts'=>$posts, 'upperMore'=>$upperMore, 'upperRelArr'=>$upperRelArr, 'metaTitle'=>$metaTitle, 'metaDesc'=>$metaDesc, 'metaKeyword'=>$metaKeyword, 'type'=>'single', 'isSingle'=>1, 'id'=>$id]);
     }
     
     

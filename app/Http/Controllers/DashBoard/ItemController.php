@@ -16,6 +16,7 @@ use App\ItemImage;
 use App\Setting;
 use App\ItemStockChange;
 use App\Icon;
+use App\ItemContent;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -31,7 +32,7 @@ use DateTime;
 
 class ItemController extends Controller
 {
-    public function __construct(Admin $admin, Item $item, Tag $tag, Category $category, CategorySecond $categorySecond, PostCategorySecond $postCateSec, TagRelation $tagRelation, Consignor $consignor, DeliveryGroup $dg, DeliveryGroupRelation $dgRel, ItemImage $itemImg, Setting $setting, ItemStockChange $itemSc, Icon $icon)
+    public function __construct(Admin $admin, Item $item, Tag $tag, Category $category, CategorySecond $categorySecond, PostCategorySecond $postCateSec, TagRelation $tagRelation, Consignor $consignor, DeliveryGroup $dg, DeliveryGroupRelation $dgRel, ItemImage $itemImg, Setting $setting, ItemStockChange $itemSc, Icon $icon, ItemContent $itemCont)
     {
         
         $this -> middleware('adminauth');
@@ -51,6 +52,7 @@ class ItemController extends Controller
         $this->setting = $setting;
         $this->itemSc = $itemSc;
         $this->icon = $icon;
+        $this->itemCont = $itemCont;
         
         $this->perPage = 20;
         
@@ -101,6 +103,8 @@ class ItemController extends Controller
     public function show($id)
     {
         $item = $this->item->find($id);
+        $itemCont = $this->itemCont->where('item_id', $id)->first();
+        
         $cates = $this->category->all();
         $subcates = $this->categorySecond->where(['parent_id'=>$item->cate_id])->get();
         $consignors = $this->consignor->all();
@@ -126,7 +130,7 @@ class ItemController extends Controller
         
         $icons = $this->icon->all();
         
-        return view('dashboard.item.form', ['item'=>$item, 'cates'=>$cates, 'subcates'=>$subcates, 'consignors'=>$consignors, 'dgs'=>$dgs, 'tagNames'=>$tagNames, 'allTags'=>$allTags, 'spares'=>$spares, 'snaps'=>$snaps, 'primaryCount'=>$primaryCount, 'imgCount'=>$imgCount, 'icons'=>$icons, 'id'=>$id, 'edit'=>1]);
+        return view('dashboard.item.form', ['item'=>$item, 'itemCont'=>$itemCont, 'cates'=>$cates, 'subcates'=>$subcates, 'consignors'=>$consignors, 'dgs'=>$dgs, 'tagNames'=>$tagNames, 'allTags'=>$allTags, 'spares'=>$spares, 'snaps'=>$snaps, 'primaryCount'=>$primaryCount, 'imgCount'=>$imgCount, 'icons'=>$icons, 'id'=>$id, 'edit'=>1]);
     }
    
     public function create()
@@ -158,14 +162,17 @@ class ItemController extends Controller
     public function store(Request $request)
     {
     	$editId = $request->has('edit_id') ? $request->input('edit_id') : 0;
-        
+//        echo $request->has('subcate_id') ? 1 :0;
+//        exit;
 //        echo ! $request->has('is_once');
 //        exit;
         
     	$rules = [
         	'number' => 'required|unique:items,number,'.$editId,
             'title' => 'required|max:255',
+            'pot_type' => 'required',
             'cate_id' => 'required',
+            'subcate_id' => 'required_if:cate_id,1',
             
             'pot_sort' => [
             	'nullable',
@@ -227,7 +234,7 @@ class ItemController extends Controller
                 },
             ],
             
-            'stock' => 'nullable|integer',
+            'stock' => 'required|integer|min:0',
             'stock_reset_month' => [
                 function($attribute, $value, $fail) use($request) {
                     if($value == '') {
@@ -246,13 +253,13 @@ class ItemController extends Controller
             'stock_reset_count' => 'nullable|integer|required_with:stock_reset_month', /* |min:1 =>0にリセットするという場合もあるか */
             'point_back' => 'nullable|numeric',
             
-            'pot_parent_id' => 'required_with:is_potset|nullable|numeric|integer',
-            'pot_count' =>'required_with:is_potset|nullable|numeric|integer',
+            'pot_parent_id' => 'required_if:pot_type,3|nullable|numeric|integer',
+            'pot_count' =>'required_if:pot_type,3|nullable|numeric|integer',
             
             //'main_img' => 'filenaming',
         ];
         
-        if($request->has('is_potset')) {
+        if($request->input('pot_type') == 3) {
         	unset($rules['cate_id']);
             
             $rules['pot_parent_id'] = $rules['pot_parent_id'] . '|min:1';
@@ -261,7 +268,10 @@ class ItemController extends Controller
         
         $messages = [
          	'title.required' => '「商品名」を入力して下さい。',
-            'cate_id.required' => '「カテゴリー」を選択して下さい。',
+            'cate_id.required' => '「親カテゴリー」は必須です。',
+            'subcate_id.required_if' => '「親カテゴリー：植木／庭木」の時「子カテゴリー」は必須です。',
+            'pot_parent_id.required_if' => '子ポットの時「親ポットID」は必須です。',
+            'pot_count.required_if' => '子ポットの時「ポット数」は必須です。',
             'stock_reset_count.required_with' => '「在庫入荷月」入力時は「在庫リセット数」は必須です。',
             //'post_thumb.filenaming' => '「サムネイル-ファイル名」は半角英数字、及びハイフンとアンダースコアのみにして下さい。',
             //'post_movie.filenaming' => '「動画-ファイル名」は半角英数字、及びハイフンとアンダースコアのみにして下さい。',
@@ -271,9 +281,9 @@ class ItemController extends Controller
         $this->validate($request, $rules, $messages);
         
         $data = $request->all();
+        $dataCont = $data['cont'];
         
-//        print_r($data['icons']);
-//		echo implode(',', $data['icons']);
+//        print_r($data['cont']);
 //        exit;
         
         //status
@@ -309,6 +319,7 @@ class ItemController extends Controller
         if($editId) { //update（編集）の時
             $status = '商品が更新されました！';
             $item = $this->item->find($editId);
+            $itemCont = $this->itemCont->where('item_id', $item->id)->first();
             
             //上書き更新の制御 ------------
             if(! $forceUp) {
@@ -365,6 +376,7 @@ class ItemController extends Controller
             //stockChange save 新着情報用 END -------------
 
             $item->update($data); //Item更新
+            $itemCont->update($dataCont);
             
         }
         else { //新規追加の時
@@ -376,33 +388,32 @@ class ItemController extends Controller
             $this->itemSc->create(['item_id'=>$item->id, 'is_auto'=>0]);
         }
         
-        //potsetの時 parentのpot_parent_idに0をセットする 親ポットのpot_parent_id:0、stock:1が固定値
-        if($item->is_potset) {
-        	$parentItem = $this->item->find($item->pot_parent_id);
+        //親ポット／子ポットの時 在庫をセットする 親ポットのpot_parent_id:0、stock:1が固定値
+        if($item->pot_type > 1) {
+            $parentId = $item->pot_type == 2 ? $item->id : $item->pot_parent_id;
+            
+        	$parentItem = $this->item->find($parentId);
             
             if(isset($parentItem)) {
-            	if(! isset($parentItem->pot_parent_id)) { //pot_parent_idに0をセット
-            		$parentItem->pot_parent_id = 0;
-                }
+//            	if(! isset($parentItem->pot_parent_id)) { //pot_parent_idに0をセット
+//            		$parentItem->pot_parent_id = 0;
+//                }
                 
-                if(Ctm::isEnv('local')) {
-                    $pots = $this->item->where(['open_status'=>1, 'is_potset'=>1, 'pot_parent_id'=>$item->pot_parent_id])->orderBy('price', 'asc')->get();
-                    $stockCount = 0;
-                    
-                    if($pots->isNotEmpty()) {
-                        foreach($pots as $pot) {
-                            $stockCount += $pot->stock;
-                        }
-                        
-                        $parentItem->stock = $stockCount;
-                        $parentItem->price = $pots->first()->price;
-                    }
+                //if(Ctm::isEnv('local')) {
+                $pots = $this->item->where(['open_status'=>1, 'pot_type'=>3, 'pot_parent_id'=>$parentId])->get();
+                $stockCount = 0;
+                
+                if($pots->isNotEmpty()) {
+                    $parentItem->stock = $pots->sum('stock');
+                    $parentItem->price = $pots->min('price');
+                    $parentItem->sale_price = $pots->whereNotIn('sale_price', [null, 0])->min('sale_price'); //子ポット-sale_priceが全てnullならnullが返るのでこれでOK(親ポットにnullがセットされる)
                 }
-                else {
-                    if(! $parentItem->stock) { //stockを1にセット
-                        $parentItem->stock = 1;
-                    }
-                }
+//                }
+//                else {
+//                    if(! $parentItem->stock) { //stockを1にセット
+//                        $parentItem->stock = 1;
+//                    }
+//                }
                 
                 $parentItem->updated_at = date('Y-m-d H:i:s', time()); //アーカイブの更新順並べ用。子ポット更新時に親ポットのupdated_atを更新する
             	$parentItem->save();

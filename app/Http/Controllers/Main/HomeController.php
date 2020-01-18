@@ -47,7 +47,7 @@ class HomeController extends Controller
         $this->dgRel = $dgRel;
                 
         //ここでAuth::check()は効かない
-        $this->whereArr = ['open_status'=>1, 'is_potset'=>0]; //こことSingleとSearchとCtm::isPotParentAndStockにある
+        $this->whereArr = ['open_status'=>1, ['pot_type', '<', 3]]; //こことSingleとSearchとCtm::isPotParentAndStockにある
                 
         $this->perPage = Ctm::isAgent('sp') ? 21 : 20;
         
@@ -151,13 +151,17 @@ class HomeController extends Controller
         
         if(Ctm::isEnv('local')) {
             //$uekiSecObj = Ctm::getUekiSecObj(); //get()で返る
-            $uekiItems['items'] = Ctm::getUekiSecObj()->take($getNum); //get()で返る 元々->all()を付けていたが不要
+            //$uekiItems['items'] = Ctm::getUekiSecObj()->take($getNum); //get()で返る 元々->all()を付けていたが不要
+            $uekiItems['items'] = Ctm::getUekiSecObj2()->take($getNum); //get()で返る 元々->all()を付けていたが不要
+            
             $uekiItems['type'] = 5;
             $uekiItems['slug'] = 'ranking-ueki';
             
             
             //Ranking Other =====================
-            $rankItems['items'] = Ctm::getRankObj()->take($getNum);
+            //$rankItems['items'] = Ctm::getRankObj()->take($getNum);
+            $rankItems['items'] = Ctm::getRankObj2()->take($getNum);
+            
             //$rankItems['items'] = array();
             //$rankItems['items'] = $this->item->where($whereArr)->orderBy('sale_count', 'desc')->take($getNum)->get()->all();
             $rankItems['type'] = 2;
@@ -339,13 +343,13 @@ class HomeController extends Controller
             /*ORG =======
             $items = $this->item->where($whereArr)->orderBy('sale_count', 'desc')->take(100)->get()->all();
             ============ */
-            $items = Ctm::getRankObj()->take(100)->all();
+            $items = Ctm::getRankObj2()->take(100)->all();
             $items = Ctm::customPaginate($items, $this->perPage, $request);
             
             $title = '人気ランキング(その他)';
         }
         elseif($path == 'ranking-ueki') {
-            $cateSecs= Ctm::getUekiSecObj()->all();
+            $cateSecs= Ctm::getUekiSecObj2()->all();
             
             $items = Ctm::customPaginate($cateSecs, $this->perPage, $request);
             

@@ -1219,10 +1219,13 @@ use App\DeliveryGroup;
      </div>{{-- ml-20per --}}
 </div>{{-- id --}}
                 
-		{{--
-        <input type="hidden" name="regist" value="{{ $regist }}">
-        --}}
-       
+    <div class="ml-20per mt-5 pt-2">
+        <button class="btn btn-block btn-kon mb-0 mx-auto py-3" type="submit" name="recognize" value="1">次へ進む</button>
+    </div>{{-- ml-20per --}}
+    
+    {{--
+    <input type="hidden" name="regist" value="{{ $regist }}">
+    --}}
 
 </div>{{-- left --}}
 

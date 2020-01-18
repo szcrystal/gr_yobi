@@ -15,6 +15,7 @@ use App\DeliveryGroup;
 use App\DeliveryGroupRelation;
 use App\Favorite;
 use App\PayMethodChild;
+use App\DataRanking;
 
 use App\Mail\OrderEnd;
 use App\Mail\Register;
@@ -38,7 +39,7 @@ use Illuminate\Validation\Rule;
 
 class CartController extends Controller
 {
-    public function __construct(Item $item, Setting $setting, User $user, UserNoregist $userNor, Sale $sale, SaleRelation $saleRel, Receiver $receiver, PayMethod $payMethod, Prefecture $prefecture, DeliveryGroup $dg, DeliveryGroupRelation $dgRel, Favorite $favorite, PayMethodChild $payMethodChild)
+    public function __construct(Item $item, Setting $setting, User $user, UserNoregist $userNor, Sale $sale, SaleRelation $saleRel, Receiver $receiver, PayMethod $payMethod, Prefecture $prefecture, DeliveryGroup $dg, DeliveryGroupRelation $dgRel, Favorite $favorite, PayMethodChild $payMethodChild, DataRanking $dataRanking)
     {
         
         //$this -> middleware('adminauth');
@@ -59,6 +60,7 @@ class CartController extends Controller
         $this->dgRel = $dgRel;
         $this->favorite = $favorite;
         $this->payMethodChild = $payMethodChild;
+        $this->dr = $dataRanking;
         
         //西濃運輸用変数
         $this->seinouObj = Ctm::getSeinouObj();
@@ -624,42 +626,50 @@ class CartController extends Controller
             
             $saleIds[] = $sale->id;
             $saleObjs[] = $sale; //for ggl
-            
 
-            //在庫引く処理
+            //在庫引く処理 ===================
             //$item = $this->item->find($val['item_id']);
             $i->timestamps = false; //在庫引く時とsale Countでタイムスタンプを上書きしない
             $i->decrement('stock', $singleSellCount);
-            
-            $parentItem = null;
-            
+
             if(! $i->stock || $i->stock < 0) { //在庫が0になればitem_idを配列へ メールで知らせるため
             	$stockNone[] = $i->id;
             }
             
-            //Sale Count処理（itemの売れた個数）
-            if($i->is_potset) {
+            //Sale Count処理（itemの売れた個数）================
+            $parentItem = null;
+            
+            if($i->pot_type == 3) {
             	$parentItem = $this->item->find($i->pot_parent_id);
                 $parentItem->increment('sale_count', $singleSellCount);
                 
-                if(Ctm::isEnv('local')) {
-                    $pots = $this->item->where(['open_status'=>1, 'is_potset'=>1, 'pot_parent_id'=>$i->pot_parent_id])->get();
-                    $stockCount = 0;
-                    
-                    if($pots->isNotEmpty()) {
-                        foreach($pots as $pot) {
-                            $stockCount += $pot->stock;
-                        }
-                        
-                        $parentItem->update(['stock' => $stockCount]);
-                    }
+                $pots = $this->item->where(['open_status'=>1, 'pot_type'=>3, 'pot_parent_id'=>$i->pot_parent_id])->get();
+                $stockCount = 0;
+                
+                if($pots->isNotEmpty()) {
+                    $stockCount = $pots->sum('stock');
+                    $parentItem->update(['stock' => $stockCount]);
                 }
+                
             }
             else {
             	$i->increment('sale_count', $singleSellCount);
             }
             
-            //お気に入りにsale_idを入れる。お気に入りに購入履歴を残すため。
+            // DataRankingにSet ===========================
+            $itemForRank = isset($parentItem) ? $parentItem : $i;
+            
+            $this->dr->create([
+                'sale_id' => $sale->id,
+                'item_id' => $itemForRank->id,
+                'cate_id' => $itemForRank->cate_id,
+                'subcate_id' => $itemForRank->subcate_id,
+                'pot_type' => $itemForRank->pot_type,
+                'sale_count' => $singleSellCount,
+                'sale_price' => $itemTotalPrice,
+            ]);
+            
+            //お気に入りにsale_idを入れる。お気に入りに購入履歴を残すため。==========
             if($isUser) {
             	$fav = $this->favorite->where(['user_id'=>$userId, 'item_id'=>$i->id])->first();
                 
@@ -2305,12 +2315,12 @@ class CartController extends Controller
             $getNum = Ctm::isAgent('sp') ? 6 : 4;
             $chunkNum = Ctm::isAgent('sp') ? $getNum/2 : $getNum;
             
-            $whereArr = ['open_status'=>1, 'is_potset'=>0];
+            $whereArr = ['open_status'=>1, ['pot_type', '<', 3]];
             
             //カートに入るのは子ポットID、Coookieにあるのは親IDなので、$itemIdsを親ポットIDにしてセットし直す
             foreach($itemIds as $idKey => $itemId) {
                 $i = $this->item->find($itemId);
-                if($i->is_potset) {
+                if($i->pot_type == 3) {
                     $itemIds[$idKey] = $i->pot_parent_id;
                 }
             }

@@ -639,7 +639,8 @@ var exe = (function() {
             
             
             
-            //is_potset ONの時（チェックボックス）
+            //is_potset ONの時（チェックボックス）=>未使用
+            /*
             var $isPotSet = $('input[name="is_potset"]');
             var $cateRequire = $('.cate-require');
             var $potRequire = $('.pot-require');
@@ -656,6 +657,30 @@ var exe = (function() {
                 }
                 else {
                 	$cateRequire.show();
+                    $potRequire.hide();
+                }
+                
+                //console.log($(this).val());
+           });
+           */
+           
+           //pot_type ONの時（チェックボックス）
+            var $isPotSet = $('select[name="pot_type"]');
+            var $cateRequire = $('.cate-require');
+            var $potRequire = $('.pot-require');
+            
+            if($isPotSet.val() == 3) {
+                $cateRequire.hide();
+                $potRequire.show();
+            }
+            
+            $isPotSet.on('change', function() {
+                if($(this).val() == 3) {
+                    $cateRequire.hide();
+                    $potRequire.show();
+                }
+                else {
+                    $cateRequire.show();
                     $potRequire.hide();
                 }
                 

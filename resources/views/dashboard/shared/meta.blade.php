@@ -2,6 +2,8 @@
 
 $isPost = isset($type) && $type == 'post';
 
+$isItem = isset($isItem) ? 1 : 0;
+
 ?>
 
 <fieldset class="form-group{{ $errors->has('meta_title') ? ' has-error' : '' }}">
@@ -11,7 +13,7 @@ $isPost = isset($type) && $type == 'post';
     @endif
     </label>
 
-    <input id="meta_title" type="text" class="form-control col-md-12" name="meta_title" value="{{ Ctm::isOld() ? old('meta_title') : (isset($obj) ? $obj->meta_title : '') }}">
+    <input id="meta_title" type="text" class="form-control col-md-12" name="{{ $isItem ? 'cont[meta_title]' : 'meta_title' }}" value="{{ Ctm::isOld() ? old('meta_title') : (isset($obj) ? $obj->meta_title : '') }}">
 
     @if ($errors->has('meta_title'))
         <div class="text-danger">
@@ -24,7 +26,7 @@ $isPost = isset($type) && $type == 'post';
 <fieldset class="form-group{{ $errors->has('meta_description') ? ' has-error' : '' }}">
     <label for="slug" class="control-label">Meta Description</label>
 
-    <textarea id="meta_description" type="text" class="form-control col-md-12" name="meta_description" rows="6">{{ Ctm::isOld() ? old('meta_description') : (isset($obj) ? $obj->meta_description : '') }}</textarea>
+    <textarea id="meta_description" type="text" class="form-control col-md-12" name="{{ $isItem ? 'cont[meta_description]' : 'meta_description' }}" rows="6">{{ Ctm::isOld() ? old('meta_description') : (isset($obj) ? $obj->meta_description : '') }}</textarea>
 
     @if ($errors->has('meta_description'))
         <div class="text-danger">
@@ -37,7 +39,7 @@ $isPost = isset($type) && $type == 'post';
 <fieldset class="form-group{{ $errors->has('meta_keyword') ? ' has-error' : '' }}">
     <label for="slug" class="control-label">Meta KeyWord<small class="ml-3">（,半角カンマで区切って下さい）</small></label>
 
-    <input id="meta_keyword" type="text" class="form-control col-md-12" name="meta_keyword" value="{{ Ctm::isOld() ? old('meta_keyword') : (isset($obj) ? $obj->meta_keyword : '') }}">
+    <input id="meta_keyword" type="text" class="form-control col-md-12" name="{{ $isItem ? 'cont[meta_keyword]' : 'meta_keyword' }}" value="{{ Ctm::isOld() ? old('meta_keyword') : (isset($obj) ? $obj->meta_keyword : '') }}">
 
     @if ($errors->has('meta_keyword'))
         <div class="text-danger">

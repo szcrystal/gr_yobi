@@ -156,6 +156,7 @@ return [
         
         'number' => '「商品番号」',
         'cate_id' => '「カテゴリー」',
+        'pot_type' => '「ポット種類」',
         'is_potset' => '「ポットセットにする」',
         'pot_parent_id' => '「ポットセット親ID」',
         'pot_count' => '「ポット数」',

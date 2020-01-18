@@ -64,7 +64,12 @@ use App\TopSetting;
                 	<h2 class="single-title">{{ $itemTitle }}<br><span>商品番号 {{ $item->number }}</span></h2>
                  	<p class="text-big">{{ $item->catchcopy }}</p>
                     
-                    <?php $isPotSet = count($potSets) > 0; ?>
+                    <?php
+                        //$isPotSet = count($potSets) > 0 ? 1 : 0;
+                        $isPotSet = $item->pot_type == 2 ? 1 : 0;
+//                        echo $isPotSet;
+//                        exit;
+                    ?>
                     
                     @if(! $isPotSet)
                         @if(isset($item->icon_id) && $item->icon_id != '')
@@ -194,7 +199,7 @@ use App\TopSetting;
                     @endif
                     
                     <div class="my-3 text-small">
-                    	<p>{!! nl2br($item->exp_first) !!}</p>
+                    	<p>{!! nl2br($itemCont->exp_first) !!}</p>
                     </div>
                     
 
@@ -341,7 +346,7 @@ use App\TopSetting;
                         @endif  
                   	 
                     
-                    	@if($item->stock > 0 || $isPotSet)
+                    	@if(($item->pot_type == 1 && $item->stock > 0) || $isPotSet)
                             <input type="hidden" name="from_item" value="1">
                             <input type="hidden" name="uri" value="category/{{ Category::find($item->cate_id)->slug }}">     
                             
@@ -374,7 +379,7 @@ use App\TopSetting;
                     </div>
                     
                     <?php
-                    	$isCaution = isset($item->caution) && $item->caution != '';
+                    	$isCaution = isset($itemCont->caution) && $itemCont->caution != '';
                         $dgId = $item->dg_id;
                     ?>
                     
@@ -390,7 +395,7 @@ use App\TopSetting;
 
                             <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
                               <div class="card-body clearfix">
-                                {!! nl2br($item->explain) !!}
+                                {!! nl2br($itemCont->explain) !!}
                               </div>
                             </div>
                           </div>
@@ -404,7 +409,7 @@ use App\TopSetting;
                             </div>
                             <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
                               <div class="card-body clearfix">
-                                {!! nl2br($item->about_ship) !!}
+                                {!! nl2br($itemCont->about_ship) !!}
                                 
                                 @if($item->is_delifee_table)
                                     <div class="btn btn-custom mt-2 slideDeli">
@@ -427,7 +432,7 @@ use App\TopSetting;
                             
                             <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordion">
                               <div class="card-body clearfix">
-                                {!! nl2br($item->contents) !!}
+                                {!! nl2br($itemCont->contents) !!}
                               </div>
                             </div>
                           </div>
@@ -443,7 +448,7 @@ use App\TopSetting;
                                 
                                 <div id="collapseFour" class="collapse show" aria-labelledby="headingFour" data-parent="#accordion">
                                   <div class="card-body clearfix">
-                                    {!! nl2br($item->caution) !!}
+                                    {!! nl2br($itemCont->caution) !!}
                                   </div>
                                 </div>
                               </div>
@@ -464,7 +469,7 @@ use App\TopSetting;
                                 <li class="nav-item">
                                   <a href="#tab3" class="nav-link" data-toggle="tab"><i class="fal fa-tree-alt"></i> 育て方</a>
                                 </li>
-                                @if(isset($item->caution))
+                                @if(isset($itemCont->caution))
                                     <li class="nav-item">
                                       <a href="#tab4" class="nav-link" data-toggle="tab"><i class="fal fa-exclamation-triangle"></i> ご注意</a>
                                     </li>
@@ -473,12 +478,12 @@ use App\TopSetting;
                             
                             <div class="tab-content mt-2">
                                   <div id="tab1" class="tab-pane active contents clearfix">
-                                    {!! nl2br($item->explain) !!}
+                                    {!! nl2br($itemCont->explain) !!}
                                   </div>
                                   
                                   <div id="tab2" class="tab-pane contents">
                                     <div class="clearfix">
-                                        {!! nl2br($item->about_ship) !!}
+                                        {!! nl2br($itemCont->about_ship) !!}
                                     </div>
                                     
                                     @if($item->is_delifee_table)
@@ -492,12 +497,12 @@ use App\TopSetting;
                                   </div>
                                   
                                   <div id="tab3" class="tab-pane contents clearfix">
-                                    {!! nl2br($item->contents) !!}
+                                    {!! nl2br($itemCont->contents) !!}
                                   </div>
                                   
                                   @if($isCaution)
                                       <div id="tab4" class="tab-pane contents clearfix">
-                                        {!! nl2br($item->caution) !!}
+                                        {!! nl2br($itemCont->caution) !!}
                                       </div>
                                   @endif
                             </div> 

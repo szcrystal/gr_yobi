@@ -1,6 +1,7 @@
 @extends('layouts.appDashBoard')
 
 <?php
+use App\Item;
 use App\CategorySecond;
 
 ?>
@@ -27,11 +28,11 @@ use App\CategorySecond;
         
         @if(isset($edit))
         	<?php 
-            	$linkId = $item->is_potset ? $item->pot_parent_id : $id;
+            	$linkId = $item->pot_type == 3 ? $item->pot_parent_id : $id;
             ?>
             
             <div class="mt-5 pt-3 clearfix">
-            	@if(!$item->is_potset)
+            	@if($item->pot_type < 3)
                     <a href="{{ url('/dashboard/upper/'. $id. '?type=item') }}" class="btn btn-success border-round text-white d-block float-left"><i class="fa fa-angle-double-left" aria-hidden="true"></i> 上部コンテンツを編集 </a>
                 @else
                 	<small>ポットセット商品：上部コンテンツ不可</small><br>
@@ -416,65 +417,52 @@ use App\CategorySecond;
                     @endforeach
                 </select>
                 
-                @if ($errors->has('consignor_id'))
+                @if ($errors->has('item_type'))
                     <span class="help-block text-warning">
-                        <strong>{{ $errors->first('consignor_id') }}</strong>
+                        <span class="fa fa-exclamation form-control-feedback"></span>
+                        <span>{{ $errors->first('item_type') }}</span>
                     </span>
                 @endif   
             </fieldset>
             
             
             <?php //ポットセット ================================ ?>
+            <hr>
             
-            <fieldset class="form-group mb-3 pb-4">
-                <label for="pot_sort" class="control-label">子ポット並び順<small>（ポット親の時に入力。子ポットのIDを希望順に半角カンマで区切って下さい）</small></label>
-                <input class="form-control col-md-8{{ $errors->has('pot_sort') ? ' is-invalid' : '' }}" name="pot_sort" value="{{ Ctm::isOld() ? old('pot_sort') : (isset($item) ? $item->pot_sort : '') }}">
+            <fieldset class="mt-1 mb-4 form-group">
+                <label>ポット種類 <span class="text-danger text-big">*</span></label>
+                <select class="form-control col-md-6{{ $errors->has('pot_type') ? ' is-invalid' : '' }}" name="pot_type">
+                    <?php
+                        $potTypes = ['通常'=>1, '親ポット'=>2, '子ポット'=>3];
+                    ?>
+                    <option selected disabled>選択して下さい</option>
+                    @foreach($potTypes as $potKey => $potTypeNum)
+                        <?php
+                            $selected = '';
+                            if(Ctm::isOld()) {
+                                if(old('pot_type') == $potTypeNum)
+                                    $selected = ' selected';
+                            }
+                            else {
+                                if(isset($item) && $item->pot_type == $potTypeNum) {
+                                    $selected = ' selected';
+                                }
+                            }
+                        ?>
+                        <option value="{{ $potTypeNum }}"{{ $selected }}>{{ $potKey }}</option>
+                    @endforeach
+                </select>
                 
-
-                @if ($errors->has('pot_sort'))
-                    <div class="text-danger">
+                @if ($errors->has('pot_type'))
+                    <span class="help-block text-danger">
                         <span class="fa fa-exclamation form-control-feedback"></span>
-                        <span>{{ $errors->first('pot_sort') }}</span>
-                    </div>
-                @endif
-                
-                @if(isset($edit))
-                    <div class="mt-1">
-                        <?php $ps = Ctm::isPotParentAndStock($item->id); ?>
-                        
-                        @if($ps['isPotParent'])
-                        	この親ポットに指定されている子ポット<br>
-                            
-                            @foreach($ps['pots'] as $ptChild)
-                                <a href="{{ url('/dashboard/items/'. $ptChild->id) }}" target="_brank" class="d-inline-block mr-3">[{{ $ptChild->id }}] {{ $ptChild->title }}</a>
-                            @endforeach
-                        @endif
-                    </div>
+                        <span>{{ $errors->first('pot_type') }}</span>
+                    </span>
                 @endif
             </fieldset>
             
-            <fieldset class="form-group mb-2 mt-3">
-                    <div class="checkbox">
-                        <label>
-                            <?php
-                                $checked = '';
-                                if(Ctm::isOld()) {
-                                    if(old('is_potset'))
-                                        $checked = ' checked';
-                                }
-                                else {
-                                    if(isset($item) && $item->is_potset) {
-                                        $checked = ' checked';
-                                    }
-                                }
-                            ?>
-                            <input type="checkbox" name="is_potset" value="1"{{ $checked }}> 子ポットセットにする
-                        </label>
-                    </div>
-            </fieldset>
-            
-            <fieldset class="mb-2 form-group">
-                <label for="pot_parent_id" class="control-label">ポットセット親 ID <span class="text-danger text-big pot-require">*</span><small>（親ポットの時は0を入力、子ポットの時は0の入力不可、ポット以外の時は空欄を入力して下さい。）</small></label>
+            <fieldset class="mb-3 form-group">
+                <label for="pot_parent_id" class="control-label">親ポットID <span class="text-danger pot-require">*</span><small>（子ポットの時のみ入力。子ポット以外（通常/親ポット）の時は空欄のまま。）</small></label>
                 <input class="form-control col-md-6{{ $errors->has('pot_parent_id') ? ' is-invalid' : '' }}" name="pot_parent_id" value="{{ Ctm::isOld() ? old('pot_parent_id') : (isset($item) ? $item->pot_parent_id : '') }}">
                 
 
@@ -486,8 +474,8 @@ use App\CategorySecond;
                 @endif
             </fieldset>
             
-            <fieldset class="mb-5 form-group">
-                <label for="pot_count" class="control-label">ポット数 <span class="text-danger text-big pot-require">*</span></label>
+            <fieldset class="mb-4 form-group">
+                <label for="pot_count" class="control-label">ポット数 <span class="text-danger pot-require">*</span><small>（↑「親ポットID」 と同様）</small></label>
                 <input class="form-control col-md-6{{ $errors->has('pot_count') ? ' is-invalid' : '' }}" name="pot_count" value="{{ Ctm::isOld() ? old('pot_count') : (isset($item) ? $item->pot_count : '') }}">
                 
 
@@ -498,13 +486,69 @@ use App\CategorySecond;
                     </div>
                 @endif
             </fieldset>
+            
+            <fieldset class="form-group mb-3 pb-3">
+                <label for="pot_sort" class="control-label">子ポット並び順<small>（親ポットの時のみ入力。子ポットのIDを希望順に半角カンマで区切って下さい）</small></label>
+                <input class="form-control col-md-8{{ $errors->has('pot_sort') ? ' is-invalid' : '' }}" name="pot_sort" value="{{ Ctm::isOld() ? old('pot_sort') : (isset($item) ? $item->pot_sort : '') }}">
+                
 
+                @if ($errors->has('pot_sort'))
+                    <div class="text-danger">
+                        <span class="fa fa-exclamation form-control-feedback"></span>
+                        <span>{{ $errors->first('pot_sort') }}</span>
+                    </div>
+                @endif
+                
+                @if(isset($edit) && $item->pot_type == 2)
+                    <div class="mt-1">
+                        <?php
+                            //$ps = Ctm::isPotParentAndStock($item->id);
+                            $potChilds = Item::where(['pot_type'=>3, 'pot_parent_id'=>$item->id])->get();
+                        ?>
+                        
+                        @if($potChilds->isNotEmpty())
+                        	この親ポットに指定されている子ポット<br>
+                            
+                            @foreach($potChilds as $ptChild)
+                                <a href="{{ url('/dashboard/items/'. $ptChild->id) }}" target="_brank" class="d-inline-block mr-3">[{{ $ptChild->id }}] {{ $ptChild->title }}</a>
+                            @endforeach
+                        @endif
+                    </div>
+                @endif
+            </fieldset>
+            
+            {{--
+            <fieldset class="form-group mb-2 mt-3">
+                    <div class="checkbox">
+                        <label>
+            --}}
+                            <?php
+//                                $checked = '';
+//                                if(Ctm::isOld()) {
+//                                    if(old('is_potset'))
+//                                        $checked = ' checked';
+//                                }
+//                                else {
+//                                    if(isset($item) && $item->is_potset) {
+//                                        $checked = ' checked';
+//                                    }
+//                                }
+                            ?>
+            {{--
+                            <input type="checkbox" name="is_potset" value="1"{{ $checked }}> 子ポットセットにする
+                        </label>
+                    </div>
+            </fieldset>
+            --}}
+            
+            
+            <hr>
             <?php //ポットセット END ================================ ?>
             
             
-            <fieldset class="mb-4 form-group">
-            	
-                <label>親カテゴリー <span class="text-danger text-big cate-require">*</span></label>
+            <fieldset class="pt-2 mb-4 form-group">
+                <label>親カテゴリー <span class="text-danger cate-require">*</span></label>
+                
                 <select class="form-control select-first col-md-6{{ $errors->has('cate_id') ? ' is-invalid' : '' }}" name="cate_id">
                     <option disabled selected>選択して下さい</option>
                     @foreach($cates as $cate)
@@ -577,7 +621,7 @@ use App\CategorySecond;
             
             
             <fieldset class="mb-4 form-group">
-                <label for="price" class="control-label">価格（本体価格）<span class="text-danger text-big">*</span><small>（ポット親の時は1を入力）</small></label>
+                <label for="price" class="control-label">価格（本体価格）<span class="text-danger">*</span><small>（ポット親の時は1を入力=>新規作成時のみで、更新時は入力不要です）</small></label>
                 <input class="form-control col-md-6{{ $errors->has('price') ? ' is-invalid' : '' }}" name="price" value="{{ Ctm::isOld() ? old('price') : (isset($item) ? $item->price : '') }}" placeholder="税抜き金額を入力">
                 
                 @if ($errors->has('price'))
@@ -602,7 +646,7 @@ use App\CategorySecond;
             </fieldset>
             
             <fieldset class="mb-4 form-group">
-                <label for="sale_price" class="control-label">セール価格<span><small>（ポット親でSaleにしたい時は1を入力。）</small></label>
+                <label for="sale_price" class="control-label">セール価格<span><small>（ポット親でSaleにしたい時は1を入力。=>新規作成時のみで、更新時は入力不要です）</small></label>
                 <input class="form-control col-md-6{{ $errors->has('sale_price') ? ' is-invalid' : '' }}" name="sale_price" value="{{ Ctm::isOld() ? old('sale_price') : (isset($item) ? $item->sale_price : '') }}">
                 
 
@@ -827,8 +871,9 @@ use App\CategorySecond;
                     </div>
             </fieldset>
             
+            <hr>
             <fieldset class="mb-2 form-group">
-                <label for="stock" class="control-label">在庫数<small>（ポット親の時は1を入力。ポット親の在庫関連は全て無関係となり、子ポットは要入力）</small></label>
+                <label for="stock" class="control-label">在庫数 <span class="text-danger">*</span><small>（ポット親の時は1を入力。=>新規作成時のみで、更新時は入力不要です）</small></label>
                 <input class="form-control col-md-6{{ $errors->has('stock') ? ' is-invalid' : '' }}" name="stock" value="{{ Ctm::isOld() ? old('stock') : (isset($item) ? $item->stock : '') }}">
                 
 
@@ -862,7 +907,7 @@ use App\CategorySecond;
             
             
             <fieldset class="mb-3 form-group">
-                <label>売り切れ表示設定</label>
+                <label>売り切れ表示設定<small>（ポット親の時は不要）</small></label>
                 <select class="form-control col-md-6{{ $errors->has('stock_type') ? ' is-invalid' : '' }}" name="stock_type">
                     <option value="0" selected>選択して下さい</option>
                         <?php
@@ -895,7 +940,7 @@ use App\CategorySecond;
             </fieldset>
             
             <fieldset class="mb-2 form-group">
-                <label for="stock" class="control-label">在庫入荷月 {{--<span class="text-danger text-big">*</span><small>（売り切れ表示で「[-]月頃入荷予定」の選択時のみ）</small>--}}</label>
+                <label for="stock" class="control-label">在庫入荷月<small>（ポット親の時は不要）</small> {{--<span class="text-danger text-big">*</span><small>（売り切れ表示で「[-]月頃入荷予定」の選択時のみ）</small>--}}</label>
                 <input class="form-control col-md-6{{ $errors->has('stock_reset_month') ? ' is-invalid' : '' }}" name="stock_reset_month" value="{{ Ctm::isOld() ? old('stock_reset_month') : (isset($item) ? $item->stock_reset_month : '') }}">
                 
 
@@ -907,8 +952,8 @@ use App\CategorySecond;
                 @endif
             </fieldset>
             
-            <fieldset class="mb-5 form-group">
-                <label for="stock" class="control-label">在庫リセット数</label>
+            <fieldset class="mb-4 pb-1 form-group">
+                <label for="stock" class="control-label">在庫リセット数<small>（ポット親の時は不要）</small></label>
                 <input class="form-control col-md-6{{ $errors->has('stock_reset_count') ? ' is-invalid' : '' }}" name="stock_reset_count" value="{{ Ctm::isOld() ? old('stock_reset_count') : (isset($item) ? $item->stock_reset_count : '') }}">
                 
 
@@ -920,7 +965,9 @@ use App\CategorySecond;
                 @endif
             </fieldset>
             
-            <fieldset class="mb-5 form-group">
+            <hr>
+            
+            <fieldset class="pt-2 mb-5 form-group">
                 <label for="point_back" class="control-label">ポイント還元率（%）</label>
                 <input class="form-control col-md-6{{ $errors->has('point_back') ? ' is-invalid' : '' }}" name="point_back" value="{{ Ctm::isOld() ? old('point_back') : (isset($item) ? $item->point_back : '') }}">
                 
@@ -1008,39 +1055,39 @@ use App\CategorySecond;
             </div>
 
             
-            <fieldset class="my-5 form-group{{ $errors->has('exp_first') ? ' is-invalid' : '' }}">
+            <fieldset class="my-5 form-group{{ $errors->has('cont.exp_first') ? ' is-invalid' : '' }}">
                     <label for="explain" class="control-label">キャッチ説明（商品ヘッドの中に表示）</label>
 
-                    <textarea class="form-control" name="exp_first" rows="10">{{ Ctm::isOld() ? old('exp_first') : (isset($item) ? $item->exp_first : '') }}</textarea>
+                    <textarea class="form-control" name="cont[exp_first]" rows="10">{{ Ctm::isOld() ? old('cont.exp_first') : (isset($itemCont) ? $itemCont->exp_first : '') }}</textarea>
 
-                    @if ($errors->has('exp_first'))
+                    @if ($errors->has('cont.exp_first'))
                         <span class="help-block">
-                            <strong>{{ $errors->first('exp_first') }}</strong>
+                            <strong>{{ $errors->first('cont.exp_first') }}</strong>
                         </span>
                     @endif
             </fieldset>
             
-            <fieldset class="my-5 form-group{{ $errors->has('explain') ? ' is-invalid' : '' }}">
+            <fieldset class="my-5 form-group{{ $errors->has('cont.explain') ? ' is-invalid' : '' }}">
                     <label for="explain" class="control-label">商品詳細</label>
 
-                    <textarea class="form-control" name="explain" rows="20">{{ Ctm::isOld() ? old('explain') : (isset($item) ? $item->explain : '') }}</textarea>
+                    <textarea class="form-control" name="cont[explain]" rows="20">{{ Ctm::isOld() ? old('cont.explain') : (isset($itemCont) ? $itemCont->explain : '') }}</textarea>
 
-                    @if ($errors->has('explain'))
+                    @if ($errors->has('cont.explain'))
                         <span class="help-block">
-                            <strong>{{ $errors->first('explain') }}</strong>
+                            <strong>{{ $errors->first('cont.explain') }}</strong>
                         </span>
                     @endif
             </fieldset>
             
             
-            <fieldset class="mt-3 mb-2 form-group{{ $errors->has('about_ship') ? ' is-invalid' : '' }}">
+            <fieldset class="mt-3 mb-2 form-group{{ $errors->has('cont.about_ship') ? ' is-invalid' : '' }}">
                     <label for="detail" class="control-label">配送について</label>
 
-                        <textarea class="form-control" name="about_ship" rows="20">{{ Ctm::isOld() ? old('about_ship') : (isset($item) ? $item->about_ship : '') }}</textarea>
+                        <textarea class="form-control" name="cont[about_ship]" rows="20">{{ Ctm::isOld() ? old('cont.about_ship') : (isset($itemCont) ? $itemCont->about_ship : '') }}</textarea>
 
-                        @if ($errors->has('about_ship'))
+                        @if ($errors->has('cont.about_ship'))
                             <span class="help-block">
-                                <strong>{{ $errors->first('about_ship') }}</strong>
+                                <strong>{{ $errors->first('cont.about_ship') }}</strong>
                             </span>
                         @endif
             </fieldset>
@@ -1066,21 +1113,21 @@ use App\CategorySecond;
             </fieldset>
             
             <?php
-                $obj = null;
-                if(isset($item)) $obj = $item;
+//                $obj = null;
+//                if(isset($item)) $obj = $item;
             ?>
 
-            @include('dashboard.shared.contents')
+            @include('dashboard.shared.contents', ['obj'=>isset($itemCont) ? $itemCont : null, 'isItem'=>1])
             
             
-            <fieldset class="mt-3 mb-2 form-group{{ $errors->has('caution') ? ' is-invalid' : '' }}">
+            <fieldset class="mt-3 mb-2 form-group{{ $errors->has('cont.caution') ? ' is-invalid' : '' }}">
                 <label for="caution" class="control-label">ご注意</label>
 
-                <textarea class="form-control" name="caution" rows="20">{{ Ctm::isOld() ? old('caution') : (isset($item) ? $item->caution : '') }}</textarea>
+                <textarea class="form-control" name="cont[caution]" rows="20">{{ Ctm::isOld() ? old('cont.caution') : (isset($itemCont) ? $itemCont->caution : '') }}</textarea>
 
-                @if ($errors->has('caution'))
+                @if ($errors->has('cont.caution'))
                     <span class="help-block">
-                        <strong>{{ $errors->first('caution') }}</strong>
+                        <strong>{{ $errors->first('cont.caution') }}</strong>
                     </span>
                 @endif
             </fieldset>
@@ -1110,7 +1157,7 @@ use App\CategorySecond;
             </div>
 			--}}
 			
-            @include('dashboard.shared.meta')
+            @include('dashboard.shared.meta', ['obj'=>isset($itemCont) ? $itemCont : null, 'isItem'=>1])
             
             <div class="form-group mt-5 pt-3">
                 <button type="submit" class="btn btn-primary btn-block w-btn w-25 mx-auto">更　新</button>

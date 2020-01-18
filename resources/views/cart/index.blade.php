@@ -72,7 +72,9 @@
                         
                         <?php 
                             $obj = $item;
-                            $urlId = $item->is_potset ? $item->pot_parent_id : $item->id;
+                            $urlId = $item->pot_type == 3 ? $item->pot_parent_id : $item->id;
+                            
+                            $disabled = '';
                         ?>
                         
                         <div>

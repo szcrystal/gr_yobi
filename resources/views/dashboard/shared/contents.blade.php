@@ -1,3 +1,7 @@
+<?php
+$isItem = isset($isItem) ? 1 : 0;
+?>
+
 
     <fieldset class="mb-4 form-group{{ $errors->has('contents') ? ' is-invalid' : '' }}">
         <label for="contents" class="control-label">
@@ -12,7 +16,7 @@
             $rows = (isset($type) && $type == 'top') ? 20 : 33;
         ?>
         
-        <textarea class="form-control" name="contents" rows="{{ $rows }}">{{ Ctm::isOld() ? old('contents') : (isset($obj) ? $obj->contents : '') }}</textarea>
+        <textarea class="form-control" name="{{ $isItem ? 'cont[contents]' : 'contents' }}" rows="{{ $rows }}">{{ Ctm::isOld() ? old('contents') : (isset($obj) ? $obj->contents : '') }}</textarea>
 
         @if ($errors->has('contents'))
             <span class="help-block">

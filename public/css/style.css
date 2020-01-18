@@ -283,8 +283,14 @@ button.btn-custom:hover {
 	color: #fff;
 	opacity: 0.7;
 }
+button.btn,
+input[type="button"].btn,
+input[type="submit"].btn {
+    border-radius: 0;
+}
 button.btn:hover,
-input[type="button"].btn:hover {
+input[type="button"].btn:hover,
+input[type="submit"].btn:hover {
 	opacity: 0.7;
 }
 button.btn:disabled,
