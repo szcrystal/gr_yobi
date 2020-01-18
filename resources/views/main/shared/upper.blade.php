@@ -146,7 +146,7 @@
         </div>
         
         @if($upperMore && $blockKey == 'a')
-            <div style="margin-top:-1em;" class="text-right mb-0 mr-3 clearfix">
+            <div style="margin-top:-1em;" class="text-right mb-0 pb-3 mr-3 clearfix">
                 <span class="text-linkblue upper-tgl">詳しく見る <i class="fal fa-angle-down"></i></span>
             </div>
         @endif
@@ -155,7 +155,7 @@
 </div>
 
 
-@include('main.shared.upperExp', ['orgObj'=>$itemCont])
+@include('main.shared.upperExp', ['orgObj'=>isset($itemCont) ? $itemCont : $orgObj])
 
 
 @endif
