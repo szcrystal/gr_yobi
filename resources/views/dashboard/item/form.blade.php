@@ -621,7 +621,7 @@ use App\CategorySecond;
             
             
             <fieldset class="mb-4 form-group">
-                <label for="price" class="control-label">価格（本体価格）<span class="text-danger">*</span><small>（ポット親の時は1を入力=>新規作成時のみで、更新時は入力不要です）</small></label>
+                <label for="price" class="control-label">価格（本体価格）<span class="text-danger">*</span><small>（親ポット時は1を入力=>新規作成時のみで、更新時は入力不要です）</small></label>
                 <input class="form-control col-md-6{{ $errors->has('price') ? ' is-invalid' : '' }}" name="price" value="{{ Ctm::isOld() ? old('price') : (isset($item) ? $item->price : '') }}" placeholder="税抜き金額を入力">
                 
                 @if ($errors->has('price'))
@@ -646,7 +646,7 @@ use App\CategorySecond;
             </fieldset>
             
             <fieldset class="mb-4 form-group">
-                <label for="sale_price" class="control-label">セール価格<span><small>（ポット親でSaleにしたい時は1を入力。=>新規作成時のみで、更新時は入力不要です）</small></label>
+                <label for="sale_price" class="control-label">セール価格<span><small>（親ポットでSaleにしたい時は1を入力。=>新規作成時のみで、更新時は入力不要です）</small></label>
                 <input class="form-control col-md-6{{ $errors->has('sale_price') ? ' is-invalid' : '' }}" name="sale_price" value="{{ Ctm::isOld() ? old('sale_price') : (isset($item) ? $item->sale_price : '') }}">
                 
 
@@ -661,7 +661,7 @@ use App\CategorySecond;
             
             
             <fieldset class="mt-5 mb-4 form-group">
-                <label>出荷元</label>
+                <label>出荷元<small>（親ポット時も要入力）</small></label>
                 <select class="form-control col-md-6{{ $errors->has('consignor_id') ? ' is-invalid' : '' }}" name="consignor_id">
                     <option selected>選択して下さい</option>
                     @foreach($consignors as $consignor)
@@ -690,7 +690,7 @@ use App\CategorySecond;
             </fieldset>
             
             <fieldset class="mb-3 form-group">
-                <label>配送区分 <span class="text-danger text-big">*</span></label>
+                <label>配送区分 <span class="text-danger text-big">*</span><small>（親ポット時も要入力）</small></label>
                 <select class="form-control col-md-6{{ $errors->has('dg_id') ? ' is-invalid' : '' }}" name="dg_id">
                     <option disabled selected>選択して下さい</option>
                     @foreach($dgs as $dg)
@@ -721,7 +721,7 @@ use App\CategorySecond;
             </fieldset>
             
             <fieldset class="mb-4 form-group">
-                <label for="factor" class="control-label">係数 <span class="text-danger text-big">*</span></label>
+                <label for="factor" class="control-label">係数 <span class="text-danger text-big">*</span><small>（親ポット時も要入力。1でOK）</small></label>
                 <input class="form-control col-md-6{{ $errors->has('factor') ? ' is-invalid' : '' }}" name="factor" value="{{ Ctm::isOld() ? old('factor') : (isset($item) ? $item->factor : '') }}" placeholder="">
                 
                 @if ($errors->has('factor'))
@@ -755,6 +755,7 @@ use App\CategorySecond;
             
             <fieldset class="form-group mt-3 mb-2">
                     <div class="checkbox">
+                        
                         <label>
                             <?php
                                 $checked = '';
@@ -768,7 +769,7 @@ use App\CategorySecond;
                                     }
                                 }
                             ?>
-                            <input type="checkbox" name="is_once" value="1"{{ $checked }}> 同梱包可能
+                            <input type="checkbox" name="is_once" value="1"{{ $checked }}> 同梱包可能 <small class="ml-2">（親ポット時も要入力）</small>
                         </label>
                     </div>
             </fieldset>
@@ -800,7 +801,7 @@ use App\CategorySecond;
                                     }
                                 }
                             ?>
-                            <input type="checkbox" name="is_once_recom" value="1"{{ $checked }}> 同梱包可能おすすめに表示させない
+                            <input type="checkbox" name="is_once_recom" value="1"{{ $checked }}> 同梱包可能おすすめに表示させない <small class="ml-2">（親ポット時も要入力）</small>
                         </label>
                     </div>
             </fieldset>
@@ -873,7 +874,7 @@ use App\CategorySecond;
             
             <hr>
             <fieldset class="mb-2 form-group">
-                <label for="stock" class="control-label">在庫数 <span class="text-danger">*</span><small>（ポット親の時は1を入力。=>新規作成時のみで、更新時は入力不要です）</small></label>
+                <label for="stock" class="control-label">在庫数 <span class="text-danger">*</span><small>（親ポット時は1を入力。=>新規作成時のみで、更新時は入力不要です）</small></label>
                 <input class="form-control col-md-6{{ $errors->has('stock') ? ' is-invalid' : '' }}" name="stock" value="{{ Ctm::isOld() ? old('stock') : (isset($item) ? $item->stock : '') }}">
                 
 
@@ -907,7 +908,7 @@ use App\CategorySecond;
             
             
             <fieldset class="mb-3 form-group">
-                <label>売り切れ表示設定<small>（ポット親の時は不要）</small></label>
+                <label>売り切れ表示設定<small>（親ポット時は不要）</small></label>
                 <select class="form-control col-md-6{{ $errors->has('stock_type') ? ' is-invalid' : '' }}" name="stock_type">
                     <option value="0" selected>選択して下さい</option>
                         <?php
@@ -940,7 +941,7 @@ use App\CategorySecond;
             </fieldset>
             
             <fieldset class="mb-2 form-group">
-                <label for="stock" class="control-label">在庫入荷月<small>（ポット親の時は不要）</small> {{--<span class="text-danger text-big">*</span><small>（売り切れ表示で「[-]月頃入荷予定」の選択時のみ）</small>--}}</label>
+                <label for="stock" class="control-label">在庫入荷月<small>（親ポット時は不要）</small> {{--<span class="text-danger text-big">*</span><small>（売り切れ表示で「[-]月頃入荷予定」の選択時のみ）</small>--}}</label>
                 <input class="form-control col-md-6{{ $errors->has('stock_reset_month') ? ' is-invalid' : '' }}" name="stock_reset_month" value="{{ Ctm::isOld() ? old('stock_reset_month') : (isset($item) ? $item->stock_reset_month : '') }}">
                 
 
@@ -953,7 +954,7 @@ use App\CategorySecond;
             </fieldset>
             
             <fieldset class="mb-4 pb-1 form-group">
-                <label for="stock" class="control-label">在庫リセット数<small>（ポット親の時は不要）</small></label>
+                <label for="stock" class="control-label">在庫リセット数<small>（親ポット時は不要）</small></label>
                 <input class="form-control col-md-6{{ $errors->has('stock_reset_count') ? ' is-invalid' : '' }}" name="stock_reset_count" value="{{ Ctm::isOld() ? old('stock_reset_count') : (isset($item) ? $item->stock_reset_count : '') }}">
                 
 

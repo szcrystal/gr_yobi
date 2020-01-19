@@ -154,38 +154,42 @@ class SingleController extends Controller
         
         
         //在庫がないIDを取得する 以下のwhereNotInで使用する ===========
-        $noStockIds = $this->item->whereNotIn('id', [$item->id])->where($whereArr)->get()->map(function($obj) {
-            
-            //$stock = 0;
-            
-            /*
-            if($obj->pot_parent_id === 0) {
-                $switchArr = Ctm::isPotParentAndStock($obj->id); //親ポットか、Stockあるか、その子ポットのObjsを取る。$switchArr['isPotParent'] $switchArr['isStock']
-                $stock = $switchArr['isStock'];
-            }
-            else {
-                $stock = $obj->stock;
-            }
-            */
-            
-            if(! $obj->stock)
-                return $obj->id;
-                
-        })->all();
-    
-        $noStockIds = array_filter($noStockIds);
-        $noStockIdsNoThis = $noStockIds;
-        $noStockIds[] = $item->id;
+//        $noStockIds = $this->item->whereNotIn('id', [$item->id])->where($whereArr)->get()->map(function($obj) {
+//            
+//            //$stock = 0;
+//            
+//            /*
+//            if($obj->pot_parent_id === 0) {
+//                $switchArr = Ctm::isPotParentAndStock($obj->id); //親ポットか、Stockあるか、その子ポットのObjsを取る。$switchArr['isPotParent'] $switchArr['isStock']
+//                $stock = $switchArr['isStock'];
+//            }
+//            else {
+//                $stock = $obj->stock;
+//            }
+//            */
+//            
+//            if(! $obj->stock)
+//                return $obj->id;
+//                
+//        })->all();
+//    
+//        $noStockIds = array_filter($noStockIds);
+//        $noStockIdsNoThis = $noStockIds;
+//        $noStockIds[] = $item->id;
         //在庫がないID END =========================
         
         if($item->is_once) {
-        	$isOnceItems = $this->item->whereNotIn('id', $noStockIds)->where($whereArr)->where(['consignor_id'=>$item->consignor_id, 'is_once'=>1, 'is_once_recom'=>0])->inRandomOrder()->take($getNum)->get()->chunk($chunkNum);
+            $isOnceItems = $this->item->where($whereArr)->where(['consignor_id'=>$item->consignor_id, 'is_once'=>1, 'is_once_recom'=>0, ['stock', '>', 0]])->whereNotIn('id', [$item->id])->inRandomOrder()->take($getNum)->get()->chunk($chunkNum);
+            
+        	//$isOnceItems = $this->item->whereNotIn('id', $noStockIds)->where($whereArr)->where(['consignor_id'=>$item->consignor_id, 'is_once'=>1, 'is_once_recom'=>0])->inRandomOrder()->take($getNum)->get()->chunk($chunkNum);
             //->inRandomOrder()->take()->get() もあり クエリビルダに記載あり
         }
         //同梱包可能商品レコメンド END ================
         
         // この商品を見た人におすすめの商品：同カテゴリーのランダム =====================
-        $recomCateItems = $this->item->whereNotIn('id', $noStockIds)->where($whereArr)->where('cate_id', $item->cate_id)->inRandomOrder()->take($getNum)->get()->chunk($chunkNum);
+        $recomCateItems = $this->item->where($whereArr)->where(['cate_id'=>$item->cate_id, ['stock', '>', 0]])->whereNotIn('id', [$item->id])->inRandomOrder()->take($getNum)->get()->chunk($chunkNum);
+        
+        //$recomCateItems = $this->item->whereNotIn('id', $noStockIds)->where($whereArr)->where('cate_id', $item->cate_id)->inRandomOrder()->take($getNum)->get()->chunk($chunkNum);
         // この商品を見た人におすすめの商品：同カテゴリーのランダム END ====================
         
         // カテゴリーランキング：同カテゴリーのランキング ====================
@@ -245,8 +249,9 @@ class SingleController extends Controller
 //            print_r($res);
 //            exit;
             
-            $recommends = $this->item->whereNotIn('id', $noStockIds)->whereIn('id', $res)->where($whereArr)->inRandomOrder()->take($getNum)->get()->chunk($chunkNum);
-            //->inRandomOrder()->take()->get() もあり クエリビルダに記載あり
+            $recommends = $this->item->whereIn('id', $res)->where($whereArr)->where('stock', '>', 0)->whereNotIn('id', [$item->id])->inRandomOrder()->take($getNum)->get()->chunk($chunkNum);
+            
+            //$recommends = $this->item->whereNotIn('id', $noStockIds)->whereIn('id', $res)->where($whereArr)->inRandomOrder()->take($getNum)->get()->chunk($chunkNum);
             //他にもこんな商品：部分 END =====================
             
             // Get SimilerPost : Tagルール tagが2個以上なら2~4を対象に、2個以下なら表示なし =====================================
@@ -260,7 +265,9 @@ class SingleController extends Controller
             // Get SimilerPost END ===================================================
         }
         else { //タグがない時
-        	$recommends = $this->item->whereNotIn('id', $noStockIds)->where($whereArr)->where(['subcate_id'=>$item->subcate_id])->inRandomOrder()->take($getNum)->get()->chunk($chunkNum);
+            $recommends = $this->item->where($whereArr)->where(['subcate_id'=>$item->subcate_id, ['stock', '>', 0]])->whereNotIn('id', [$item->id])->inRandomOrder()->take($getNum)->get()->chunk($chunkNum);
+            
+        	//$recommends = $this->item->whereNotIn('id', $noStockIds)->where($whereArr)->where(['subcate_id'=>$item->subcate_id])->inRandomOrder()->take($getNum)->get()->chunk($chunkNum);
             //->inRandomOrder()->take()->get() もあり クエリビルダに記載あり
         }
         

@@ -14,8 +14,6 @@ use App\TopSetting;
 
     <div class="panel panel-default">
         
-        <span class="text-big d-inline-block mb-2">THIS IS imp235-1</span>
-        
         @if(! Ctm::isAgent('sp') || (Ctm::isAgent('sp') &&  $isLookfor))
             <div class="clearfix s-form-top">
                 <form class="d-block mb-3 clearfix" role="form" method="GET" action="{{ url('search') }}">

@@ -19,6 +19,7 @@ use App\MailTemplate;
 use App\SendMailFlag;
 use App\Prefecture;
 use App\SaleRelationCancel;
+use App\DataRanking;
 
 use App\Mail\OrderSend;
 use App\Mail\OrderMails;
@@ -36,7 +37,7 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class SaleController extends Controller
 {
-    public function __construct(Admin $admin, Sale $sale, SaleRelation $saleRel, Item $item, User $user, PayMethod $payMethod, UserNoregist $userNoregist, Receiver $receiver, DeliveryGroup $dg, Consignor $consignor, Category $category, Setting $setting, DeliveryCompany $dc, MailTemplate $templ, SendMailFlag $smf, Prefecture $pref, SaleRelationCancel $saleRelCancel)
+    public function __construct(Admin $admin, Sale $sale, SaleRelation $saleRel, Item $item, User $user, PayMethod $payMethod, UserNoregist $userNoregist, Receiver $receiver, DeliveryGroup $dg, Consignor $consignor, Category $category, Setting $setting, DeliveryCompany $dc, MailTemplate $templ, SendMailFlag $smf, Prefecture $pref, SaleRelationCancel $saleRelCancel, DataRanking $dr)
     {
         
         $this -> middleware(['adminauth', 'role:isAdmin']);
@@ -62,6 +63,7 @@ class SaleController extends Controller
         $this->smf = $smf;
         $this->pref = $pref;
         $this->saleRelCancel = $saleRelCancel;
+        $this->dr = $dr;
 
 		$templCodes = [
         	'payDone',
@@ -334,10 +336,14 @@ class SaleController extends Controller
             //$isFirstCancel = $this->sale->where(['salerel_id'=>$saleRel->id, 'is_cancel'=>1])->get()->isEmpty();
             
             if($isFirstCancel) {
-            	$saleRelArr = $saleRel->toArray();
+                //cancelDBに登録
+                $saleRelArr = $saleRel->toArray();
                 $saleRelArr['salerel_id'] = $saleRel->id;
                 
                 $this->saleRelCancel->create($saleRelArr);
+                
+                //Ranking DBから削除
+                $this->dr->where('sale_id', $saleModel->id)->first()->delete();
             }
                     
             

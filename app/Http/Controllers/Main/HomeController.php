@@ -293,11 +293,13 @@ class HomeController extends Controller
         $type = 'unique';
         
         if($path == 'sale-items') {
-        	$itemObjs = $this->item->where('sale_price', '>', 0)->where($whereArr)->orderBy('updated_at', 'desc')->get();
+            $items = $this->item->where($whereArr)->where('sale_price', '>', 0)->orderBy('stock', 'desc')->orderBy('updated_at', 'desc')->paginate($this->perPage);
             
-            $stockIds = $this->getStockSepIds($itemObjs); //$itemObjsはコレクション
-            $strs = implode(',', $stockIds); //$strs = '"'. implode('","', $stockIds) .'"';
-            $items = $this->item->whereIn('id', $stockIds)->orderByRaw("FIELD(id, $strs)")->paginate($this->perPage);            
+//        	$itemObjs = $this->item->where('sale_price', '>', 0)->where($whereArr)->orderBy('updated_at', 'desc')->get();
+//
+//            $stockIds = $this->getStockSepIds($itemObjs); //$itemObjsはコレクション
+//            $strs = implode(',', $stockIds); //$strs = '"'. implode('","', $stockIds) .'"';
+//            $items = $this->item->whereIn('id', $stockIds)->orderByRaw("FIELD(id, $strs)")->paginate($this->perPage);
             
             $title = 'Sale商品';
             
@@ -402,7 +404,7 @@ class HomeController extends Controller
             if(isset($orgId) && isset($orgItem) && $orgItem->is_once) {
             	$whereArr = array_merge($whereArr, ['consignor_id'=>$orgItem->consignor_id, 'is_once'=>1, 'is_once_recom'=>0]);
             
-                $items = $this->item->whereNotIn('id', [$orgItem->id])->where($whereArr)->orderBy('updated_at','desc')->paginate($this->perPage);
+                $items = $this->item->whereNotIn('id', [$orgId])->where($whereArr)->orderBy('stock', 'desc')->orderBy('updated_at', 'desc')->paginate($this->perPage);
 
                 //ページネーションのリンクにqueryをつける
                 $items->appends(['orgId' => $orgId]);
@@ -646,6 +648,7 @@ class HomeController extends Controller
     }
     
     
+    //在庫の有無で区分けする（在庫なしを後ろに回す）関数 => 現在未使用
     private function getStockSepIds($itemObjs)
     {
         //ここで渡される$itemObjsはコレクションなので、以下記述がいつもと異なることに注意
