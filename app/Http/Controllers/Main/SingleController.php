@@ -155,9 +155,9 @@ class SingleController extends Controller
         
         //在庫がないIDを取得する 以下のwhereNotInで使用する ===========
 //        $noStockIds = $this->item->whereNotIn('id', [$item->id])->where($whereArr)->get()->map(function($obj) {
-//            
+//
 //            //$stock = 0;
-//            
+//
 //            /*
 //            if($obj->pot_parent_id === 0) {
 //                $switchArr = Ctm::isPotParentAndStock($obj->id); //親ポットか、Stockあるか、その子ポットのObjsを取る。$switchArr['isPotParent'] $switchArr['isStock']
@@ -167,16 +167,17 @@ class SingleController extends Controller
 //                $stock = $obj->stock;
 //            }
 //            */
-//            
+//
 //            if(! $obj->stock)
 //                return $obj->id;
-//                
+//
 //        })->all();
-//    
+//
 //        $noStockIds = array_filter($noStockIds);
 //        $noStockIdsNoThis = $noStockIds;
 //        $noStockIds[] = $item->id;
         //在庫がないID END =========================
+        
         
         if($item->is_once) {
             $isOnceItems = $this->item->where($whereArr)->where(['consignor_id'=>$item->consignor_id, 'is_once'=>1, 'is_once_recom'=>0, ['stock', '>', 0]])->whereNotIn('id', [$item->id])->inRandomOrder()->take($getNum)->get()->chunk($chunkNum);
@@ -237,7 +238,7 @@ class SingleController extends Controller
             	return $obj->item_id;
             })->all();
             
-            $idWithCate = $this->item/*->whereNotIn('id', $tempIds)*/->where('subcate_id', $item->subcate_id)->get()->map(function($obj){
+            $idWithCate = $this->item->where('subcate_id', $item->subcate_id)->get()->map(function($obj){
             	return $obj->id;
             })->all();
             
@@ -318,9 +319,10 @@ class SingleController extends Controller
 	        $chunkNum = Ctm::isAgent('sp') ? $getNum/2 : $getNum;
           	
             //Viewに渡すItems
-	        $cacheItems = $this->item->whereIn('id', $cookieArr)->whereNotIn('id', [$item->id])->where($whereArr)->orderByRaw("FIELD(id, $cookieIds)")->take($getNum)->get()->chunk($chunkNum);
+	        $cacheItems = $this->item->whereIn('id', $cookieArr)->where($whereArr)->whereNotIn('id', [$item->id])->orderByRaw("FIELD(id, $cookieIds)")->take($getNum)->get()->chunk($chunkNum);
 		}
         
+        //Cookieのセット ---------
         if(! in_array($item->id, $cookieArr)) { //配列にidがない時 or cachIdsが空の時
         	$count = array_unshift($cookieArr, $item->id); //配列の最初に追加
          	
