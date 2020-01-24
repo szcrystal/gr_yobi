@@ -3,7 +3,12 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
+    {{--
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    --}}
+    
+    <meta name="viewport" content="width=device-width,initial-scale=1.0, maximum-scale=1.0"/>
     
     @if(! Ctm::isEnv('product'))
     <meta name="robots" content="noindex, nofollow">
@@ -57,6 +62,19 @@
 			@include('main.shared.twitterCard', [])
       	@endif                  
 	@endif
+
+
+    <script type='text/javascript'>
+        window.onAmazonLoginReady = function() {
+            amazon.Login.setClientId('amzn1.application-oa2-client.471a3dc352524c5cb3066ece8967eeb2');
+        };
+        window.onAmazonPaymentsReady = function() {
+            showButton();
+            showAddressBookWidget();
+        };
+    </script>
+    <script async="async" src='https://static-fe.payments-amazon.com/OffAmazonPayments/jp/sandbox/lpa/js/Widgets.js'>
+    </script>
 
 
     <!-- Scripts -->

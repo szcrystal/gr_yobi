@@ -49,6 +49,160 @@
 @endif
 
 
+{{-- Amazon --}}
+
+
+<div id="AmazonPayButton">
+</div>
+
+<a id="Logout" class="btn border border-secondary" href="/shop/cart">ログアウト</a>
+
+  <script type="text/javascript">
+      function showButton(){
+              var authRequest;
+              
+              OffAmazonPayments.Button("AmazonPayButton", "AUT5MRXA61A3P", {
+                  type: "PwA",
+                  color: "Gold",
+                  size: "large",
+                  authorization: function() {
+                      loginOptions = {
+                        scope: "profile payments:widget payments:shipping_address postal_code",
+                        popup: "true",
+                        //interactive: 'always', //毎回ログインする
+                        };
+                        
+                        authRequest = amazon.Login.authorize (loginOptions,"https://192.168.10.16/shop/cart");
+                  },
+
+                  onError: function(error) {
+                      // your error handling code.
+                       alert("The following error occurred: "
+                        + error.getErrorCode()
+                        + ' - ' + error.getErrorMessage());
+                  }
+          });
+      };
+  </script>
+  
+  <script type="text/javascript">
+  document.getElementById('Logout').onclick = function() {
+  amazon.Login.logout();
+  };
+  </script>
+
+<?php //========================================================================================= ?>
+
+<style>
+#addressBookWidgetDiv {
+  min-width: 300px;
+  max-width: 600px;
+  min-height: 228px;
+  max-height: 400px;
+}
+#walletWidgetDiv {
+  min-width: 300px;
+  max-width:600px;
+  min-height: 228px;
+  max-height: 400px;
+}
+
+/* Mobile optimized and small window */
+#addressBookWidgetDiv {
+  width: 100%;
+  height: 228px;
+}
+#walletWidgetDiv {
+  width: 100%;
+  height: 228px;
+}
+  
+
+</style>
+
+<div id="addressBookWidgetDiv">
+</div>
+  
+<script>
+function showAddressBookWidget() {
+    new OffAmazonPayments.Widgets.AddressBook({
+    sellerId: 'AUT5MRXA61A3P',
+
+    onOrderReferenceCreate: function(orderReference) {
+        // Here is where you can grab the Order Reference ID.
+        orderReference.getAmazonOrderReferenceId();
+    },
+    onAddressSelect: function(orderReference) {
+        // Replace the following code with the action that you want
+        // to perform after the address is selected. The
+        // amazonOrderReferenceId can be used to retrieve the address
+        // details by calling the GetOrderReferenceDetails operation.
+        // If rendering the AddressBook and Wallet widgets
+        // on the same page, you do not have to provide any additional
+        // logic to load the Wallet widget after the AddressBook widget.
+        // The Wallet widget will re-render itself on all subsequent
+        // onAddressSelect events, without any action from you.
+        // It is not recommended that you explicitly refresh it.
+    },
+    design: {
+        designMode: 'responsive'
+    },
+    onReady: function(orderReference) {
+        // Enter code here you want to be executed
+        // when the address widget has been rendered.
+        
+        var orderReferenceId = orderReference.getAmazonOrderReferenceId();
+        var el;
+        if ((el = document.getElementById("orderReferenceId"))) {
+          el.value = orderReferenceId;
+        }
+        // Wallet
+        showWalletWidget(orderReferenceId);
+    },
+    onError: function(error) {
+        // Your error handling code.
+        // During development you can use the following
+        // code to view error messages:
+        alert(error.getErrorCode() + ': ' + error.getErrorMessage());
+        // See "Handling Errors" for more information.
+    }
+    }).bind("addressBookWidgetDiv");
+}
+</script>
+
+
+<div id="walletWidgetDiv">
+</div>
+  
+<script>
+function showWalletWidget(orderReferenceId) {
+    new OffAmazonPayments.Widgets.Wallet({
+        sellerId: 'AUT5MRXA61A3P',
+        onPaymentSelect: function(orderReference) {
+            // Replace this code with the action that you want to perform
+            // after the payment method is selected.
+  
+            // Ideally this would enable the next action for the buyer
+            // including either a "Continue" or "Place Order" button.
+        },
+        design: {
+        designMode: 'responsive'
+        },
+  
+        onError: function(error) {
+            // Your error handling code.
+            // During development you can use the following
+            // code to view error messages:
+            // console.log(error.getErrorCode() + ': ' + error.getErrorMessage());
+            // See "Handling Errors" for more information.
+            alert(error.getErrorCode() + ': ' + error.getErrorMessage());
+        }
+    }).bind("walletWidgetDiv");
+}
+</script>
+
+
+{{-- Amazon END --}}
 
 <div class="clearfix">
 <div class="confirm-left">

@@ -35,6 +35,8 @@ use DateTime;
 use Route;
 use Cookie;
 
+use Client;
+
 use Illuminate\Validation\Rule;
 
 class CartController extends Controller
@@ -2016,7 +2018,36 @@ class CartController extends Controller
     
     
     public function postCart(Request $request)
-    {        
+    {
+        $config = array(
+            'merchant_id' => 'AUT5MRXA61A3P',
+            'access_key'  => 'AKIAIULMCJL2WZE3LLAQ',
+            'secret_key'  => '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',
+            'client_id'   => 'amzn1.application-oa2-client.471a3dc352524c5cb3066ece8967eeb2',
+            'region'      => 'jp',
+            
+            //'mws developer_id' => '879609259100',
+            //'mws_access_token' => '3pKDQQL1eRfsZpFM0mTMaYxkLScapMmcOAbYoGr5',
+        );
+
+        // or, instead of setting the array in the code, you can
+        // initialze the Client by specifying a JSON file
+        // $config = 'PATH_TO_JSON_FILE';
+
+        // Instantiate the client class with the config type
+        $client = new Client($config);
+        $client->setSandbox(true);
+        
+        $requestParameters = array();
+
+        // Optional Parameter
+        $requestParameters['mws_auth_token'] = '3pKDQQL1eRfsZpFM0mTMaYxkLScapMmcOAbYoGr5';
+
+        $response = $client->getMerchantAccountStatus($requestParameters);
+        echo $response->toXml() . "\n";
+        //exit;
+        
+        
         $itemData = array();
         $itemIds = null;
         $allPrice = 0;
