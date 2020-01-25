@@ -1132,6 +1132,53 @@ class CartController extends Controller
 
     public function postConfirm(Request $request)
     {
+        //print_r($request->all());
+//        echo session('all.access_token');
+        //exit;
+        
+        $data = $request->all();
+        //echo $data['order_reference_id'];
+        
+        $config = array(
+            'merchant_id' => 'AUT5MRXA61A3P',
+            'access_key'  => 'AKIAIULMCJL2WZE3LLAQ',
+            'secret_key'  => '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',
+            'client_id'   => 'amzn1.application-oa2-client.471a3dc352524c5cb3066ece8967eeb2',
+            'region'      => 'jp',
+            
+            //'mws developer_id' => '879609259100',
+            //'mws_access_token' => '3pKDQQL1eRfsZpFM0mTMaYxkLScapMmcOAbYoGr5',
+        );
+
+        // or, instead of setting the array in the code, you can
+        // initialze the Client by specifying a JSON file
+        // $config = 'PATH_TO_JSON_FILE';
+
+        // Instantiate the client class with the config type
+        $client = new Client($config);
+        $client->setSandbox(true);
+        
+        $requestParameters = array();
+
+        // Optional Parameter
+        $requestParameters['mws_auth_token'] = '3pKDQQL1eRfsZpFM0mTMaYxkLScapMmcOAbYoGr5';
+        
+        $requestParameters['amazon_order_reference_id'] = $data['order_reference_id'];
+        $requestParameters['address_consent_token'] = session('all.access_token');
+
+        //$response = $client->getMerchantAccountStatus($requestParameters);
+        $response = $client->getOrderReferenceDetails($requestParameters);
+        //echo $response->toXml() . "\n";
+        $obj = simplexml_load_string($response->toXml());
+        $obj = json_decode(json_encode($obj), true);
+        //print_r($response);
+        echo $obj['GetOrderReferenceDetailsResult']['OrderReferenceDetails']['Destination']['PhysicalDestination']['AddressLine1'];
+        echo $obj['GetOrderReferenceDetailsResult']['OrderReferenceDetails']['Buyer']['Name'];
+        echo $obj['GetOrderReferenceDetailsResult']['OrderReferenceDetails']['Buyer']['Email'];
+        exit;
+        
+        
+        
 //    	if($request->isMethod('get')) {
 //        	abort(404);
 //        }
@@ -1762,7 +1809,7 @@ class CartController extends Controller
     
     public function postForm(Request $request)
     {
-//       print_r(session('item.data'));
+//       print_r($request->all());
 //       exit;
 //         print_r(session('all'));   
 //         exit;
@@ -1806,6 +1853,10 @@ class CartController extends Controller
             else {
                 abort(404);
             }
+            
+            //AmazonPayの有無
+            $isAmznPay = $data['is_amzn_pay'];
+            $accessToken = $data['access_token'];
             
             /* registのボタン分けを無くした
             $regist = $request->has('regist_on') ? 1 : 0;
@@ -1858,7 +1909,13 @@ class CartController extends Controller
             
             //form_cartのsession入れ 一度はpostを通っていることを判別する
             //session(['all.from_cart'=>$request->input('from_cart')]); //session入れ
-            session(['all.from_cart'=>1]); //session入れ
+            
+             //session入れ ---------
+            session([
+                'all.from_cart' => 1,
+                'all.is_amzn_pay' => $isAmznPay,
+                'all.access_token' => $accessToken,
+            ]);
             //all priceのsession入れ
             $request->session()->put('all.all_price', $allPrice);
        	}
@@ -2013,41 +2070,12 @@ class CartController extends Controller
 
 		$metaTitle = 'ご注文情報の入力' . '｜植木買うならグリーンロケット';
      
-     	return view('cart.form', ['allPrice'=>$allPrice, 'payMethod'=>$payMethod, 'pmChilds'=>$pmChilds, 'prefs'=>$prefs, 'userObj'=>$userObj, 'deliFee'=>$deliFee, 'prefName'=>$prefName, 'codCheck'=>$codCheck, 'dgGroup'=>$dgGroup, 'seinouHuzaiSes'=>$seinouHuzaiSes, 'seinouNoHuzaiSes'=>$seinouNoHuzaiSes, 'regCardDatas'=>$regCardDatas, 'regCardErrors'=>$regCardErrors, 'cardErrors'=>$cardErrors, 'metaTitle'=>$metaTitle]);
+     	return view('cart.form', ['allPrice'=>$allPrice, 'payMethod'=>$payMethod, 'pmChilds'=>$pmChilds, 'prefs'=>$prefs, 'userObj'=>$userObj, 'deliFee'=>$deliFee, 'prefName'=>$prefName, 'codCheck'=>$codCheck, 'dgGroup'=>$dgGroup, 'seinouHuzaiSes'=>$seinouHuzaiSes, 'seinouNoHuzaiSes'=>$seinouNoHuzaiSes, 'regCardDatas'=>$regCardDatas, 'regCardErrors'=>$regCardErrors, 'cardErrors'=>$cardErrors, 'isAmznPay'=>$isAmznPay, 'metaTitle'=>$metaTitle]);
     }
     
     
     public function postCart(Request $request)
     {
-        $config = array(
-            'merchant_id' => 'AUT5MRXA61A3P',
-            'access_key'  => 'AKIAIULMCJL2WZE3LLAQ',
-            'secret_key'  => '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',
-            'client_id'   => 'amzn1.application-oa2-client.471a3dc352524c5cb3066ece8967eeb2',
-            'region'      => 'jp',
-            
-            //'mws developer_id' => '879609259100',
-            //'mws_access_token' => '3pKDQQL1eRfsZpFM0mTMaYxkLScapMmcOAbYoGr5',
-        );
-
-        // or, instead of setting the array in the code, you can
-        // initialze the Client by specifying a JSON file
-        // $config = 'PATH_TO_JSON_FILE';
-
-        // Instantiate the client class with the config type
-        $client = new Client($config);
-        $client->setSandbox(true);
-        
-        $requestParameters = array();
-
-        // Optional Parameter
-        $requestParameters['mws_auth_token'] = '3pKDQQL1eRfsZpFM0mTMaYxkLScapMmcOAbYoGr5';
-
-        $response = $client->getMerchantAccountStatus($requestParameters);
-        echo $response->toXml() . "\n";
-        //exit;
-        
-        
         $itemData = array();
         $itemIds = null;
         $allPrice = 0;

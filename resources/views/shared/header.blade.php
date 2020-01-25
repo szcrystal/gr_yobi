@@ -63,18 +63,17 @@
       	@endif                  
 	@endif
 
-
-    <script type='text/javascript'>
-        window.onAmazonLoginReady = function() {
-            amazon.Login.setClientId('amzn1.application-oa2-client.471a3dc352524c5cb3066ece8967eeb2');
-        };
-        window.onAmazonPaymentsReady = function() {
-            showButton();
-            showAddressBookWidget();
-        };
-    </script>
-    <script async="async" src='https://static-fe.payments-amazon.com/OffAmazonPayments/jp/sandbox/lpa/js/Widgets.js'>
-    </script>
+    @if(Request::is('shop/cart') || Request::is('shop/form'))
+        <script type='text/javascript'>
+            window.onAmazonLoginReady = function() {
+                amazon.Login.setClientId('amzn1.application-oa2-client.471a3dc352524c5cb3066ece8967eeb2');
+            };
+//            window.onAmazonPaymentsReady = function() {
+//                showButton();
+//                showAddressBookWidget();
+//            };
+        </script>
+    @endif
 
 
     <!-- Scripts -->

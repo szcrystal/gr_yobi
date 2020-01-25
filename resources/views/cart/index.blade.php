@@ -49,160 +49,10 @@
 @endif
 
 
-{{-- Amazon --}}
 
 
-<div id="AmazonPayButton">
-</div>
-
-<a id="Logout" class="btn border border-secondary" href="/shop/cart">ログアウト</a>
-
-  <script type="text/javascript">
-      function showButton(){
-              var authRequest;
-              
-              OffAmazonPayments.Button("AmazonPayButton", "AUT5MRXA61A3P", {
-                  type: "PwA",
-                  color: "Gold",
-                  size: "large",
-                  authorization: function() {
-                      loginOptions = {
-                        scope: "profile payments:widget payments:shipping_address postal_code",
-                        popup: "true",
-                        //interactive: 'always', //毎回ログインする
-                        };
-                        
-                        authRequest = amazon.Login.authorize (loginOptions,"https://192.168.10.16/shop/cart");
-                  },
-
-                  onError: function(error) {
-                      // your error handling code.
-                       alert("The following error occurred: "
-                        + error.getErrorCode()
-                        + ' - ' + error.getErrorMessage());
-                  }
-          });
-      };
-  </script>
-  
-  <script type="text/javascript">
-  document.getElementById('Logout').onclick = function() {
-  amazon.Login.logout();
-  };
-  </script>
-
-<?php //========================================================================================= ?>
-
-<style>
-#addressBookWidgetDiv {
-  min-width: 300px;
-  max-width: 600px;
-  min-height: 228px;
-  max-height: 400px;
-}
-#walletWidgetDiv {
-  min-width: 300px;
-  max-width:600px;
-  min-height: 228px;
-  max-height: 400px;
-}
-
-/* Mobile optimized and small window */
-#addressBookWidgetDiv {
-  width: 100%;
-  height: 228px;
-}
-#walletWidgetDiv {
-  width: 100%;
-  height: 228px;
-}
-  
-
-</style>
-
-<div id="addressBookWidgetDiv">
-</div>
-  
-<script>
-function showAddressBookWidget() {
-    new OffAmazonPayments.Widgets.AddressBook({
-    sellerId: 'AUT5MRXA61A3P',
-
-    onOrderReferenceCreate: function(orderReference) {
-        // Here is where you can grab the Order Reference ID.
-        orderReference.getAmazonOrderReferenceId();
-    },
-    onAddressSelect: function(orderReference) {
-        // Replace the following code with the action that you want
-        // to perform after the address is selected. The
-        // amazonOrderReferenceId can be used to retrieve the address
-        // details by calling the GetOrderReferenceDetails operation.
-        // If rendering the AddressBook and Wallet widgets
-        // on the same page, you do not have to provide any additional
-        // logic to load the Wallet widget after the AddressBook widget.
-        // The Wallet widget will re-render itself on all subsequent
-        // onAddressSelect events, without any action from you.
-        // It is not recommended that you explicitly refresh it.
-    },
-    design: {
-        designMode: 'responsive'
-    },
-    onReady: function(orderReference) {
-        // Enter code here you want to be executed
-        // when the address widget has been rendered.
-        
-        var orderReferenceId = orderReference.getAmazonOrderReferenceId();
-        var el;
-        if ((el = document.getElementById("orderReferenceId"))) {
-          el.value = orderReferenceId;
-        }
-        // Wallet
-        showWalletWidget(orderReferenceId);
-    },
-    onError: function(error) {
-        // Your error handling code.
-        // During development you can use the following
-        // code to view error messages:
-        alert(error.getErrorCode() + ': ' + error.getErrorMessage());
-        // See "Handling Errors" for more information.
-    }
-    }).bind("addressBookWidgetDiv");
-}
-</script>
 
 
-<div id="walletWidgetDiv">
-</div>
-  
-<script>
-function showWalletWidget(orderReferenceId) {
-    new OffAmazonPayments.Widgets.Wallet({
-        sellerId: 'AUT5MRXA61A3P',
-        onPaymentSelect: function(orderReference) {
-            // Replace this code with the action that you want to perform
-            // after the payment method is selected.
-  
-            // Ideally this would enable the next action for the buyer
-            // including either a "Continue" or "Place Order" button.
-        },
-        design: {
-        designMode: 'responsive'
-        },
-  
-        onError: function(error) {
-            // Your error handling code.
-            // During development you can use the following
-            // code to view error messages:
-            // console.log(error.getErrorCode() + ': ' + error.getErrorMessage());
-            // See "Handling Errors" for more information.
-            alert(error.getErrorCode() + ': ' + error.getErrorMessage());
-        }
-    }).bind("walletWidgetDiv");
-}
-</script>
-
-
-{{-- Amazon END --}}
 
 <div class="clearfix">
 <div class="confirm-left">
@@ -362,6 +212,88 @@ function showWalletWidget(orderReferenceId) {
                 
                 <button class="btn btn-block btn-custom mb-2 py-3" type="submit" name="from_login" value="1"{{ $disabled }}>ログインして進む</button>
             @endif
+            
+            <div style="text-align: center; padding:5px 0; margin:5px 0;">
+                <div id="AmazonPayButton"></div>
+                <label style="font-size: 14px;line-height: 23px;">
+                    Amazonアカウントにご登録の住所・クレジット<br>カード情報を利用して、簡単にご注文が出来ます。
+                </label>
+                
+                <input type="hidden" name="access_token" value="">
+                <input type="hidden" name="token_type" value="">
+                <input type="hidden" name="expires_in" value="">
+                <input type="hidden" name="scope" value="">
+                
+                <input type="hidden" name="is_amzn_pay" value="0">
+            </div>
+            <button type="button" name="button" id="Logout" class="mb-3">Logout</button>
+
+
+            <script type="text/javascript">
+                window.onAmazonPaymentsReady = function() {
+                    showButton();
+                    //showAddressBookWidget();
+                };
+                
+                function showButton(){
+                    var authRequest;
+                      
+                    OffAmazonPayments.Button("AmazonPayButton", "AUT5MRXA61A3P", {
+                          type: "PwA",
+                          color: "Gold",
+                          size: "large",
+                          authorization: function() {
+                              loginOptions = {
+                                scope: "profile payments:widget payments:shipping_address postal_code",
+                                popup: "true",
+                                //interactive: 'always', //毎回ログインする
+                                };
+                                
+                                authRequest = amazon.Login.authorize (
+                                    loginOptions,
+                                    //"{{ url('shop/cart') }}"
+                                    
+                                    function(t) {
+                                        //jQuery使える
+                                        // console.log(t.access_token);
+                                        // console.log(t.expires_in);
+                                        // console.log(t.token_type);
+                                        /*
+                                        var access_token = '?access_token=' + t.access_token;
+                                        var token_type = '&token_type=' + t.token_type;
+                                        var expires_in = '&expires_in=' + t.expires_in;
+                                        var scope = '&scope=' + t.scope;
+                                        */
+                                        
+                                        $('input[name="access_token"]').val(t.access_token);
+                                        $('input[name="token_type"]').val(t.token_type);
+                                        $('input[name="expires_in"]').val(t.expires_in);
+                                        $('input[name="scope"]').val(t.scope); //URLエンコード必要？？ => ないかも
+                                        $('input[name="is_amzn_pay"]').val(1);
+                                        
+                                        $form = $('#with1');
+                                        $form.attr('action', '/shop/form'/* + access_token + token_type + expires_in + scope*/); //queryをつけなくてもwidget表示可能のようだ
+                                        $form.submit();
+                                    }
+                                    
+                                );
+                          },
+
+                          onError: function(error) {
+                              // your error handling code.
+                               alert("The following error occurred: "
+                                + error.getErrorCode()
+                                + ' - ' + error.getErrorMessage());
+                          }
+                      });
+                  };
+            </script>
+              
+            <script type="text/javascript">
+                document.getElementById('Logout').onclick = function() {
+                    amazon.Login.logout();
+                };
+            </script>
             
             @if(Auth::check())
                 

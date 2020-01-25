@@ -57,6 +57,8 @@ use App\DeliveryGroup;
 
 <div class="confirm-left">
 
+@if(! $isAmznPay)
+
 @if(Auth::check())
 
 <div id="delivery-add" class="mb-5">
@@ -494,6 +496,8 @@ use App\DeliveryGroup;
          
 @endif {{-- AuthCheck --}}
 
+@endif {{-- isAmznPay --}}
+
 
 <div id="delivery-info" class="pt-2">
     <div class="clearfix mt-3">
@@ -850,8 +854,115 @@ use App\DeliveryGroup;
         </div>
     </div>
 </div>
-                
-                
+
+<?php //Amazon Pay ================================================= ?>
+@if($isAmznPay)
+<div id="pay-method" class="pt-2 mb-4">
+   <div class="clearfix mt-3">
+       <h3>Amazon Pay</h3>
+       <div></div>
+   </div>
+
+   <div class="ml-20per">
+        <div id="addressBookWidgetDiv"></div>
+        <div id="walletWidgetDiv"></div>
+        
+        <?php
+            $amznPay = $payMethod->where('name', 'Amazon Pay')->first();
+        ?>
+        
+        <input type="hidden" name="pay_method" value="{{ $amznPay->id }}" form="user-input">
+        
+        <input id="orderReferenceId" type="hidden" name="order_reference_id" value="" form="user-input">
+        {{-- <input type="hidden" name="access_token" value="" form="user-input"> --}}
+        
+        
+        <script>
+            window.onAmazonPaymentsReady = function() {
+                //showButton();
+                showAddressBookWidget();
+            };
+            
+            function showAddressBookWidget() {
+                new OffAmazonPayments.Widgets.AddressBook({
+                    sellerId: 'AUT5MRXA61A3P',
+
+                    onOrderReferenceCreate: function(orderReference) {
+                        // Here is where you can grab the Order Reference ID.
+                        orderReference.getAmazonOrderReferenceId();
+                    },
+                    onAddressSelect: function(orderReference) {
+                        // Replace the following code with the action that you want
+                        // to perform after the address is selected. The
+                        // amazonOrderReferenceId can be used to retrieve the address
+                        // details by calling the GetOrderReferenceDetails operation.
+                        // If rendering the AddressBook and Wallet widgets
+                        // on the same page, you do not have to provide any additional
+                        // logic to load the Wallet widget after the AddressBook widget.
+                        // The Wallet widget will re-render itself on all subsequent
+                        // onAddressSelect events, without any action from you.
+                        // It is not recommended that you explicitly refresh it.
+                    },
+                    design: {
+                        designMode: 'responsive'
+                    },
+                    onReady: function(orderReference) {
+                        // Enter code here you want to be executed
+                        // when the address widget has been rendered.
+                        
+                        var orderReferenceId = orderReference.getAmazonOrderReferenceId();
+                        var el;
+                        if ((el = document.getElementById("orderReferenceId"))) {
+                          el.value = orderReferenceId;
+                        }
+                        // Wallet
+                        showWalletWidget(orderReferenceId);
+                    },
+                    onError: function(error) {
+                        // Your error handling code.
+                        // During development you can use the following
+                        // code to view error messages:
+                        
+                        //alert('aaa' + error.getErrorCode() + ': ' + error.getErrorMessage());
+                        
+                        // See "Handling Errors" for more information.
+                    }
+                }).bind("addressBookWidgetDiv");
+            }
+            
+            function showWalletWidget(orderReferenceId) {
+                new OffAmazonPayments.Widgets.Wallet({
+                    sellerId: 'AUT5MRXA61A3P',
+                    onPaymentSelect: function(orderReference) {
+                        // Replace this code with the action that you want to perform
+                        // after the payment method is selected.
+              
+                        // Ideally this would enable the next action for the buyer
+                        // including either a "Continue" or "Place Order" button.
+                    },
+                    design: {
+                        designMode: 'responsive'
+                    },
+              
+                    onError: function(error) {
+                        // Your error handling code.
+                        // During development you can use the following
+                        // code to view error messages:
+                        // console.log(error.getErrorCode() + ': ' + error.getErrorMessage());
+                        // See "Handling Errors" for more information.
+                        alert('bbb' + error.getErrorCode() + ': ' + error.getErrorMessage());
+                    }
+                }).bind("walletWidgetDiv");
+            }
+        </script>
+
+</div>{{-- ml-20per --}}
+</div>{{-- id --}}
+@endif
+<?php //Amazon Pay END ================================================= ?>
+
+
+@if(! $isAmznPay)
 <div id="pay-method" class="pt-2 mb-4">
     <div class="clearfix mt-3">
         <h3>お支払方法</h3>
@@ -1218,7 +1329,10 @@ use App\DeliveryGroup;
         </fieldset>
      </div>{{-- ml-20per --}}
 </div>{{-- id --}}
-                
+
+@endif {{-- isAmznPay --}}
+
+
     <div class="ml-20per mt-5 pt-2">
         <button class="btn btn-block btn-kon mb-0 mx-auto py-3" type="submit" name="recognize" value="1">次へ進む</button>
     </div>{{-- ml-20per --}}

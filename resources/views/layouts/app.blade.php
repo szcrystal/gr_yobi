@@ -109,6 +109,10 @@ $getNow .= Ctm::isEnv('product') ? str_replace ('.', '', config('app.app_version
     @endif
 @endif
 
+@if(Request::is('shop/cart') || Request::is('shop/form'))
+<script async="async" src='https://static-fe.payments-amazon.com/OffAmazonPayments/jp/sandbox/lpa/js/Widgets.js'></script>
+@endif
+
 @if(isset($isTop) || Request::is('item/*'))
 <script type="text/javascript" src="{{ asset('cdn/slick.min.js') }}"></script>
 {{-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.js"></script> --}}
