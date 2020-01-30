@@ -7,7 +7,6 @@ use App\TopSetting;
 //use App\Category;
 ?>
 
-
 @section('content')
 
 <div id="main" class="top home">
