@@ -172,8 +172,8 @@ class HomeController extends Controller
         //$getNum = Ctm::isAgent('sp') ? 6 : 7;
         $a = array('a', 'b', 'c', 123);
         
-        Cookie::queue(Cookie::make('item_ids', '', config('app.cookie_time') ));
-        
+        //Cookie::queue(Cookie::make('item_ids', '', time()-60 ));
+        setcookie('item_ids', '', time()-60);
         $cookieIds = Cookie::get('item_ids');
         print_r($cookieIds);
         print_r($a);
