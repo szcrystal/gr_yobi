@@ -170,8 +170,10 @@ class HomeController extends Controller
         //Recent 最近見た 最近チェックした =====================
         $cookieArr = array();
         //$getNum = Ctm::isAgent('sp') ? 6 : 7;
-        /*
+        
         $cookieIds = Cookie::get('item_ids');
+        print_r($cookieIds);
+        exit;
         
         if(isset($cookieIds) && $cookieIds != '') {
             $cookieArr = explode(',', $cookieIds); //orderByRowに渡すものはString
@@ -180,7 +182,7 @@ class HomeController extends Controller
         
         $cookieItems['type'] = 3; 
         $cookieItems['slug'] = 'recent-items';
-        */
+        
         //FirstItem END =========================
         
         /*
