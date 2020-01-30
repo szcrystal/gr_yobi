@@ -170,14 +170,16 @@ class HomeController extends Controller
         //Recent 最近見た 最近チェックした =====================
         $cookieArr = array();
         //$getNum = Ctm::isAgent('sp') ? 6 : 7;
-        $a = array('a', 'b', 'c', 123);
+        $cookieIds = Cookie::get('item_ids');
         
-        //Cookie::queue(Cookie::make('item_ids', '', time()-60 ));
+        /*
+        $a = array('a', 'b', 'c', 123);
         setcookie('item_ids', '', time()-60);
         $cookieIds = Cookie::get('item_ids');
         print_r($cookieIds);
         print_r($a);
         exit;
+        */
         
         if(isset($cookieIds) && $cookieIds != '') {
             $cookieArr = explode(',', $cookieIds); //orderByRowに渡すものはString
