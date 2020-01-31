@@ -880,6 +880,21 @@ class CustomController extends Controller
 //    }
 
     
+    //Cookieの削除 Laravel5.6.30以上にUpdate(composer update)するとserialize()がなくなるので、エラーが出る
+    static function deleteCookie($switch = 1)
+    {
+        //Laravel5.6.30以上にUpdate(composer update)するとserialize()がなくなるので、エラーが出る
+        //それまでのCookieの値（s:9:"1296, 1279"; <=このままの文字列で入っている）が元に戻せなくなりエラーが出る
+        
+        $cookieIds = Cookie::get('item_ids');
+        
+        if($switch && isset($cookieIds) && strpos($cookieIds, '"') !== false) {
+            setcookie('item_ids', '', time()-60);
+        }
+        
+        return $cookieIds;
+        
+    }
     
     //管理画面：管理者権限の判定
     static function checkRole($roleName)

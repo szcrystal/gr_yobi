@@ -186,7 +186,7 @@ class HomeController extends Controller
           	$cookieItems['items'] = $this->item->whereIn('id', $cookieArr)->where($whereArr)->orderByRaw("FIELD(id, $cookieIds)")->take($getNum)->get();
         }
         
-        $cookieItems['type'] = 3; 
+        $cookieItems['type'] = 3;
         $cookieItems['slug'] = 'recent-items';
         
         //FirstItem END =========================
