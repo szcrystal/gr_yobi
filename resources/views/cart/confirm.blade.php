@@ -298,9 +298,10 @@
                         @endif
                     </th>
                     <td>
-                        @if(/*$regist && */$data['pay_method'] == 1 && $data['card_seq'] == 99)
-                            カードの登録：{{ isset($data['is_regist_card']) ? 'する' : 'しない' }}
-                        
+                        @if($data['pay_method'] == 1)
+                            @if((Auth::check() || $regist) && $data['card_seq'] == 99)
+                                カードの登録：{{ isset($data['is_regist_card']) && $data['is_regist_card'] ? 'する' : 'しない' }}
+                            @endif
                         @elseif($data['pay_method'] == 2)
                             {{-- コンビニ決済手数料 --}}
                             ¥{{ number_format($codFee) }}
