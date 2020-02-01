@@ -86,8 +86,8 @@ use App\Setting;
                     </tr>
                     <tr>
                         <th>MAIL</th>
-                        <td><a href="mailto:info@green-rocket.jp">info@green-rocket.jp</a></td>
-                        </tr>
+                        <td><a href="{{ url('contact') }}">info@green-rocket.jp</a></td>
+                    </tr>
                     <tr>
                         <th>所在地</th>
                         <td><span class="text-small">〒311-3406</span><br>
