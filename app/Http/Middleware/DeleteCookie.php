@@ -41,6 +41,7 @@ class DeleteCookie
         ★★★★★★
         */
         
+        /* ************************************
         // vendor updateするなら下記を各所に実装する必要がある ================================
         $cookieIds = Cookie::get('item_ids');
 
@@ -60,6 +61,8 @@ class DeleteCookie
             Cookie::queue(Cookie::make('fav_key', $favKey[1], config('app.cookie_time')));
             //setcookie('item_ids', '', time()-60);
         }
+        *****************************************
+        */
         
 //        $favKey = $_COOKIE['fav_key'];
 //        echo $cookieIds;
