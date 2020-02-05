@@ -5,15 +5,10 @@
     use App\User;
     use App\Fix;
     
-    //print_r($_SERVER);
 ?>
     
-    @if($_SERVER['SERVER_ADDR'] == '153.121.92.178')
-    <div class="site-description {{ Ctm::isEnv('alpha') ? 'text-success' : '' }}">
-    @else
     <div class="site-description {{ Ctm::isEnv('alpha') ? 'text-danger' : '' }}">
-    @endif
-    	<p>植木買うならグリーンロケット：グリーンロケットは初めての植木、お庭づくりを全力で応援します。</p>
+        <p>植木買うならグリーンロケット：グリーンロケットは初めての植木、お庭づくりを全力で応援します。</p>
     </div>
 
 	<div class="head-first clearfix">
