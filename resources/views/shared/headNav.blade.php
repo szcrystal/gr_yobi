@@ -8,7 +8,7 @@
     
 ?>
     
-    <div class="site-description {{ Ctm::isEnv('alpha') ? 'text-primary' : '' }}">
+    <div class="site-description {{ Ctm::isEnv('alpha') ? 'text-success' : '' }}">
     	<p>植木買うならグリーンロケット：グリーンロケットは初めての植木、お庭づくりを全力で応援します。</p>
     </div>
 
