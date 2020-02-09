@@ -14,7 +14,7 @@
                 margin: 0;
                 padding: 0;
                 width: 100%;
-                color: #B0BEC5;
+                color: #BDB8A9/*#B0BEC5*/;
                 display: table;
                 font-weight: 300;
                 font-family: 'Lato';
@@ -41,7 +41,7 @@
     <body>
         <div class="container">
             <div class="content">
-                <div class="title col-md-6">現在メンテナンス中です。<br>しばらくしてから再度アクセスして下さい。<br>GREEN ROCKET</div>
+                <div class="title col-md-6">現在メンテナンス中です。<br>しばらく時間を置き、再度アクセスして下さい。<br>GREEN ROCKET</div>
             </div>
         </div>
     </body>

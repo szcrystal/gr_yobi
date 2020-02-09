@@ -2066,8 +2066,13 @@ ul.side-rank {
 
 /* Single Slider Slick */
 .slider-single > div {
-	//position: relative;
-    //border: 2px solid red;
+	position: relative;
+    width: 100%;
+    //background: none;
+    border: 1px solid #fff;
+}
+.slider-single img {
+/*    -webkit-backface-visibility: hidden;*/
 }
 .slider-single .s-caption {
 	position: absolute;
@@ -2075,7 +2080,7 @@ ul.side-rank {
     //left: 0;
     z-index: 999;
 	color: #fff;
-    font-size: 0.95em;
+    font-size: 1em;
     font-weight: normal;
     background: rgba(0,0,0,0.55);
     width: 100%;
@@ -2107,10 +2112,10 @@ ul.side-rank {
     cursor: pointer;
 }
 .slider-single .s-prev {
-    left: 0;
+    left: 1px;
 }
 .slider-single .s-next {
-    right: 0;
+    right: 1px;
 }
 .slider-single .s-prev:hover,
 .slider-single .s-next:hover {
@@ -2129,10 +2134,11 @@ ul.side-rank {
 .single .carousel-item {
 	height: 680px; /* 1:1.2 img-box */
     overflow: hidden;
-    //border: 1px solid #ddd;
+    //border: 1px solid orange;
 }
 .single .carousel-item img {
 	width: 100%;
+    //border: 1px solid orange;
 }
 .single .carousel-indicators {
 	width: 100%;
