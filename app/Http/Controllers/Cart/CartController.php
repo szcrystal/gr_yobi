@@ -333,8 +333,8 @@ class CartController extends Controller
       	$allData = $all['data']; //session(all.data): destination, pay_method, user, receiver  
      	
       	$regist = $all['regist']; 
-       	$allPrice = $all['all_price']; //商品合計のみの金額。SessionにTotalPrice（送料、手数料、マイナスポイント）は入れていない
-        $totalFee = $all['total_fee'];
+       	$allPrice = $all['all_price']; //商品合計のみの金額。（送料、手数料、マイナスポイント）は入っていない
+        $totalFee = $all['total_fee']; //商品合計 + 送料／手数料／ポイント全て含む金額
         $deliFee = $all['deli_fee'];
         $codFee = $all['cod_fee'];
         //$takeChargeFee = $all['take_charge_fee'];
@@ -364,7 +364,126 @@ class CartController extends Controller
         //ここはカード決済Methodの中でカード登録が正常完了した時に取得するSession
        	$isCardRegist = isset($allData['card_regist']) && $allData['card_regist'] != '' ? 1 : 0;
 
-       	
+        
+        // AmazonPay ======================================
+        if($pm == 7) {
+            $config = array(
+                'merchant_id' => 'AUT5MRXA61A3P',
+                'access_key'  => 'AKIAIULMCJL2WZE3LLAQ',
+                'secret_key'  => '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',
+                'client_id'   => 'amzn1.application-oa2-client.471a3dc352524c5cb3066ece8967eeb2',
+                'region'      => 'jp',
+                
+                //'mws developer_id' => '879609259100',
+                //'mws_access_token' => '3pKDQQL1eRfsZpFM0mTMaYxkLScapMmcOAbYoGr5',
+            );
+
+            // or, instead of setting the array in the code, you can
+            // initialze the Client by specifying a JSON file
+            // $config = 'PATH_TO_JSON_FILE';
+
+            // Instantiate the client class with the config type
+            $client = new Client($config);
+            $client->setSandbox(true);
+            
+            $requestParameters = array();
+            $orderReferenceId = session('all.order_reference_id');
+
+            // Optional Parameter
+            $requestParameters['mws_auth_token'] = '3pKDQQL1eRfsZpFM0mTMaYxkLScapMmcOAbYoGr5';
+            
+            $requestParameters['amazon_order_reference_id'] = $orderReferenceId;
+            $requestParameters['address_consent_token'] = session('all.access_token');
+            
+            //$response = $client->getMerchantAccountStatus($requestParameters);
+            //$response = $client->getOrderReferenceDetails($requestParameters);
+
+            $setParams['amount'] = $totalFee;
+            $setParams['currency_code'] = 'JPY';
+            $setParams['seller_order_id'] = $orderNumber;
+            
+            $setParams = array_merge($requestParameters, $setParams);
+            
+            $response = $client->setOrderReferenceDetails($setParams);
+            
+            //echo $response->toXml() . "\n";
+            $obj = simplexml_load_string($response->toXml());
+            $obj = json_decode(json_encode($obj), true);
+            
+            if(isset($obj['Error'])) {
+                //Error処理・・・
+    //            [Error] => Array
+    //            (
+    //                [Type] => Sender
+    //                [Code] => InvalidParameterValue
+    //                [Message] => The Value 'null' is invalid for the Parameter 'Amount'
+    //            )
+                print_r($obj);
+                exit;
+            }
+            else {
+                $confirmParams = array();
+                $confirmParams['amazon_order_reference_id'] = $orderReferenceId;
+                
+                $response = $client->confirmOrderReference($confirmParams);
+                
+                $obj = simplexml_load_string($response->toXml());
+                $obj = json_decode(json_encode($obj), true);
+                
+                if(isset($obj['Error'])) {
+                // Error処理・・・
+                //    [Error] => Array
+                //     (
+                //          [Type] => Sender
+                //          [Code] => InvalidParameterValue
+                //          [Message] => The Value 'null' is invalid for the Parameter 'Amount'
+                //      )
+                    print_r($obj);
+                    exit;
+                }
+                else {
+                    $response = $client->getOrderReferenceDetails($requestParameters);
+                    
+                    $obj = simplexml_load_string($response->toXml());
+                    $obj = json_decode(json_encode($obj), true);
+                    
+                    if(isset($obj['Error'])) { //stateがopenならの条件もあった方がいいか
+                        // Error処理・・・
+                        print_r($obj);
+                        exit;
+                    }
+                    
+                    //Authorize ======
+                    $authParams = array();
+                    $authParams['amazon_order_reference_id'] = $orderReferenceId;
+                    $authParams['authorization_reference_id'] = $orderNumber;
+                    $authParams['authorization_amount'] = $totalFee;
+                    $authParams['currency_code'] = 'JPY';
+                    $authParams['transaction_timeout'] = 0;
+                    
+                    $response = $client->authorize($authParams);
+                    
+                    $obj = simplexml_load_string($response->toXml());
+                    $obj = json_decode(json_encode($obj), true);
+                    
+                    echo "Atuh";
+                    print_r($obj);
+                    exit;
+                    
+                    //        echo $obj['GetOrderReferenceDetailsResult']['OrderReferenceDetails']['Destination']['PhysicalDestination']['AddressLine1'];
+                    //        echo $obj['GetOrderReferenceDetailsResult']['OrderReferenceDetails']['Buyer']['Name'];
+                    //        echo $obj['GetOrderReferenceDetailsResult']['OrderReferenceDetails']['Buyer']['Email'];
+                    //        exit;
+                }
+            }
+    
+        
+        
+        }
+        // AmazonPay END ====================================
+
+
+/*
         //配送時間指定 itemごとにitemDataの配列内に入れる
 //        if(count($planTime) > 0) {
 //            foreach($itemData as $key => $value) {
@@ -377,7 +496,7 @@ class CartController extends Controller
 //                }
 //            }
 //        }
-
+*/
       
       	//User登録処理 ==============
       	$userId = 0;
@@ -539,6 +658,9 @@ class CartController extends Controller
             'destination' => $destination,
             'huzai_comment' => isset($allData['huzai_comment']) ? $allData['huzai_comment'] : null,
             'user_comment' => $allData['user_comment'],
+            
+            'amzn_reference_id' => isset($orderReferenceId) ? $orderReferenceId : null,
+            
             'deli_done' => 0,
             'pay_done' => 0,
             
@@ -1136,48 +1258,8 @@ class CartController extends Controller
 //        echo session('all.access_token');
         //exit;
         
-        $data = $request->all();
+        //$data = $request->all();
         //echo $data['order_reference_id'];
-        
-        $config = array(
-            'merchant_id' => 'AUT5MRXA61A3P',
-            'access_key'  => 'AKIAIULMCJL2WZE3LLAQ',
-            'secret_key'  => '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',
-            'client_id'   => 'amzn1.application-oa2-client.471a3dc352524c5cb3066ece8967eeb2',
-            'region'      => 'jp',
-            
-            //'mws developer_id' => '879609259100',
-            //'mws_access_token' => '3pKDQQL1eRfsZpFM0mTMaYxkLScapMmcOAbYoGr5',
-        );
-
-        // or, instead of setting the array in the code, you can
-        // initialze the Client by specifying a JSON file
-        // $config = 'PATH_TO_JSON_FILE';
-
-        // Instantiate the client class with the config type
-        $client = new Client($config);
-        $client->setSandbox(true);
-        
-        $requestParameters = array();
-
-        // Optional Parameter
-        $requestParameters['mws_auth_token'] = '3pKDQQL1eRfsZpFM0mTMaYxkLScapMmcOAbYoGr5';
-        
-        $requestParameters['amazon_order_reference_id'] = $data['order_reference_id'];
-        $requestParameters['address_consent_token'] = session('all.access_token');
-
-        //$response = $client->getMerchantAccountStatus($requestParameters);
-        $response = $client->getOrderReferenceDetails($requestParameters);
-        //echo $response->toXml() . "\n";
-        $obj = simplexml_load_string($response->toXml());
-        $obj = json_decode(json_encode($obj), true);
-        //print_r($response);
-        echo $obj['GetOrderReferenceDetailsResult']['OrderReferenceDetails']['Destination']['PhysicalDestination']['AddressLine1'];
-        echo $obj['GetOrderReferenceDetailsResult']['OrderReferenceDetails']['Buyer']['Name'];
-        echo $obj['GetOrderReferenceDetailsResult']['OrderReferenceDetails']['Buyer']['Email'];
-        exit;
-        
-        
         
 //    	if($request->isMethod('get')) {
 //        	abort(404);
@@ -1371,17 +1453,8 @@ class CartController extends Controller
         $data['temp_is_regist_card'] = isset($data['is_regist_card']) ? 1 : 0;
         $data['is_regist_card'] = isset($data['is_regist_card']) && (Auth::check() || $regist) ? 1 : 0;
                 
-        //全データをsessionに入れる session入れ
-        session([
-        	'all.data' => $data, //user receiver destination paymentMethod
-        	'all.regist' => $regist, //$registはこのメソッドの先頭で取得
-        ]);
-        //$request->session()->put('all.data', $data); //user receiver destination paymentMethod
-        //$request->session()->put('all.user', $data['user']);
-        //$request->session()->put('all.receiver', $data['receiver']);
-        //$request->session()->put('user.data', $data['user']);
-        //$request->session()->put('receiver.data', $data['receiver']);
         
+        //itemのsessionをgetする
         $itemSes = session('item.data');
         //$regist = session('all.regist');
 
@@ -1393,6 +1466,88 @@ class CartController extends Controller
         $itemData = array();
         $addPoint = 0;
         $allPrice = 0;
+        
+        $isAmznPay = $data['pay_method'] == 7 ? 1 : 0;
+        
+        //AmazonPay ===================================================================
+        if($isAmznPay) {
+            $config = array(
+                'merchant_id' => 'AUT5MRXA61A3P',
+                'access_key'  => 'AKIAIULMCJL2WZE3LLAQ',
+                'secret_key'  => '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',
+                'client_id'   => 'amzn1.application-oa2-client.471a3dc352524c5cb3066ece8967eeb2',
+                'region'      => 'jp',
+                
+                //'mws developer_id' => '879609259100',
+                //'mws_access_token' => '3pKDQQL1eRfsZpFM0mTMaYxkLScapMmcOAbYoGr5',
+            );
+
+            // or, instead of setting the array in the code, you can
+            // initialze the Client by specifying a JSON file
+            // $config = 'PATH_TO_JSON_FILE';
+
+            // Instantiate the client class with the config type
+            $client = new Client($config);
+            $client->setSandbox(true);
+            
+            $requestParameters = array();
+
+            // Optional Parameter
+            $requestParameters['mws_auth_token'] = '3pKDQQL1eRfsZpFM0mTMaYxkLScapMmcOAbYoGr5';
+            
+            $requestParameters['amazon_order_reference_id'] = $data['order_reference_id'];
+            $requestParameters['address_consent_token'] = session('all.access_token');
+
+    //        $requestParameters['amount'] = '106';
+    //        $requestParameters['currency_code'] = 'JPY';
+
+            //$response = $client->getMerchantAccountStatus($requestParameters);
+            $response = $client->getOrderReferenceDetails($requestParameters);
+            //$response = $client->setOrderReferenceDetails($requestParameters);
+            
+            
+            //echo $response->toXml() . "\n";
+            $obj = simplexml_load_string($response->toXml());
+            $obj = json_decode(json_encode($obj), true);
+            
+            if(isset($obj['Error'])) {
+                //Error処理・・・
+    //            [Error] => Array
+    //            (
+    //                [Type] => Sender
+    //                [Code] => InvalidParameterValue
+    //                [Message] => The Value 'null' is invalid for the Parameter 'Amount'
+    //            )
+                print_r($obj);
+                exit;
+            }
+            else {
+                //print_r($obj);
+                
+                $addInfo = $obj['GetOrderReferenceDetailsResult']['OrderReferenceDetails']['Destination']['PhysicalDestination'];
+                $userInfo = $obj['GetOrderReferenceDetailsResult']['OrderReferenceDetails']['Buyer'];
+                
+                $data['destination'] = 1;
+                
+                $data['receiver']['post_num'] = $addInfo['PostalCode'];
+                $data['receiver']['prefecture'] = $addInfo['StateOrRegion'];
+                $data['receiver']['address_1'] = $addInfo['AddressLine1'] . $addInfo['AddressLine2'];
+                $data['receiver']['address_2'] = $addInfo['AddressLine3'];
+                $data['receiver']['name'] = $addInfo['Name'];
+                $data['receiver']['tel_num'] = $addInfo['Phone'];
+                
+                $data['user']['name'] = $userInfo['Name'];
+                $data['user']['email'] = $userInfo['Email'];
+
+                session([
+                    'all.order_reference_id'=>$data['order_reference_id'],
+                    
+                ]);
+
+            }
+        
+        }
+        // amznPay END ===========================
 
 
 		//ユーザー(配送先)の都道府県NameとIdを取得
@@ -1405,12 +1560,24 @@ class CartController extends Controller
         		$prefName = $this->user->find(Auth::id())->prefecture;
          	}
           	else {
-           		$prefName = $data['user']['prefecture'];
+                $prefName = $data['user']['prefecture'];
            }
         }
         
         //都道府県ID
         $prefId = $this->prefecture->where('name', $prefName)->first()->id;
+        
+        
+        //全データ（$data）をsessionに入れる session入れ
+        session([
+            'all.data' => $data, //user receiver destination paymentMethod
+            'all.regist' => $regist, //$registはこのメソッドの先頭で取得
+        ]);
+        //$request->session()->put('all.data', $data); //user receiver destination paymentMethod
+        //$request->session()->put('all.user', $data['user']);
+        //$request->session()->put('all.receiver', $data['receiver']);
+        //$request->session()->put('user.data', $data['user']);
+        //$request->session()->put('receiver.data', $data['receiver']);
         
         
         //Important ! ***************************************
@@ -1713,16 +1880,13 @@ class CartController extends Controller
         $settles = array();
         $actionUrl = '';
         
-        if($data['pay_method'] == 5 || $data['pay_method'] == 6) { //代引きと銀振
+        if($data['pay_method'] == 1) {
+            $actionUrl = url('shop/paydo');
+        }
+        else {
             $actionUrl = url('shop/thankyou');
         }
-        elseif($data['pay_method'] == 4) { //後払い
-        	//$actionUrl = url('shop/afterdo');
-            $actionUrl = url('shop/thankyou');
-        }
-        else { //代引きと銀振以外
-        	$actionUrl = url('shop/paydo');
-        }
+        
 
 /*        
 //        $payCode = 0;
@@ -1751,16 +1915,19 @@ class CartController extends Controller
 //        }
 */
         
-        //User識別
-        $cardInfo['cardno'] = $data['cardno'];
-        $cardInfo['securitycode'] = $data['securitycode'];
-        $cardInfo['expire_year'] = $data['expire_year'];
-        $cardInfo['expire_month'] = $data['expire_month'];
-        //$cardInfo['holdername'] = $data['holdername'];
-        //$cardInfo['tokennumber'] = $data['tokennumber'];
+        //クレカ情報
+        $cardInfo = array();
+        if($data['pay_method'] == 1) {
+            $cardInfo['cardno'] = $data['cardno'];
+            $cardInfo['securitycode'] = $data['securitycode'];
+            $cardInfo['expire_year'] = $data['expire_year'];
+            $cardInfo['expire_month'] = $data['expire_month'];
+            //$cardInfo['holdername'] = $data['holdername'];
+            //$cardInfo['tokennumber'] = $data['tokennumber'];
+        }
         
-        //$settles['ShopID'] = 'tshop00036826'; //
-        //$settles['ShopPass'] = 'bgx3a3xf'; //
+        //$settles['ShopID'] = 'tshop00036826';
+        //$settles['ShopPass'] = 'bgx3a3xf';
         
         $settles['OrderID'] = $orderNum;
         //$settles['JobCd'] = 'CAPTURE';
@@ -1803,7 +1970,7 @@ class CartController extends Controller
         $metaTitle = 'ご注文内容の確認' . '｜植木買うならグリーンロケット';
         
         
-        return view('cart.confirm', ['data'=>$data, 'userArr'=>$userArr, 'itemData'=>$itemData, 'regist'=>$regist, 'totalFee'=>$totalFee, 'allPrice'=>$allPrice, 'settles'=>$settles, 'payMethod'=>$payMethod, 'pmChild'=>$pmChild, 'deliFee'=>$deliFee, 'codFee'=>$codFee, 'usePoint'=>$usePoint, 'addPoint'=>$addPoint, 'seinouSundayAllPrice'=>$seinouSundayAllPrice, 'seinouHuzaiAllPrice'=>$seinouHuzaiAllPrice,  'actionUrl'=>$actionUrl, 'cardInfo'=>$cardInfo, 'metaTitle'=>$metaTitle])->withErrors($errors);
+        return view('cart.confirm', ['data'=>$data, 'userArr'=>$userArr, 'itemData'=>$itemData, 'regist'=>$regist, 'totalFee'=>$totalFee, 'allPrice'=>$allPrice, 'settles'=>$settles, 'payMethod'=>$payMethod, 'pmChild'=>$pmChild, 'deliFee'=>$deliFee, 'codFee'=>$codFee, 'usePoint'=>$usePoint, 'addPoint'=>$addPoint, 'seinouSundayAllPrice'=>$seinouSundayAllPrice, 'seinouHuzaiAllPrice'=>$seinouHuzaiAllPrice,  'actionUrl'=>$actionUrl, 'cardInfo'=>$cardInfo, 'isAmznPay'=>$isAmznPay, 'metaTitle'=>$metaTitle])->withErrors($errors);
     }
     
     
@@ -1857,6 +2024,7 @@ class CartController extends Controller
             //AmazonPayの有無
             $isAmznPay = $data['is_amzn_pay'];
             $accessToken = $data['access_token'];
+            //orderRefferenceIdはフォーム表示時にjsで取得されるのでここでは無し
             
             /* registのボタン分けを無くした
             $regist = $request->has('regist_on') ? 1 : 0;
@@ -1915,6 +2083,7 @@ class CartController extends Controller
                 'all.from_cart' => 1,
                 'all.is_amzn_pay' => $isAmznPay,
                 'all.access_token' => $accessToken,
+                //orderRefferenceIdはフォーム表示時にjsで取得されるのでここでは無し
             ]);
             //all priceのsession入れ
             $request->session()->put('all.all_price', $allPrice);

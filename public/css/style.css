@@ -842,13 +842,13 @@ body {
 }
 #addressBookWidgetDiv {
   min-width: 300px;
-  max-width: 600px;
+  max-width: 650px;
   min-height: 228px;
   max-height: 400px;
 }
 #walletWidgetDiv {
   min-width: 300px;
-  max-width:600px;
+  max-width: 650px;
   min-height: 228px;
   max-height: 400px;
 }

@@ -57,396 +57,124 @@ use App\DeliveryGroup;
 
 <div class="confirm-left">
 
-@if(! $isAmznPay)
+<?php //Amazon Pay ================================================= ?>
+@if($isAmznPay)
+<div id="pay-method" class="pt-2 mb-4">
+   <div class="clearfix mt-3">
+       <h3>Amazon Pay</h3>
+       <div></div>
+   </div>
+
+   <div class="ml-20per pt-3">
+        <div id="addressBookWidgetDiv"></div>
+        <div id="walletWidgetDiv" class="mt-2"></div>
+        
+        <?php
+            $amznPay = $payMethod->where('name', 'Amazon Pay')->first();
+        ?>
+        
+        <input type="hidden" name="pay_method" value="{{ $amznPay->id }}" form="user-input">
+        
+        <input id="orderReferenceId" type="hidden" name="order_reference_id" value="" form="user-input">
+        {{-- <input type="hidden" name="access_token" value="" form="user-input"> --}}
+        
+        
+        <script>
+            window.onAmazonPaymentsReady = function() {
+                //showButton();
+                showAddressBookWidget();
+            };
+            
+            function showAddressBookWidget() {
+                new OffAmazonPayments.Widgets.AddressBook({
+                    sellerId: 'AUT5MRXA61A3P',
+
+                    onOrderReferenceCreate: function(orderReference) {
+                        // Here is where you can grab the Order Reference ID.
+                        orderReference.getAmazonOrderReferenceId();
+                    },
+                    onAddressSelect: function(orderReference) {
+                        // Replace the following code with the action that you want
+                        // to perform after the address is selected. The
+                        // amazonOrderReferenceId can be used to retrieve the address
+                        // details by calling the GetOrderReferenceDetails operation.
+                        // If rendering the AddressBook and Wallet widgets
+                        // on the same page, you do not have to provide any additional
+                        // logic to load the Wallet widget after the AddressBook widget.
+                        // The Wallet widget will re-render itself on all subsequent
+                        // onAddressSelect events, without any action from you.
+                        // It is not recommended that you explicitly refresh it.
+                    },
+                    design: {
+                        designMode: 'responsive'
+                    },
+                    onReady: function(orderReference) {
+                        // Enter code here you want to be executed
+                        // when the address widget has been rendered.
+                        
+                        var orderReferenceId = orderReference.getAmazonOrderReferenceId();
+                        var el;
+                        if ((el = document.getElementById("orderReferenceId"))) {
+                          el.value = orderReferenceId;
+                        }
+                        // Wallet
+                        showWalletWidget(orderReferenceId);
+                    },
+                    onError: function(error) {
+                        // Your error handling code.
+                        // During development you can use the following
+                        // code to view error messages:
+                        
+                        //alert('aaa' + error.getErrorCode() + ': ' + error.getErrorMessage());
+                        
+                        // See "Handling Errors" for more information.
+                    }
+                }).bind("addressBookWidgetDiv");
+            }
+            
+            function showWalletWidget(orderReferenceId) {
+                new OffAmazonPayments.Widgets.Wallet({
+                    sellerId: 'AUT5MRXA61A3P',
+                    onPaymentSelect: function(orderReference) {
+                        // Replace this code with the action that you want to perform
+                        // after the payment method is selected.
+              
+                        // Ideally this would enable the next action for the buyer
+                        // including either a "Continue" or "Place Order" button.
+                    },
+                    design: {
+                        designMode: 'responsive'
+                    },
+              
+                    onError: function(error) {
+                        // Your error handling code.
+                        // During development you can use the following
+                        // code to view error messages:
+                        // console.log(error.getErrorCode() + ': ' + error.getErrorMessage());
+                        // See "Handling Errors" for more information.
+                        alert('bbb' + error.getErrorCode() + ': ' + error.getErrorMessage());
+                    }
+                }).bind("walletWidgetDiv");
+            }
+        </script>
+
+</div>{{-- ml-20per --}}
+</div>{{-- id --}}
+
+@endif {{-- isAmznPay --}}
+<?php //Amazon Pay END ================================================= ?>
+
 
 @if(Auth::check())
 
-<div id="delivery-add" class="mb-5">
-    <div class="clearfix mb-3">
-        <h3>お届け先</h3>
-        <div></div>
-    </div>
-
-    <div class="ml-20per pl-1">
-        <?php
-            $checked = '';
-            if(Ctm::isOld()) {
-                 if(old('destination'))
-                    $checked = ' checked';
-            }
-            else {
-                if(Session::has('all.data.destination') && session('all.data.destination'))
-                    $checked = ' checked';
-            }
-        ?>
-        
-        
-        <fieldset class="form-group">
-            <div class="">
-                <input id="radio-destination-1" type="radio" name="destination" value="0" checked form="user-input">
-                <label for="radio-destination-1" class="radios">{{ $userObj->name }} 様</label>
-                <div class="pl-4">
-                    〒{{ Ctm::getPostNum( $userObj->post_num) }}<br>
-                    住所：{{ $userObj->prefecture }}{{ $userObj->address_1 }}{{ $userObj->address_2 }}<br>
-                    TEL：{{ $userObj->tel_num }}
-                </div>
+    @if(! $isAmznPay)
+        <div id="delivery-add" class="mb-5">
+            <div class="clearfix mb-3">
+                <h3>お届け先</h3>
+                <div></div>
             </div>
-            
-            <div class="mt-4 mb-1">
-                <input id="radio-destination-2" type="radio" name="destination" value="1"{{ $checked }} form="user-input">
-                <label for="radio-destination-2" class="radios">別の住所へお届け</label>
-            </div>
-            
-            @if ($errors->has('receiver.*'))
-                <div class="help-block text-danger receiver-error">
-                    <span class="fa fa-exclamation form-control-feedback"></span>
-                    <span class="text-small">上記登録先住所に配送をご希望の場合は、上記先頭のチェックをONにして下さい。</span>
-                </div>
-            @endif
-            
-        </fieldset>
-        
-        <div class="receiver">
-            @include('cart.shared.anotherAddress')
-        </div>
-        
-    </div>
-</div>{{-- id --}}
 
-<div id="use-point" class="mb-4">
-    <div class="clearfix mt-3 mb-3">
-        <h3>ポイント利用</h3>
-        <div></div>
-    </div>
-            
-    <div class="ml-20per pl-1">
-
-        <div class="mb-2">
-           現在の保持ポイント：<span class="text-primary">{{ $userObj->point }}</span>ポイント
-        </div>
-        <div class="mb-2">
-            <label>ポイント利用する</label>
-            <input class="form-control d-inline col-md-5{{ $errors->has('use_point') ? ' is-invalid' : '' }}" name="use_point" value="{{ Ctm::isOld() ? old('use_point') : (Session::has('all.use_point') ? session('all.use_point') : 0) }}" placeholder="" form="user-input">
-        </div>
-       
-        @if ($errors->has('use_point'))
-            <div class="text-danger">
-                <span class="fa fa-exclamation form-control-feedback"></span>
-                <span>{{ $errors->first('use_point') }}</span>
-            </div>
-        @endif
-
-    </div>
-</div>{{-- id --}}
-
-<?php //新規会員登録 =================================================== ?>
-@else
-
-    <input type="hidden" name="use_point" value="0">
-
-<div id="user-info">
-    <div class="clearfix">
-        <h3>お客様情報</h3>
-        <div></div>
-    </div>
-
-    <div class="table-responsive table-custom mt-3">
-        <table class="table p-0 m-0">
-            
-            <tr class="form-group">
-                 <th>氏名<em>必須</em></th>
-                   <td>
-                    <input class="form-control col-md-12{{ $errors->has('user.name') ? ' is-invalid' : '' }}" name="user[name]" value="{{ Ctm::isOld() ? old('user.name') : (Session::has('all.data.user') ? session('all.data.user.name') : '') }}" placeholder="例）山田太郎" form="user-input">
-                   
-                    @if ($errors->has('user.name'))
-                        <div class="text-danger">
-                            <span class="fa fa-exclamation form-control-feedback"></span>
-                            <span>{{ $errors->first('user.name') }}</span>
-                        </div>
-                    @endif
-                </td>
-             </tr>
-          
-              <tr class="form-group">
-                 <th>フリガナ<em>必須</em></th>
-                   <td>
-                    <input type="text" class="form-control col-md-12{{ $errors->has('user.hurigana') ? ' is-invalid' : '' }}" name="user[hurigana]" value="{{ Ctm::isOld() ? old('user.hurigana') : (Session::has('all.data.user') ? session('all.data.user.hurigana') : '') }}" placeholder="例）ヤマダタロウ" form="user-input">
-                    
-                    @if ($errors->has('user.hurigana'))
-                        <div class="text-danger">
-                            <span class="fa fa-exclamation form-control-feedback"></span>
-                            <span>{{ $errors->first('user.hurigana') }}</span>
-                        </div>
-                    @endif
-                </td>
-             </tr>
-             
-             <tr class="form-group">
-                 <th>電話番号<em>必須</em>
-                    {{-- <small>例）09012345678ハイフンなし半角数字</small> --}}
-                 </th>
-                   <td>
-                    <input type="text" class="form-control col-md-12{{ $errors->has('user.tel_num') ? ' is-invalid' : '' }}" name="user[tel_num]" value="{{ Ctm::isOld() ? old('user.tel_num') : (Session::has('all.data.user') ? session('all.data.user.tel_num') : '') }}" placeholder="例）09012345678（ハイフンなし半角数字）" form="user-input">
-                    
-                    @if ($errors->has('user.tel_num'))
-                        <div class="help-block text-danger">
-                            <span class="fa fa-exclamation form-control-feedback"></span>
-                            <span>{{ $errors->first('user.tel_num') }}</span>
-                        </div>
-                    @endif
-                </td>
-             </tr>
-             
-             <tr class="form-group">
-                 <th>郵便番号<em>必須</em>
-                    {{-- <small>例）1234567ハイフンなし半角数字</small> --}}
-                 </th>
-                   <td>
-                    <input id="zipcode" type="text" class="form-control col-md-12{{ $errors->has('user.post_num') ? ' is-invalid' : '' }}" name="user[post_num]" value="{{ Ctm::isOld() ? old('user.post_num') : (Session::has('all.data.user') ? session('all.data.user.post_num') : '') }}" placeholder="例）1234567（ハイフンなし半角数字）" form="user-input">
-                    
-                    @if ($errors->has('user.post_num'))
-                        <div class="help-block text-danger">
-                            <span class="fa fa-exclamation form-control-feedback"></span>
-                            <span>{{ $errors->first('user.post_num') }}</span>
-                        </div>
-                    @endif
-                </td>
-             </tr>
-             
-             <tr class="form-group">
-                 <th>都道府県<em>必須</em></th>
-                   <td>
-                    <div class="select-wrap col-md-12 p-0">
-                        <select id="pref" class="form-control select-first{{ $errors->has('user.prefecture') ? ' is-invalid' : '' }}" name="user[prefecture]" form="user-input">
-                            <option selected value="0">選択して下さい</option>
-                            <?php
-        //                        use App\Prefecture;
-        //                        $prefs = Prefecture::all();
-                            ?>
-                            @foreach($prefs as $pref)
-                                <?php
-                                    $selected = '';
-                                    if(Ctm::isOld()) {
-                                        if(old('user.prefecture') == $pref->name)
-                                            $selected = ' selected';
-                                    }
-                                    else {
-                                        if(Session::has('all.data.user')  && session('all.data.user.prefecture') == $pref->name) {
-                                            $selected = ' selected';
-                                        }
-                                    }
-                                ?>
-                                
-                                <option value="{{ $pref->name }}"{{ $selected }}>{{ $pref->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    
-                    @if ($errors->has('user.prefecture'))
-                        <div class="help-block text-danger">
-                            <span class="fa fa-exclamation form-control-feedback"></span>
-                            <span>{{ $errors->first('user.prefecture') }}</span>
-                        </div>
-                    @endif
-                </td>
-             </tr>
-             
-             <tr class="form-group">
-                 <th>住所1<small>（都市区それ以降）</small><em>必須</em></th>
-                   <td>
-                    <input id="address" type="text" class="form-control col-md-12{{ $errors->has('user.address_1') ? ' is-invalid' : '' }}" name="user[address_1]" value="{{ Ctm::isOld() ? old('user.address_1') : (Session::has('all.data.user') ? session('all.data.user.address_1') : '') }}" placeholder="例）小美玉市下吉影1-1" form="user-input">
-                    
-                    @if ($errors->has('user.address_1'))
-                        <div class="help-block text-danger">
-                            <span class="fa fa-exclamation form-control-feedback"></span>
-                            <span>{{ $errors->first('user.address_1') }}</span>
-                        </div>
-                    @endif
-                </td>
-             </tr>
-             
-             <tr class="form-group">
-                 <th>住所2<small>（建物/マンション名等）</small></th>
-                   <td>
-                    <input type="text" class="form-control col-md-12{{ $errors->has('user.address_2') ? ' is-invalid' : '' }}" name="user[address_2]" value="{{ Ctm::isOld() ? old('user.address_2') : (Session::has('all.data.user') ? session('all.data.user.address_2') : '') }}" placeholder="例）GRビル 101号" form="user-input">
-                    
-                    @if ($errors->has('user.address_2'))
-                        <div class="help-block text-danger">
-                            <span class="fa fa-exclamation form-control-feedback"></span>
-                            <span>{{ $errors->first('user.address_2') }}</span>
-                        </div>
-                    @endif
-                </td>
-             </tr>
-             
-             
-             <tr class="form-group">
-                 <th>メールアドレス<em>必須</em></th>
-                   <td>
-                    <input type="email" class="form-control col-md-12{{ $errors->has('user.email') ? ' is-invalid' : '' }}" name="user[email]" value="{{ Ctm::isOld() ? old('user.email') : (Session::has('all.data.user') ? session('all.data.user.email') : '') }}" placeholder="例）abcde@example.com" form="user-input">
-                    
-                    @if ($errors->has('user.email'))
-                        <div class="help-block text-danger">
-                            <span class="fa fa-exclamation form-control-feedback"></span>
-                            <span>{{ $errors->first('user.email') }}</span>
-                        </div>
-                    @endif
-                </td>
-             </tr>
-             
-        </table>
-    </div>
-
-    </div>{{-- id --}}
-
-    <div id="user-regist" class="pt-3">
-        <div class="clearfix">
-            <h3>会員登録</h3>
-            <div></div>
-        </div>
-
-        <div class="table-responsive table-custom">
-            <table class="table table-borderd border p-0 m-0">
-                
-                <tr class="form-group">
-                    <th>会員登録</th>
-                    <td>
-                        <?php
-    /*
-    //                            $registChecked = ' checked';
-    //
-    //                            if( Ctm::isOld()) {
-    //                                if(! old('regist'))
-    //                                    $registChecked = '';
-    //                            }
-    //                            elseif(Session::has('all.regist')) {
-    //                                if(! session('all.regist'))
-    //                                    $registChecked = '';
-    //                            }
-    */
-                        ?>
-                        
-                        {{--
-                        <input type="hidden" name="regist" value="0">
-                        <input id="check-regist-y" type="checkbox" name="regist" value="1"{{ $registChecked }} form="user-input">
-                        <label for="check-regist-y" class="checks">会員登録する</label>
-                        --}}
-                            
-                        <?php
-                                $registChecked = '';
-        
-                                if( Ctm::isOld()) {
-                                    if(! old('regist'))
-                                        $registChecked = ' checked';
-                                }
-                                elseif(Session::has('all.regist')) {
-                                    if(! session('all.regist'))
-                                        $registChecked = ' checked';
-                                }
-                        ?>
-                            
-                            
-                        <span class="deliRadioWrap">
-                            <input id="radio-regist-y" type="radio" name="regist" value="1" class="registRadio" checked form="user-input">
-                            <label for="radio-regist-y" class="radios">する</label>
-                        </span>
-                        
-                        <span class="deliRadioWrap">
-                            <input id="radio-regist-n" type="radio" name="regist" value="0" class="registRadio" {{ $registChecked }} form="user-input">
-                            <label for="radio-regist-n" class="radios">しない</label>
-                        </span>
-                        
-                        <p class="mt-2 mb-0 text-small">＊会員登録をすると住所やクレジットカードの登録、お気に入りの永続使用が可能です。</p>
-                    </td>
-                </tr>
-            </table>
-            </div>
-            
-            <div class="regist-frame">
-                <div class="table-responsive table-custom">
-                <table class="table table-borderd border p-0 m-0">
-                    <tr class="form-group">
-                        <th>パスワード<em>必須</em></th>
-                        <td>
-                            <input type="password" class="form-control col-md-12{{ $errors->has('user.password') ? ' is-invalid' : '' }}" name="user[password]" value="{{ Ctm::isOld() ? old('user.password') : (Session::has('all.data.user') ? session('all.data.user.password') : '') }}" placeholder="8文字以上（半角）" form="user-input">
-                                                
-                            @if ($errors->has('user.password'))
-                                <div class="help-block text-danger">
-                                    <span class="fa fa-exclamation form-control-feedback"></span>
-                                    <span>{{ $errors->first('user.password') }}</span>
-                                </div>
-                            @endif
-                        </td>
-                    </tr>
-                     
-                    <tr class="form-group">
-                         <th>パスワードの確認<em>必須</em></th>
-                           <td>
-                            <input type="password" class="form-control col-md-12{{ $errors->has('user.password_confirmation') ? ' is-invalid' : '' }}" name="user[password_confirmation]" value="{{ Ctm::isOld() ? old('user.password_confirmation') : (Session::has('all.data.user') ? session('all.data.user.password_confirmation') : '') }}" form="user-input">
-                            
-                            @if ($errors->has('user.password_confirmation'))
-                                <div class="help-block text-danger">
-                                    <span class="fa fa-exclamation form-control-feedback"></span>
-                                    <span>{{ $errors->first('user.password_confirmation') }}</span>
-                                </div>
-                            @endif
-                        </td>
-                    </tr>
-                </table>
-                </div>
-                            
-            <div class="table-responsive table-custom">
-            <p class="text-small mb-0 mt-2"><i class="fas fa-square"></i> 当店からのお知らせを希望しますか？</p>
-                
-            <table class="table table-borderd border p-0 m-0">
-                <tr class="form-group">
-                    <th class="">メールマガジン</th>
-                    <td class="">
-                        
-                        <?php
-                            $checked = '';
-                            if(Ctm::isOld()) {
-                                if(old('user.magazine'))
-                                    $checked = ' checked';
-                            }
-                            else {
-                                if(Session::has('all.data.user')  && session('all.data.user.magazine')) {
-                                    $checked = ' checked';
-                                }
-                            }
-                        ?>
-                        
-                        <input id="check-magazine" type="checkbox" name="user[magazine]" value="1"{{ $checked }} form="user-input">
-                        <label for="check-magazine" class="checks">登録する</label>
-                        
-                        {{--
-                        <input type="checkbox" name="user[magazine]" value="1"{{ $checked }}> 登録する
-                        --}}
-                        
-                        @if ($errors->has('user.magazine'))
-                            <div class="help-block text-danger">
-                                <span class="fa fa-exclamation form-control-feedback"></span>
-                                <span>{{ $errors->first('user.magazine') }}</span>
-                            </div>
-                        @endif
-                    </td>
-                 </tr>
-            </table>
-        </div>
-        
-        </div>{{-- regist-frame --}}
-
-    </div>{{-- id --}}
-            
-        
-    <div id="delivery-add" class="receiver">
-        <div class="clearfix mt-3">
-            <h3>お届け先</h3>
-            <div></div>
-        </div>
-        
-        <div class="ml-20per">
-        <fieldset class="form-group mt-2 py-1 pl-1">
+            <div class="ml-20per pl-1">
                 <?php
                     $checked = '';
                     if(Ctm::isOld()) {
@@ -456,47 +184,430 @@ use App\DeliveryGroup;
                     else {
                         if(Session::has('all.data.destination') && session('all.data.destination'))
                             $checked = ' checked';
-                            
                     }
                 ?>
                 
-                <div class="mb-2">
-                    <input id="radio-destination-1" type="radio" name="destination" value="0" checked form="user-input">
-                    <label for="radio-destination-1" class="radios">お客様情報と同じ</label>
-                </div>
                 
-                <div class="">
-                    <input id="radio-destination-2" type="radio" name="destination" value="1"{{ $checked }} form="user-input">
-                    <label for="radio-destination-2" class="radios">別の住所へお届け</label>
-                </div>
-                
-                {{--
-                <label class="d-block">
-                    <input type="radio" name="destination" class="destinationRadio ml-2" value="0" checked> 登録先と同じ
-                </label>
-                 
-                <label class="d-block">
-                    <input type="radio" name="destination" class="destinationRadio ml-2" value="1"{{ $checked }}> 別の住所へお届け
-                </label>
-                --}}
-                
-                @if ($errors->has('receiver.*'))
-                    <div class="help-block text-danger receiver-error">
-                        <span class="fa fa-exclamation form-control-feedback"></span>
-                        <span class="text-small">上記登録先住所に配送をご希望の場合は「お客様情報と同じ」にチェックをして下さい。</span>
+                <fieldset class="form-group">
+                    <div class="">
+                        <input id="radio-destination-1" type="radio" name="destination" value="0" checked form="user-input">
+                        <label for="radio-destination-1" class="radios">{{ $userObj->name }} 様</label>
+                        <div class="pl-4">
+                            〒{{ Ctm::getPostNum( $userObj->post_num) }}<br>
+                            住所：{{ $userObj->prefecture }}{{ $userObj->address_1 }}{{ $userObj->address_2 }}<br>
+                            TEL：{{ $userObj->tel_num }}
+                        </div>
                     </div>
-                @endif
-        </fieldset>
-        </div>
-    
-        @include('cart.shared.anotherAddress')
-        
-     </div><!-- id / receiver -->
+                    
+                    <div class="mt-4 mb-1">
+                        <input id="radio-destination-2" type="radio" name="destination" value="1"{{ $checked }} form="user-input">
+                        <label for="radio-destination-2" class="radios">別の住所へお届け</label>
+                    </div>
+                    
+                    @if ($errors->has('receiver.*'))
+                        <div class="help-block text-danger receiver-error">
+                            <span class="fa fa-exclamation form-control-feedback"></span>
+                            <span class="text-small">上記登録先住所に配送をご希望の場合は、上記先頭のチェックをONにして下さい。</span>
+                        </div>
+                    @endif
+                    
+                </fieldset>
+                
+                <div class="receiver">
+                    @include('cart.shared.anotherAddress')
+                </div>
+                
+            </div>
+        </div>{{-- id --}}
+    @endif {{-- AmznPay --}}
 
+    <div id="use-point" class="mb-4">
+        <div class="clearfix mt-3 mb-3">
+            <h3>ポイント利用</h3>
+            <div></div>
+        </div>
+                
+        <div class="ml-20per pl-1">
+
+            <div class="mb-2">
+               現在の保持ポイント：<span class="text-primary">{{ $userObj->point }}</span>ポイント
+            </div>
+            <div class="mb-2">
+                <label>ポイント利用する</label>
+                <input class="form-control d-inline col-md-5{{ $errors->has('use_point') ? ' is-invalid' : '' }}" name="use_point" value="{{ Ctm::isOld() ? old('use_point') : (Session::has('all.use_point') ? session('all.use_point') : 0) }}" placeholder="" form="user-input">
+            </div>
+           
+            @if ($errors->has('use_point'))
+                <div class="text-danger">
+                    <span class="fa fa-exclamation form-control-feedback"></span>
+                    <span>{{ $errors->first('use_point') }}</span>
+                </div>
+            @endif
+
+        </div>
+    </div>{{-- id --}}
+
+<?php //新規会員登録 =================================================== ?>
+@else {{-- is Auth check() --}}
+
+    <input type="hidden" name="use_point" value="0">
+
+    @if(! $isAmznPay)
+        <div id="user-info">
+            <div class="clearfix">
+                <h3>お客様情報</h3>
+                <div></div>
+            </div>
+
+            <div class="table-responsive table-custom mt-3">
+                <table class="table p-0 m-0">
+                    
+                    <tr class="form-group">
+                         <th>氏名<em>必須</em></th>
+                           <td>
+                            <input class="form-control col-md-12{{ $errors->has('user.name') ? ' is-invalid' : '' }}" name="user[name]" value="{{ Ctm::isOld() ? old('user.name') : (Session::has('all.data.user') ? session('all.data.user.name') : '') }}" placeholder="例）山田太郎" form="user-input">
+                           
+                            @if ($errors->has('user.name'))
+                                <div class="text-danger">
+                                    <span class="fa fa-exclamation form-control-feedback"></span>
+                                    <span>{{ $errors->first('user.name') }}</span>
+                                </div>
+                            @endif
+                        </td>
+                     </tr>
+                  
+                      <tr class="form-group">
+                         <th>フリガナ<em>必須</em></th>
+                           <td>
+                            <input type="text" class="form-control col-md-12{{ $errors->has('user.hurigana') ? ' is-invalid' : '' }}" name="user[hurigana]" value="{{ Ctm::isOld() ? old('user.hurigana') : (Session::has('all.data.user') ? session('all.data.user.hurigana') : '') }}" placeholder="例）ヤマダタロウ" form="user-input">
+                            
+                            @if ($errors->has('user.hurigana'))
+                                <div class="text-danger">
+                                    <span class="fa fa-exclamation form-control-feedback"></span>
+                                    <span>{{ $errors->first('user.hurigana') }}</span>
+                                </div>
+                            @endif
+                        </td>
+                     </tr>
+                     
+                     <tr class="form-group">
+                         <th>電話番号<em>必須</em>
+                            {{-- <small>例）09012345678ハイフンなし半角数字</small> --}}
+                         </th>
+                           <td>
+                            <input type="text" class="form-control col-md-12{{ $errors->has('user.tel_num') ? ' is-invalid' : '' }}" name="user[tel_num]" value="{{ Ctm::isOld() ? old('user.tel_num') : (Session::has('all.data.user') ? session('all.data.user.tel_num') : '') }}" placeholder="例）09012345678（ハイフンなし半角数字）" form="user-input">
+                            
+                            @if ($errors->has('user.tel_num'))
+                                <div class="help-block text-danger">
+                                    <span class="fa fa-exclamation form-control-feedback"></span>
+                                    <span>{{ $errors->first('user.tel_num') }}</span>
+                                </div>
+                            @endif
+                        </td>
+                     </tr>
+                     
+                     <tr class="form-group">
+                         <th>郵便番号<em>必須</em>
+                            {{-- <small>例）1234567ハイフンなし半角数字</small> --}}
+                         </th>
+                           <td>
+                            <input id="zipcode" type="text" class="form-control col-md-12{{ $errors->has('user.post_num') ? ' is-invalid' : '' }}" name="user[post_num]" value="{{ Ctm::isOld() ? old('user.post_num') : (Session::has('all.data.user') ? session('all.data.user.post_num') : '') }}" placeholder="例）1234567（ハイフンなし半角数字）" form="user-input">
+                            
+                            @if ($errors->has('user.post_num'))
+                                <div class="help-block text-danger">
+                                    <span class="fa fa-exclamation form-control-feedback"></span>
+                                    <span>{{ $errors->first('user.post_num') }}</span>
+                                </div>
+                            @endif
+                        </td>
+                     </tr>
+                     
+                     <tr class="form-group">
+                         <th>都道府県<em>必須</em></th>
+                           <td>
+                            <div class="select-wrap col-md-12 p-0">
+                                <select id="pref" class="form-control select-first{{ $errors->has('user.prefecture') ? ' is-invalid' : '' }}" name="user[prefecture]" form="user-input">
+                                    <option selected value="0">選択して下さい</option>
+                                    <?php
+                //                        use App\Prefecture;
+                //                        $prefs = Prefecture::all();
+                                    ?>
+                                    @foreach($prefs as $pref)
+                                        <?php
+                                            $selected = '';
+                                            if(Ctm::isOld()) {
+                                                if(old('user.prefecture') == $pref->name)
+                                                    $selected = ' selected';
+                                            }
+                                            else {
+                                                if(Session::has('all.data.user')  && session('all.data.user.prefecture') == $pref->name) {
+                                                    $selected = ' selected';
+                                                }
+                                            }
+                                        ?>
+                                        
+                                        <option value="{{ $pref->name }}"{{ $selected }}>{{ $pref->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            
+                            @if ($errors->has('user.prefecture'))
+                                <div class="help-block text-danger">
+                                    <span class="fa fa-exclamation form-control-feedback"></span>
+                                    <span>{{ $errors->first('user.prefecture') }}</span>
+                                </div>
+                            @endif
+                        </td>
+                     </tr>
+                     
+                     <tr class="form-group">
+                         <th>住所1<small>（都市区それ以降）</small><em>必須</em></th>
+                           <td>
+                            <input id="address" type="text" class="form-control col-md-12{{ $errors->has('user.address_1') ? ' is-invalid' : '' }}" name="user[address_1]" value="{{ Ctm::isOld() ? old('user.address_1') : (Session::has('all.data.user') ? session('all.data.user.address_1') : '') }}" placeholder="例）小美玉市下吉影1-1" form="user-input">
+                            
+                            @if ($errors->has('user.address_1'))
+                                <div class="help-block text-danger">
+                                    <span class="fa fa-exclamation form-control-feedback"></span>
+                                    <span>{{ $errors->first('user.address_1') }}</span>
+                                </div>
+                            @endif
+                        </td>
+                     </tr>
+                     
+                     <tr class="form-group">
+                         <th>住所2<small>（建物/マンション名等）</small></th>
+                           <td>
+                            <input type="text" class="form-control col-md-12{{ $errors->has('user.address_2') ? ' is-invalid' : '' }}" name="user[address_2]" value="{{ Ctm::isOld() ? old('user.address_2') : (Session::has('all.data.user') ? session('all.data.user.address_2') : '') }}" placeholder="例）GRビル 101号" form="user-input">
+                            
+                            @if ($errors->has('user.address_2'))
+                                <div class="help-block text-danger">
+                                    <span class="fa fa-exclamation form-control-feedback"></span>
+                                    <span>{{ $errors->first('user.address_2') }}</span>
+                                </div>
+                            @endif
+                        </td>
+                     </tr>
+                     
+                     
+                     <tr class="form-group">
+                         <th>メールアドレス<em>必須</em></th>
+                           <td>
+                            <input type="email" class="form-control col-md-12{{ $errors->has('user.email') ? ' is-invalid' : '' }}" name="user[email]" value="{{ Ctm::isOld() ? old('user.email') : (Session::has('all.data.user') ? session('all.data.user.email') : '') }}" placeholder="例）abcde@example.com" form="user-input">
+                            
+                            @if ($errors->has('user.email'))
+                                <div class="help-block text-danger">
+                                    <span class="fa fa-exclamation form-control-feedback"></span>
+                                    <span>{{ $errors->first('user.email') }}</span>
+                                </div>
+                            @endif
+                        </td>
+                     </tr>
+                     
+                </table>
+            </div>
+
+            </div>{{-- id --}}
+
+            <div id="user-regist" class="pt-3">
+                <div class="clearfix">
+                    <h3>会員登録</h3>
+                    <div></div>
+                </div>
+
+                <div class="table-responsive table-custom">
+                    <table class="table table-borderd border p-0 m-0">
+                        
+                        <tr class="form-group">
+                            <th>会員登録</th>
+                            <td>
+                                <?php
+                                    //チェックボックスの時 -----
+            /*
+            //                            $registChecked = ' checked';
+            //
+            //                            if( Ctm::isOld()) {
+            //                                if(! old('regist'))
+            //                                    $registChecked = '';
+            //                            }
+            //                            elseif(Session::has('all.regist')) {
+            //                                if(! session('all.regist'))
+            //                                    $registChecked = '';
+            //                            }
+            */
+                                ?>
+                                
+                                {{--
+                                <input type="hidden" name="regist" value="0">
+                                <input id="check-regist-y" type="checkbox" name="regist" value="1"{{ $registChecked }} form="user-input">
+                                <label for="check-regist-y" class="checks">会員登録する</label>
+                                --}}
+                                    
+                                <?php
+                                        $registChecked = '';
+                
+                                        if( Ctm::isOld()) {
+                                            if(! old('regist'))
+                                                $registChecked = ' checked';
+                                        }
+                                        elseif(Session::has('all.regist')) {
+                                            if(! session('all.regist'))
+                                                $registChecked = ' checked';
+                                        }
+                                ?>
+                                    
+                                    
+                                <span class="deliRadioWrap">
+                                    <input id="radio-regist-y" type="radio" name="regist" value="1" class="registRadio" checked form="user-input">
+                                    <label for="radio-regist-y" class="radios">する</label>
+                                </span>
+                                
+                                <span class="deliRadioWrap">
+                                    <input id="radio-regist-n" type="radio" name="regist" value="0" class="registRadio" {{ $registChecked }} form="user-input">
+                                    <label for="radio-regist-n" class="radios">しない</label>
+                                </span>
+                                
+                                <p class="mt-2 mb-0 text-small">＊会員登録をすると住所やクレジットカードの登録、お気に入りの永続使用が可能です。</p>
+                            </td>
+                        </tr>
+                    </table>
+                    </div>
+                    
+                    <div class="regist-frame">
+                        <div class="table-responsive table-custom">
+                        <table class="table table-borderd border p-0 m-0">
+                            <tr class="form-group">
+                                <th>パスワード<em>必須</em></th>
+                                <td>
+                                    <input type="password" class="form-control col-md-12{{ $errors->has('user.password') ? ' is-invalid' : '' }}" name="user[password]" value="{{ Ctm::isOld() ? old('user.password') : (Session::has('all.data.user') ? session('all.data.user.password') : '') }}" placeholder="8文字以上（半角）" form="user-input">
+                                                        
+                                    @if ($errors->has('user.password'))
+                                        <div class="help-block text-danger">
+                                            <span class="fa fa-exclamation form-control-feedback"></span>
+                                            <span>{{ $errors->first('user.password') }}</span>
+                                        </div>
+                                    @endif
+                                </td>
+                            </tr>
+                             
+                            <tr class="form-group">
+                                 <th>パスワードの確認<em>必須</em></th>
+                                   <td>
+                                    <input type="password" class="form-control col-md-12{{ $errors->has('user.password_confirmation') ? ' is-invalid' : '' }}" name="user[password_confirmation]" value="{{ Ctm::isOld() ? old('user.password_confirmation') : (Session::has('all.data.user') ? session('all.data.user.password_confirmation') : '') }}" form="user-input">
+                                    
+                                    @if ($errors->has('user.password_confirmation'))
+                                        <div class="help-block text-danger">
+                                            <span class="fa fa-exclamation form-control-feedback"></span>
+                                            <span>{{ $errors->first('user.password_confirmation') }}</span>
+                                        </div>
+                                    @endif
+                                </td>
+                            </tr>
+                        </table>
+                        </div>
+                                    
+                    <div class="table-responsive table-custom">
+                    <p class="text-small mb-0 mt-2"><i class="fas fa-square"></i> 当店からのお知らせを希望しますか？</p>
+                        
+                    <table class="table table-borderd border p-0 m-0">
+                        <tr class="form-group">
+                            <th class="">メールマガジン</th>
+                            <td class="">
+                                
+                                <?php
+                                    $checked = '';
+                                    if(Ctm::isOld()) {
+                                        if(old('user.magazine'))
+                                            $checked = ' checked';
+                                    }
+                                    else {
+                                        if(Session::has('all.data.user')  && session('all.data.user.magazine')) {
+                                            $checked = ' checked';
+                                        }
+                                    }
+                                ?>
+                                
+                                <input id="check-magazine" type="checkbox" name="user[magazine]" value="1"{{ $checked }} form="user-input">
+                                <label for="check-magazine" class="checks">登録する</label>
+                                
+                                {{--
+                                <input type="checkbox" name="user[magazine]" value="1"{{ $checked }}> 登録する
+                                --}}
+                                
+                                @if ($errors->has('user.magazine'))
+                                    <div class="help-block text-danger">
+                                        <span class="fa fa-exclamation form-control-feedback"></span>
+                                        <span>{{ $errors->first('user.magazine') }}</span>
+                                    </div>
+                                @endif
+                            </td>
+                         </tr>
+                    </table>
+                </div>
+                
+                </div>{{-- regist-frame --}}
+
+            </div>{{-- id --}}
+                    
+                
+            <div id="delivery-add" class="receiver">
+                <div class="clearfix mt-3">
+                    <h3>お届け先</h3>
+                    <div></div>
+                </div>
+                
+                <div class="ml-20per">
+                <fieldset class="form-group mt-2 py-1 pl-1">
+                        <?php
+                            $checked = '';
+                            if(Ctm::isOld()) {
+                                 if(old('destination'))
+                                    $checked = ' checked';
+                            }
+                            else {
+                                if(Session::has('all.data.destination') && session('all.data.destination'))
+                                    $checked = ' checked';
+                                    
+                            }
+                        ?>
+                        
+                        <div class="mb-2">
+                            <input id="radio-destination-1" type="radio" name="destination" value="0" checked form="user-input">
+                            <label for="radio-destination-1" class="radios">お客様情報と同じ</label>
+                        </div>
+                        
+                        <div class="">
+                            <input id="radio-destination-2" type="radio" name="destination" value="1"{{ $checked }} form="user-input">
+                            <label for="radio-destination-2" class="radios">別の住所へお届け</label>
+                        </div>
+                        
+                        {{--
+                        <label class="d-block">
+                            <input type="radio" name="destination" class="destinationRadio ml-2" value="0" checked> 登録先と同じ
+                        </label>
+                         
+                        <label class="d-block">
+                            <input type="radio" name="destination" class="destinationRadio ml-2" value="1"{{ $checked }}> 別の住所へお届け
+                        </label>
+                        --}}
+                        
+                        @if ($errors->has('receiver.*'))
+                            <div class="help-block text-danger receiver-error">
+                                <span class="fa fa-exclamation form-control-feedback"></span>
+                                <span class="text-small">上記登録先住所に配送をご希望の場合は「お客様情報と同じ」にチェックをして下さい。</span>
+                            </div>
+                        @endif
+                </fieldset>
+                </div>
+            
+                @include('cart.shared.anotherAddress')
+                
+             </div><!-- id / receiver -->
+
+    @endif {{-- $isAmaznPay --}}
          
 @endif {{-- AuthCheck --}}
 
-@endif {{-- isAmznPay --}}
+
 
 
 <div id="delivery-info" class="pt-2">
@@ -854,112 +965,6 @@ use App\DeliveryGroup;
         </div>
     </div>
 </div>
-
-<?php //Amazon Pay ================================================= ?>
-@if($isAmznPay)
-<div id="pay-method" class="pt-2 mb-4">
-   <div class="clearfix mt-3">
-       <h3>Amazon Pay</h3>
-       <div></div>
-   </div>
-
-   <div class="ml-20per">
-        <div id="addressBookWidgetDiv"></div>
-        <div id="walletWidgetDiv"></div>
-        
-        <?php
-            $amznPay = $payMethod->where('name', 'Amazon Pay')->first();
-        ?>
-        
-        <input type="hidden" name="pay_method" value="{{ $amznPay->id }}" form="user-input">
-        
-        <input id="orderReferenceId" type="hidden" name="order_reference_id" value="" form="user-input">
-        {{-- <input type="hidden" name="access_token" value="" form="user-input"> --}}
-        
-        
-        <script>
-            window.onAmazonPaymentsReady = function() {
-                //showButton();
-                showAddressBookWidget();
-            };
-            
-            function showAddressBookWidget() {
-                new OffAmazonPayments.Widgets.AddressBook({
-                    sellerId: 'AUT5MRXA61A3P',
-
-                    onOrderReferenceCreate: function(orderReference) {
-                        // Here is where you can grab the Order Reference ID.
-                        orderReference.getAmazonOrderReferenceId();
-                    },
-                    onAddressSelect: function(orderReference) {
-                        // Replace the following code with the action that you want
-                        // to perform after the address is selected. The
-                        // amazonOrderReferenceId can be used to retrieve the address
-                        // details by calling the GetOrderReferenceDetails operation.
-                        // If rendering the AddressBook and Wallet widgets
-                        // on the same page, you do not have to provide any additional
-                        // logic to load the Wallet widget after the AddressBook widget.
-                        // The Wallet widget will re-render itself on all subsequent
-                        // onAddressSelect events, without any action from you.
-                        // It is not recommended that you explicitly refresh it.
-                    },
-                    design: {
-                        designMode: 'responsive'
-                    },
-                    onReady: function(orderReference) {
-                        // Enter code here you want to be executed
-                        // when the address widget has been rendered.
-                        
-                        var orderReferenceId = orderReference.getAmazonOrderReferenceId();
-                        var el;
-                        if ((el = document.getElementById("orderReferenceId"))) {
-                          el.value = orderReferenceId;
-                        }
-                        // Wallet
-                        showWalletWidget(orderReferenceId);
-                    },
-                    onError: function(error) {
-                        // Your error handling code.
-                        // During development you can use the following
-                        // code to view error messages:
-                        
-                        //alert('aaa' + error.getErrorCode() + ': ' + error.getErrorMessage());
-                        
-                        // See "Handling Errors" for more information.
-                    }
-                }).bind("addressBookWidgetDiv");
-            }
-            
-            function showWalletWidget(orderReferenceId) {
-                new OffAmazonPayments.Widgets.Wallet({
-                    sellerId: 'AUT5MRXA61A3P',
-                    onPaymentSelect: function(orderReference) {
-                        // Replace this code with the action that you want to perform
-                        // after the payment method is selected.
-              
-                        // Ideally this would enable the next action for the buyer
-                        // including either a "Continue" or "Place Order" button.
-                    },
-                    design: {
-                        designMode: 'responsive'
-                    },
-              
-                    onError: function(error) {
-                        // Your error handling code.
-                        // During development you can use the following
-                        // code to view error messages:
-                        // console.log(error.getErrorCode() + ': ' + error.getErrorMessage());
-                        // See "Handling Errors" for more information.
-                        alert('bbb' + error.getErrorCode() + ': ' + error.getErrorMessage());
-                    }
-                }).bind("walletWidgetDiv");
-            }
-        </script>
-
-</div>{{-- ml-20per --}}
-</div>{{-- id --}}
-@endif
-<?php //Amazon Pay END ================================================= ?>
 
 
 @if(! $isAmznPay)
