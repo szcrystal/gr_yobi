@@ -836,10 +836,10 @@ body {
 }
 
 /* Amazon Pay */
-#AmazonPayButton > img {
-    width: 100% !important;
-    max-height: auto !important;
-}
+/*#AmazonPayButton > img {*/
+/*    width: 100% !important;*/
+/*    max-height: auto !important;*/
+/*}*/
 #addressBookWidgetDiv {
   min-width: 300px;
   max-width: 650px;

@@ -59,8 +59,8 @@ use App\DeliveryGroup;
 
 <?php //Amazon Pay ================================================= ?>
 @if($isAmznPay)
-<div id="pay-method" class="pt-2 mb-4">
-   <div class="clearfix mt-3">
+<div id="pay-method" class="mb-5 pb-2">
+   <div class="clearfix mt-0">
        <h3>Amazon Pay</h3>
        <div></div>
    </div>
@@ -405,8 +405,9 @@ use App\DeliveryGroup;
                      
                 </table>
             </div>
-
             </div>{{-- id --}}
+        
+        @endif {{-- $isAmznPay --}}
 
             <div id="user-regist" class="pt-3">
                 <div class="clearfix">
@@ -466,7 +467,16 @@ use App\DeliveryGroup;
                                     <label for="radio-regist-n" class="radios">しない</label>
                                 </span>
                                 
-                                <p class="mt-2 mb-0 text-small">＊会員登録をすると住所やクレジットカードの登録、お気に入りの永続使用が可能です。</p>
+                                <p class="mt-2 pt-1 mb-0 text-small">
+                                    会員登録をすると…
+                                </p>
+                                <ul class="text-small pl-3">
+                                    @if($isAmznPay)
+                                    <li class="mt-1">Amazon Payでの配送先が会員情報として登録されます。<br>
+                                    @endif
+                                    <li class="mt-1">住所やクレジットカードの登録が出来、次回のお買い物がスムーズとなります。<br>
+                                    <li class="mt-1">購入履歴の確認やお気に入りの永続利用が可能となります。
+                                </ul>
                             </td>
                         </tr>
                     </table>
@@ -547,8 +557,9 @@ use App\DeliveryGroup;
                 </div>{{-- regist-frame --}}
 
             </div>{{-- id --}}
-                    
-                
+        
+        
+        @if(! $isAmznPay)
             <div id="delivery-add" class="receiver">
                 <div class="clearfix mt-3">
                     <h3>お届け先</h3>
@@ -603,7 +614,7 @@ use App\DeliveryGroup;
                 
              </div><!-- id / receiver -->
 
-    @endif {{-- $isAmaznPay --}}
+    @endif {{-- $isAmznPay --}}
          
 @endif {{-- AuthCheck --}}
 
@@ -987,6 +998,11 @@ use App\DeliveryGroup;
         <fieldset class="form-group mt-1 pt-3 pl-1{{ $errors->has('pay_method') ? ' border border-danger' : '' }}">
 
             @foreach($payMethod as $method)
+                
+                @if($method->id == 7)
+                    <?php continue; ?>
+                @endif
+                
                 <?php
                     $checked = '';
                     

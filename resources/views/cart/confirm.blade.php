@@ -42,6 +42,9 @@
                         $isCard = 1;
                     }
                 }
+                
+//                echo $isCard;
+//                exit;
             ?>
 
             @if($isCard)
@@ -111,7 +114,11 @@
                         <span class="loader mr-3"><i class="fas fa-square mr-1"></i> 処理中..</span>
                     </div>
                     
-                    <button id="exist-submit" class="btn btn-block btn-orange mb-4 py-3" type="submit"{{ $disabled }}>注文を確定する</button>
+                    <input type="button" id="exist-submit" class="btn btn-block btn-orange mb-4 py-3"{{ $disabled }} value="注文を確定す">
+                    
+                    {{--
+                    <button id="exist-submit" class="btn btn-block btn-orange mb-4 py-3" type="submit"{{ $disabled }}>注文を確定す</button>
+                    --}}
                 @endif
               
             </form>
@@ -644,7 +651,11 @@
                     </span>
                 @endif
                 
+                <input type="button" id="exist-submit-2" class="btn btn-block btn-orange mb-0 py-3"{{ $disabled }} value="注文を確定す" form="purchaseForm">
+                
+                {{--
                 <input id="exist-submit-2" class="btn btn-block btn-orange mb-0 py-3" type="submit"{{ $disabled }} value="注文を確定する" form="purchaseForm">
+                --}}
             @endif
         </div>
     @endif
