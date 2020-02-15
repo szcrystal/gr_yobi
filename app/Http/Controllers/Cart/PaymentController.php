@@ -17,15 +17,6 @@ class PaymentController extends Controller
 {
     public function __construct()
     {
-        /***********************
-         $itemDataはitemのobjectに[count]（購入個数）を足したObjectを一つずつ配列にしたもの
-        ************************/
-        
-//        $this->item = new Item; //DB::table('items')
-//        $this->tag = new Tag;
-//        $this->tagRel = new TagRelation;
-        
-        
         
         $this->setting = new Setting;
         $this->set = $this->setting->first();
@@ -37,8 +28,7 @@ class PaymentController extends Controller
         //GMO 決済ID
         $this->gmoId = Ctm::gmoId();
         
-        
-        //Amzn
+        //Amzn 本番／テストどちらも同じ
         $this->amznConfig = [
             'merchant_id' => 'AUT5MRXA61A3P',
             'access_key'  => 'AKIAIULMCJL2WZE3LLAQ',
@@ -68,14 +58,11 @@ class PaymentController extends Controller
         
         // Optional Parameter
         $requestParams = [
-            'mws_auth_token' => '3pKDQQL1eRfsZpFM0mTMaYxkLScapMmcOAbYoGr5',
             'amazon_order_reference_id' => $referenceId,
-            'address_consent_token' => session('all.access_token'),
+            'access_token' => session('all.access_token'),
+            //'mws_auth_token' => '3pKDQQL1eRfsZpFM0mTMaYxkLScapMmcOAbYoGr5', // config -> シークレットキーと同じ？ 必須ではないらしい
+            //'address_consent_token' => session('all.access_token'),
         ];
-
-//        $requestParameters['amount'] = '106';
-//        $requestParameters['currency_code'] = 'JPY';
-
         
         //$response = $client->getMerchantAccountStatus($$requestParams);
         $response = $client->getOrderReferenceDetails($requestParams);
@@ -97,16 +84,20 @@ class PaymentController extends Controller
 //                [Code] => InvalidParameterValue
 //                [Message] => The Value 'null' is invalid for the Parameter 'Amount'
 //            )
-            print_r($obj);
-            exit;
+
+            return $obj;
+            //このタイミングでredirectが効かない
+            //return redirect('shop/form?amznerr=1000')->with('ErrInfo', '[amz-'.$obj['ResponseStatus'].'-'. $obj['Error']['Code'].']');
+//            print_r($obj);
+//            exit;
         }
-        
         
         $addInfo = $obj['GetOrderReferenceDetailsResult']['OrderReferenceDetails']['Destination']['PhysicalDestination'];
         $userInfo = $obj['GetOrderReferenceDetailsResult']['OrderReferenceDetails']['Buyer'];
         
         
         return compact('addInfo', 'userInfo');
+        
 //
 //        $data['destination'] = 1;
 //
@@ -135,39 +126,39 @@ class PaymentController extends Controller
     }
     
     // POSTで送信される url: shop/amznpay
-    public function setAmznPay()
+    public function setAmznPay(Request $request)
     {
-        //$config = $this->amznConfig;
-
-        // or, instead of setting the array in the code, you can
-        // initialze the Client by specifying a JSON file
-        // $config = 'PATH_TO_JSON_FILE';
+        if(! $request->session()->has('all')) {
+            abort(404);
+        }
 
         // Instantiate the client class with the config type
         $client = new Client($this->amznConfig);
         //$client->setSandbox(true);
         
         $sesAll = session('all');
+        
         $orderReferenceId = $sesAll['order_reference_id'];
         $totalFee = $sesAll['total_fee'];
         $orderNumber = $sesAll['order_number'];
         
-        $requestParameters = array();
         // Optional Parameter
-        $requestParameters['mws_auth_token'] = '3pKDQQL1eRfsZpFM0mTMaYxkLScapMmcOAbYoGr5';
-        $requestParameters['amazon_order_reference_id'] = $orderReferenceId;
-        $requestParameters['address_consent_token'] = session('all.access_token');
+//        $requestParams = [
+//            'mws_auth_token' => '3pKDQQL1eRfsZpFM0mTMaYxkLScapMmcOAbYoGr5',
+//            'amazon_order_reference_id' => $orderReferenceId,
+//            'address_consent_token' => session('all.access_token'),
+//        ];
         
-        //$response = $client->getMerchantAccountStatus($requestParameters);
-        $response = $client->getOrderReferenceDetails($requestParameters);
-        return redirect('shop/thankyou');
+        //$response = $client->getMerchantAccountStatus($$requestParams);
+        //$response = $client->getOrderReferenceDetails($requestParams);
+        //return redirect('shop/thankyou');
         
         // setOrderReferenceDetails -------------
         $setParams = [
             'amazon_order_reference_id' => $orderReferenceId,
-            //'charge_amount' => $totalFee,
             'amount' => $totalFee,
-            'currency_code' => 'JPY',
+            //'charge_amount' => $totalFee,
+            //'currency_code' => 'JPY', //configで指定しているので不要
             'seller_order_id' => $orderNumber,
             'store_name' => 'グリーンロケット',
         ];
@@ -186,9 +177,11 @@ class PaymentController extends Controller
 //                [Code] => InvalidParameterValue
 //                [Message] => The Value 'null' is invalid for the Parameter 'Amount'
 //            )
-            echo 'set';
-            print_r($obj);
-            exit;
+            
+            return redirect('shop/form?amznerr=1000')->with('ErrInfo', '[amzSet-'.$obj['ResponseStatus'].'-'. $obj['Error']['Code'].']');
+//            echo 'setOrder:';
+//            print_r($obj);
+//            exit;
         }
         
         // confirmOrderReference --------------------------
@@ -207,9 +200,13 @@ class PaymentController extends Controller
         //          [Code] => InvalidParameterValue
         //          [Message] => The Value 'null' is invalid for the Parameter 'Amount'
         //      )
-            echo 'confirm';
-            print_r($obj);
-            exit;
+            
+            //「PaymentMethodNotAllowed」はここのタイミングでエラーになる
+            
+            return redirect('shop/form?amznerr=1000')->with('ErrInfo', '[amzConfirm-'.$obj['ResponseStatus'].'-'. $obj['Error']['Code'].']');
+//            echo 'confirmOrder:';
+//            print_r($obj);
+//            exit;
         }
         
         // getOrderReferenceDetailsはここでは不要
@@ -229,7 +226,7 @@ class PaymentController extends Controller
             'amazon_order_reference_id' => $orderReferenceId,
             'authorization_reference_id' => $orderNumber,
             'authorization_amount' => $totalFee,
-            'currency_code' => 'JPY',
+            //'currency_code' => 'JPY',
             'transaction_timeout' => 0, // 0:同期オーソリ
             //'capture_now' => TRUE,
         ];
@@ -237,11 +234,31 @@ class PaymentController extends Controller
         $response = $client->authorize($authParams);
         $obj = $response->toArray();
         
+//        print_r($obj);
+//        exit;
+        
+        //エラー時、$obj['AuthorizeResult']['AuthorizationDetails']['AuthorizationStatus']['State']=>Declinedで、[ReasonCode] => AmazonRejected/ProcessingFailure/TransactionTimedOut になる
+        //成功時、[State]=>Open
+        
+        $status = $obj['AuthorizeResult']['AuthorizationDetails']['AuthorizationStatus'];
+        
         if(isset($obj['Error'])) { //stateがopenならの条件もあった方がいいか
             // Error処理・・・
-            echo 'authorize';
-            print_r($obj);
-            exit;
+            return redirect('shop/form?amznerr=1000')->with([
+                'ErrInfo' => '[amzAuth-'.$obj['ResponseStatus'].'-'. $obj['Error']['Code'].']',
+                //'refId' => $orderReferenceId,
+            ]);
+            
+//            echo 'Authorize:';
+//            print_r($obj);
+//            exit;
+        }
+        
+        if(isset($status['ReasonCode'])) {
+            return redirect('shop/form?amznerr=1000')->with([
+                'ErrInfo' => '[amzAuth-'. $status['State'] .'-'. $status['ReasonCode'].']',
+                'refId' => $orderReferenceId,
+            ]);
         }
         
 //        echo "Atuh";
@@ -373,7 +390,7 @@ class PaymentController extends Controller
                 //カード会社から返却された時 or E61010002（カード番号異常/利用不可カードの時）
                 if(strpos($cardRegSuccess['ErrCode'], 'G') !== false || strpos($cardRegSuccess['ErrCode'], 'C') !== false || strpos($cardRegSuccess['ErrInfo'], 'E61010002') !== false) {
                     //$errors['carderr'] = 'カード情報が正しくないか、お取り扱いが出来ません。';
-                    return redirect('shop/form?carderr=1000')->with('ErrInfo', '[cc-5002-'.$cardRegSuccess['ErrInfo'].']');;
+                    return redirect('shop/form?carderr=1000')->with('ErrInfo', '[cc-5002-'.$cardRegSuccess['ErrInfo'].']');
                 }
                 else {
                     return view('cart.error', ['erroeName'=>'[cc-5002-'.$cardRegSuccess['ErrInfo'].']', 'active'=>3]);

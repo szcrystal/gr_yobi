@@ -69,6 +69,8 @@ use App\DeliveryGroup;
         <div id="addressBookWidgetDiv"></div>
         <div id="walletWidgetDiv" class="mt-2"></div>
         
+        {{ session('refId') }}
+        
         <?php
             $amznPay = $payMethod->where('name', 'Amazon Pay')->first();
         ?>
@@ -77,6 +79,7 @@ use App\DeliveryGroup;
         
         <input id="orderReferenceId" type="hidden" name="order_reference_id" value="" form="user-input">
         {{-- <input type="hidden" name="access_token" value="" form="user-input"> --}}
+        
         
         
         <script>
@@ -112,8 +115,18 @@ use App\DeliveryGroup;
                         // Enter code here you want to be executed
                         // when the address widget has been rendered.
                         
-                        var orderReferenceId = orderReference.getAmazonOrderReferenceId();
+                        {{--
+                        @if(Request::session()->has('refId'))
+                            var orderReferenceId = "{{ session('refId') }}";
+                        @else
+                        --}}
+                        
+                            var orderReferenceId = orderReference.getAmazonOrderReferenceId();
+                        
+                        {{-- @endif --}}
+                        
                         var el;
+                        
                         if ((el = document.getElementById("orderReferenceId"))) {
                           el.value = orderReferenceId;
                         }
@@ -125,7 +138,7 @@ use App\DeliveryGroup;
                         // During development you can use the following
                         // code to view error messages:
                         
-                        //alert('aaa' + error.getErrorCode() + ': ' + error.getErrorMessage());
+                        alert('address' + error.getErrorCode() + ': ' + error.getErrorMessage());
                         
                         // See "Handling Errors" for more information.
                     }
@@ -134,7 +147,9 @@ use App\DeliveryGroup;
             
             function showWalletWidget(orderReferenceId) {
                 new OffAmazonPayments.Widgets.Wallet({
+                    
                     sellerId: 'AUT5MRXA61A3P',
+                    
                     onPaymentSelect: function(orderReference) {
                         // Replace this code with the action that you want to perform
                         // after the payment method is selected.
@@ -142,6 +157,7 @@ use App\DeliveryGroup;
                         // Ideally this would enable the next action for the buyer
                         // including either a "Continue" or "Place Order" button.
                     },
+                    
                     design: {
                         designMode: 'responsive'
                     },
@@ -152,7 +168,7 @@ use App\DeliveryGroup;
                         // code to view error messages:
                         // console.log(error.getErrorCode() + ': ' + error.getErrorMessage());
                         // See "Handling Errors" for more information.
-                        alert('bbb' + error.getErrorCode() + ': ' + error.getErrorMessage());
+                        alert('wallet' + error.getErrorCode() + ': ' + error.getErrorMessage());
                     }
                 }).bind("walletWidgetDiv");
             }

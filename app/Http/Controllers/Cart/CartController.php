@@ -1496,7 +1496,13 @@ class CartController extends Controller
         if($isAmznPay) {
             $paymentObj = new Payment();
             
-            extract($paymentObj->getAmznDetail($data['order_reference_id']));
+            $res = $paymentObj->getAmznDetail($data['order_reference_id']);
+            
+            if(isset($res['Error'])) {
+                return redirect('shop/form?amznerr=1000')->with('ErrInfo', '[amz-'. $res['ResponseStatus'].'-'. $res['Error']['Code'].']');
+            }
+            
+            extract($res);
             
             $postNum = str_replace('-', '', $addInfo['PostalCode']);
             $telNum = str_replace('-', '', $addInfo['Phone']);
@@ -1968,9 +1974,11 @@ class CartController extends Controller
 		
 		//カードトークン取得でエラーが返った時 or 決済実行でカード情報エラーの時 getで?carderr=122を付ける
         $cardErrors = array();
+        //$refId = null;
+        
         if($request->has('carderr') && $request->input('carderr')) {
         	
-        	if($request->input('carderr') == 1000) { //決済を実行してカードに問題がある時ここにエラーコード1000でリダイレクトさせている
+            if($request->input('carderr') == 1000) { //決済を実行してカードに問題がある時ここにエラーコード1000でリダイレクトさせている
             	$errInfo = session()->has('ErrInfo') ? session('ErrInfo') : '';
                 $errText = 'カード情報が正しくないか、お取り扱いができません。';
                 //Local時のみエラーコード
@@ -1982,6 +1990,25 @@ class CartController extends Controller
             }
             else {
         		$cardErrors['carderr'] = 'カード情報が正しくありません。';
+            }
+        }
+        
+        // AmznPayでのエラー処理
+        if($request->has('amznerr')) {
+            
+            if($request->input('amznerr') == 1000) { //amznPayを実行して問題がある時ここにエラーコード1000でリダイレクトさせている
+                $errInfo = session()->has('ErrInfo') ? session('ErrInfo') : '';
+                $refId = session()->has('refId') ? session('refId') : '';
+                $errText = 'Amazonの情報取得に失敗しました。再度やり直すか、別のお支払い方法を選択して下さい。';
+                //Local時のみエラーコード
+                if(Ctm::isEnv('local')) {
+                    $errText .= $errInfo . $refId;
+                }
+                
+                $cardErrors['carderr'] = $errText;
+            }
+            else {
+                $cardErrors['carderr'] = 'Amazonの情報が正しくありません。';
             }
         }
         
