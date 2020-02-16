@@ -1998,8 +1998,14 @@ class CartController extends Controller
             
             if($request->input('amznerr') == 1000) { //amznPayを実行して問題がある時ここにエラーコード1000でリダイレクトさせている
                 $errInfo = session()->has('ErrInfo') ? session('ErrInfo') : '';
-                $refId = session()->has('refId') ? session('refId') : '';
-                $errText = 'Amazonの情報取得に失敗しました。再度やり直すか、別のお支払い方法を選択して下さい。';
+                $refId = session()->has('refIdFromAuth') ? session('refIdFromAuth') : '';
+                
+                $errText = $refId != '' ?
+                    'Amazonでのお支払い方法に問題があるようです。' :
+                    'Amazonご登録情報の取得に失敗しました。' ;
+                
+                $errText .= '<a href="/shop/cart" class="text-primary">カートに戻り</a>再度やり直すか、別のお支払い方法を選択して下さい。';
+                
                 //Local時のみエラーコード
                 if(Ctm::isEnv('local')) {
                     $errText .= $errInfo . $refId;

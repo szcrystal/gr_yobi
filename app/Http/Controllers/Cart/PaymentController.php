@@ -178,7 +178,10 @@ class PaymentController extends Controller
 //                [Message] => The Value 'null' is invalid for the Parameter 'Amount'
 //            )
             
-            return redirect('shop/form?amznerr=1000')->with('ErrInfo', '[amzSet-'.$obj['ResponseStatus'].'-'. $obj['Error']['Code'].']');
+            return redirect('shop/form?amznerr=1000')->with([
+                'ErrInfo' => '[amzSet-'.$obj['ResponseStatus'].'-'. $obj['Error']['Code'].']',
+                'refId' => $orderReferenceId,
+            ]);
 //            echo 'setOrder:';
 //            print_r($obj);
 //            exit;
@@ -193,17 +196,28 @@ class PaymentController extends Controller
         $obj = $response->toArray();
         
         if(isset($obj['Error'])) {
-        // Error処理・・・
-        //    [Error] => Array
-        //     (
-        //          [Type] => Sender
-        //          [Code] => InvalidParameterValue
-        //          [Message] => The Value 'null' is invalid for the Parameter 'Amount'
-        //      )
-            
+            // Error処理・・・
             //「PaymentMethodNotAllowed」はここのタイミングでエラーになる
+            /*
+            confirmOrder:Array
+            (
+                [Error] => Array
+                    (
+                        [Type] => Sender
+                        [Code] => ConstraintsExist
+                        [Message] => The OrderReferenceId S03-4524407-5072965 has constraints PaymentMethodNotAllowed and cannot be confirmed.
+                    )
+
+                [RequestId] => ee3a911a-26f1-44d3-b59e-88a7fadf926d
+                [ResponseStatus] => 400
+            )
+             */
             
-            return redirect('shop/form?amznerr=1000')->with('ErrInfo', '[amzConfirm-'.$obj['ResponseStatus'].'-'. $obj['Error']['Code'].']');
+            return redirect('shop/form?amznerr=1000')->with([
+                'ErrInfo' => '[amzConfirm-'.$obj['ResponseStatus'].'-'. $obj['Error']['Code'].']',
+                'refId' => $orderReferenceId,
+            ]);
+
 //            echo 'confirmOrder:';
 //            print_r($obj);
 //            exit;
@@ -255,9 +269,11 @@ class PaymentController extends Controller
         }
         
         if(isset($status['ReasonCode'])) {
+            //soft_decline trueの時とfalseの時で分けるか => trueの時は同じreferenceIdで再登録できるらしい
+            
             return redirect('shop/form?amznerr=1000')->with([
                 'ErrInfo' => '[amzAuth-'. $status['State'] .'-'. $status['ReasonCode'].']',
-                'refId' => $orderReferenceId,
+                'refIdFromAuth' => $orderReferenceId,
             ]);
         }
         

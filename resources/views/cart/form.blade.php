@@ -20,7 +20,7 @@ use App\DeliveryGroup;
         <i class="far fa-exclamation-triangle"></i> 確認して下さい。
         <ul class="mt-2">
             @foreach ($cardErrors as $cardError)
-                <li>{{ $cardError }}</li>
+                <li>{!! $cardError !!}</li>
             @endforeach
         </ul>
     </div>
@@ -80,7 +80,19 @@ use App\DeliveryGroup;
         <input id="orderReferenceId" type="hidden" name="order_reference_id" value="" form="user-input">
         {{-- <input type="hidden" name="access_token" value="" form="user-input"> --}}
         
-        
+        <?php
+            // orderReferenceId 注意点 ====================
+            /*
+            setOrderReferenceDetails と confirmOrderReferenceDetails のエラーから戻った時は、
+            Amazonにまだ登録されていない状態なので、新しいorderReferenceIdを作成すればOK => つまりsesssionを入れたりなどはしない。何もしない。
+            （使い回しのorderReferenceIdでも登録できるが意味がない。sessionに入れたorderReferenceIdをセットしなくてもOK）
+            
+            Authorizeから戻った時は、Amazonに登録されている状態で、更にStatusがClosedで再登録できないので新しいorderReferenceIdで再購入する必要がある。
+            orderReferenceIdの使い回しはできない。
+            しかも、walletにエラー表示させるため、前回のorderReferenceIdをsessionに入れて、walletにセットする必要がある
+            このまま、別支払い選択で進むと再度confirmからエラーが返るので、別支払い方法選択時にlocation.reload()させるようにしている
+            */
+        ?>
         
         <script>
             window.onAmazonPaymentsReady = function() {
@@ -92,10 +104,10 @@ use App\DeliveryGroup;
                 new OffAmazonPayments.Widgets.AddressBook({
                     sellerId: 'AUT5MRXA61A3P',
 
-                    onOrderReferenceCreate: function(orderReference) {
-                        // Here is where you can grab the Order Reference ID.
-                        orderReference.getAmazonOrderReferenceId();
-                    },
+//                    onOrderReferenceCreate: function(orderReference) {
+//                        // Here is where you can grab the Order Reference ID.
+//                        orderReference.getAmazonOrderReferenceId();
+//                    },
                     onAddressSelect: function(orderReference) {
                         // Replace the following code with the action that you want
                         // to perform after the address is selected. The
@@ -114,16 +126,16 @@ use App\DeliveryGroup;
                     onReady: function(orderReference) {
                         // Enter code here you want to be executed
                         // when the address widget has been rendered.
-                        
                         {{--
                         @if(Request::session()->has('refId'))
                             var orderReferenceId = "{{ session('refId') }}";
                         @else
                         --}}
-                        
                             var orderReferenceId = orderReference.getAmazonOrderReferenceId();
                         
-                        {{-- @endif --}}
+                        {{--@endif--}}
+                        
+                        console.log(orderReferenceId);
                         
                         var el;
                         
@@ -137,8 +149,8 @@ use App\DeliveryGroup;
                         // Your error handling code.
                         // During development you can use the following
                         // code to view error messages:
-                        
-                        alert('address' + error.getErrorCode() + ': ' + error.getErrorMessage());
+                        //console.log("aaa");
+                        //alert('address' + error.getErrorCode() + ': ' + error.getErrorMessage());
                         
                         // See "Handling Errors" for more information.
                     }
@@ -149,6 +161,18 @@ use App\DeliveryGroup;
                 new OffAmazonPayments.Widgets.Wallet({
                     
                     sellerId: 'AUT5MRXA61A3P',
+                    amazonOrderReferenceId:
+                        @if(session()->has('refIdFromAuth'))
+                            "{{ session('refIdFromAuth') }}"
+                        @else
+                            orderReferenceId
+                        @endif
+                    ,
+                    
+                    onReady: function(orderReference) {
+                        //console.log(orderReference.getAmazonOrderReferenceId());
+                        console.log("bbb");
+                    },
                     
                     onPaymentSelect: function(orderReference) {
                         // Replace this code with the action that you want to perform
@@ -156,6 +180,15 @@ use App\DeliveryGroup;
               
                         // Ideally this would enable the next action for the buyer
                         // including either a "Continue" or "Place Order" button.
+                        
+                        //console.log(arguments);
+                        @if(session()->has('refIdFromAuth'))
+                        
+                            //showAddressBookWidget();
+                            location.reload();
+                            //orderReference.amazonOrderReferenceId = orderReferenceId;
+                            //console.log(orderReference.getAmazonContractId());
+                        @endif
                     },
                     
                     design: {
@@ -166,9 +199,9 @@ use App\DeliveryGroup;
                         // Your error handling code.
                         // During development you can use the following
                         // code to view error messages:
-                        // console.log(error.getErrorCode() + ': ' + error.getErrorMessage());
+                        //console.log(error.getErrorCode() + ': ' + error.getErrorMessage());
                         // See "Handling Errors" for more information.
-                        alert('wallet' + error.getErrorCode() + ': ' + error.getErrorMessage());
+                        //alert('wallet' + error.getErrorCode() + ': ' + error.getErrorMessage());
                     }
                 }).bind("walletWidgetDiv");
             }
@@ -490,7 +523,7 @@ use App\DeliveryGroup;
                                     @if($isAmznPay)
                                     <li class="mt-1">Amazon Payでの配送先が会員情報として登録されます。<br>
                                     @endif
-                                    <li class="mt-1">住所やクレジットカードの登録が出来、次回のお買い物がスムーズとなります。<br>
+                                    <li class="mt-1">クレジットカードの登録が出来るようになり、次回の購入がスムーズとなります。<br>
                                     <li class="mt-1">購入履歴の確認やお気に入りの永続利用が可能となります。
                                 </ul>
                             </td>
