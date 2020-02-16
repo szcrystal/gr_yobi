@@ -234,8 +234,6 @@ class PaymentController extends Controller
             exit;
         }
         */
-        
-        
                 
         // Authorize ======
         $authParams = [
