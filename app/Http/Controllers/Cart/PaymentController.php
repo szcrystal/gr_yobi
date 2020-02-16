@@ -221,6 +221,8 @@ class PaymentController extends Controller
 //            echo 'confirmOrder:';
 //            print_r($obj);
 //            exit;
+
+
         }
         
         // getOrderReferenceDetailsはここでは不要
