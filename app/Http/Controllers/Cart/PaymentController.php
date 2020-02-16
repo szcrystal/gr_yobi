@@ -223,7 +223,6 @@ class PaymentController extends Controller
 //            exit;
         }
         
-        
         // getOrderReferenceDetailsはここでは不要
         /*
         $response = $client->getOrderReferenceDetails($requestParameters);
@@ -235,6 +234,7 @@ class PaymentController extends Controller
             exit;
         }
         */
+        
                 
         // Authorize ======
         $authParams = [
