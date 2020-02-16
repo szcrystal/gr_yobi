@@ -173,8 +173,11 @@ Route::post('/shop/confirm', 'Cart\CartController@postConfirm');
 Route::get('/shop/confirm', 'Cart\CartController@postConfirm');
 
 //クレカ
-Route::post('/shop/paydo', 'Cart\CartController@postCardPay');
+Route::post('/shop/paydo', 'Cart\PaymentController@postCardPay');
 Route::get('/shop/error', 'Cart\CartController@getShopError');
+
+//Amzn
+Route::post('/shop/amznpay', 'Cart\PaymentController@setAmznPay');
 
 //後払い
 Route::post('/shop/afterdo', 'Cart\CartController@postAfterPay');

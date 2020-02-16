@@ -42,6 +42,9 @@
                         $isCard = 1;
                     }
                 }
+                
+//                echo $isCard;
+//                exit;
             ?>
 
             @if($isCard)
@@ -111,7 +114,11 @@
                         <span class="loader mr-3"><i class="fas fa-square mr-1"></i> 処理中..</span>
                     </div>
                     
-                    <button id="exist-submit" class="btn btn-block btn-orange mb-4 py-3" type="submit"{{ $disabled }}>注文を確定する</button>
+                    <input type="button" id="exist-submit" class="btn btn-block btn-orange mb-4 py-3"{{ $disabled }} value="注文を確定す">
+                    
+                    {{--
+                    <button id="exist-submit" class="btn btn-block btn-orange mb-4 py-3" type="submit"{{ $disabled }}>注文を確定す</button>
+                    --}}
                 @endif
               
             </form>
@@ -262,14 +269,14 @@
                 <span>{{ $data['receiver']['name'] }} 様</span>
                 <p class="mt-1 mb-0">
                 〒{{ Ctm::getPostNum($data['receiver']['post_num']) }}<br>
-                {{ $data['receiver']['prefecture'] }}{{ $data['receiver']['address_1'] }}{{ $data['receiver']['address_2'] }}<br>
+                {{ $data['receiver']['prefecture'] }}{{ $data['receiver']['address_1'] }} {{ $data['receiver']['address_2'] }}<br>
                 TEL : {{ $data['receiver']['tel_num'] }}
                 </p>
             @else
                 <span>{{ $userArr['name'] }} 様</span>
                 <p class="mt-1 mb-0">
                 〒{{ Ctm::getPostNum($userArr['post_num']) }}<br>
-                {{ $userArr['prefecture'] }}{{ $userArr['address_1'] }}{{ $userArr['address_2'] }}<br>
+                {{ $userArr['prefecture'] }}{{ $userArr['address_1'] }} {{ $userArr['address_2'] }}<br>
                 TEL : {{ $userArr['tel_num'] }}
                 </p>
             @endif
@@ -308,11 +315,11 @@
                         
                         @elseif($data['pay_method'] == 4)
                             {{-- 後払い手数料 --}}
-                            ¥{{ number_format($codFee) }}
+                            手数料：¥{{ number_format($codFee) }}
                         
                         @elseif($data['pay_method'] == 5)
                             {{-- 代引き手数料 --}}
-                            ¥{{ number_format($codFee) }}
+                            手数料：¥{{ number_format($codFee) }}
                         @elseif($data['pay_method'] == 6)
                             手数料：お客様負担
                         @endif
@@ -544,7 +551,7 @@
         </div>
     @endif
 
-    @if(! Auth::check())
+    @if(! Auth::check() && ! $isAmznPay)
         <div class="clearfix mt-3">
             <h3>{{ $regist ? '会員登録情報' : 'お客様情報' }}</h3>
             <div></div>
@@ -556,23 +563,21 @@
             </div>
             
             <div>
-            @if(!Auth::check())
                 <p class="">会員登録：{{ $regist ? 'する' : 'しない' }}</p>
-            @endif
             
-            {{ $userArr['name'] }}（{{ $userArr['hurigana'] }}）&nbsp;様
-            <p class="py-1 mb-0">
-            〒{{ Ctm::getPostNum($userArr['post_num']) }}<br>
-            {{ $userArr['prefecture'] }}{{ $userArr['address_1'] }}{{ $userArr['address_2'] }}
-            </p>
-            
-            TEL：{{ $userArr['tel_num'] }}<br>
-            メール：{{ $userArr['email'] }}
-            
-            @if($regist)
-            <br>
-            <p class="m-0 pt-1">メールマガジンの登録を{{ isset($userArr['magazine']) ? 'する' : 'しない' }}</p>
-            @endif
+                {{ $userArr['name'] }}（{{ $userArr['hurigana'] }}）&nbsp;様
+                <p class="py-1 mb-0">
+                    〒{{ Ctm::getPostNum($userArr['post_num']) }}<br>
+                    {{ $userArr['prefecture'] }}{{ $userArr['address_1'] }}{{ $userArr['address_2'] }}
+                </p>
+                
+                TEL：{{ $userArr['tel_num'] }}<br>
+                メール：{{ $userArr['email'] }}
+                
+                @if($regist)
+                    <br>
+                    <p class="m-0 pt-1">メールマガジンの登録を{{ isset($userArr['magazine']) ? 'する' : 'しない' }}</p>
+                @endif
             
             </div>
         </div>
@@ -647,7 +652,11 @@
                     </span>
                 @endif
                 
+                <input type="button" id="exist-submit-2" class="btn btn-block btn-orange mb-0 py-3"{{ $disabled }} value="注文を確定す" form="purchaseForm">
+                
+                {{--
                 <input id="exist-submit-2" class="btn btn-block btn-orange mb-0 py-3" type="submit"{{ $disabled }} value="注文を確定する" form="purchaseForm">
+                --}}
             @endif
         </div>
     @endif

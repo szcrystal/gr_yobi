@@ -1222,9 +1222,11 @@ var exe = (function() {
             
             $submitTarget.on('click', function(){
             	$submitTarget.addClass('invisible');
-                $('.loader').show();
+                $('.loader').fadeIn(100, function(){
+                    $("#purchaseForm").submit();
+                });
                 
-                //return false;
+//                return false;
             });
                 
         },

@@ -32,6 +32,7 @@ class SaleRelation extends Model
         'destination',
         'huzai_comment',
         'user_comment',
+        'amzn_reference_id',
         
         //'deli_done',
         'pay_done',

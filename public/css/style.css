@@ -834,6 +834,36 @@ body {
 .confirm .confirm-right .table-normal.show-price tbody th { /* shop confirm ポイント利用などのテーブルのth */
 	width: 48%;
 }
+
+/* Amazon Pay */
+/*#AmazonPayButton > img {*/
+/*    width: 100% !important;*/
+/*    max-height: auto !important;*/
+/*}*/
+#addressBookWidgetDiv {
+  min-width: 300px;
+  max-width: 650px;
+  min-height: 228px;
+  max-height: 400px;
+}
+#walletWidgetDiv {
+  min-width: 300px;
+  max-width: 650px;
+  min-height: 228px;
+  max-height: 400px;
+}
+
+/* Mobile optimized and small window */
+#addressBookWidgetDiv {
+  width: 100%;
+  height: 228px;
+}
+#walletWidgetDiv {
+  width: 100%;
+  height: 228px;
+}
+/* Amazon Pay END */
+
 .table-cart .table {
 	//width: 99.7%;
 }

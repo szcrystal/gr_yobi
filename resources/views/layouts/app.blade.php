@@ -89,6 +89,7 @@ $getNow .= Ctm::isEnv('product') ? str_replace ('.', '', config('app.app_version
 
 <?php
     //$getNow = ! Ctm::isEnv('product') ? '?up=' . time() : '';
+    $isProduct = Setting::first()->is_product ? 1 : 0;
 ?>
 
 <!-- Scripts -->
@@ -102,10 +103,18 @@ $getNow .= Ctm::isEnv('product') ? str_replace ('.', '', config('app.app_version
 @endif
 
 @if(Request::is('shop/confirm'))
-    @if(Setting::first()->is_product)
+    @if($isProduct)
     	<script src="https://p01.mul-pay.jp/ext/js/token.js"></script>
     @else
     	<script src="https://pt01.mul-pay.jp/ext/js/token.js"></script>
+    @endif
+@endif
+
+@if(Request::is('shop/cart') || Request::is('shop/form'))
+    @if($isProduct)
+        <script async="async" src='https://static-fe.payments-amazon.com/OffAmazonPayments/jp/lpa/js/Widgets.js'></script>
+    @else
+        <script async="async" src='https://static-fe.payments-amazon.com/OffAmazonPayments/jp/sandbox/lpa/js/Widgets.js'></script>
     @endif
 @endif
 

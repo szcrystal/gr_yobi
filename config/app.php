@@ -225,7 +225,10 @@ return [
         'Ctm' => App\Http\Controllers\CustomController::class,
         'Delifee' => App\Http\Controllers\CalcDelifeeController::class,
         'Search' => App\Http\Controllers\CalcSearchController::class,
+        'Payment' => App\Http\Controllers\Cart\PaymentController::class,
 
+        'Client' => AmazonPay\Client::class,
     ],
 
 ];
+

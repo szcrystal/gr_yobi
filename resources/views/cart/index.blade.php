@@ -50,6 +50,10 @@
 
 
 
+
+
+
+
 <div class="clearfix">
 <div class="confirm-left">
 
@@ -208,6 +212,88 @@
                 
                 <button class="btn btn-block btn-custom mb-2 py-3" type="submit" name="from_login" value="1"{{ $disabled }}>ログインして進む</button>
             @endif
+            
+            <div style="text-align: center; padding:5px 0; margin:5px 0;">
+                <div id="AmazonPayButton"></div>
+                <label style="font-size: 14px;line-height: 23px;">
+                    Amazonアカウントにご登録の住所・クレジット<br>カード情報を利用して、簡単にご注文が出来ます。
+                </label>
+                
+                <input type="hidden" name="access_token" value="">
+                <input type="hidden" name="token_type" value="">
+                <input type="hidden" name="expires_in" value="">
+                <input type="hidden" name="scope" value="">
+                
+                <input type="hidden" name="is_amzn_pay" value="0">
+            </div>
+            <button type="button" name="button" id="Logout" class="mb-3">Logout</button>
+
+
+            <script type="text/javascript">
+                window.onAmazonPaymentsReady = function() {
+                    showButton();
+                    //showAddressBookWidget();
+                };
+                
+                function showButton(){
+                    var authRequest;
+                      
+                    OffAmazonPayments.Button("AmazonPayButton", "AUT5MRXA61A3P", {
+                          type: "PwA",
+                          color: "Gold",
+                          size: "large",
+                          authorization: function() {
+                              loginOptions = {
+                                scope: "profile payments:widget payments:shipping_address postal_code",
+                                popup: "true",
+                                //interactive: 'always', //毎回ログインする
+                                };
+                                
+                                authRequest = amazon.Login.authorize (
+                                    loginOptions,
+                                    //"{{ url('shop/cart') }}"
+                                    
+                                    function(t) {
+                                        //jQuery使える
+                                        // console.log(t.access_token);
+                                        // console.log(t.expires_in);
+                                        // console.log(t.token_type);
+                                        /*
+                                        var access_token = '?access_token=' + t.access_token;
+                                        var token_type = '&token_type=' + t.token_type;
+                                        var expires_in = '&expires_in=' + t.expires_in;
+                                        var scope = '&scope=' + t.scope;
+                                        */
+                                        
+                                        $('input[name="access_token"]').val(t.access_token);
+                                        $('input[name="token_type"]').val(t.token_type);
+                                        $('input[name="expires_in"]').val(t.expires_in);
+                                        $('input[name="scope"]').val(t.scope); //URLエンコード必要？？ => ないかも
+                                        $('input[name="is_amzn_pay"]').val(1);
+                                        
+                                        $form = $('#with1');
+                                        $form.attr('action', '/shop/form'/* + access_token + token_type + expires_in + scope*/); //queryをつけなくてもwidget表示可能のようだ
+                                        $form.submit();
+                                    }
+                                    
+                                );
+                          },
+
+                          onError: function(error) {
+                              // your error handling code.
+                               alert("The following error occurred: "
+                                + error.getErrorCode()
+                                + ' - ' + error.getErrorMessage());
+                          }
+                      });
+                  };
+            </script>
+              
+            <script type="text/javascript">
+                document.getElementById('Logout').onclick = function() {
+                    amazon.Login.logout();
+                };
+            </script>
             
             @if(Auth::check())
                 
