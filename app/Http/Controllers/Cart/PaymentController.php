@@ -44,14 +44,151 @@ class PaymentController extends Controller
                     
     }
     
+    public function amznSetOrder($clientObj)
+    {
+        $sesAll = session('all');
+        
+        $orderReferenceId = $sesAll['order_reference_id'];
+        $totalFee = $sesAll['total_fee'];
+        $orderNumber = $sesAll['order_number'];
+        
+        // setOrderReferenceDetails -------------
+        $setParams = [
+            'amazon_order_reference_id' => $orderReferenceId,
+            'amount' => $totalFee,
+            //'charge_amount' => $totalFee,
+            //'currency_code' => 'JPY', //configで指定しているので不要
+            'seller_order_id' => $orderNumber,
+            'store_name' => 'グリーンロケット',
+        ];
+                
+        $response = $clientObj->setOrderReferenceDetails($setParams);
+        
+        $obj = $response->toArray();
+//        $obj = simplexml_load_string($response->toXml());
+//        $obj = json_decode(json_encode($obj), true);
+        
+        if(isset($obj['Error'])) {
+            //Error処理・・・
+//            [Error] => Array
+//            (
+//                [Type] => Sender
+//                [Code] => InvalidParameterValue
+//                [Message] => The Value 'null' is invalid for the Parameter 'Amount'
+//            )
+            
+            return redirect('shop/form?amznerr=1000')->with([
+                'ErrInfo' => '[amzSet-'.$obj['ResponseStatus'].'-'. $obj['Error']['Code'].']',
+                'refId' => $orderReferenceId,
+            ]);
+            
+            //return 0;
+//            echo 'setOrder:';
+//            print_r($obj);
+//            exit;
+        }
+    }
+    
+    public function amznConfirmOrder($clientObj)
+    {
+        $sesAll = session('all');
+        
+        $orderReferenceId = $sesAll['order_reference_id'];
+//        $totalFee = $sesAll['total_fee'];
+//        $orderNumber = $sesAll['order_number'];
+        
+        // confirmOrderReference --------------------------
+        $confirmParams = [
+            'amazon_order_reference_id' => $orderReferenceId,
+        ];
+        
+        $response = $clientObj->confirmOrderReference($confirmParams);
+        $obj = $response->toArray();
+        
+        if(isset($obj['Error'])) {
+            // Error処理・・・
+            //「PaymentMethodNotAllowed」はここのタイミングでエラーになる
+            /*
+            confirmOrder:Array
+            (
+                [Error] => Array
+                    (
+                        [Type] => Sender
+                        [Code] => ConstraintsExist
+                        [Message] => The OrderReferenceId S03-4524407-5072965 has constraints PaymentMethodNotAllowed and cannot be confirmed.
+                    )
+
+                [RequestId] => ee3a911a-26f1-44d3-b59e-88a7fadf926d
+                [ResponseStatus] => 400
+            )
+             */
+            
+            return redirect('shop/form?amznerr=1000')->with([
+                'ErrInfo' => '[amzConfirm-'.$obj['ResponseStatus'].'-'. $obj['Error']['Code'].']',
+                'refId' => $orderReferenceId,
+            ]);
+
+//            echo 'confirmOrder:';
+//            print_r($obj);
+//            exit;
+        }
+    }
+    
+    public function amznAuthorize($clientObj)
+    {
+        $sesAll = session('all');
+        
+        $orderReferenceId = $sesAll['order_reference_id'];
+        $totalFee = $sesAll['total_fee'];
+        $orderNumber = $sesAll['order_number'];
+        
+        // Authorize ===============
+        $authParams = [
+            'amazon_order_reference_id' => $orderReferenceId,
+            'authorization_reference_id' => Ctm::getOrderNum(13),
+            'authorization_amount' => $totalFee,
+            //'currency_code' => 'JPY',
+            'transaction_timeout' => 0, // 0:同期オーソリ
+            //'capture_now' => TRUE,
+        ];
+        
+        $response = $clientObj->authorize($authParams);
+        $obj = $response->toArray();
+        
+//        print_r($obj);
+//        exit;
+        
+        //エラー時、$obj['AuthorizeResult']['AuthorizationDetails']['AuthorizationStatus']['State']=>Declinedで、
+        //[ReasonCode] => AmazonRejected or ProcessingFailure or TransactionTimedOut or InvalidPayment(これもか？？)になる
+        //成功時、[State]=>Open
+        
+        $status = $obj['AuthorizeResult']['AuthorizationDetails']['AuthorizationStatus'];
+        
+        if(isset($obj['Error'])) { //stateがopenならの条件もあった方がいいか
+            // Error処理・・・
+            return redirect('shop/form?amznerr=1000')->with([
+                'ErrInfo' => '[amzAuth-'.$obj['ResponseStatus'].'-'. $obj['Error']['Code'].']',
+                //'refId' => $orderReferenceId,
+            ]);
+            
+//            echo 'Authorize:';
+//            print_r($obj);
+//            exit;
+        }
+        
+        if(isset($status['ReasonCode'])) {
+            //soft_decline trueの時とfalseの時で分けるか => trueの時は同じreferenceIdで再登録できるらしい
+            
+            return redirect('shop/form?amznerr=1000')->with([
+                'ErrInfo' => '[amzAuth-'. $status['State'] .'-'. $status['ReasonCode'].']',
+                'refIdFromAuth' => $orderReferenceId,
+            ]);
+        }
+    }
+    
+    //getOrderReferenceDetailsのMethod => cart->confirmで使用
     public function getAmznDetail($referenceId)
     {
-        //$config = $this->amznConfig;
-
-        // or, instead of setting the array in the code, you can
-        // initialze the Client by specifying a JSON file
-        // $config = 'PATH_TO_JSON_FILE';
-
         // Instantiate the client class with the config type
         $client = new Client($this->amznConfig);
         //$client->setSandbox(true);
@@ -85,9 +222,9 @@ class PaymentController extends Controller
 //                [Message] => The Value 'null' is invalid for the Parameter 'Amount'
 //            )
 
-            return $obj;
+            //return $obj;
             //このタイミングでredirectが効かない
-            //return redirect('shop/form?amznerr=1000')->with('ErrInfo', '[amz-'.$obj['ResponseStatus'].'-'. $obj['Error']['Code'].']');
+            return redirect('shop/form?amznerr=1000')->with('ErrInfo', '[amz-'.$obj['ResponseStatus'].'-'. $obj['Error']['Code'].']');
 //            print_r($obj);
 //            exit;
         }
@@ -97,7 +234,7 @@ class PaymentController extends Controller
         
         
         return compact('addInfo', 'userInfo');
-        
+/*
 //
 //        $data['destination'] = 1;
 //
@@ -123,6 +260,32 @@ class PaymentController extends Controller
 //        session([
 //            'all.order_reference_id'=>$data['order_reference_id'],
 //        ]);
+*/
+    }
+    
+    
+    // Errorで再度の時 url: shop/amznpay-retry
+    public function retrySetAmznPay(Request $request)
+    {
+        if(! $request->session()->has('all')) {
+            abort(404);
+        }
+        
+        $client = new Client($this->amznConfig);
+        
+        // confirmOrderReference --------------------------
+        $res = $this->amznConfirmOrder($client);
+        if(is_object($res)) { //エラーの時、Illuminate\Http\RedirectResponse オブジェクトが返るので。 get_class($res);
+            return $res;
+        }
+        
+        // confirmOrderReference --------------------------
+        $res = $this->amznAuthorize($client);
+        if(is_object($res)) { //エラーの時、Illuminate\Http\RedirectResponse オブジェクトが返るので。 get_class($res);
+            return $res;
+        }
+        
+        return redirect('shop/thankyou');
     }
     
     // POSTで送信される url: shop/amznpay
@@ -136,11 +299,10 @@ class PaymentController extends Controller
         $client = new Client($this->amznConfig);
         //$client->setSandbox(true);
         
-        $sesAll = session('all');
-        
-        $orderReferenceId = $sesAll['order_reference_id'];
-        $totalFee = $sesAll['total_fee'];
-        $orderNumber = $sesAll['order_number'];
+//        $sesAll = session('all');
+//        $orderReferenceId = $sesAll['order_reference_id'];
+//        $totalFee = $sesAll['total_fee'];
+//        $orderNumber = $sesAll['order_number'];
         
         // Optional Parameter
 //        $requestParams = [
@@ -153,133 +315,27 @@ class PaymentController extends Controller
         //$response = $client->getOrderReferenceDetails($requestParams);
         //return redirect('shop/thankyou');
         
-        // setOrderReferenceDetails -------------
-        $setParams = [
-            'amazon_order_reference_id' => $orderReferenceId,
-            'amount' => $totalFee,
-            //'charge_amount' => $totalFee,
-            //'currency_code' => 'JPY', //configで指定しているので不要
-            'seller_order_id' => $orderNumber,
-            'store_name' => 'グリーンロケット',
-        ];
-                
-        $response = $client->setOrderReferenceDetails($setParams);
-        
-        $obj = $response->toArray();
-//        $obj = simplexml_load_string($response->toXml());
-//        $obj = json_decode(json_encode($obj), true);
-        
-        if(isset($obj['Error'])) {
-            //Error処理・・・
-//            [Error] => Array
-//            (
-//                [Type] => Sender
-//                [Code] => InvalidParameterValue
-//                [Message] => The Value 'null' is invalid for the Parameter 'Amount'
-//            )
-            
-            return redirect('shop/form?amznerr=1000')->with([
-                'ErrInfo' => '[amzSet-'.$obj['ResponseStatus'].'-'. $obj['Error']['Code'].']',
-                'refId' => $orderReferenceId,
-            ]);
-//            echo 'setOrder:';
-//            print_r($obj);
-//            exit;
+        // setOrderReferenceDetails --------------------------
+        $res = $this->amznSetOrder($client);
+        if(is_object($res)) { //エラーの時、Illuminate\Http\RedirectResponse オブジェクトが返るので。 get_class($res);
+            return $res;
         }
+        
         
         // confirmOrderReference --------------------------
-        $confirmParams = [
-            'amazon_order_reference_id' => $orderReferenceId,
-        ];
+        $res = $this->amznConfirmOrder($client);
+        if(is_object($res))  //エラーの時、Illuminate\Http\RedirectResponse オブジェクトが返るので。 get_class($res);
+            return $res;
         
-        $response = $client->confirmOrderReference($confirmParams);
-        $obj = $response->toArray();
         
-        if(isset($obj['Error'])) {
-            // Error処理・・・
-            //「PaymentMethodNotAllowed」はここのタイミングでエラーになる
-            /*
-            confirmOrder:Array
-            (
-                [Error] => Array
-                    (
-                        [Type] => Sender
-                        [Code] => ConstraintsExist
-                        [Message] => The OrderReferenceId S03-4524407-5072965 has constraints PaymentMethodNotAllowed and cannot be confirmed.
-                    )
+        // getOrderReferenceDetailsはここでは不要 --------------------------
+       
 
-                [RequestId] => ee3a911a-26f1-44d3-b59e-88a7fadf926d
-                [ResponseStatus] => 400
-            )
-             */
-            
-            return redirect('shop/form?amznerr=1000')->with([
-                'ErrInfo' => '[amzConfirm-'.$obj['ResponseStatus'].'-'. $obj['Error']['Code'].']',
-                'refId' => $orderReferenceId,
-            ]);
+        // Authorize ----------------------------------------------------
+        $res = $this->amznAuthorize($client);
+        if(is_object($res))  //エラーの時、Illuminate\Http\RedirectResponse オブジェクトが返るので。 get_class($res);
+            return $res;
 
-//            echo 'confirmOrder:';
-//            print_r($obj);
-//            exit;
-        }
-        
-        // getOrderReferenceDetailsはここでは不要
-        /*
-        $response = $client->getOrderReferenceDetails($requestParameters);
-        $obj = $response->toArray();
-        
-        if(isset($obj['Error'])) { //stateがopenならの条件もあった方がいいか
-            // Error処理・・・
-            print_r($obj);
-            exit;
-        }
-        */
-                
-        // Authorize ======
-        $authParams = [
-            'amazon_order_reference_id' => $orderReferenceId,
-            'authorization_reference_id' => $orderNumber,
-            'authorization_amount' => $totalFee,
-            //'currency_code' => 'JPY',
-            'transaction_timeout' => 0, // 0:同期オーソリ
-            //'capture_now' => TRUE,
-        ];
-        
-        $response = $client->authorize($authParams);
-        $obj = $response->toArray();
-        
-//        print_r($obj);
-//        exit;
-        
-        //エラー時、$obj['AuthorizeResult']['AuthorizationDetails']['AuthorizationStatus']['State']=>Declinedで、[ReasonCode] => AmazonRejected/ProcessingFailure/TransactionTimedOut になる
-        //成功時、[State]=>Open
-        
-        $status = $obj['AuthorizeResult']['AuthorizationDetails']['AuthorizationStatus'];
-        
-        if(isset($obj['Error'])) { //stateがopenならの条件もあった方がいいか
-            // Error処理・・・
-            return redirect('shop/form?amznerr=1000')->with([
-                'ErrInfo' => '[amzAuth-'.$obj['ResponseStatus'].'-'. $obj['Error']['Code'].']',
-                //'refId' => $orderReferenceId,
-            ]);
-            
-//            echo 'Authorize:';
-//            print_r($obj);
-//            exit;
-        }
-        
-        if(isset($status['ReasonCode'])) {
-            //soft_decline trueの時とfalseの時で分けるか => trueの時は同じreferenceIdで再登録できるらしい
-            
-            return redirect('shop/form?amznerr=1000')->with([
-                'ErrInfo' => '[amzAuth-'. $status['State'] .'-'. $status['ReasonCode'].']',
-                'refIdFromAuth' => $orderReferenceId,
-            ]);
-        }
-        
-//        echo "Atuh";
-//        print_r($obj);
-//        exit;
         
         //        echo $obj['GetOrderReferenceDetailsResult']['OrderReferenceDetails']['Destination']['PhysicalDestination']['AddressLine1'];
         //        echo $obj['GetOrderReferenceDetailsResult']['OrderReferenceDetails']['Buyer']['Name'];

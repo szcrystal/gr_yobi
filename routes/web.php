@@ -178,6 +178,7 @@ Route::get('/shop/error', 'Cart\CartController@getShopError');
 
 //Amzn
 Route::post('/shop/amznpay', 'Cart\PaymentController@setAmznPay');
+Route::post('/shop/amznpay-retry', 'Cart\PaymentController@retrySetAmznPay');
 
 //後払い
 Route::post('/shop/afterdo', 'Cart\CartController@postAfterPay');

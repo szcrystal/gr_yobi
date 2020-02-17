@@ -1021,7 +1021,7 @@ var exe = (function() {
                             //absoluteにするので、relativeに対する高さ（confirm-leftの高さ）からrightの高さを引けばいい
                             $right.css({ top:leftH - rightH });
                             
-                            console.log('abc-' + changePointH);
+                            //console.log('abc-' + changePointH);
                         }
                         else {
                             if($right.hasClass('position-absolute')) {
@@ -1043,7 +1043,7 @@ var exe = (function() {
 //                                $right.removeClass('position-fixed').addClass('position-absolute').css({ top:leftH - rightH });
 //                            }
                             
-                            console.log('123-' + changePointH);
+                            //console.log('123-' + changePointH);
                         }
                     }
                     else {
@@ -1051,7 +1051,7 @@ var exe = (function() {
                             $right.removeClass('position-fixed');
                         }
                         
-                        console.log('out');
+                        //console.log('out');
                     }
                     
                 }
@@ -1067,7 +1067,7 @@ var exe = (function() {
                     setFixed();
                     
 //                    console.log($('.confirm-left').offset().top + $('.confirm-left').height() - rightH);
-                    console.log($(document).scrollTop());
+                    //console.log($(document).scrollTop());
 //                    console.log(winH);
 //                    console.log($(document).scrollTop());
                     
@@ -1080,7 +1080,7 @@ var exe = (function() {
                 $pmRadio.on('change', function(e) {
                     //if($(this).val() == 1) {
                         setTimeout(setFixed, 150);
-                        console.log('pay-change');
+                        //console.log('pay-change');
 //                    }
                 });
             }
@@ -1524,4 +1524,3 @@ $.extend( $.easing,
 
 
 })(jQuery);
-          

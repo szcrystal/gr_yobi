@@ -69,7 +69,7 @@ use App\DeliveryGroup;
         <div id="addressBookWidgetDiv"></div>
         <div id="walletWidgetDiv" class="mt-2"></div>
         
-        {{ session('refId') }}
+        {{ session('refIdFromAuth') }}
         
         <?php
             $amznPay = $payMethod->where('name', 'Amazon Pay')->first();
@@ -79,6 +79,11 @@ use App\DeliveryGroup;
         
         <input id="orderReferenceId" type="hidden" name="order_reference_id" value="" form="user-input">
         {{-- <input type="hidden" name="access_token" value="" form="user-input"> --}}
+        
+        @if(session()->has('refIdFromAuth')) {{-- Authorizeエラーで戻った時 --}}
+            <input type="hidden" name="ref_id_error_back" value="1" form="user-input">
+        @endif
+        
         
         <?php
             // orderReferenceId 注意点 ====================
@@ -126,14 +131,13 @@ use App\DeliveryGroup;
                     onReady: function(orderReference) {
                         // Enter code here you want to be executed
                         // when the address widget has been rendered.
-                        {{--
-                        @if(Request::session()->has('refId'))
-                            var orderReferenceId = "{{ session('refId') }}";
-                        @else
-                        --}}
-                            var orderReferenceId = orderReference.getAmazonOrderReferenceId();
                         
-                        {{--@endif--}}
+                        var orderReferenceId =
+                            @if(Request::session()->has('refIdFromAuth'))
+                                "{{ session('refIdFromAuth') }}";
+                            @else
+                                orderReference.getAmazonOrderReferenceId();
+                            @endif
                         
                         console.log(orderReferenceId);
                         
@@ -162,11 +166,9 @@ use App\DeliveryGroup;
                     
                     sellerId: 'AUT5MRXA61A3P',
                     amazonOrderReferenceId:
-                        @if(session()->has('refIdFromAuth'))
-                            "{{ session('refIdFromAuth') }}"
-                        @else
+                        
                             orderReferenceId
-                        @endif
+                        
                     ,
                     
                     onReady: function(orderReference) {
@@ -185,7 +187,7 @@ use App\DeliveryGroup;
                         @if(session()->has('refIdFromAuth'))
                         
                             //showAddressBookWidget();
-                            location.reload();
+                            //location.reload();
                             //orderReference.amazonOrderReferenceId = orderReferenceId;
                             //console.log(orderReference.getAmazonContractId());
                         @endif

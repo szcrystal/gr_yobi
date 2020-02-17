@@ -343,6 +343,7 @@ class CartController extends Controller
       	$addPoint = $all['add_point'];
         
         $isAmznPay = $all['is_amzn_pay'];
+        $amznOrderReferenceId = $all['order_reference_id']; //amazonPay以外でもnullが必ずセットされている
         
         $destination = $allData['destination'];
         $pm = $allData['pay_method'];
@@ -678,7 +679,7 @@ class CartController extends Controller
             'huzai_comment' => isset($allData['huzai_comment']) ? $allData['huzai_comment'] : null,
             'user_comment' => $allData['user_comment'],
             
-            'amzn_reference_id' => isset($orderReferenceId) ? $orderReferenceId : null,
+            'amzn_reference_id' => $amznOrderReferenceId, //amazonPay以外でもnullが必ずセットされている
             
             'deli_done' => 0,
             'pay_done' => 0,
@@ -1463,6 +1464,7 @@ class CartController extends Controller
         
         $data = $request->all();
         
+        
 //        if(! Auth::check()) {
 //            //Birth Input 月日全て入力で登録することにしているがどうか
 //            if(! $data['user']['birth_year'] || ! $data['user']['birth_month'] || ! $data['user']['birth_day']) {
@@ -1491,15 +1493,16 @@ class CartController extends Controller
         $allPrice = 0;
         
         $isAmznPay = session('all.is_amzn_pay');
+        $amznOrderReferenceId = isset($data['order_reference_id']) ? $data['order_reference_id'] : null;
         
         // AmazonPay ===================================================================
         if($isAmznPay) {
             $paymentObj = new Payment();
             
-            $res = $paymentObj->getAmznDetail($data['order_reference_id']);
+            $res = $paymentObj->getAmznDetail($amznOrderReferenceId);
             
-            if(isset($res['Error'])) {
-                return redirect('shop/form?amznerr=1000')->with('ErrInfo', '[amz-'. $res['ResponseStatus'].'-'. $res['Error']['Code'].']');
+            if(is_object($res)) { //エラーの時、Illuminate\Http\RedirectResponse オブジェクトが返るのでそれをreturnする。 get_class($res);
+                return $res;
             }
             
             extract($res);
@@ -1528,12 +1531,12 @@ class CartController extends Controller
                 $data['user']['tel_num'] = $telNum;
             }
 
-            //referenceIdをsessionに入れる session入れ
-            session([
-                'all.order_reference_id'=>$data['order_reference_id'],
-            ]);
-
         }
+        
+        //referenceIdをsessionに入れる session入れ amazonPayでない場合はnullがセットされる
+        session([
+            'all.order_reference_id'=>$amznOrderReferenceId,
+        ]);
         // amznPay END ===========================
 
 
@@ -1847,10 +1850,12 @@ class CartController extends Controller
         $title = $itemData[0]->title; //購入１個目の商品をタイトルにする。これ以外なさそう。
         $number = $itemData[0]->number;
         
-        //注文番号作成 Order_Number
-        $orderNum = Ctm::getOrderNum(11);
+        //注文番号作成 Order_Number ==========================
+        //Amazonエラーから再送信の時のみsessionのorderNumを再利用する
+        $orderNum = isset($data['ref_id_error_back']) ? session('all.order_number') : Ctm::getOrderNum(11);
         
-        //UserInfo
+        
+        //UserInfo ========================================
         if(isset($data['user'])) { //Authでなければ$data['user']にデータが入る
         	//$user_id = Ctm::getOrderNum(15);
         	$user_name = $data['user']['name'];
@@ -1871,7 +1876,12 @@ class CartController extends Controller
             $actionUrl = url('shop/paydo');
         }
         elseif($data['pay_method'] == 7) {
-            $actionUrl = url('shop/amznpay');
+            if(isset($data['ref_id_error_back'])) { //Authorizeエラーから再度支払い方法を選択し直した時
+                $actionUrl = url('shop/amznpay-retry');
+            }
+            else {
+                $actionUrl = url('shop/amznpay');
+            }
         }
         else {
             $actionUrl = url('shop/thankyou');
