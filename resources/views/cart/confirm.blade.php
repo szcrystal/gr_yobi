@@ -89,6 +89,10 @@
                 
                 <input type="hidden" value="" id="token" name="token">
                 
+                @if(isset($data['ref_id_error_back'])) <?php //amazonPayのauthorizeでエラーになり再送信する場合 ?>
+                    <input type="hidden" name="ref_id_error_back" value="1">
+                @endif
+                
                 @if(! $isCard)
                     <?php
                         $disabled = '';

@@ -68,18 +68,19 @@ class PaymentController extends Controller
 //        $obj = simplexml_load_string($response->toXml());
 //        $obj = json_decode(json_encode($obj), true);
         
+        //Error処理・・・
         if(isset($obj['Error'])) {
-            //Error処理・・・
-//            [Error] => Array
-//            (
-//                [Type] => Sender
-//                [Code] => InvalidParameterValue
-//                [Message] => The Value 'null' is invalid for the Parameter 'Amount'
-//            )
+            $addInfo = '<a href="/shop/cart" class="text-primary">カートに戻り</a>AmazonPay以外のお支払方法を選択して下さい。';
+            
+            $errInfo ='Amazonでの手続きに失敗しました。再度やり直すか、' . $addInfo;
+            
+            if(Ctm::isEnv('local')) {
+                $errInfo .= '[amzSet-'.$obj['ResponseStatus'].'-'. $obj['Error']['Code'].']';
+            }
             
             return redirect('shop/form?amznerr=1000')->with([
-                'ErrInfo' => '[amzSet-'.$obj['ResponseStatus'].'-'. $obj['Error']['Code'].']',
-                'refId' => $orderReferenceId,
+                'ErrInfo' => $errInfo,
+                //'refId' => $orderReferenceId,
             ]);
             
             //return 0;
@@ -121,11 +122,19 @@ class PaymentController extends Controller
                 [RequestId] => ee3a911a-26f1-44d3-b59e-88a7fadf926d
                 [ResponseStatus] => 400
             )
-             */
+            */
+            
+            $addInfo = '<a href="/shop/cart" class="text-primary">カートに戻り</a>AmazonPay以外のお支払方法を選択して下さい。';
+            
+            $errInfo ='Amazonでの手続きに失敗しました。再度やり直すか、' . $addInfo;
+            
+            if(Ctm::isEnv('local')) {
+                $errInfo .= '[amzConfirm-'.$obj['ResponseStatus'].'-'. $obj['Error']['Code'].']';
+            }
             
             return redirect('shop/form?amznerr=1000')->with([
-                'ErrInfo' => '[amzConfirm-'.$obj['ResponseStatus'].'-'. $obj['Error']['Code'].']',
-                'refId' => $orderReferenceId,
+                'ErrInfo' => $errInfo,
+                //'refId' => $orderReferenceId,
             ]);
 
 //            echo 'confirmOrder:';
@@ -150,6 +159,10 @@ class PaymentController extends Controller
             //'currency_code' => 'JPY',
             'transaction_timeout' => 0, // 0:同期オーソリ
             //'capture_now' => TRUE,
+            
+            //下記はテストシミュレートの指定 -------
+            //'seller_authorization_note' => '{"SandboxSimulation": {"State":"Declined", "ReasonCode":"InvalidPayment Method", "PaymentMethodUpdateTimeInMins":5, "SoftDecline":"true"}}',
+            //'seller_authorization_note' => '{"SandboxSimulation": {"State":"Declined", "ReasonCode":"TransactionTimedOut"}}',
         ];
         
         $response = $clientObj->authorize($authParams);
@@ -162,26 +175,63 @@ class PaymentController extends Controller
         //[ReasonCode] => AmazonRejected or ProcessingFailure or TransactionTimedOut or InvalidPayment(これもか？？)になる
         //成功時、[State]=>Open
         
-        $status = $obj['AuthorizeResult']['AuthorizationDetails']['AuthorizationStatus'];
+        if(isset($obj['AuthorizeResult'])) {
+            $softDecline = $obj['AuthorizeResult']['AuthorizationDetails']['SoftDecline'];
+            $status = $obj['AuthorizeResult']['AuthorizationDetails']['AuthorizationStatus'];
+        }
         
-        if(isset($obj['Error'])) { //stateがopenならの条件もあった方がいいか
-            // Error処理・・・
+        $addInfo = '<a href="/shop/cart" class="text-primary">カートに戻り</a>、再度やり直すかAmazonPay以外のお支払方法を選択して下さい。';
+        
+        // Error処理・・・
+        if(isset($obj['Error'])) {
+            //この時は完全エラーになる =>Widgetが選択不可の画面になる。Xマークと「お支払い方法の変更をご希望の場合、販売事業者様へお問い合わせください。」の表示
+            //トランザクションレポートにはセットされる
+            
+            $errInfo ='Amazon情報の取得に失敗しました。' . $addInfo;
+            
+            if(Ctm::isEnv('local')) {
+                $errInfo .= '[amzAuth-'.$obj['ResponseStatus'].'-'. $obj['Error']['Code'].']';
+            }
+            
             return redirect('shop/form?amznerr=1000')->with([
-                'ErrInfo' => '[amzAuth-'.$obj['ResponseStatus'].'-'. $obj['Error']['Code'].']',
-                //'refId' => $orderReferenceId,
+                'ErrInfo' => $errInfo,
+                'refIdFromAuth' => $orderReferenceId,
             ]);
             
-//            echo 'Authorize:';
-//            print_r($obj);
+//            header('Location: /error.html');
 //            exit;
         }
         
         if(isset($status['ReasonCode'])) {
             //soft_decline trueの時とfalseの時で分けるか => trueの時は同じreferenceIdで再登録できるらしい
+            $errInfo ='Amazonでのお支払方法に問題があるようです。';
+            
+            if($softDecline == 'true') {
+                $errInfo .= '再度お試しになるか、別のお支払方法を選択する、もしくは';
+            }
+            else {
+                if($status['ReasonCode'] == 'InvalidPaymentMethod') {
+                    $errInfo .='別のお支払方法を選択する、もしくは';
+                }
+                elseif($status['ReasonCode'] == 'AmazonRejected' || $status['ReasonCode'] == 'TransactionTimedOut') {
+                    // この時は完全エラーになる =>Widgetが選択不可の画面になる、再送信でも失敗となるのでカートに戻る以外ない
+                }
+                elseif($status['ReasonCode'] == 'ProcessingFailure') { // これはテストシミュレート不可らしい
+                    $errInfo .= '1~2分程度時間を置いて再度お試しになるか、もしくは';
+                }
+            }
+            
+            $errInfo .= $addInfo;
+            
+            if(Ctm::isEnv('local')) {
+                $errInfo .= '[amzAuth-SoftDecline:' . $softDecline . '-' . $status['State'] .'-'. $status['ReasonCode'].']';
+            }
             
             return redirect('shop/form?amznerr=1000')->with([
-                'ErrInfo' => '[amzAuth-'. $status['State'] .'-'. $status['ReasonCode'].']',
+                'ErrInfo' => $errInfo,
                 'refIdFromAuth' => $orderReferenceId,
+//                'softDecline' => $softDecline,
+//                'errorStatus' => $status,
             ]);
         }
     }
@@ -189,7 +239,6 @@ class PaymentController extends Controller
     //getOrderReferenceDetailsのMethod => cart->confirmで使用
     public function getAmznDetail($referenceId)
     {
-        // Instantiate the client class with the config type
         $client = new Client($this->amznConfig);
         //$client->setSandbox(true);
         
@@ -212,64 +261,75 @@ class PaymentController extends Controller
 //            $obj = simplexml_load_string($response->toXml());
 //            $obj = json_decode(json_encode($obj), true);
 
-        
+        //Error処理・・・
         if(isset($obj['Error'])) {
-            //Error処理・・・
-//            [Error] => Array
-//            (
-//                [Type] => Sender
-//                [Code] => InvalidParameterValue
-//                [Message] => The Value 'null' is invalid for the Parameter 'Amount'
-//            )
+            
+            $addInfo = '<a href="/shop/cart" class="text-primary">カートに戻り</a>AmazonPay以外のお支払方法を選択して下さい。';
+            $errInfo ='Amazon情報の取得に失敗しました。再度やり直すか、' . $addInfo;
+            
+            if(Ctm::isEnv('local')) {
+                $errInfo .= '[amzorder-'.$obj['ResponseStatus'].'-'. $obj['Error']['Code'].']';
+            }
 
-            //return $obj;
             //このタイミングでredirectが効かない
-            return redirect('shop/form?amznerr=1000')->with('ErrInfo', '[amz-'.$obj['ResponseStatus'].'-'. $obj['Error']['Code'].']');
-//            print_r($obj);
-//            exit;
+            return redirect('shop/form?amznerr=1000')->with([
+                'ErrInfo' => $errInfo,
+            ]);
+
         }
         
         $addInfo = $obj['GetOrderReferenceDetailsResult']['OrderReferenceDetails']['Destination']['PhysicalDestination'];
         $userInfo = $obj['GetOrderReferenceDetailsResult']['OrderReferenceDetails']['Buyer'];
         
+        //ハイフンがあるので消す
+        $postNum = str_replace('-', '', $addInfo['PostalCode']);
+        $telNum = str_replace('-', '', $addInfo['Phone']);
         
-        return compact('addInfo', 'userInfo');
-/*
-//
-//        $data['destination'] = 1;
-//
-//        $data['receiver']['post_num'] = $addInfo['PostalCode'];
-//        $data['receiver']['prefecture'] = $addInfo['StateOrRegion'];
-//        $data['receiver']['address_1'] = $addInfo['AddressLine1'] . $addInfo['AddressLine2'];
-//        $data['receiver']['address_2'] = $addInfo['AddressLine3'];
-//        $data['receiver']['name'] = $addInfo['Name'];
-//        $data['receiver']['tel_num'] = $addInfo['Phone'];
-//
-//        $data['user']['name'] = $userInfo['Name'];
-//        $data['user']['email'] = $userInfo['Email'];
-//
-//        if($regist) {
-//            $data['user']['hurigana'] = '';
-//            $data['user']['post_num'] = $addInfo['PostalCode'];
-//            $data['user']['prefecture'] = $addInfo['StateOrRegion'];
-//            $data['user']['address_1'] = $addInfo['AddressLine1'] . $addInfo['AddressLine2'];
-//            $data['user']['address_2'] = $addInfo['AddressLine3'];
-//            $data['user']['tel_num'] = $addInfo['Phone'];
-//        }
-//
-//        session([
-//            'all.order_reference_id'=>$data['order_reference_id'],
-//        ]);
-*/
+        //Receiver --------------------------------------
+        $amznReceiver['name'] = $addInfo['Name'];
+        $amznReceiver['hurigana'] = '';
+        $amznReceiver['email'] = $userInfo['Email'];
+        $amznReceiver['tel_num'] = $telNum;
+        $amznReceiver['post_num'] = $postNum;
+        $amznReceiver['prefecture'] = $addInfo['StateOrRegion'];
+        
+        if($this->set->is_product) {
+            $amznReceiver['address_1'] = $addInfo['City'] . $addInfo['AddressLine1'];
+            $amznReceiver['address_2'] = $addInfo['AddressLine2'];
+        }
+        else {
+            $amznReceiver['address_1'] = $addInfo['AddressLine1'] . $addInfo['AddressLine2'];
+            $amznReceiver['address_2'] = $addInfo['AddressLine3'];
+        }
+        
+        
+        //User --------------------------------------
+        $amznUser['name'] = $userInfo['Name'];
+        $amznUser['email'] = $userInfo['Email'];
+        $amznUser['hurigana'] = '';
+        $amznUser['tel_num'] = $telNum;
+        $amznUser['post_num'] = $postNum;
+        $amznUser['prefecture'] = $addInfo['StateOrRegion'];
+        
+        if($this->set->is_product) {
+            $amznUser['address_1'] = $addInfo['City'] . $addInfo['AddressLine1'];
+            $amznUser['address_2'] = $addInfo['AddressLine2'];
+        }
+        else {
+            $amznUser['address_1'] = $addInfo['AddressLine1'] . $addInfo['AddressLine2'];
+            $amznUser['address_2'] = $addInfo['AddressLine3'];
+        }
+        
+        return compact('amznReceiver', 'amznUser');
+
     }
     
     
     // Errorで再度の時 url: shop/amznpay-retry
     public function retrySetAmznPay(Request $request)
     {
-        if(! $request->session()->has('all')) {
+        if(! $request->session()->has('all'))
             abort(404);
-        }
         
         $client = new Client($this->amznConfig);
         
@@ -291,45 +351,29 @@ class PaymentController extends Controller
     // POSTで送信される url: shop/amznpay
     public function setAmznPay(Request $request)
     {
-        if(! $request->session()->has('all')) {
+        if(! $request->session()->has('all'))
             abort(404);
-        }
 
         // Instantiate the client class with the config type
         $client = new Client($this->amznConfig);
         //$client->setSandbox(true);
         
-//        $sesAll = session('all');
-//        $orderReferenceId = $sesAll['order_reference_id'];
-//        $totalFee = $sesAll['total_fee'];
-//        $orderNumber = $sesAll['order_number'];
-        
-        // Optional Parameter
-//        $requestParams = [
-//            'mws_auth_token' => '3pKDQQL1eRfsZpFM0mTMaYxkLScapMmcOAbYoGr5',
-//            'amazon_order_reference_id' => $orderReferenceId,
-//            'address_consent_token' => session('all.access_token'),
-//        ];
-        
-        //$response = $client->getMerchantAccountStatus($$requestParams);
-        //$response = $client->getOrderReferenceDetails($requestParams);
-        //return redirect('shop/thankyou');
-        
-        // setOrderReferenceDetails --------------------------
-        $res = $this->amznSetOrder($client);
-        if(is_object($res)) { //エラーの時、Illuminate\Http\RedirectResponse オブジェクトが返るので。 get_class($res);
-            return $res;
+        // setOrderReferenceDetails ＊エラーからの再送信の場合はsetOrderは不要（実行不可）　--------------------------
+        if(! $request->has('ref_id_error_back')) {
+            $res = $this->amznSetOrder($client);
+            if(is_object($res)) { //エラーの時、Illuminate\Http\RedirectResponse オブジェクトが返るので。 get_class($res);
+                return $res;
+            }
         }
         
         
         // confirmOrderReference --------------------------
         $res = $this->amznConfirmOrder($client);
-        if(is_object($res))  //エラーの時、Illuminate\Http\RedirectResponse オブジェクトが返るので。 get_class($res);
+        if(is_object($res)) { //エラーの時、Illuminate\Http\RedirectResponse オブジェクトが返るので。 get_class($res);
             return $res;
-        
+        }
         
         // getOrderReferenceDetailsはここでは不要 --------------------------
-       
 
         // Authorize ----------------------------------------------------
         $res = $this->amznAuthorize($client);

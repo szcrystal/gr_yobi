@@ -1507,30 +1507,10 @@ class CartController extends Controller
             
             extract($res);
             
-            $postNum = str_replace('-', '', $addInfo['PostalCode']);
-            $telNum = str_replace('-', '', $addInfo['Phone']);
-            
             $data['destination'] = 1;
             
-            $data['receiver']['post_num'] = $postNum;
-            $data['receiver']['prefecture'] = $addInfo['StateOrRegion'];
-            $data['receiver']['address_1'] = $addInfo['AddressLine1'] . $addInfo['AddressLine2'];
-            $data['receiver']['address_2'] = $addInfo['AddressLine3'];
-            $data['receiver']['name'] = $addInfo['Name'];
-            $data['receiver']['tel_num'] = $telNum;
-            
-            $data['user']['name'] = $userInfo['Name'];
-            $data['user']['email'] = $userInfo['Email'];
-            
-            if($regist) {
-                $data['user']['hurigana'] = '';
-                $data['user']['post_num'] = $postNum;
-                $data['user']['prefecture'] = $addInfo['StateOrRegion'];
-                $data['user']['address_1'] = $addInfo['AddressLine1'] . $addInfo['AddressLine2'];
-                $data['user']['address_2'] = $addInfo['AddressLine3'];
-                $data['user']['tel_num'] = $telNum;
-            }
-
+            $data['receiver'] = $amznReceiver;
+            $data['user'] = $amznUser;
         }
         
         //referenceIdをsessionに入れる session入れ amazonPayでない場合はnullがセットされる
@@ -1876,12 +1856,12 @@ class CartController extends Controller
             $actionUrl = url('shop/paydo');
         }
         elseif($data['pay_method'] == 7) {
-            if(isset($data['ref_id_error_back'])) { //Authorizeエラーから再度支払い方法を選択し直した時
-                $actionUrl = url('shop/amznpay-retry');
-            }
-            else {
+//            if(isset($data['ref_id_error_back'])) { //Authorizeエラーから再度支払い方法を選択し直した時
+//                $actionUrl = url('shop/amznpay-retry');
+//            }
+//            else {
                 $actionUrl = url('shop/amznpay');
-            }
+            //}
         }
         else {
             $actionUrl = url('shop/thankyou');
@@ -1989,11 +1969,10 @@ class CartController extends Controller
         if($request->has('carderr') && $request->input('carderr')) {
         	
             if($request->input('carderr') == 1000) { //決済を実行してカードに問題がある時ここにエラーコード1000でリダイレクトさせている
-            	$errInfo = session()->has('ErrInfo') ? session('ErrInfo') : '';
                 $errText = 'カード情報が正しくないか、お取り扱いができません。';
-                //Local時のみエラーコード
+                //Local時のみエラーコードを付ける
                 if(Ctm::isEnv('local')) {
-                	$errText .= $errInfo;
+                	$errText .= session()->has('ErrInfo') ? session('ErrInfo') : '';
                 }
             	
                 $cardErrors['carderr'] = $errText;
@@ -2007,19 +1986,7 @@ class CartController extends Controller
         if($request->has('amznerr')) {
             
             if($request->input('amznerr') == 1000) { //amznPayを実行して問題がある時ここにエラーコード1000でリダイレクトさせている
-                $errInfo = session()->has('ErrInfo') ? session('ErrInfo') : '';
-                $refId = session()->has('refIdFromAuth') ? session('refIdFromAuth') : '';
-                
-                $errText = $refId != '' ?
-                    'Amazonでのお支払い方法に問題があるようです。' :
-                    'Amazonご登録情報の取得に失敗しました。' ;
-                
-                $errText .= '<a href="/shop/cart" class="text-primary">カートに戻り</a>再度やり直すか、別のお支払い方法を選択して下さい。';
-                
-                //Local時のみエラーコード
-                if(Ctm::isEnv('local')) {
-                    $errText .= $errInfo . $refId;
-                }
+                $errText = session()->has('ErrInfo') ? session('ErrInfo') : '';
                 
                 $cardErrors['carderr'] = $errText;
             }

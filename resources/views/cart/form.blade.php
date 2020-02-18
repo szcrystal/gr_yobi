@@ -84,6 +84,9 @@ use App\DeliveryGroup;
             <input type="hidden" name="ref_id_error_back" value="1" form="user-input">
         @endif
         
+        <span class="mt-3 d-none back-to-cart">
+            <a href="{{ url('shop/cart') }}" class="text-linkblue"><i class="fal fa-angle-double-left"></i> カートに戻り、再度やり直すか別のお支払い方法を選択して下さい。</a>
+        </span>
         
         <?php
             // orderReferenceId 注意点 ====================
@@ -157,6 +160,9 @@ use App\DeliveryGroup;
                         //alert('address' + error.getErrorCode() + ': ' + error.getErrorMessage());
                         
                         // See "Handling Errors" for more information.
+                        
+                        $('.next-btn-form').attr('disabled', 1);
+                        $('.back-to-cart').removeClass('d-none').addClass('d-inline-block');
                     }
                 }).bind("addressBookWidgetDiv");
             }
@@ -173,7 +179,7 @@ use App\DeliveryGroup;
                     
                     onReady: function(orderReference) {
                         //console.log(orderReference.getAmazonOrderReferenceId());
-                        console.log("bbb");
+                        //console.log("bbb");
                     },
                     
                     onPaymentSelect: function(orderReference) {
@@ -204,6 +210,9 @@ use App\DeliveryGroup;
                         //console.log(error.getErrorCode() + ': ' + error.getErrorMessage());
                         // See "Handling Errors" for more information.
                         //alert('wallet' + error.getErrorCode() + ': ' + error.getErrorMessage());
+                        
+                        $('.next-btn-form').attr('disabled', 1);
+                        $('.back-to-cart').removeClass('d-none').addClass('d-inline-block');
                     }
                 }).bind("walletWidgetDiv");
             }
@@ -1406,7 +1415,7 @@ use App\DeliveryGroup;
 
 
     <div class="ml-20per mt-5 pt-2">
-        <button class="btn btn-block btn-kon mb-0 mx-auto py-3" type="submit" name="recognize" value="1">次へ進む</button>
+        <button class="btn btn-block btn-kon mb-0 mx-auto py-3 next-btn-form" type="submit" name="recognize" value="1">次へ進む</button>
     </div>{{-- ml-20per --}}
     
     {{--
@@ -1421,7 +1430,7 @@ use App\DeliveryGroup;
     
     <div class="right-blue mb-2">
         <div>
-            <button class="btn btn-block btn-kon mb-4 mx-auto py-3" type="submit" name="recognize" value="1">次へ進む</button>
+            <button class="btn btn-block btn-kon mb-4 mx-auto py-3 next-btn-form" type="submit" name="recognize" value="1">次へ進む</button>
         </div>
         
         <div class="table-responsive table-foot">
